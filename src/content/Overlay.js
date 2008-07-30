@@ -150,7 +150,12 @@ var Overlay = {
     var setup = window.open("chrome://gcontactsync/content/FirstLogin.xul",
                             "SetupWindow",
                             "chrome,resizable=yes,scrollbars=no,status=no");
-    setup.addEventListener("unload", function(e) { Sync.begin(); }, false);
+    // when the setup window loads, set its onunload property to begin a sync
+    setup.onload = function() {
+      setup.onunload = function () {
+        Sync.begin(); 
+      };
+    };
   },
 
   /**
