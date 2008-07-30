@@ -150,7 +150,7 @@ var Overlay = {
     var setup = window.open("chrome://gcontactsync/content/FirstLogin.xul",
                             "SetupWindow",
                             "chrome,resizable=yes,scrollbars=no,status=no");
-    window.addEventListener("unload", function(e) { Sync.begin(); }, false);
+    setup.addEventListener("unload", function(e) { Sync.begin(); }, false);
   },
 
   /**
