@@ -1,0 +1,5 @@
+/* Style for the button uses the large abcard image */
+.gContactSync-Button {
+  list-style-image:
+  	url("chrome://messenger/skin/addressbook/icons/abcard-large.png");
+}

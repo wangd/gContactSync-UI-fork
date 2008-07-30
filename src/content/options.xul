@@ -1,0 +1,271 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is gContactSync.
+   -
+   - The Initial Developer of the Original Code is
+   - Josh Geenen <gcontactsync@pirules.net>.
+   - Portions created by the Initial Developer are Copyright (C) 2008
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK ***** -->
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE window SYSTEM "chrome://gContactSync/locale/options.dtd">
+<prefwindow id="gContactSyncPrefs"
+            title="&title.label;"
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="LoginManager.js"/>
+  <script src="StringBundle.js"/>
+  <script src="synonyms.js"/>
+  <script src="options.js"/>
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="otherStringBundle"
+                  src="chrome://gContactSync/locale/gcontactsync.properties"/>
+  </stringbundleset>
+  <prefpane id="gContactSync-prefpane" label="&title.label;">
+
+    <preferences>
+      <preference id="refreshInterval"
+                  name="extensions.gContactSync.refreshInterval"
+                  type="int"/>
+      <preference id="initialDelay"
+                  name="extensions.gContactSync.initialDelay"
+                  type="int"/>
+      <preference id="addressBookName"
+                  name="extensions.gContactSync.addressBookName"
+                  type="string"/>
+      <preference id="updateGoogleInConflicts"
+                  name="extensions.gContactSync.updateGoogleInConflicts"
+                  type="bool"/>
+      <preference id="confirmDuplicates"
+                  name="extensions.gContactSync.confirmDuplicates"
+                  type="bool"/>
+      <preference id="overrideCopy"
+                  name="extensions.gContactSync.overrideCopy"
+                  type="bool"/>
+      <preference id="extended1"
+                  name="extensions.gContactSync.extended1"
+                  type="string"/>
+      <preference id="extended2"
+                  name="extensions.gContactSync.extended2"
+                  type="string"/>
+      <preference id="extended3"
+                  name="extensions.gContactSync.extended3"
+                  type="string"/>
+      <preference id="extended4"
+                  name="extensions.gContactSync.extended4"
+                  type="string"/>
+      <preference id="extended5"
+                  name="extensions.gContactSync.extended5"
+                  type="string"/>
+      <preference id="extended6"
+                  name="extensions.gContactSync.extended6"
+                  type="string"/>
+      <preference id="extended7"
+                  name="extensions.gContactSync.extended7"
+                  type="string"/>
+      <preference id="extended8"
+                  name="extensions.gContactSync.extended8"
+                  type="string"/>
+      <preference id="extended9"
+                  name="extensions.gContactSync.extended9"
+                  type="string"/>
+      <preference id="extended10"
+                  name="extensions.gContactSync.extended10"
+                  type="string"/>
+      <preference id="syncExtended"
+                  name="extensions.gContactSync.syncExtended"
+                  type="bool"/>
+      <preference id="address1"
+                  name="extensions.gContactSync.address1"
+                  type="string"/>
+      <preference id="address2"
+                  name="extensions.gContactSync.address2"
+                  type="string"/>
+      <preference id="address3"
+                  name="extensions.gContactSync.address3"
+                  type="string"/>
+      <preference id="address4"
+                  name="extensions.gContactSync.address4"
+                  type="string"/>
+      <preference id="address5"
+                  name="extensions.gContactSync.address5"
+                  type="string"/>
+      <preference id="address6"
+                  name="extensions.gContactSync.address6"
+                  type="string"/>
+    </preferences>
+
+    <vbox>
+      <tabbox>
+        <tabs id="optionsTabs">
+          <tab label="&main.tab;"/>
+          <tab label="&extended.tab;"/>
+          <tab label="&address.tab;"/>
+        </tabs>
+
+        <tabpanels id="optionsPanels" flex="1">
+          <vbox index="main">
+            <label control="abNameLbl"
+                   value="&abName.value;"/>
+            <label control="abNameLbl2"
+                   value="&abName2.value;"/>
+            <textbox preference="addressBookName"
+                     id="abName"
+                     maxLength="25"/>
+
+            <label control="refreshIntervalLbl"
+                   value="&refreshInterval.value;"/>
+            <label control="refreshIntervalLbl2"
+                   value="&refreshInterval2.value;"/>
+            <textbox preference="refreshInterval"
+                     id="refreshIntervalBox"
+                     maxlength="8"/>
+
+            <label control="initialDelayLbl"
+                   value="&initialDelay.value;"/>
+            <textbox preference="initialDelay"
+                     id="initialDelayBox"
+                     maxlength="8"/>
+                   
+            <checkbox preference="updateGoogleInConflicts"
+                      id="macContacts"
+                      label="&updateGoogle.label;"/>
+                   
+            <checkbox preference="confirmDuplicates"
+                     id="confirmDuplicates"
+                     label="&confirmDuplicates.label;"/>
+                   
+            <checkbox preference="overrideCopy"
+                     id="overrideCopy"
+                     label="&overrideCopy.label;"/>
+                   
+            <checkbox preference="syncExtended"
+                     id="syncExtended"
+                     label="&syncExtended.label;"/>
+            <hbox>
+              <button id="removeLogin"
+                      label="&removeLogin.label;"
+                      oncommand="removeLogin()"/>
+            </hbox>
+          </vbox>
+          <vbox index="extended">
+            <label control="extendedDesc1"
+                   value="&extendedPropertiesDesc1.value;"/>
+            <label control="extendedDesc2"
+                   value="&extendedPropertiesDesc2.value;"/>
+            <label control="extendedDesc3"
+                   value="&extendedPropertiesDesc3.value;"/>
+            <label control="extendedDesc4"
+                   value="&extendedPropertiesDesc4.value;"/>
+            <label control="blank" value=""/>
+            <hbox>
+              <label control="extended1" value="&extended1.value;"/>
+              <textbox preference="extended1" id="extended1" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended2" value="&extended2.value;"/>
+              <textbox preference="extended2" id="extended2" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended3" value="&extended3.value;"/>
+              <textbox preference="extended3" id="extended3" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended4" value="&extended4.value;"/>
+              <textbox preference="extended4" id="extended4" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended5" value="&extended5.value;"/>
+              <textbox preference="extended5" id="extended5" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended6" value="&extended6.value;"/>
+              <textbox preference="extended6" id="extended6" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended7" value="&extended7.value;"/>
+              <textbox preference="extended7" id="extended7" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended8" value="&extended8.value;"/>
+              <textbox preference="extended8" id="extended8" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended9" value="&extended9.value;"/>
+              <textbox preference="extended9" id="extended9" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="extended10" value="&extended10.value;"/>
+              <textbox preference="extended10" id="extended10" maxlength="20"/>
+            </hbox>
+          </vbox>
+          <vbox index="address">
+            <label control="extendedDesc1"
+                   value="&addressDesc1.value;"/>
+            <label control="extendedDesc2"
+                   value="&addressDesc2.value;"/>
+            <label control="extendedDesc3"
+                   value="&addressDesc3.value;"/>
+            <label control="extendedDesc4"
+                   value="&addressDesc4.value;"/>
+            <label control="extendedDesc5"
+                   value="&addressDesc5.value;"/>
+            <label control="extendedDesc6"
+                   value="&addressDesc6.value;"/>
+            <label control="blank" value=""/>
+            <hbox>
+              <label control="address1" value="&address1.value;"/>
+              <textbox preference="address1" id="address1" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="address2" value="&address2.value;"/>
+              <textbox preference="address2" id="address2" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="address3" value="&address3.value;"/>
+              <textbox preference="address3" id="address3" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="address4" value="&address4.value;"/>
+              <textbox preference="address4" id="address4" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="address5" value="&address5.value;"/>
+              <textbox preference="address5" id="address5" maxlength="20"/>
+            </hbox>
+            <hbox>
+              <label control="address6" value="&address6.value;"/>
+              <textbox preference="address6" id="address6" maxlength="20"/>
+            </hbox>
+          </vbox>
+        </tabpanels>
+      </tabbox>
+    </vbox>
+  </prefpane>
+</prefwindow>

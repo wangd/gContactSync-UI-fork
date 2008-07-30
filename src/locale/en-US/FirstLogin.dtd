@@ -1,0 +1,26 @@
+<!ENTITY title.label "gContactSync Initial Setup">
+<!ENTITY refreshInterval.value "Synchronize Interval (minutes)">
+<!ENTITY refreshInterval2.value "[Default is 30]">
+<!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
+<!ENTITY abName.value "Name of the Address Book">
+<!ENTITY updateGoogle.label "Always update Gmail™ during conflicts">
+<!ENTITY confirmDuplicates.label "Confirm before deleting duplicates">
+<!ENTITY overrideCopy.label "Copy extra attributes when copying/moving cards">
+<!ENTITY syncExtended.label "Sync Attributes that Thunderbird has, but Google lacks">
+<!ENTITY main.tab "Main">
+<!ENTITY address.tab "Address">
+<!ENTITY addressDesc1.value "Addresses are synced with one property per line">
+<!ENTITY addressDesc2.value "Choose from the following, or leave the last box(es)">
+<!ENTITY addressDesc3.value "blank if you would like fewer properties synced">
+<!ENTITY addressDesc4.value "Address, Address2, City, State, ZipCode, Country">
+<!ENTITY addressDesc5.value "You must edit your Google Contacts to reflect your">
+<!ENTITY addressDesc6.value "preferences here or addresses will not sync properly.">
+<!ENTITY address1.value "Address Line 1">
+<!ENTITY address2.value "Address Line 2">
+<!ENTITY address3.value "Address Line 3">
+<!ENTITY address4.value "Address Line 4">
+<!ENTITY address5.value "Address Line 5">
+<!ENTITY address6.value "Address Line 6">
+<!ENTITY gettingStarted1.value "Before you start synchronizing your contacts, please">
+<!ENTITY gettingStarted2.value "look through and modify the preferences in these two tabs.">
+
