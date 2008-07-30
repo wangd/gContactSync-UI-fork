@@ -75,7 +75,7 @@ var LOGGER = {
     * @param aWarningMessage The warning message.
     */
    LOG_WARNING: function(aWarningMessage) {
-     this.LOG("***WARNING: " + aWarningMessage);
+     this.LOG("***WARNING: " + aWarningMessage + "\n" + StringBundle.getStr("warningEnd");
      this.mWarningCount++;
    }
 };
