@@ -46,8 +46,10 @@
  * @constructor
  */
 function GContact(aXml) {
-  if (aXml)
+  if (aXml) {
     this.xml = aXml;
+    this.checkIMAddress();
+  }
   else {
     var atom = gdata.namespaces.ATOM;
     var gd = gdata.namespaces.GD;
@@ -64,6 +66,21 @@ function GContact(aXml) {
 GContact.prototype = {
   mElementsToRemove: [],
   mCurrentElement: null,
+  // checks for an invalid IM address
+  checkIMAddress: function() {
+    var i = 0;
+    var element = {};
+    var ns = gdata.namespaces.GD.url;
+    var arr = this.xml.getElementsByTagNameNS(ns, "im");
+    alert(arr.length);
+    for (var i = 0, length = arr.length; i < length; i++) {
+      var address = arr[i].getAttribute("address")
+      if (address && address.indexOf(": ") != -1) {
+        arr[i].setAttribute("address", address.replace(": ", ""));
+        alert('replaced ' + address);
+      }
+    }
+  },
   removeElements: function() {
     for (var i = 0, length = this.mElementsToRemove.length; i < length; i++) {
       try { this.xml.removeChild(this.mElementsToRemove[i]); }
@@ -133,7 +150,7 @@ GContact.prototype = {
               return arr[i].childNodes[0].nodeValue;
             return null;
           default:
-            throw "Error - bad type";
+            LOGGER.LOG_WARNING("Error - bad type");
         }
       }
     }
@@ -256,7 +273,7 @@ GContact.prototype = {
           }
           break;
         default:
-          throw "Error - bad type"; // XXX fix error
+          LOGGER.LOG_WARNING("Error - bad type");
       }
     }
   },
@@ -295,7 +312,7 @@ GContact.prototype = {
   setExtendedProperty: function(aName, aValue) {
     if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
         "extendedProperty").length >= 10) {
-      LOGGER.LOG_WARNING("Attempt to add too many properties");
+      LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
       return;
     }
     if (aValue && aValue != "") {
