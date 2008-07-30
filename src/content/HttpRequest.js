@@ -71,7 +71,7 @@ HttpRequest.prototype = {
         this.addHeaderItem("X-HTTP-Method-Override", "PUT");
         break;
       default:
-        throw Cr.NS_ERROR_ILLEGAL_VALUE;
+        throw NS_ERROR_ILLEGAL_VALUE;
     }
   },
   /**

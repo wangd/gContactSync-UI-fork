@@ -145,14 +145,20 @@ GContact.prototype = {
             return null;
           case gdata.contacts.types.TYPED_WITH_ATTR:
             if (!aElement.attribute)
-              throw "Error - invalid attribute";
+              throw StringBundle.getStr("error") + "aElement.attribute" +
+                    StringBundle.getStr("suppliedTo") + "GContact.getElementValue" +
+                    StringBundle.getStr("errorEnd");
             return arr[i].getAttribute(aElement.attribute);
           case gdata.contacts.types.UNTYPED:
             if (arr[i].childNodes[0])
               return arr[i].childNodes[0].nodeValue;
             return null;
           default:
-            LOGGER.LOG_WARNING("Error - bad type");
+            LOGGER.LOG_WARNING(
+              StringBundle.getStr("error") + "aElement.contactType" +
+              StringBundle.getStr("suppliedTo") + "GContact.getElementValue" +
+              StringBundle.getStr("errorEnd");
+            );
         }
       }
     }
@@ -169,7 +175,9 @@ GContact.prototype = {
   setOrg: function(aElement, aValue) {
     var tagName = aElement ? aElement.tagName : null;
     if (tagName != "orgName" && tagName != "orgTitle")
-      throw "Invalid element sent to setOrg"; // XXX fix error message
+      throw StringBundle.getStr("error") + "aElement" +
+            StringBundle.getStr("suppliedTo") + "GContact setOrg" +
+            StringBundle.getStr("errorEnd");
 
     var organization = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
                                                        "organization")[0];
@@ -190,7 +198,7 @@ GContact.prototype = {
         else if (organization)
           organization.removeChild(thisElem);
         else
-          throw "Error";
+          {}
       }
       return;
     }
@@ -234,7 +242,9 @@ GContact.prototype = {
             this.mCurrentElement.childNodes[0].nodeValue = aValue;
           else {
             if (!aType)
-              throw "Error aType needed";
+              throw StringBundle.getStr("error") + "aType" +
+                    StringBundle.getStr("suppliedTo") + "GContact.setElementValue" +
+                    StringBundle.getStr("errorEnd");
             var elem = this.mCurrentElement ? this.mCurrentElement :
                                               document.createElementNS
                                                        (aElement.namespace.url,
@@ -275,7 +285,11 @@ GContact.prototype = {
           }
           break;
         default:
-          LOGGER.LOG_WARNING("Error - bad type");
+          LOGGER.LOG_WARNING(
+            StringBundle.getStr("error") + "aType" +
+            StringBundle.getStr("suppliedTo") + "GContact.setElementValue" +
+            StringBundle.getStr("errorEnd");
+          );
       }
     }
   },
@@ -284,15 +298,20 @@ GContact.prototype = {
    * @return The last modified date of the entry in milliseconds from 1970
    */
   getLastModifiedDate: function() {
-    var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
-    var year = sModified.substring(0,4);
-    var month = sModified.substring(5,7);
-    var day = sModified.substring(8,10);
-    var hrs = sModified.substring(11,13);
-    var mins = sModified.substring(14,16);
-    var sec = sModified.substring(17,19);
-    var ms = sModified.substring(20,23);
-    return  parseInt(Date.UTC(year, parseInt(month) - 1, day, hrs, mins, sec)) + parseInt(ms);
+    try {
+      var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
+      var year = sModified.substring(0,4);
+      var month = sModified.substring(5,7);
+      var day = sModified.substring(8,10);
+      var hrs = sModified.substring(11,13);
+      var mins = sModified.substring(14,16);
+      var sec = sModified.substring(17,19);
+      var ms = sModified.substring(20,23);
+      return  parseInt(Date.UTC(year, parseInt(month) - 1, day, hrs, mins, sec)) + parseInt(ms);
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
+    }
   },
   removeExtendedProperties: function() {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
@@ -336,20 +355,25 @@ GContact.prototype = {
    * @return The value.
    */
   getValue: function(aName, aIndex, aType) {
-    // if the value to obtain is a link, get the value for the link
-    if (gdata.contacts.links[aName]) {
-      var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "link");
-      for (var i = 0, length = arr.length; i < length; i++)
-        if (arr[i].getAttribute("rel") == gdata.contacts.links[aName])
-          return arr[i].getAttribute("href");
+    try {
+      // if the value to obtain is a link, get the value for the link
+      if (gdata.contacts.links[aName]) {
+        var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "link");
+        for (var i = 0, length = arr.length; i < length; i++)
+          if (arr[i].getAttribute("rel") == gdata.contacts.links[aName])
+            return arr[i].getAttribute("href");
+      }
+      // otherwise, if it is a normal attribute, get it's value
+      else if (gdata.contacts[aName])
+        return this.decodeString(this.getElementValue(gdata.contacts[aName],
+                                aIndex, aType));
+      // if the name of the value to get is something else, throw an error
+      else
+        LOGGER.LOG_WARNING("Unable to getValue for " + aName);
     }
-    // otherwise, if it is a normal attribute, get it's value
-    else if (gdata.contacts[aName])
-      return this.decodeString(this.getElementValue(gdata.contacts[aName],
-                              aIndex, aType));
-    // if the name of the value to get is something else, throw an error
-    else
-      throw "getValue error - " + aName; // XXX fix error
+    catch(e) {
+      LOGGER.LOG_WARNING("Error in GContact.getValue:\n" + e);
+    }
   },
   /**
    * GContact.setValue
@@ -361,16 +385,21 @@ GContact.prototype = {
    * @param aValue The value to set.  null if the element should be removed.
    */
   setValue: function(aName, aIndex, aType, aValue) {
-    LOGGER.VERBOSE_LOG(aName + " - " + aIndex + " - " + aType + " - " + aValue);
-    var value = null;
-    if (aValue && aValue != "")
-      value = this.encodeString(aValue);
-    if (gdata.contacts[aName])
-      return this.setElementValue(gdata.contacts[aName],
-                              aIndex, aType, value);
-    // if the name of the value to get is something else, throw an error
-    else
-      throw "setValue error - " + aName; // XXX fix error
+    try {
+      LOGGER.VERBOSE_LOG(aName + " - " + aIndex + " - " + aType + " - " + aValue);
+      var value = null;
+      if (aValue && aValue != "")
+        value = this.encodeString(aValue);
+      if (gdata.contacts[aName])
+        return this.setElementValue(gdata.contacts[aName],
+                                    aIndex, aType, value);
+      // if the name of the value to get is something else, throw an error
+      else
+        LOGGER.LOG_WARNING("Unable to SetValue for " + aName + " - " + aValue);
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Error in GContact.setValue:\n" + e);
+    }
   },
   /**
    * GContact.isMatch
