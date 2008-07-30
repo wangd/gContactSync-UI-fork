@@ -157,8 +157,7 @@ GContact.prototype = {
             LOGGER.LOG_WARNING(
               StringBundle.getStr("error") + "aElement.contactType" +
               StringBundle.getStr("suppliedTo") + "GContact.getElementValue" +
-              StringBundle.getStr("errorEnd");
-            );
+              StringBundle.getStr("errorEnd"));
         }
       }
     }
@@ -288,8 +287,7 @@ GContact.prototype = {
           LOGGER.LOG_WARNING(
             StringBundle.getStr("error") + "aType" +
             StringBundle.getStr("suppliedTo") + "GContact.setElementValue" +
-            StringBundle.getStr("errorEnd");
-          );
+            StringBundle.getStr("errorEnd"));
       }
     }
   },
