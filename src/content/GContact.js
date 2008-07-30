@@ -48,6 +48,7 @@
 function GContact(aXml) {
   if (aXml) {
     this.xml = aXml;
+    // check for invalid IM addresses
     this.checkIMAddress();
   }
   else {
@@ -66,19 +67,20 @@ function GContact(aXml) {
 GContact.prototype = {
   mElementsToRemove: [],
   mCurrentElement: null,
-  // checks for an invalid IM address
+  /**
+   * GContact.checkIMAddress
+   * Checks for an invalid IM address as explained here:
+   * http://pi3141.wordpress.com/2008/07/30/update-2/
+   */
   checkIMAddress: function() {
     var i = 0;
     var element = {};
     var ns = gdata.namespaces.GD.url;
     var arr = this.xml.getElementsByTagNameNS(ns, "im");
-    alert(arr.length);
     for (var i = 0, length = arr.length; i < length; i++) {
       var address = arr[i].getAttribute("address")
-      if (address && address.indexOf(": ") != -1) {
+      if (address && address.indexOf(": ") != -1)
         arr[i].setAttribute("address", address.replace(": ", ""));
-        alert('replaced ' + address);
-      }
     }
   },
   removeElements: function() {
