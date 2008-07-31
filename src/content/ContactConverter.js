@@ -42,7 +42,7 @@ var ContactConverter = {
   mAddedAttributes: [
     "OtherAddress", "ThirdEmail", "FourthEmail", "TalkScreenName",
     "JabberScreenName", "YahooScreenName", "MSNScreenName", "ICQScreenName",
-    "HomeFaxNumber", "OtherNumber"],
+    "HomeFaxNumber", "OtherNumber", "Groups"],
   mInitialized: false,
   init: function() {
     this.GD = gdata.namespaces.GD;
@@ -177,6 +177,11 @@ var ContactConverter = {
     // get the home and work addresses
     card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "home"), "Home");
     card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "work"), "Work");
+    
+    // get the groups
+    var groups = aContact.getValue("groupMembershipInfo");
+    alert(groups.join(", "));
+    ab.setCardValue(card, "Groups", groups.join(", "))
     ab.updateCard(card);
   },
   /**

@@ -361,6 +361,8 @@ GContact.prototype = {
           if (arr[i].getAttribute("rel") == gdata.contacts.links[aName])
             return arr[i].getAttribute("href");
       }
+      else if (aName == "groupMembershipInfo")
+        return this.getGroups();
       // otherwise, if it is a normal attribute, get it's value
       else if (gdata.contacts[aName])
         return this.decodeString(this.getElementValue(gdata.contacts[aName],
@@ -388,7 +390,7 @@ GContact.prototype = {
       var value = null;
       if (aValue && aValue != "")
         value = this.encodeString(aValue);
-      if (gdata.contacts[aName])
+      if (gdata.contacts[aName] && aName != "groupMembershipInfo")
         return this.setElementValue(gdata.contacts[aName],
                                     aIndex, aType, value);
       // if the name of the value to get is something else, throw an error
@@ -398,6 +400,25 @@ GContact.prototype = {
     catch(e) {
       LOGGER.LOG_WARNING("Error in GContact.setValue:\n" + e);
     }
+  },
+  /**
+   * GContact.getGroups
+   * Returns an array of the URLs of the groups to which this contact belongs.
+   */
+  getGroups: function() {
+    var groupInfo = gdata.contacts.groupMembershipInfo;
+    var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
+                                              groupInfo.tagName);
+    var groups = [];
+    for (var i = 0, length = arr.length; i < length; i++) {
+      var url = arr[i].getAttribute("href");
+      var name = Sync.mGroups[url];
+      if (name)
+        groups.push(name);
+      else
+        LOGGER.LOG_WARNING("Unable to find group: " + url);
+    }
+    return groups;
   },
   /**
    * GContact.isMatch

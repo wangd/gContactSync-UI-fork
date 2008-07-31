@@ -117,6 +117,8 @@ var gdata = {
       this.orgTitle = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
       this.organization = new GElement(typedWithAttr, "organization",
                                       gdata.namespaces.GD, ["other"]);
+      this.groupMembershipInfo = new GElement(untyped, "groupMembershipInfo",
+                                              gdata.namespaces.GCONTACT);
     },
     // different tagnames in the Atom feed, must be initialized
     postalAddress: {},
@@ -130,6 +132,7 @@ var gdata = {
     orgName: {},
     orgTitle: {},
     organization: {},
+    groupMembershipInfo: {},
     // links in the contacts feed.  The property name is the type of link
     // and the value is the value of the "rel" attribute
     links: {
