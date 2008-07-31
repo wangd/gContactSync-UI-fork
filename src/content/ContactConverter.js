@@ -250,22 +250,21 @@ var ContactConverter = {
    */
   decodeAddress: function(aCard, aAddress, aPrefix) {
     Overlay.mAddressBook.checkCard(aCard, "decodeAddress");
-    if (!aAddress)
-      return aCard;
     if (!aPrefix)
       throw StringBundle.getStr("error") + "aPrefix" +
             StringBundle.getStr("suppliedTo") + "decodeAddress" +
             StringBundle.getStr("errorEnd");
-    // the default value of the address is 6 blank strings
-    var address = ["", "", "", "", "", ""];
+    var address = {};
     if (aAddress)
       address = aAddress.split("\n");
     var prefArr = Preferences.mAddressProperties;
     var ab = Overlay.mAddressBook;
-    // get the shorter of the pref array and address array
-    var length = prefArr.length < address.length ? prefArr.length : address.length;
-    for (var i = 0; i < length; i++)
-      ab.setCardValue(aCard, aPrefix + prefArr[i], address[i]);
+    // set the value of each item in the preferences array as the value obtained
+    // from Google, or blank if there was no value
+    for (var i = 0, length = prefArr.length; i < length; i++) {
+      var value = address[i] ? address[i] : ""; 
+      ab.setCardValue(aCard, aPrefix + prefArr[i], value);
+    }
     return aCard;
   }
 }
