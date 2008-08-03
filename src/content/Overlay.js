@@ -196,8 +196,15 @@ var Overlay = {
    */
   myDisplayCardViewPane: function(aCard) {
     originalDisplayCardViewPane(aCard); // call the original first
-    if (aCard.isMailList) // do nothing for lists
-      return;
+    if (aCard.isMailList) {
+      // collapse all the attributes added
+      Overlay.clearNodes(ContactConverter.getExtraSyncAttributes());
+      // and then collapse the e-mail boxes
+      cvData.cvThirdEmailBox.collapsed = true;
+      cvData.cvFourthEmailBox.collapsed = true;
+      return; // and quit, nothing was added for mail lists (yet?)
+    }
+    
     var ab = Overlay.mAddressBook;
 
     // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
@@ -213,8 +220,8 @@ var Overlay = {
                          fourthEmail) || visible;
     
     visible = Overlay.getVisible(aCard, ["TalkScreenName", "JabberScreenName",
-                         "YahooScreenName", "MSNScreenName",
-                         "ICQScreenName"], visible);
+                                         "YahooScreenName", "MSNScreenName",
+                                         "ICQScreenName"], visible);
     cvSetVisible(cvData.cvhContact, visible);
     cvSetVisible(cvData.cvbContact, visible);
     // Other section (OtherAddress, Groups, GoogleID)
@@ -243,6 +250,10 @@ var Overlay = {
     visible = Overlay.getVisible(aCard, ["OtherNumber", "HomeFaxNumber"], visible);
     cvSetVisible(cvData.cvhPhone, visible);
     cvSetVisible(cvData.cvbPhone, visible);
+  },
+  clearNodes: function(aArray) {
+    for (var i = 0, length = aArray.length; i < length; i++)
+      cvSetVisible(cvData["cv" + aArray[i]], "");
   },
   /**
    * A helper method for myDisplayCardViewPane that iterates through an array of

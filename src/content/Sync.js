@@ -255,7 +255,7 @@ var Sync = {
 
     for (var i = 0; i < abCards.length; i++) {
       var card = abCards[i];
-      if (card != null && card instanceof nsIAbCard && !card.isMailList) {
+      if (card != null && card instanceof nsIAbCard) {
         LOGGER.LOG(card.displayName + StringBundle.getStr("noMatch"));
         // if it is a new card, add it to Google
         var id = ab.getCardValue(card, "GoogleID");
