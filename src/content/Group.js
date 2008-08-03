@@ -35,11 +35,16 @@
  * ***** END LICENSE BLOCK ***** */
 /**
  * Group
- * Creates a new group with the given name and URL.
+ * Creates a new group with the given name, URL, and URI for the equivalent
+ * mail list.
+ * @param aURL     The URL of the group in Google.
+ * @param aName    The name of the group in Google and Thunderbird.
+ * @param aListURI The URI of the equivalent mail list in Thunderbird.
  * @class
  * @constructor
  */
-function Group(aURL, aName) {
+function Group(aURL, aName, aMailListURI) {
   this.url = aUrl;
   this.name = aName;
+  this.listURI = aMailListURI;
 }
