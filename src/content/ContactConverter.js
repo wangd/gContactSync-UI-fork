@@ -134,6 +134,13 @@ var ContactConverter = {
     aContact.setValue("postalAddress", 0, "home", address);
     var address = this.encodeAddress(aCard, "Work");
     aContact.setValue("postalAddress", 0, "work", address);
+    // set the groups
+    var groups = ab.getCardValue(aCard, "Groups");
+    if (groups)
+      aContact.setGroups(groups.split(", "));
+    else
+      aContact.setGroups(groups);
+    
     // cleanup
     aContact.removeElements();
     return aContact;

@@ -13,6 +13,6 @@
 <!ENTITY otherNum.label "Other Number">
 <!ENTITY other.box "Additional Address">
 <!ENTITY otherAddress.label "Other Address">
-<!ENTITY groups.box "Groups (separate with commas)">
+<!ENTITY groups.box "Groups (separate with a comma and space)">
 <!ENTITY groups.label "Groups">
 <!ENTITY initialStatus.label "">

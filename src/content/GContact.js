@@ -67,6 +67,7 @@ function GContact(aXml) {
 GContact.prototype = {
   mElementsToRemove: [],
   mCurrentElement: null,
+  mGroups: {},
   /**
    * GContact.checkIMAddress
    * Checks for an invalid IM address as explained here:
@@ -93,7 +94,7 @@ GContact.prototype = {
     this.mElementsToRemove = [];
   },
   /**
-   * gdata.contacts.getContactName
+   * GContact.getContactName
    * Gets the name and e-mail address of a contact from it's Atom
    * representation.
    * @param aAtomEntry  The contact.
@@ -110,6 +111,7 @@ GContact.prototype = {
     return contactName;
   },
   /**
+   * GContact.getElementValue
    * Returns the value of an element with a type where the value is in the
    * value of the child node.
    * @param aElement The GElement object with information about the value to get.
@@ -403,9 +405,10 @@ GContact.prototype = {
   },
   /**
    * GContact.getGroups
-   * Returns an array of the URLs of the groups to which this contact belongs.
+   * Returns an array of the names of the groups to which this contact belongs.
    */
   getGroups: function() {
+    this.mGroups = {};
     var groupInfo = gdata.contacts.groupMembershipInfo;
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
@@ -413,12 +416,87 @@ GContact.prototype = {
     for (var i = 0, length = arr.length; i < length; i++) {
       var url = arr[i].getAttribute("href");
       var name = Sync.mGroups[url];
-      if (name)
+      if (name) {
         groups.push(name);
+        this.mGroups[name] = arr[i];
+      }
       else
         LOGGER.LOG_WARNING("Unable to find group: " + url);
     }
     return groups;
+  },
+  /**
+   * GContact.setGroups
+   * Sets the groups of that this contact is in based on the name(s).  If a
+   * group does not exist, makes it and adds the contact to it.
+   * @param aGroups An array of the names of the groups to which the contact
+   *                should belong.
+   */
+  setGroups: function(aGroups) {
+    this.getGroups(); // get the groups (sets a member variable)
+    // check if the contact needs to be removed from one or more groups
+    for (var i in this.mGroups) {
+      var groupName = i;
+      var index = aGroups.indexOf(groupName);
+      if (index == -1) { // remove the contact from the group
+        this.removeFromGroup(this.mGroups[i]);
+        this.mGroups[i] = null;
+      }
+      else
+        aGroups[index] = null;
+    }
+    // check if the contact needs to be added to one or more groups
+    for (var i = 0, length = aGroups.length; i < length; i++) {
+      var group = aGroups[i];
+      if (!group)
+        continue;
+      var url = Sync.mGroups[group];
+      if (url) // the group exists
+        this.addToGroup(url);
+      else {
+      
+      }
+    }
+  },
+  /**
+   * GContact.removeFromGroup
+   * Removes the contact from the given group.
+   * @param aGroup The group from which the contact should be removed.
+   */
+  removeFromGroup: function(aGroup) {
+    if (!aGroup) {
+      LOGGER.LOG_WARNING("Attempt to remove a contact from a non-existant group");
+      return;
+    }
+    try {
+      this.xml.removeChild(aGroup);
+    }
+    catch (e) {
+      LOGGER.LOG_WARNING("Error while trying to remove a contact from a group: " + e);
+    }
+  },
+  /**
+   * GContact.addToGroup
+   * Adds the contact to the given, existing, group.
+   * @param aGroupURL The URL of an existing group to which the contact will be
+   *                  added.
+   */
+  addToGroup: function(aGroupURL) {
+    if (!aGroupURL) {
+      LOGGER.LOG_WARNING("Attempt to add a contact to a non-existant group");
+      return;
+    }
+    try {
+      var ns = gdata.namespaces.GCONTACT;
+      var group = document.createElementNS(ns.url,
+                                           ns.prefix + "groupMembershipInfo");
+      group.setAttribute("deleted", false);
+      group.setAttribute("href", aGroupURL);
+      this.xml.appendChild(group);
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Error while trying to add a contact to a group: " + e);
+    }
   },
   /**
    * GContact.isMatch

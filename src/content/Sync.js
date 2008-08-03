@@ -424,6 +424,7 @@ var Sync = {
           var id = arr[i].getElementsByTagNameNS(ns.url, "id")[0].childNodes[0].nodeValue;
           var title = arr[i].getElementsByTagNameNS(ns.url, "title")[0].childNodes[0].nodeValue;
           this.mGroups[id] = title;
+          this.mGroups[title] = id;
         }
         catch(e) { LOGGER.LOG_ERROR(e); }
       }
