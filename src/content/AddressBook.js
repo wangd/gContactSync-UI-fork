@@ -207,10 +207,58 @@ AddressBook.prototype = {
           if(data instanceof nsIAbCard && !data.isMailList)
             arr.push(data);
           iter.next();
-        } while( Components.lastResult == 0 );
+        } while (Components.lastResult == 0);
       } catch(e) {} // error is expected when finished   
     }
     return arr;
+  },
+  /**
+   * AddressBook.getAllLists
+   * Returns an an object containing MailList objects whose attribute name is
+   * the name of the mail list.
+   * @param skipGetCards True to skip getting the cards of each list.
+   * @return An object containing MailList objects.
+   */
+  getAllLists: function(skipGetCards) {
+    // same in Thunderbird 2 and 3
+    var iter = this.mDirectory.childNodes;
+    var obj = {};
+    while (iter.hasMoreElements()) {
+      data = iter.getNext();
+      if (data instanceof Ci.nsIAbDirectory && data.isMailList)
+        var list = new MailList(data, this, skipGetCards);
+        var description = list.getDescription();
+        if (!description)
+         description = "no description " + (new Date).getTime();
+        obj[description] = list;
+    }
+    return obj;
+  },
+  getListByDesc: function(aDescription) {
+    // same in Thunderbird 2 and 3
+    var iter = this.mDirectory.childNodes;
+    while (iter.hasMoreElements()) {
+      data = iter.getNext();
+      if (data instanceof Ci.nsIAbDirectory && data.isMailList &&
+          data.description == aDescription) {
+        var list = new MailList(data, this, true);
+        return list;
+      }
+    }
+  },
+  addList: function(aName, aDescription) {
+    if (!aName)
+      throw "Error - aName sent to addList is invalid";
+    var list = Cc["@mozilla.org/addressbook/directoryproperty;1"]
+                .createInstance(Ci.nsIAbDirectory);
+    list.dirName = aName;
+    list.description = aDescription;
+    list.isMailList = true;
+    this.mDirectory.addMailList(list);
+    LOGGER.VERBOSE_LOG("getting the new list");
+    // list can't be QI'd to an MDBDirectory, so the new list has to be found...
+    var realList = this.getListByDesc(aDescription);
+    return realList;
   },
   /**
    * AddressBook.deleteCards
@@ -222,6 +270,7 @@ AddressBook.prototype = {
     this.checkDirectory(this.mDirectory, "deleteAbCard");
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
+    var arr;
     if (this.mVersion == 3) { // TB 3
       arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
@@ -230,13 +279,14 @@ AddressBook.prototype = {
       }
     }
     else { // TB 2
-      arr =  Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
+      arr =  Cc["@mozilla.org/supports-array;1"]
+              .createInstance(Ci.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
         this.checkCard(aCards[i], "deleteAbCard");
         arr.AppendElement(aCards[i], false);
       }
     }
-    if (arr) // make sure arr isn't null (bug 448165)
+    if (arr) // make sure arr isn't null (mailnews bug 448165)
       this.mDirectory.deleteCards(arr);
   },
   /**
@@ -259,9 +309,26 @@ AddressBook.prototype = {
    *                     throwing the error)
    */
   checkCard: function(aCard, aMethodName) {
-    if (!aCard || (!(aCard instanceof Ci.nsIAbCard) && !(aCard instanceof Ci.nsIAbMDBCard))) {
+    var card = aCard && aCard.mCard ? aCard.mCard : aCard;
+    if (!card || (!(card instanceof Ci.nsIAbCard) &&
+                  !(card instanceof Ci.nsIAbMDBCard))) {
       throw StringBundle.getStr("invalidCard") + aMethodName +
-           StringBundle.getStr("errorEnd");
+            StringBundle.getStr("errorEnd");
+    }
+  },
+  /**
+   * AddressBook.checkList
+   * Checks the validity of a mailing list and throws an error if it is invalid.
+   * @param aCard        An object that should be a mailing list
+   * @param aMethodName  The name of the method calling checkList (used when
+   *                     throwing the error)
+   */
+  checkList: function(aList, aMethodName) {
+    // if it is a MailList object, get it's actual list
+    var list = aList && aList.mList ? aList.mList : aList;
+    if (!list || !(list instanceof Ci.nsIAbDirectory) || !list.isMailList) {
+      throw StringBundle.getStr("invalidList") + aMethodName +
+            StringBundle.getStr("errorEnd");
     }
   },
   /**
@@ -388,12 +455,12 @@ AddressBook.prototype = {
      try {
        if (!(aCard instanceof Ci.nsIAbMDBCard))
          aCard.QueryInterface(Ci.nsIAbMDBCard);
-     } catch(e) {LOGGER.LOG_ERROR("Unable to QueryInterface card: " + aCard + "\n" + e); throw e;}
-     if (!aValue)
-       aValue = "";
-     try { aCard.setStringAttribute(aAttrName, aValue); }
-     catch(e) { LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" +
-                                   aAttrName + "\n" + aValue); }
+       aCard.setStringAttribute(aAttrName, aValue);
+     }
+     catch(e) {
+       LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
+                          "\n" + aValue);
+     }
    },
    /**
     * AddressBook.getMDBCardValue
@@ -407,10 +474,11 @@ AddressBook.prototype = {
      try {
        if (!(aCard instanceof Ci.nsIAbMDBCard))
          aCard.QueryInterface(Ci.nsIAbMDBCard);
-     } catch(e) {LOGGER.LOG_ERROR("Unable to QueryInterface card: " + aCard + "\n" + e); throw e;}
-     try { return aCard.getStringAttribute(aAttrName); }
-     catch(e) { LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" +
-                                   aAttrName); }
+       return aCard.getStringAttribute(aAttrName);
+     }
+     catch(e) {
+       LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
+     }
    },
   /**
    * AddressBook.hasAddress

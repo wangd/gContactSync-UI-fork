@@ -45,7 +45,10 @@ var Sync = {
   mContactsToAdd: [],
   mContactsToUpdate: [],
   mAddedEmails: [],
-
+  mGroupsToDelete: [],
+  mGroupsToAdd: [],
+  mGroupsToUpdate: [],
+  mGroupsToAddURI: [],
   // an array of commands to execute when offline during an HTTP Request
   mOfflineCommand: ["Overlay.setStatusBarText(StringBundle.getStr('offlineStatusText'));", "Sync.finish();"],
 
@@ -53,6 +56,7 @@ var Sync = {
   mSynced: true,
   mSyncScheduled: false,
   mGroups: {}, // used to store groups
+  mLists: {}, // stores the mail lists
   mFirstSync: false,
   /**
    * Sync.begin
@@ -88,11 +92,11 @@ var Sync = {
     LOGGER.LOG(StringBundle.getStr("startSync") + " " + Date() + "\n");
 
     var httpReq = new GHttpRequest("getGroups", gdata.mAuthToken, null, null);
-    httpReq.mOnSuccess = ["Sync.getGroups(httpReq.responseXML);"],
+    httpReq.mOnSuccess = ["Sync.syncGroups(httpReq.responseXML);"],
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
-                    "Sync.getGroups();"]; // if there is an error, try to sync w/o groups                   
-   httpReq.mOnOffline = this.mOfflineCommand
-   httpReq.send();
+                        "Sync.begin();"]; // if there is an error, try to sync w/o groups                   
+    httpReq.mOnOffline = this.mOfflineCommand
+    httpReq.send();
   },
   /**
    * Sync.finish
@@ -142,6 +146,7 @@ var Sync = {
     var googleContacts = aAtom.getElementsByTagName('entry');
     var abCards = Overlay.mAddressBook.getAllCards();
     var lastSync = FileIO.getLastSync();
+    LOGGER.VERBOSE_LOG("Last sync was at: " + lastSync);
     var cardsToDelete = [];
     this.ab = Overlay.mAddressBook;
     var ab = this.ab;
@@ -177,8 +182,8 @@ var Sync = {
 
         // if the cards are the same...
         if (ab.getCardValue(abCard, "GoogleID") == id) {
-          LOGGER.LOG(found);
           var gCardDate = gContact.getLastModifiedDate();
+          LOGGER.LOG(found + "  -  " + gCardDate);
           var tbCardDate;
           tbCardDate = Overlay.mAddressBook.getCardValue(abCard, "LastModifiedDate");
           if (!tbCardDate)
@@ -304,7 +309,7 @@ var Sync = {
     var httpReq = new GHttpRequest("delete", gdata.mAuthToken, editURL, null);
     httpReq.mOnSuccess = ["Sync.processDeleteQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
-                        "Sync.processDeleteQueue();"],
+                        "Sync.processDeleteQueue();"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
@@ -395,17 +400,17 @@ var Sync = {
     var string = (new XMLSerializer()).serializeToString(xml);
     LOGGER.VERBOSE_LOG("\n" + string + "\n");
     var httpReq = new GHttpRequest("update", gdata.mAuthToken, editURL, string)
-    httpReq.mOnSuccess = ["Sync.processUpdateQueue();"],
+    httpReq.mOnSuccess = ["Sync.processUpdateQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
                         "Sync.processUpdateQueue();"],
-    httpReq.mOnOffline = this.mOfflineCommand
+    httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
   /**
-   * Sync.getGroups
-   * Gets all contact groups.
+   * Sync.syncGroups
+   * Syncs all contact groups with mailing lists.
    */
-  getGroups: function(aAtom) {
+  syncGroups: function(aAtom) {
     // reset the groups object
     this.mGroups = {};
     // if there wasn't an error, setup groups
@@ -415,29 +420,153 @@ var Sync = {
         LOGGER.LOG(string + "\n"); // VERBOSE_LOG checks the pref, but serializing isn't
                             // always necessary.
       }
+      var ab = Overlay.mAddressBook;
       var ns = gdata.namespaces.ATOM
       var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
+      LOGGER.VERBOSE_LOG("Getting all lists");
+      this.mLists = Overlay.mAddressBook.getAllLists(true);
+      var lastSync = FileIO.getLastSync();
       for (var i = 0; i < arr.length; i++) {
         try {
+          var group = new Group(arr[i]);
           // add the ID to mGroups by making a new property with the ID as the
           // name and the title as the value for easy lookup for contacts
-          var id = arr[i].getElementsByTagNameNS(ns.url, "id")[0].childNodes[0].nodeValue;
-          var title = arr[i].getElementsByTagNameNS(ns.url, "title")[0].childNodes[0].nodeValue;
-          this.mGroups[id] = title;
-          this.mGroups[title] = id;
+          var id = group.getID();
+          var title = group.getTitle();
+          var list = this.mLists[id];
+          if (group.getLastModifiedDate() < lastSync) { // it's an old group
+            this.mGroups[id] = group;
+            //this.mGroups[title] = group;
+            if (list) {
+              LOGGER.LOG("matched group " + title + " with mailing list " + 
+                         list.getName());
+              // good
+              list.matched = true;
+              if (list.mList.lastModifiedDate > lastSync/1000)
+                alert('list changed');
+              list.mList.lastModifiedDate = (new Date()).getTime()/1000;
+              // XXX check if the list was modified, might have to update cards
+            }
+            else {
+              this.mGroupsToDelete.push(group);
+              LOGGER.LOG("didn't find match for group: " + title + ".  It will be deleted");
+            }
+          }
+          else { // it is new
+            if (list) {
+              // XXX update the mailing list
+              alert('need to update list');
+            }
+            else {
+              // make a new mailing list with the same name
+              LOGGER.LOG("found new group: " + title);
+              var list = ab.addList(title, id);
+              LOGGER.VERBOSE_LOG("List added to address book");
+              list.mList.lastModifiedDate = (new Date()).getTime()/1000;
+              this.mGroupsToUpdate.push(group);
+              this.mGroups[id] = group;
+              this.mGroups[title] = group;
+            }
+          }
         }
         catch(e) { LOGGER.LOG_ERROR(e); }
       }
-    
+      LOGGER.VERBOSE_LOG("looking for unmatched mailing lists");
+      // XXX go through each unmatched mailing list and add new groups or delete
+      // old mail lists
+      for (var i in this.mLists) {
+        var list = this.mLists[i];
+        // if it should be added
+        if (list && !list.matched) {
+          var lastModifiedDate = list.mList.lastModifiedDate;
+          // if it is new
+          if (!lastModifiedDate || lastModifiedDate > lastSync/1000 ||
+              lastModifiedDate == 0) {
+            LOGGER.VERBOSE_LOG("found new list: " + list.getName());
+            this.mGroupsToAdd.push(list);
+          }
+          else {
+            LOGGER.VERBOSE_LOG("deleting list: " + list.getName());
+            list.delete();
+          }
+        }
+      }
     }
-    // get the contacts from Google and sync the address book with the response
-    var httpReq = new GHttpRequest("getAll", gdata.mAuthToken, null, null);
-    httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
+    // have to update the lists or TB 2 won't work properly
+    this.mLists = Overlay.mAddressBook.getAllLists();
+    LOGGER.LOG("deleting groups");
+    this.deleteGroups();
+  },
+  deleteGroups: function() {
+    if (this.mGroupsToDelete.length == 0) {
+      LOGGER.LOG("adding groups");
+      this.addGroups();
+      return;
+    }
+    var group = this.mGroupsToDelete.shift();
+    LOGGER.LOG("Deleting group: " + group.getTitle());
+    var httpReq = new GHttpRequest("delete", gdata.mAuthToken, group.getEditURL());
+    httpReq.mOnSuccess = ["Sync.deleteGroups();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
-                        "Sync.finish(httpReq.responseText);"];
-    httpReq.mOnOffline = this.mOfflineCommand
+                        "Sync.deleteGroups();"];
+    httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
-
+  },
+  addGroups: function() {
+    if (this.mGroupsToAdd.length == 0) {
+      LOGGER.LOG("updating groups");
+      this.updateGroups();
+      return;
+    }
+    var list = this.mGroupsToAdd[0];
+    var group = new Group(null, list.getName());
+    LOGGER.LOG("Adding group: " + group.getTitle());
+    var body = (new XMLSerializer()).serializeToString(group.xml);
+    LOGGER.VERBOSE_LOG(body);
+    var httpReq = new GHttpRequest("addGroup", gdata.mAuthToken, null, body);
+    httpReq.mOnCreated = ["Sync.addGroups2(httpReq);"];
+    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+                        "Sync.mGroupsToAddURI.shift()",
+                        "Sync.addGroups();"];
+    httpReq.mOnOffline = this.mOfflineCommand;
+    httpReq.send();
+  },
+  addGroups2: function(aResponse) {
+    var group = new Group(aResponse.responseXML
+                                   .getElementsByTagNameNS(gdata.namespaces.ATOM.url,
+                                                           "entry")[0]);
+    LOGGER.VERBOSE_LOG(aResponse.responseText);
+    var list = this.mGroupsToAdd.shift();
+    var id = group.getID();
+    list.setDescription(id);
+    list.update();
+    this.mLists[id] = list;
+    this.addGroups();
+  },
+  updateGroups: function() {
+    if (this.mGroupsToUpdate.length == 0) {
+    // get the contacts from Google and sync the address book with the response
+      LOGGER.LOG("beginning sync");
+      var httpReq = new GHttpRequest("getAll", gdata.mAuthToken, null, null);
+      httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
+      httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+                          "Sync.finish(httpReq.responseText);"];
+      httpReq.mOnOffline = this.mOfflineCommand;
+      httpReq.send();
+      return;
+    }
+    var group = this.mGroupsToUpdate.shift();
+    LOGGER.LOG("Updating group: " + group.getTitle());
+    var body = (new XMLSerializer()).serializeToString(group.xml);
+    LOGGER.VERBOSE_LOG(body);
+    var httpReq = new GHttpRequest("update", gdata.mAuthToken, group.getEditURL(),
+                                   body);
+    httpReq.mOnSuccess = ["Sync.updateGroups();"];
+    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+                        "Sync.updateGroups();"];
+    httpReq.mOnOffline = this.mOfflineCommand;
+    //httpReq.addHeaderItem("Content-Length", group);
+    httpReq.send();
   },
   /**
    * Sync.schedule

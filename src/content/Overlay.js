@@ -199,14 +199,14 @@ var Overlay = {
     if (aCard.isMailList) {
       // collapse all the attributes added
       Overlay.clearNodes(ContactConverter.getExtraSyncAttributes());
-      // and then collapse the e-mail boxes
-      cvData.cvThirdEmailBox.collapsed = true;
-      cvData.cvFourthEmailBox.collapsed = true;
-      return; // and quit, nothing was added for mail lists (yet?)
+      try {
+        // and then collapse the e-mail boxes
+        cvData.cvThirdEmailBox.collapsed = true;
+        cvData.cvFourthEmailBox.collapsed = true;
+      } catch(e) {}
+      return; // and quit, nothing was added for mail lists
     }
-    
     var ab = Overlay.mAddressBook;
-
     // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
     // JabberScreenName, YahooScreenName, ICQScreenName)
     var visible = !cvData.cvbContact.getAttribute("collapsed");
@@ -253,7 +253,7 @@ var Overlay = {
   },
   clearNodes: function(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++)
-      cvSetVisible(cvData["cv" + aArray[i]], "");
+      try { cvSetVisible(cvData["cv" + aArray[i]], ""); } catch (e) {}
   },
   /**
    * A helper method for myDisplayCardViewPane that iterates through an array of
@@ -311,11 +311,8 @@ var Overlay = {
     vbox.insertBefore(cvData.cvYahooScreenName, cvData.cvMSNScreenName);
     vbox.insertBefore(cvData.cvJabberScreenName, cvData.cvYahooScreenName);
     vbox.insertBefore(cvData.cvTalkScreenName, cvData.cvJabberScreenName);
-    // Other Address and groups
-    vbox = document.getElementById("cvbOther");
-    cvData.cvGroups = Overlay.makeDescElement("Groups", "CardViewText");
-    vbox.appendChild(cvData.cvGroups);
     // Other Address
+    vbox = document.getElementById("cvbOther");
     var otherHbox = document.createElement("hbox");
     var otherVbox = document.createElement("vbox");
     otherVbox.setAttribute("flex", "1");

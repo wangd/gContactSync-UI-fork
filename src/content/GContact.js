@@ -199,7 +199,7 @@ GContact.prototype = {
         else if (organization)
           organization.removeChild(thisElem);
         else
-          {}
+          {} // XXX fix
       }
       return;
     }
@@ -307,7 +307,7 @@ GContact.prototype = {
       var mins = sModified.substring(14,16);
       var sec = sModified.substring(17,19);
       var ms = sModified.substring(20,23);
-      return  parseInt(Date.UTC(year, parseInt(month) - 1, day, hrs, mins, sec)) + parseInt(ms);
+      return  parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
     }
     catch(e) {
       LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
@@ -414,16 +414,27 @@ GContact.prototype = {
                                               groupInfo.tagName);
     var groups = [];
     for (var i = 0, length = arr.length; i < length; i++) {
-      var url = arr[i].getAttribute("href");
-      var name = Sync.mGroups[url];
-      if (name) {
-        groups.push(name);
-        this.mGroups[name] = arr[i];
+      var id = arr[i].getAttribute("href");
+      var group = Sync.mGroups[id];
+      if (group) {
+        groups.push(group);
+        this.mGroups[id] = arr[i];
       }
       else
         LOGGER.LOG_WARNING("Unable to find group: " + url);
     }
     return groups;
+  },
+  clearGroups: function() {
+    for (var i in this.mGroups) {
+      try {
+        this.xml.removeChild(this.mGroups[i])
+      }
+      catch(e) {
+        LOGGER.LOG_WARNING("Error while trying to clear groups: " + e);
+      }
+    }
+    this.mGroups = {};
   },
   /**
    * GContact.setGroups
@@ -433,29 +444,15 @@ GContact.prototype = {
    *                should belong.
    */
   setGroups: function(aGroups) {
-    this.getGroups(); // get the groups (sets a member variable)
-    // check if the contact needs to be removed from one or more groups
-    for (var i in this.mGroups) {
-      var groupName = i;
-      var index = aGroups.indexOf(groupName);
-      if (index == -1) { // remove the contact from the group
-        this.removeFromGroup(this.mGroups[i]);
-        this.mGroups[i] = null;
-      }
-      else
-        aGroups[index] = null;
-    }
+    this.clearGroups(); // clear existing groups
+    if (!aGroups)
+      return;
     // check if the contact needs to be added to one or more groups
     for (var i = 0, length = aGroups.length; i < length; i++) {
-      var group = aGroups[i];
-      if (!group)
+      var id = aGroups[i];
+      if (!id)
         continue;
-      var url = Sync.mGroups[group];
-      if (url) // the group exists
-        this.addToGroup(url);
-      else {
-      
-      }
+      this.addToGroup(id);
     }
   },
   /**

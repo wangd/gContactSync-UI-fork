@@ -135,12 +135,13 @@ var ContactConverter = {
     var address = this.encodeAddress(aCard, "Work");
     aContact.setValue("postalAddress", 0, "work", address);
     // set the groups
-    var groups = ab.getCardValue(aCard, "Groups");
-    if (groups)
-      aContact.setGroups(groups.split(", "));
-    else
-      aContact.setGroups(groups);
-    
+    var groups = [];
+    for (var i in Sync.mLists) {
+      var list = Sync.mLists[i];
+      if (list.hasCard(aCard))
+        groups.push(i);
+    }
+    aContact.setGroups(groups);
     // cleanup
     aContact.removeElements();
     return aContact;
@@ -180,16 +181,24 @@ var ContactConverter = {
       var value = aContact.getExtendedProperty(arr[i]);
       ab.setCardValue(card, arr[i], value);
     }
-    
+
     // get the home and work addresses
     card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "home"), "Home");
     card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "work"), "Work");
-    
-    // get the groups
-    var groups = aContact.getValue("groupMembershipInfo");
-    alert(groups.join(", "));
-    ab.setCardValue(card, "Groups", groups.join(", "))
+
     ab.updateCard(card);
+    // get the groups after updating the card
+    var groups = aContact.getValue("groupMembershipInfo");
+    for (var i = 0, length = groups.length; i < length; i++) {
+      var group = groups[i];
+      var list = Sync.mLists[group.getID()];
+      if (list) {
+        if (!list.hasCard(card))
+          list.addCard(card);
+      }
+      else
+        LOGGER.LOG_WARNING("Couldn't find the group with uri: " + uri);
+    }
   },
   /**
    * Compares two contacts and returns true if they are considered equal

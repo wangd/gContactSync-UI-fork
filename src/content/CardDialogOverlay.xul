@@ -128,16 +128,6 @@
            </hbox>
          </hbox>
        </groupbox>
-       <groupbox flex="1">
-         <caption label="&groups.box;"/>
-         <hbox>
-           <spacer flex="1"/>
-           <label control="group" value="&groups.label;" class="CardEditLabel"/>
-           <hbox class="CardEditWidth">
-             <textbox id="Groups" wrap="virtual" flex="1"/>
-           </hbox>
-         </hbox>
-       </groupbox>
      </vbox>
    </vbox>
  </tabpanels> 

@@ -85,6 +85,7 @@ function GHttpRequest(aType, aAuth, aUrl, aBody) {
       break;
     case "UPDATE":
     case "update":
+    case "updategroup":
       this.mContentType = this.CONTENT_TYPES.ATOM;
       this.mUrl = aUrl;
       this.mType = "POST";  // for firewalls that block PUT requests
@@ -95,6 +96,12 @@ function GHttpRequest(aType, aAuth, aUrl, aBody) {
     case "add":
       this.mContentType = this.CONTENT_TYPES.ATOM;
       this.mUrl = gdata.contacts.ADD_URL;
+      this.mType = gdata.contacts.requestTypes.ADD;
+      this.addHeaderItem("Authorization", aAuth);
+      break;
+    case "addGroup":
+      this.mContentType = this.CONTENT_TYPES.ATOM;
+      this.mUrl = gdata.contacts.ADD_GROUP_URL;
       this.mType = gdata.contacts.requestTypes.ADD;
       this.addHeaderItem("Authorization", aAuth);
       break;

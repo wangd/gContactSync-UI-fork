@@ -47,7 +47,6 @@ var gAttributes = [
   "OtherAddress",
   "HomeFaxNumber",
   "OtherNumber",
-  "Groups"
 ];
 const Ci = Components.interfaces;
 var abVersion;

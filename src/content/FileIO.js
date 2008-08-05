@@ -139,9 +139,9 @@ var FileIO = {
    * @return True if there is no error.
    */
   appendToFile: function(aFile, aData) {
-    this.checkFile(aFile, "FileIO.appendToFile");
     if (!aData)
       return;
+    this.checkFile(aFile, "FileIO.appendToFile");
     try {
       var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
                       .createInstance(Ci.nsIFileOutputStream);

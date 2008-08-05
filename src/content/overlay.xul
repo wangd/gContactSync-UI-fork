@@ -44,7 +44,10 @@
   <script src="Namespace.js"/>
   <script src="GElement.js"/>
   <script src="gdata.js"/>
+  <script src="Group.js"/>
   <script src="GContact.js"/>
+  <script src="AbCard.js"/>
+  <script src="MailList.js"/>
   <script src="Pref.js"/>
   <script src="FileIO.js"/>
   <script src="Preferences.js"/>
