@@ -74,19 +74,30 @@ MailList.prototype = {
   },
   /**
    * MailList.hasCard
-   * Returns true if this mail list contains a card with the same (not-null)
-   * value for the GoogleID attribute.
-   * @param aCard The card whose Google ID is searched for.
-   * @return True if there is a card in this list with the same, and non-null
-   *         value for its GoogleID attribute.
+   * Returns the card in this mail list, if any, with the same (not-null)
+   * value for the GoogleID attribute, or, if the GoogleID is null, if the
+   *         display name, primary, and second emails are the same.
+   * @param aCard The card being searched for.
+   * @return The card in this list, if any, with the same, and non-null value
+   *         for its GoogleID attribute, or, if the GoogleID is null, if the
+   *         display name, primary, and second emails are the same.
    */
   hasCard: function(aCard) {
     this.mParent.checkCard(aCard);
+    var ab = this.mParent;
     for (var i = 0, length = this.mCards.length; i < length; i++) {
-      var aCardID = this.mParent.getCardValue(aCard, "GoogleID");
-      if (aCardID && aCardID ==
-         this.mParent.getCardValue(this.mCards[i], "GoogleID"))
-        return true;
+      var card = this.mCards[i];
+      var aCardID = ab.getCardValue(aCard, "GoogleID");
+      // if it is an old card (has id) compare IDs
+      if (aCardID) {
+        if (aCardID == ab.getCardValue(card, "GoogleID"))
+          return card;
+      }
+      // else check that display name, primary and second email are equal
+      else if (ab.getCardValue(aCard, "DisplayName") == ab.getCardValue(card, "DisplayName")
+              && ab.getCardValue(aCard, "PrimaryEmail") == ab.getCardValue(card, "PrimaryEmail")
+              && ab.getCardValue(aCard, "SecondEmail") == ab.getCardValue(card, "SecondEmail"))
+        return card;
     }
   },
   /**
@@ -182,17 +193,17 @@ MailList.prototype = {
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
     var arr;
-    if (this.mDirectory.mVersion == 3) { // TB 3
+    if (this.mParent.mVersion == 3) { // TB 3
       arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
-        this.checkCard(aCards[i], "deleteAbCard");
+        this.mParent.checkCard(aCards[i], "deleteAbCard");
         arr.appendElement(aCards[i], false);
       }
     }
     else { // TB 2
       arr =  Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
-        this.checkCard(aCards[i], "deleteAbCard");
+        this.mParent.checkCard(aCards[i], "deleteAbCard");
         arr.AppendElement(aCards[i], false);
       }
     }

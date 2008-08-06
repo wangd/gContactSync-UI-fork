@@ -189,15 +189,18 @@ var ContactConverter = {
     ab.updateCard(card);
     // get the groups after updating the card
     var groups = aContact.getValue("groupMembershipInfo");
-    for (var i = 0, length = groups.length; i < length; i++) {
+    var lists = Sync.mLists;
+    for (var i in lists) {
       var group = groups[i];
-      var list = Sync.mLists[group.getID()];
-      if (list) {
-        if (!list.hasCard(card))
-          list.addCard(card);
+      var list = lists[i];
+      // delete the card from the list, if necessary
+      if (list.hasCard(card)) {
+        if (!group)
+          list.deleteCards([card]);
       }
-      else
-        LOGGER.LOG_WARNING("Couldn't find the group with uri: " + uri);
+      // add the card to the list, if necessary
+      else if (group)
+        list.addCard(card);
     }
   },
   /**

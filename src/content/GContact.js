@@ -408,27 +408,27 @@ GContact.prototype = {
    * Returns an array of the names of the groups to which this contact belongs.
    */
   getGroups: function() {
-    this.mGroups = {};
     var groupInfo = gdata.contacts.groupMembershipInfo;
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
-    var groups = [];
+    var groups = {};
     for (var i = 0, length = arr.length; i < length; i++) {
       var id = arr[i].getAttribute("href");
       var group = Sync.mGroups[id];
-      if (group) {
-        groups.push(group);
-        this.mGroups[id] = arr[i];
-      }
+      if (group)
+        groups[id] = group;
       else
-        LOGGER.LOG_WARNING("Unable to find group: " + url);
+        LOGGER.LOG_WARNING("Unable to find group: " + id);
     }
     return groups;
   },
   clearGroups: function() {
-    for (var i in this.mGroups) {
+    var groupInfo = gdata.contacts.groupMembershipInfo;
+    var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
+                                              groupInfo.tagName);
+    for (var i in arr) {
       try {
-        this.xml.removeChild(this.mGroups[i])
+        this.xml.removeChild(arr[i])
       }
       catch(e) {
         LOGGER.LOG_WARNING("Error while trying to clear groups: " + e);

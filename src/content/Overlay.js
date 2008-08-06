@@ -71,7 +71,13 @@ var Overlay = {
     Overlay.setupButton(); // insert the Sync button
     gdata.contacts.init();
     ContactConverter.init();
+    AbListener.add(); // add the address book listener
     this.checkAuthentication(); // check if the Auth token is valid
+    // call the unload function when the address book window is shut
+    window.addEventListener("unload", function(e) { Overlay.unload(); }, false);
+  },
+  unload: function() {
+    AbListener.remove();
   },
   /**
    * Overlay.setupButton

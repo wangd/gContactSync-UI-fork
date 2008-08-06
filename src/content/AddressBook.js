@@ -44,11 +44,12 @@
  * @class
  */
 function AddressBook(aName, aURI) {
-  if (Cc["@mozilla.org/abmanager;1"])
+  // get the version of Thunderbird
+  if (Cc["@mozilla.org/abmanager;1"]) // The AB Manager is in Thunderbird 3
     this.mVersion = 3;
   else
     this.mVersion = 2;
-
+  // get the address book by either the URI or name
   if (aURI)
     this.mDirectory = this.getAbByURI(aURI);
   else if (aName)
@@ -56,18 +57,20 @@ function AddressBook(aName, aURI) {
   else
     throw StringBundle.getStr("error") + "aURI" + StringBundle.getStr("suppliedTo") +
           "AddressBook constructor" + StringBundle.getStr("errorEnd");
+  // make sure the directory is valid
   if (!this.isDirectoryValid(this.mDirectory))
     throw StringBundle.getStr("error") + "aURI" + StringBundle.getStr("suppliedTo") +
           "AddressBook constructor" + StringBundle.getStr("errorEnd");
   this.mURI = this.mDirectory.URI;
+  // figure out if this is post-bug 413260
   var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
               .createInstance(nsIAbCard);
   this.mBug413260 = card.getProperty ? true : false;
 }
 
 AddressBook.prototype = {
-  mCurrentCard: {},
-  mBug413260: null,
+  mCurrentCard: {}, // the last card modified
+  mBug413260: false, // true if bug 413260 has landed
   // attributes that can be set by getCardValue and setCardValue
   mBasicAttributes: [
     "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
@@ -84,7 +87,6 @@ AddressBook.prototype = {
    */
   addCard: function(aCard) {
     this.checkCard(aCard, "addCardTo");
-    this.checkDirectory(this.mDirectory, "addCard");
     return this.mDirectory.addCard(aCard);
   },
   /**
@@ -515,5 +517,13 @@ AddressBook.prototype = {
    */
   isRegularAttribute: function(aAttribute) {
     return this.mBasicAttributes.indexOf(aAttribute) != -1;
+  },
+
+  equals: function(aOtherDir) {
+    if (!this.isDirectoryValid)
+      return false;
+    if (this.mDirectory.URI)
+      return this.mDirectory.URI == aOtherDir.URI;
+    return this.mDirectory.getDirUri() == aOtherDir.getDirUri();
   }
 };
