@@ -1,14 +1,16 @@
 <!ENTITY title.label "gContactSync Preferences">
 <!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
 <!ENTITY refreshInterval2.value "Set to 0 to disable automatic synchronization">
-<!ENTITY refreshInterval3.value "after the inital sync when the Address Book is opened">
+<!ENTITY refreshInterval3.value "after the inital sync.">
 <!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
+<!ENTITY initialDelay2.value "Set to 0 to disable the initial auto syncing">
 <!ENTITY abName.value "Name of the Address Book">
 <!ENTITY abName2.value "Re-synchronize contacts before changing this">
 <!ENTITY updateGoogle.label "Always update Gmail™ during conflicts">
 <!ENTITY confirmDuplicates.label "Confirm before deleting duplicates">
 <!ENTITY overrideCopy.label "Copy extra attributes when copying/moving cards">
 <!ENTITY syncExtended.label "Sync Extended Properties (see next tab)">
+<!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY removeLogin.label "Remove Authentiation Token">
 <!-- NOTE: Please leave trailing spaces in extended1 - extended9 -->
 <!ENTITY extended1.value "Property 1  ">

@@ -53,25 +53,16 @@ var originalDisplayCardViewPane;
  * @class
  */
 var Overlay = {
-  mAddressBook: null, // XXX move to Sync?
+  mAddressBook: null,
   initialize: function() {
     StringBundle.init(); // initialize the string bundle
     Preferences.getSyncPrefs(); // get the preferences
     FileIO.init(); // initialize the FileIO class
-    // get the Address Book
-    this.mAddressBook = new AddressBook(Preferences.mSyncPrefs.addressBookName.value);
-    // if this is pre-413260, override the onDrop method of abDirTreeObserver
-    // so when a card is copied the extra attributes are copied with it
-    if (!this.mAddressBook.mBug413260 && Preferences.mSyncPrefs.overrideCopy.value)
-      abDirTreeObserver.onDrop = myOnDrop;
     originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
-    originalDisplayCardViewPane = DisplayCardViewPane;
-    DisplayCardViewPane = this.myDisplayCardViewPane;
     Overlay.setupButton(); // insert the Sync button
     gdata.contacts.init();
     ContactConverter.init();
-    AbListener.add(); // add the address book listener
     this.checkAuthentication(); // check if the Auth token is valid
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function(e) { Overlay.unload(); }, false);
@@ -111,7 +102,18 @@ var Overlay = {
    */
   checkAuthentication: function() {
     if (gdata.isAuthValid()) {
-      Sync.schedule(Preferences.mSyncPrefs.initialDelay.value);
+      // get the Address Book
+      this.mAddressBook = new AddressBook(Preferences.mSyncPrefs.addressBookName.value);
+      // if this is pre-413260, override the onDrop method of abDirTreeObserver
+      // so when a card is copied the extra attributes are copied with it
+      if (this.mAddressBook && !this.mAddressBook.mBug413260 &&
+          Preferences.mSyncPrefs.overrideCopy.value)
+        abDirTreeObserver.onDrop = myOnDrop;
+
+      originalDisplayCardViewPane = DisplayCardViewPane;
+      DisplayCardViewPane = this.myDisplayCardViewPane;
+      AbListener.add(); // add the address book listener
+      Sync.schedule(Preferences.mSyncPrefs.initialDelay.value);  
       return;
     }
     this.setStatusBarText(StringBundle.getStr("notAuthString"));
@@ -159,7 +161,7 @@ var Overlay = {
     // when the setup window loads, set its onunload property to begin a sync
     setup.onload = function() {
       setup.onunload = function () {
-        Sync.begin(); 
+        Overlay.checkAuthentication(); 
       };
     };
   },

@@ -68,6 +68,9 @@
       <preference id="syncExtended"
                   name="extensions.gContactSync.syncExtended"
                   type="bool"/>
+      <preference id="autoSync"
+                  name="extensions.gContactSync.autoSync"
+                  type="bool"/>
       <preference id="address1"
                   name="extensions.gContactSync.address1"
                   type="string"/>
@@ -110,6 +113,8 @@
                    value="&refreshInterval.value;"/>
             <label control="refreshIntervalLbl2"
                    value="&refreshInterval2.value;"/>
+            <label control="refreshIntervalLbl3"
+                   value="&refreshInterval3.value;"/>
             <textbox preference="refreshInterval"
                      id="refreshIntervalBox"
                      maxlength="8"/>
@@ -129,6 +134,10 @@
             <checkbox preference="syncExtended"
                      id="syncExtended"
                      label="&syncExtended.label;"/>
+                   
+            <checkbox preference="autoSync"
+                     id="autoSync"
+                     label="&autoSync.label;"/>
           </vbox>
           <vbox index="address">
             <label control="extendedDesc1"

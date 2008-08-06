@@ -1,12 +1,13 @@
 <!ENTITY title.label "gContactSync Initial Setup">
-<!ENTITY refreshInterval.value "Synchronize Interval (minutes)">
-<!ENTITY refreshInterval2.value "[Default is 30]">
-<!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
+<!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
+<!ENTITY refreshInterval2.value "Set to 0 to disable automatic synchronization">
+<!ENTITY refreshInterval3.value "after the inital sync.">
 <!ENTITY abName.value "Name of the Address Book">
 <!ENTITY updateGoogle.label "Always update Gmail™ during conflicts">
 <!ENTITY confirmDuplicates.label "Confirm before deleting duplicates">
 <!ENTITY overrideCopy.label "Copy extra attributes when copying/moving cards">
 <!ENTITY syncExtended.label "Sync Attributes that Thunderbird has, but Google lacks">
+<!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY main.tab "Main">
 <!ENTITY address.tab "Address">
 <!ENTITY addressDesc1.value "Addresses are synced with one property per line">

@@ -571,12 +571,13 @@ var Sync = {
   /**
    * Sync.schedule
    * Schedules another sync after the given delay if one is not already scheduled,
-   * there isn't a sync currently running, and if the delay is greater than 0.
-   *
+   * there isn't a sync currently running, if the delay is greater than 0, and
+   * finally if the auto sync pref is set to true.
    * @param aDelay The duration of time to wait before synchronizing again
    */
   schedule: function(aDelay) {
-    if (aDelay && this.mSynced && !this.mSyncScheduled && aDelay > 0) {
+    if (aDelay && this.mSynced && !this.mSyncScheduled && aDelay > 0 &&
+        Preferences.mSyncPrefs.autoSync.value) {
       this.mSyncScheduled = true;
       setTimeout("Sync.begin();", aDelay);  
     }

@@ -65,7 +65,8 @@ var Preferences = {
     initialDelay: new Pref("initialDelay", "int", 500),
     verboseLog: new Pref("verboseLog", "bool", true),
     syncExtended: new Pref("syncExtended", "bool", true),
-    overrideCopy: new Pref("overrideCopy", "bool", true)
+    overrideCopy: new Pref("overrideCopy", "bool", true),
+    autoSync: new Pref("autoSync", "bool", true)
   },
   /**
    * Preferences.getPref

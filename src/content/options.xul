@@ -154,6 +154,8 @@
 
             <label control="initialDelayLbl"
                    value="&initialDelay.value;"/>
+            <label control="initialDelayLbl2"
+                   value="&initialDelay2.value;"/>
             <textbox preference="initialDelay"
                      id="initialDelayBox"
                      maxlength="8"/>
@@ -173,6 +175,10 @@
             <checkbox preference="syncExtended"
                      id="syncExtended"
                      label="&syncExtended.label;"/>
+                   
+            <checkbox preference="autoSync"
+                     id="autoSync"
+                     label="&autoSync.label;"/>
             <hbox>
               <button id="removeLogin"
                       label="&removeLogin.label;"
