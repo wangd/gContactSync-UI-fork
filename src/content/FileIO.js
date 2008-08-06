@@ -57,10 +57,10 @@ var FileIO = {
   /**
    * FileIO.writeLastSync
    * Writes the current time in milliseconds since 1970 to the data file
-   * and adds 5 seconds.
+   * and adds 1 second.
    */
   writeLastSync: function(){ 
-    this.writeToFile(this.mDataFile, new String(new Date().getTime() + 5000));
+    this.writeToFile(this.mDataFile, new String(new Date().getTime() + 1000));
   },
   /**
    * FileIO.getLastSync

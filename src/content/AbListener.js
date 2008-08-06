@@ -1,33 +1,64 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is gContactSync.
+ *
+ * The Initial Developer of the Original Code is
+ * Josh Geenen <gcontactsync@pirules.net>.
+ * Portions created by the Initial Developer are Copyright (C) 2008
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+/**
+ * AbListener
+ * AbListener is a listener for the Address Book that is currently only used to
+ * update the last modified date of mailing lists and cards contained within
+ * them.
+ * @class
+ */
 var AbListener = {
-  onItemAdded: function(aParentDir, aItem) {
-    // this.update(aParentDir, aItem);
-  },
+  onItemAdded: function(aParentDir, aItem) { /* do nothing */ },
   onItemPropertyChanged: function(aItem, aProperty , aOldValue , aNewValue ) {
     // do nothing
   },
   onItemRemoved: function(aParentDir, aItem) {
-    this.update(aParentDir, aItem);
-  },
-  update: function(aParentDir, aItem) {
-    var now = (new Date).getTime()/1000;
     aParentDir.QueryInterface(Ci.nsIAbDirectory);
-    var uri = this.getURI(aParentDir);
-    var dir = aParentDir;
-    if (aParentDir instanceof Ci.nsIAbDirectory && aParentDir.isMailList) {
-      aParentDir.lastModifiedDate = now;
-      //this.updateList(aParentDir);
-      uri = uri.substring(0, uri.lastIndexOf("/"));
-      dir = this.getAbByURI(uri);
-    }
-    if (aItem instanceof Ci.nsIAbDirectory) {
-      aItem.lastModifiedDate = now;
-      this.updateList(aItem);
-    }
-    else if (aItem instanceof Ci.nsIAbCard) {
+    // only update if a card was removed from a mail list
+    // if so, then update the card's lastModifiedDate in the mail list's parent
+    if (aParentDir.isMailList && (aItem instanceof Ci.nsIAbCard)) {
+      var uri = this.getURI(aParentDir);
+      uri = uri.substring(0, uri.lastIndexOf("/")); // the URI of the list's parent
+      var dir = this.getAbByURI(uri); // the list's parent directory
       aItem.QueryInterface(Ci.nsIAbMDBCard);
-      aItem.lastModifiedDate = now;
+      aItem.lastModifiedDate = (new Date).getTime();
       this.updateCard(dir, aItem, uri);
     }
+    
   },
   updateCard: function(aDirectory, aCard, aURI) {
     if (aDirectory && aDirectory.modifyCard)
@@ -54,15 +85,13 @@ var AbListener = {
   },
   add: function() {
     if (Cc["@mozilla.org/abmanager;1"]) {
-      var flags = Ci.nsIAbListener.itemAdded |
-                  Ci.nsIAbListener.directoryItemRemoved;
+      var flags = Ci.nsIAbListener.directoryItemRemoved;
       Cc["@mozilla.org/abmanager;1"]
        .getService(Ci.nsIAbManager)
        .addAddressBookListener(AbListener, flags);
     }
     else {
-      var flags = Ci.nsIAddrBookSession.added |
-                  Ci.nsIAddrBookSession.directoryItemRemoved;
+      var flags = Ci.nsIAddrBookSession.directoryItemRemoved;
       Cc["@mozilla.org/addressbook/services/session;1"]
        .getService(Ci.nsIAddrBookSession)
        .addAddressBookListener(AbListener, flags);

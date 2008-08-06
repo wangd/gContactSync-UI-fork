@@ -426,12 +426,12 @@ GContact.prototype = {
     var groupInfo = gdata.contacts.groupMembershipInfo;
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
-    for (var i in arr) {
+    for (var i = 0, length = arr.length; i < length; i++) {
       try {
-        this.xml.removeChild(arr[i])
+        this.xml.removeChild(arr[i]);
       }
       catch(e) {
-        LOGGER.LOG_WARNING("Error while trying to clear groups: " + e);
+        LOGGER.LOG_WARNING("Error while trying to clear groups: " + e + "\n" + arr[i]);
       }
     }
     this.mGroups = {};

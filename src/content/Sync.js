@@ -434,9 +434,8 @@ var Sync = {
           var id = group.getID();
           var title = group.getTitle();
           var list = this.mLists[id];
+          this.mGroups[id] = group;
           if (group.getLastModifiedDate() < lastSync) { // it's an old group
-            this.mGroups[id] = group;
-            //this.mGroups[title] = group;
             if (list) {
               LOGGER.LOG("matched group " + title + " with mailing list " + 
                          list.getName());
@@ -459,29 +458,21 @@ var Sync = {
               LOGGER.LOG("found new group: " + title);
               var list = ab.addList(title, id);
               LOGGER.VERBOSE_LOG("List added to address book");
-              list.mList.lastModifiedDate = (new Date()).getTime()/1000;
-              this.mGroupsToUpdate.push(group);
-              this.mGroups[id] = group;
-              this.mGroups[title] = group;
             }
           }
         }
         catch(e) { LOGGER.LOG_ERROR(e); }
       }
       LOGGER.VERBOSE_LOG("looking for unmatched mailing lists");
-      // XXX go through each unmatched mailing list and add new groups or delete
-      // old mail lists
       for (var i in this.mLists) {
         var list = this.mLists[i];
-        // if it should be added
         if (list && !list.matched) {
-          var lastModifiedDate = list.mList.lastModifiedDate;
-          // if it is new
-          if (!lastModifiedDate || lastModifiedDate > lastSync/1000 ||
-              lastModifiedDate == 0) {
+          // if it is new, make a new group in Google
+          if (list.getDescription().indexOf("http://www.google.com/m8/feeds/groups/") == -1) {
             LOGGER.VERBOSE_LOG("found new list: " + list.getName());
             this.mGroupsToAdd.push(list);
           }
+          // if it is old, delete it
           else {
             LOGGER.VERBOSE_LOG("deleting list: " + list.getName());
             list.delete();

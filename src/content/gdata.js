@@ -74,7 +74,7 @@ var gdata = {
     // XXX add pref?  shouldn't have more than 250 groups
     GROUPS_URL: "https://www.google.com/m8/feeds/groups/default/full?" +
                 "max-results=250",
-    ADD_GROUP_URL: "http://www.google.com/m8/feeds/groups/default/full",
+    ADD_GROUP_URL: "https://www.google.com/m8/feeds/groups/default/full",
     ADD_URL: "https://www.google.com/m8/feeds/contacts/default/full",
     requestTypes: {
       GET_ALL: "GET",
