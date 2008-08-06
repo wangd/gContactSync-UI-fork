@@ -143,6 +143,8 @@ var Sync = {
       LOGGER.LOG(string + "\n"); // VERBOSE_LOG checks the pref, but serializing isn't
                           // always necessary.
     }
+    // have to update the lists or TB 2 won't work properly
+    this.mLists = Overlay.mAddressBook.getAllLists();
     var googleContacts = aAtom.getElementsByTagName('entry');
     var abCards = Overlay.mAddressBook.getAllCards();
     var lastSync = FileIO.getLastSync();
@@ -433,15 +435,21 @@ var Sync = {
           // name and the title as the value for easy lookup for contacts
           var id = group.getID();
           var title = group.getTitle();
+          var modifiedDate = group.getLastModifiedDate();
+          LOGGER.VERBOSE_LOG("Found group with ID: " + id + " name: " + title +
+                             " last modified: " + modifiedDate);
           var list = this.mLists[id];
           this.mGroups[id] = group;
-          if (group.getLastModifiedDate() < lastSync) { // it's an old group
+          if (modifiedDate < lastSync) { // it's an old group
             if (list) {
               LOGGER.LOG("matched group " + title + " with mailing list " + 
                          list.getName());
               list.matched = true;
-              if (list.mList.lastModifiedDate > lastSync/1000) {
-                // XXX compare the name of the list w/ the group's name
+              // if the name is different, update the group's title
+              var listName = list.getName();
+              if (listName != title) {
+                group.setTitle(listName);
+                this.mGroupsToUpdate.push(group);
               }
             }
             else {
@@ -449,11 +457,17 @@ var Sync = {
               LOGGER.LOG("didn't find match for group: " + title + ".  It will be deleted");
             }
           }
-          else { // it is new
-            if (list) {
-              // XXX compare the name of the list w/ the group's name
+          else { // it is new or updated
+            if (list) { // the group has been updated
+              // if the name changed, update the mail list's name
+              if (list.getName() != title) {
+                LOGGER.VERBOSE_LOG("The group's name changed, updating the list");
+                list.setName(title);
+                list.update();
+                list.matched = true;
+              }
             }
-            else {
+            else { // the group is new
               // make a new mailing list with the same name
               LOGGER.LOG("found new group: " + title);
               var list = ab.addList(title, id);
@@ -480,8 +494,6 @@ var Sync = {
         }
       }
     }
-    // have to update the lists or TB 2 won't work properly
-    this.mLists = Overlay.mAddressBook.getAllLists();
     LOGGER.LOG("deleting groups");
     this.deleteGroups();
   },

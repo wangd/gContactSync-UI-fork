@@ -63,6 +63,8 @@ var AbListener = {
   /**
    * AbListener.onItemRemoved
    * Used just to update the lastModifiedDate of cards removed from a mail list.
+   * If a mail list is removed nothing needs to be done since the Group will be
+   * deleted in Gmail.
    * @param aParentDir The directory from which an item was removed.  Ignored
    *                   unless it is a mail list.
    * @param aItem      The item removed from a directory.  Ignored unless it is
@@ -76,9 +78,18 @@ var AbListener = {
       var uri = this.getURI(aParentDir);
       uri = uri.substring(0, uri.lastIndexOf("/")); // the URI of the list's parent
       var dir = this.getAbByURI(uri); // the list's parent directory
-      aItem.QueryInterface(Ci.nsIAbMDBCard);
-      aItem.lastModifiedDate = (new Date).getTime();
-      this.updateCard(dir, aItem, uri);
+      try {
+        aItem.QueryInterface(Ci.nsIAbCard);
+        var now = (new Date).getTime()/1000;
+        aItem.lastModifiedDate = now;
+        aItem.QueryInterface(Ci.nsIAbMDBCard);
+        this.updateCard(dir, aItem, uri);
+      }
+      catch(e) {
+        LOGGER.LOG_WARNING("Error updating card after being removed: " + 
+                            aItem + " " + e + " " + uri + " " + now);
+      }
+      
     }
   },
   /**

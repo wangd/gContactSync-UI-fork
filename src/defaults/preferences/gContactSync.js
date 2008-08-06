@@ -16,6 +16,8 @@ pref("extensions.gContactSync.overrideCopy", true);
 pref("extensions.gContactSync.initialDelay", 500);
 // set to true to enable verbose logging (recommended)
 pref("extensions.gContactSync.verboseLog", true);
+// set to true to enable automatic synchronizing when Thunderbird opens and after the sync delay
+pref("extensions.gContactSync.autoSync", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

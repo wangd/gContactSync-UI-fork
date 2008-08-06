@@ -1,6 +1,7 @@
 <!ENTITY title.label "gContactSync Preferences">
-<!ENTITY refreshInterval.value "Synchronize Interval (minutes)">
-<!ENTITY refreshInterval2.value "[Default is 30]">
+<!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
+<!ENTITY refreshInterval2.value "Set to 0 to disable automatic synchronization">
+<!ENTITY refreshInterval3.value "after the inital sync when the Address Book is opened">
 <!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
 <!ENTITY abName.value "Name of the Address Book">
 <!ENTITY abName2.value "Re-synchronize contacts before changing this">

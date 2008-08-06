@@ -450,7 +450,7 @@ GContact.prototype = {
     // check if the contact needs to be added to one or more groups
     for (var i = 0, length = aGroups.length; i < length; i++) {
       var id = aGroups[i];
-      if (!id)
+      if (!id || !id.indexOf || id.indexOf("www.google.com/m8/feeds/groups") == -1)
         continue;
       this.addToGroup(id);
     }

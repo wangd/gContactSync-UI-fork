@@ -132,12 +132,15 @@ function myOnDrop(row, orientation) {
         var values = [];
         // put in a try/catch block in case the card can't be QI'd to nsIAbMDBCard
         try {
-          // first get the extra attributes of the card
+          // get the extra attributes of the card if it is an MDB card
           card.QueryInterface(Ci.nsIAbMDBCard);
           for (var k = 0; k < attributesLen; k++)
             values[k] = card.getStringAttribute(attributes[k]);
         }
-        catch (e) {}
+        catch (e) {
+          LOGGER.VERBOSE_LOG("Error while getting extra card attributes. The" +
+                              "card probably isn't an MDB card: " + e);
+        }
         // delete the card if the user chose to move it (rather than copy it)
         if (actionIsMoving)
           deleteCard(srcDirectory, card);
@@ -154,7 +157,7 @@ function myOnDrop(row, orientation) {
             newCard.editCardToDatabase(targetURI);
           else // Thunderbird 3
             toDirectory.modifyCard(newCard);
-        } catch (e) {}
+        } catch (e) { LOGGER.LOG_WARNING('copy card error: ' + e); }
       }
     }
     var cardsTransferredText;

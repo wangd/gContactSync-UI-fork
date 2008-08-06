@@ -53,7 +53,7 @@ var gdata = {
    * @param aPassword  The user's password
    */
   makeAuthBody: function(aEmail, aPassword) {
-    return "accountType=GOOGLE&Email=" + aEmail + "&Passwd=" + aPassword +
+    return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" + aPassword +
              "&service=cp&source=Josh-gContactSync-0-1a1";
   },
   // The namespaces used

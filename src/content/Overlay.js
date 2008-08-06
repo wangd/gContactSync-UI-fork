@@ -212,54 +212,63 @@ var Overlay = {
       } catch(e) {}
       return; // and quit, nothing was added for mail lists
     }
-    var ab = Overlay.mAddressBook;
-    // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
-    // JabberScreenName, YahooScreenName, ICQScreenName)
-    var visible = !cvData.cvbContact.getAttribute("collapsed");
-    var thirdEmail = ab.getCardValue(aCard, "ThirdEmail");
-    var fourthEmail = ab.getCardValue(aCard, "FourthEmail");
-    visible = HandleLink(cvData.cvThirdEmail, StringBundle.getStr("ThirdEmail"),
-                         thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
-                         thirdEmail) || visible;
-    visible = HandleLink(cvData.cvFourthEmail, StringBundle.getStr("FourthEmail"),
-                         fourthEmail, cvData.cvFourthEmailBox, "mailto:" +
-                         fourthEmail) || visible;
+    try {
+      Overlay.showNodes(ContactConverter.getExtraSyncAttributes());
+      cvData.cvThirdEmailBox.collapsed = false;
+      cvData.cvFourthEmailBox.collapsed = false;
+      var ab = Overlay.mAddressBook;
+      // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
+      // JabberScreenName, YahooScreenName, ICQScreenName)
+      var visible = !cvData.cvbContact.getAttribute("collapsed");
+      var thirdEmail = ab.getCardValue(aCard, "ThirdEmail");
+      var fourthEmail = ab.getCardValue(aCard, "FourthEmail");
+      visible = HandleLink(cvData.cvThirdEmail, StringBundle.getStr("ThirdEmail"),
+                           thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
+                           thirdEmail) || visible;
+      visible = HandleLink(cvData.cvFourthEmail, StringBundle.getStr("FourthEmail"),
+                           fourthEmail, cvData.cvFourthEmailBox, "mailto:" +
+                           fourthEmail) || visible;
     
-    visible = Overlay.getVisible(aCard, ["TalkScreenName", "JabberScreenName",
-                                         "YahooScreenName", "MSNScreenName",
-                                         "ICQScreenName"], visible);
-    cvSetVisible(cvData.cvhContact, visible);
-    cvSetVisible(cvData.cvbContact, visible);
-    // Other section (OtherAddress, Groups, GoogleID)
-    var visible = !cvData.cvhOther.getAttribute("collapsed");
-    visible = Overlay.getVisible(aCard, ["Groups", "OtherAddress"], visible);
-    cvSetVisible(cvData.cvhOther, visible);
-    cvSetVisible(cvData.cvbOther, visible);
-    // setup the OtherAddress MapIt button 
-    if (cvData.cvOtherAddress && cvData.cvOtherAddress.childNodes[0] &&
-        cvData.cvOtherAddress.childNodes[0].nodeValue) {
-      var baseUrl = "http://maps.google.com/maps?q=";
-      var address = cvData.cvOtherAddress.childNodes[0].nodeValue;
-      // remove the label
-      var index = address.indexOf(":")
-      if (index != -1 && address.length > index + 2)
-        address = address.substring(address.indexOf(":") + 2);
-      cvData.cvOtherMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
-      cvSetVisible(cvData.cvbOtherMapItBox, true);
-    }
-    else {
-      cvData.cvOtherMapIt.setAttribute("url", "");
-      cvSetVisible(cvData.cvbOtherMapItBox, false);
-    }
-    // Phone section (add OtherNumber and HomeFaxNumber)
-    var visible = !cvData.cvhPhone.getAttribute("collapsed");
-    visible = Overlay.getVisible(aCard, ["OtherNumber", "HomeFaxNumber"], visible);
-    cvSetVisible(cvData.cvhPhone, visible);
-    cvSetVisible(cvData.cvbPhone, visible);
+      visible = Overlay.getVisible(aCard, ["TalkScreenName", "JabberScreenName",
+                                           "YahooScreenName", "MSNScreenName",
+                                           "ICQScreenName"], visible);
+      cvSetVisible(cvData.cvhContact, visible);
+      cvSetVisible(cvData.cvbContact, visible);
+      // Other section (OtherAddress, Groups, GoogleID)
+      var visible = !cvData.cvhOther.getAttribute("collapsed");
+      visible = Overlay.getVisible(aCard, ["Groups", "OtherAddress"], visible);
+      cvSetVisible(cvData.cvhOther, visible);
+      cvSetVisible(cvData.cvbOther, visible);
+      // setup the OtherAddress MapIt button 
+      if (cvData.cvOtherAddress && cvData.cvOtherAddress.childNodes[0] &&
+          cvData.cvOtherAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvOtherAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":")
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvOtherMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbOtherMapItBox, true);
+      }  
+      else {
+        cvData.cvOtherMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbOtherMapItBox, false);
+      }
+      // Phone section (add OtherNumber and HomeFaxNumber)
+      var visible = !cvData.cvhPhone.getAttribute("collapsed");
+      visible = Overlay.getVisible(aCard, ["OtherNumber", "HomeFaxNumber"], visible);
+      cvSetVisible(cvData.cvhPhone, visible);
+      cvSetVisible(cvData.cvbPhone, visible);
+    } catch(e) {alert(e);}
   },
   clearNodes: function(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++)
-      try { cvSetVisible(cvData["cv" + aArray[i]], ""); } catch (e) {}
+      try { cvSetVisible(cvData["cv" + aArray[i]], false); } catch (e) { alert('clear nodes error: ' + e); }
+  },
+  showNodes: function(aArray) {
+    for (var i = 0, length = aArray.length; i < length; i++)
+      try { cvSetVisible(cvData["cv" + aArray[i]], true); } catch (e) { alert('show nodes error' + e); }
   },
   /**
    * A helper method for myDisplayCardViewPane that iterates through an array of
