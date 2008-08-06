@@ -131,33 +131,38 @@ function myOnDrop(row, orientation) {
       else {
         var values = [];
         // put in a try/catch block in case the card can't be QI'd to nsIAbMDBCard
+        var isMDBCard = false;
         try {
           // get the extra attributes of the card if it is an MDB card
           card.QueryInterface(Ci.nsIAbMDBCard);
+          isMDBCard = true;
           for (var k = 0; k < attributesLen; k++)
             values[k] = card.getStringAttribute(attributes[k]);
         }
         catch (e) {
-          LOGGER.VERBOSE_LOG("Error while getting extra card attributes. The" +
-                              "card probably isn't an MDB card: " + e);
+          // ignore the error if the card wasn't an MDB card, otherwise log it
+          if (isMDBCard)
+            LOGGER.LOG_WARNING("Error while getting extra card attributes.\n" + e);
         }
         // delete the card if the user chose to move it (rather than copy it)
         if (actionIsMoving)
           deleteCard(srcDirectory, card);
         var newCard = toDirectory.addCard(card);
-        // put in a try/catch block in case the card can't be QI'd to nsIAbMDBCard
-        try {
-          newCard.QueryInterface(Ci.nsIAbMDBCard);
-          for (var k = 0; k < attributesLen; k++) {
-            var value = values[k] ? values[k] : "";
-            newCard.setStringAttribute(attributes[k], value);
-          }
-          // now update the new card
-          if (newCard.editCardToDatabase) // Thunderbird 2
-            newCard.editCardToDatabase(targetURI);
-          else // Thunderbird 3
-            toDirectory.modifyCard(newCard);
-        } catch (e) { LOGGER.LOG_WARNING('copy card error: ' + e); }
+        
+        if (isMDBCard) { // only update it if the original was an MDB card
+          try {
+            newCard.QueryInterface(Ci.nsIAbMDBCard);
+            for (var k = 0; k < attributesLen; k++) {
+              var value = values[k] ? values[k] : "";
+              newCard.setStringAttribute(attributes[k], value);
+            }
+            // now update the new card
+            if (newCard.editCardToDatabase) // Thunderbird 2
+              newCard.editCardToDatabase(targetURI);
+            else // Thunderbird 3
+              toDirectory.modifyCard(newCard);
+          } catch (e) { LOGGER.LOG_WARNING('copy card error: ' + e); }
+        }
       }
     }
     var cardsTransferredText;
