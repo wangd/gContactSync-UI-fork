@@ -49,7 +49,7 @@ function AddressBook(aName, aURI) {
     this.mVersion = 3;
   else
     this.mVersion = 2;
-  // get the address book by either the URI or name
+  // get the address book by either the URI or name or throw an error
   if (aURI)
     this.mDirectory = this.getAbByURI(aURI);
   else if (aName)
@@ -59,7 +59,7 @@ function AddressBook(aName, aURI) {
           "AddressBook constructor" + StringBundle.getStr("errorEnd");
   // make sure the directory is valid
   if (!this.isDirectoryValid(this.mDirectory))
-    throw StringBundle.getStr("error") + "aURI" + StringBundle.getStr("suppliedTo") +
+    throw StringBundle.getStr("error") + "aURI or aName" + StringBundle.getStr("suppliedTo") +
           "AddressBook constructor" + StringBundle.getStr("errorEnd");
   this.mURI = this.mDirectory.URI;
   // figure out if this is post-bug 413260
@@ -71,6 +71,7 @@ function AddressBook(aName, aURI) {
 AddressBook.prototype = {
   mCurrentCard: {}, // the last card modified
   mBug413260: false, // true if bug 413260 has landed
+  mURI: {}, // the uniform resource identifier of the directory
   // attributes that can be set by getCardValue and setCardValue
   mBasicAttributes: [
     "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
@@ -82,12 +83,19 @@ AddressBook.prototype = {
     "Custom1", "Custom2", "Custom3", "Custom4"],
   /**
    * AddressBook.addCard
-   * Adds the card to this address book 
-   * @param aCard      The card to add
+   * Adds the card to this address book and returns the added card.
+   * @param aCard The card to add.
+   * @return An MDB
    */
   addCard: function(aCard) {
-    this.checkCard(aCard, "addCardTo");
-    return this.mDirectory.addCard(aCard);
+    this.checkCard(aCard, "addCardTo"); // check the card's validity first
+    try {
+      return this.mDirectory.addCard(aCard); // then add it and return the MDBCard
+    }
+    catch(e) {
+      LOGGER.LOG_ERROR("Unable to add card to the directory with URI: " +
+                       this.URI, e);
+    }
   },
   /**
    * AddressBook.getAbByURI
@@ -114,7 +122,7 @@ AddressBook.prototype = {
         return null;
       return dir;
     }
-    catch(e) { LOGGER.VERBOSE_LOG("Error in getAbByURI: " + e); }
+    catch(e) { LOGGER.LOG_ERROR("Error in getAbByURI" + e); }
   },
   /**
    * AddressBook.getAbByName
@@ -181,16 +189,14 @@ AddressBook.prototype = {
             return data;
       }
    }
-    
     return null;
   },
   /**
    * AddressBook.getAllCards
-   * Gets all the Cards in the Address Book
-   * @return   An array of the nsIAbCards in the book
+   * Returns an array of all of the cards in this Address Book.
+   * @return  An array of the nsIAbCards in this Address Book.
    */
   getAllCards: function() {
-    this.checkDirectory(this.mDirectory, "getAllCards");
     var arr = [];
     var iter = this.mDirectory.childCards;
     if (this.mVersion == 3) { // TB 3
@@ -269,7 +275,6 @@ AddressBook.prototype = {
    * @param aCard   The card to delete from the directory
    */
   deleteCards: function(aCards) {
-    this.checkDirectory(this.mDirectory, "deleteAbCard");
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
     var arr;
@@ -455,9 +460,10 @@ AddressBook.prototype = {
     */
    setMDBCardValue: function(aCard, aAttrName, aValue) {
      try {
-       if (!(aCard instanceof Ci.nsIAbMDBCard))
-         aCard.QueryInterface(Ci.nsIAbMDBCard);
-       aCard.setStringAttribute(aAttrName, aValue);
+       //if (!(aCard instanceof Ci.nsIAbMDBCard))
+       //  aCard.QueryInterface(Ci.nsIAbMDBCard);
+       if (aCard instanceof Ci.nsIAbMDBCard)
+         aCard.setStringAttribute(aAttrName, aValue);
      }
      catch(e) {
        LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
@@ -474,9 +480,10 @@ AddressBook.prototype = {
     */
    getMDBCardValue: function(aCard, aAttrName) {
      try {
-       if (!(aCard instanceof Ci.nsIAbMDBCard))
-         aCard.QueryInterface(Ci.nsIAbMDBCard);
-       return aCard.getStringAttribute(aAttrName);
+       //if (!(aCard instanceof Ci.nsIAbMDBCard))
+       //  aCard.QueryInterface(Ci.nsIAbMDBCard);
+       if (aCard instanceof Ci.nsIAbMDBCard)
+         return aCard.getStringAttribute(aAttrName);
      }
      catch(e) {
        LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
@@ -484,6 +491,7 @@ AddressBook.prototype = {
    },
   /**
    * AddressBook.hasAddress
+   * XXX move to AbCard.js
    * Returns true if the given card has at least one address-related property
    * for the given type.
    * @param aCard    The card to check.
@@ -502,7 +510,8 @@ AddressBook.prototype = {
   },
   /**
    * AddressBook.makeCard
-   * @return A new instance of nsIAbCard.
+   * XXX move to AbCard.js
+   * @return A new instantiation of nsIAbCard.
    */
   makeCard: function() {
     return Cc["@mozilla.org/addressbook/cardproperty;1"]
@@ -518,10 +527,20 @@ AddressBook.prototype = {
   isRegularAttribute: function(aAttribute) {
     return this.mBasicAttributes.indexOf(aAttribute) != -1;
   },
-
+  /**
+   * AddressBook.equals
+   * Returns true if the directory passed in is the same as the directory
+   * stored by this AddressBook object.  Two directories are considered the same
+   * if and only if their Uniform Resource Identifiers (URIs) are the same.
+   * @param aOtherDir The directory to compare with this object's directory.
+   * @return True if the URI of the passed directory is the same as the URI of
+   *         the directory stored by this object.
+   */
   equals: function(aOtherDir) {
-    if (!this.isDirectoryValid)
+    // return false if the directory isn't valid
+    if (!this.isDirectoryValid(aOtherDir))
       return false;
+    // compare the URIs
     if (this.mDirectory.URI)
       return this.mDirectory.URI == aOtherDir.URI;
     return this.mDirectory.getDirUri() == aOtherDir.getDirUri();

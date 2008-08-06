@@ -64,8 +64,12 @@ var LOGGER = {
    * Logs an error and updates the error count.
    * @param aErrorMessage The error message.
    */
-   LOG_ERROR: function(aErrorMessage) {
-     this.LOG("***ERROR: " + aErrorMessage);
+   LOG_ERROR: function(aMessage, aError) {
+     str = "***ERROR: " + aMessage;
+     if (aError)
+       str += "\nError Message:\n" + aError;
+     str += StringBundle.getStr("errorEnd");
+     this.LOG(str);
      Sync.mError = true;
      this.mErrorCount++;
    },
