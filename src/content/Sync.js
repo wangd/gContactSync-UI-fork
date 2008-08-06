@@ -440,12 +440,10 @@ var Sync = {
             if (list) {
               LOGGER.LOG("matched group " + title + " with mailing list " + 
                          list.getName());
-              // good
               list.matched = true;
-              if (list.mList.lastModifiedDate > lastSync/1000)
-                alert('list changed');
-              list.mList.lastModifiedDate = (new Date()).getTime()/1000;
-              // XXX check if the list was modified, might have to update cards
+              if (list.mList.lastModifiedDate > lastSync/1000) {
+                // XXX compare the name of the list w/ the group's name
+              }
             }
             else {
               this.mGroupsToDelete.push(group);
@@ -454,8 +452,7 @@ var Sync = {
           }
           else { // it is new
             if (list) {
-              // XXX update the mailing list
-              alert('need to update list');
+              // XXX compare the name of the list w/ the group's name
             }
             else {
               // make a new mailing list with the same name
