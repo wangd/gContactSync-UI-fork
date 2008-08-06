@@ -42,10 +42,32 @@
  * @class
  */
 var AbListener = {
+  /**
+   * AbListener.onItemAdded
+   * Unused.
+   * @param aParentDir The parent directory to which an item was added.
+   * @param aItem      The item added to the directory.
+   */
   onItemAdded: function(aParentDir, aItem) { /* do nothing */ },
+  /**
+   * AbListener.onItemPropertyChanged
+   * Unused.
+   * @param aItem     The item whose property was changed.
+   * @param aProperty The property changed.
+   * @param aOldValue The former value of the property.
+   * @param aNewValue The new value of the property.
+   */
   onItemPropertyChanged: function(aItem, aProperty , aOldValue , aNewValue ) {
     // do nothing
   },
+  /**
+   * AbListener.onItemRemoved
+   * Used just to update the lastModifiedDate of cards removed from a mail list.
+   * @param aParentDir The directory from which an item was removed.  Ignored
+   *                   unless it is a mail list.
+   * @param aItem      The item removed from a directory.  Ignored unless it is
+   *                   an Address Book card removed from a mail list.
+   */
   onItemRemoved: function(aParentDir, aItem) {
     aParentDir.QueryInterface(Ci.nsIAbDirectory);
     // only update if a card was removed from a mail list
@@ -58,73 +80,93 @@ var AbListener = {
       aItem.lastModifiedDate = (new Date).getTime();
       this.updateCard(dir, aItem, uri);
     }
-    
   },
+  /**
+   * AbListener.updateCard
+   * Updates the card passed in to the given directory (aDirectory or the
+   * directory specified by aURI, depending on the version of Thunderbird).
+   * @param aDirectory The directory to which the card should be updated.
+   *                   Ignored if this isn't Thunderbird 3.
+   * @param aCard      The card to update.
+   * @param aURI       The URI of the directory to which this card should be
+   *                   updated.  Ignored if this isn't Thunderbird 2.
+   */
   updateCard: function(aDirectory, aCard, aURI) {
-    if (aDirectory && aDirectory.modifyCard)
+    if (aDirectory && aDirectory.modifyCard) // Thunderbird 3
       aDirectory.modifyCard(aCard);
-    else if (aCard && aURI && aCard.editCardToDatabase)
+    else if (aCard && aURI && aCard.editCardToDatabase) // Thunderbird 2
       aCard.editCardToDatabase(aURI);
-    else
+    else // error...
       LOGGER.LOG_WARNING("unable to update card " + aCard + " to directory "
                          + aDirectory + " with URI " + aURI);
   },
-  updateList: function(aList) {
-    if (Cc["@mozilla.org/abmanager;1"])
-      aList.editMailListToDatabase(null);
-    else
-      aList.editMailListToDatabase(this.getURI(aList), null);
-  },
+  /**
+   * AbListener.getURI
+   * Gets the Uniform Resource Identifier (URI) of the specified directory.
+   * @param aDirectory The directory whose URI is returned.
+   * @return The URI of aDirectory.
+   */
   getURI: function(aDirectory) {
-    if (aDirectory.URI)
+    if (aDirectory.URI) // Thunderbird 3
       return aDirectory.URI;
-    aDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
+    aDirectory.QueryInterface(Ci.nsIAbMDBDirectory); // Thunderbird 2
     if (aDirectory.getDirUri)
       return aDirectory.getDirUri();
     LOGGER.LOG_WARNING('AbListener could not get a URI for: ' + aDirectory);
   },
+  /**
+   * AbListener.add
+   * Adds this listener to be alerted whenever a directory item is removed.
+   * It will be called whenever an item (card or mail list) is removed from a
+   * directory (address book or mail list).
+   */
   add: function() {
-    if (Cc["@mozilla.org/abmanager;1"]) {
+    if (Cc["@mozilla.org/abmanager;1"]) { // Thunderbird 3
       var flags = Ci.nsIAbListener.directoryItemRemoved;
       Cc["@mozilla.org/abmanager;1"]
        .getService(Ci.nsIAbManager)
        .addAddressBookListener(AbListener, flags);
     }
-    else {
+    else { // Thunderbird 2
       var flags = Ci.nsIAddrBookSession.directoryItemRemoved;
       Cc["@mozilla.org/addressbook/services/session;1"]
        .getService(Ci.nsIAddrBookSession)
        .addAddressBookListener(AbListener, flags);
     }
   },
+  /**
+   * AbListener.remove
+   * Removes this listener.
+   */
   remove: function() {
-    if (Cc["@mozilla.org/abmanager;1"]) {
+    if (Cc["@mozilla.org/abmanager;1"]) // Thunderbird 3
       Cc["@mozilla.org/abmanager;1"]
        .getService(Ci.nsIAbManager)
        .removeAddressBookListener(AbListener);
-    }
-    else {
+    else // Thunderbird 2
       Cc["@mozilla.org/addressbook/services/session;1"]
        .getService(Ci.nsIAddrBookSession)
        .removeAddressBookListener(AbListener);
-    }
   },
+  /**
+   * AbListener.getAbByURI
+   * Returns the directory with the given Uniform Resource Identifier (URI).
+   * @return The directory with the given URI.
+   */
   getAbByURI: function(aURI) {
     if (!aURI)
       throw StringBundle.getStr("error") + "aURI" + StringBundle.getStr("suppliedTo") +
             "getAbByURI" + StringBundle.getStr("errorEnd");
     try {
       var dir;
-      if (Cc["@mozilla.org/abmanager;1"])
+      if (Cc["@mozilla.org/abmanager;1"]) // Thunderbird 3, use the AB Manager
         dir = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager)
                .getDirectory(aURI).QueryInterface(Ci.nsIAbDirectory);
-      else
-       dir = Cc["@mozilla.org/rdf/rdf-service;1"]
-              .getService(Ci.nsIRDFService)
-              .GetResource(aURI)
-              .QueryInterface(Ci.nsIAbDirectory);
+      else // Thunderbird 2, get the AB through the RDF service
+        dir = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService)
+               .GetResource(aURI).QueryInterface(Ci.nsIAbDirectory);
       return dir;
     }
     catch(e) { LOGGER.VERBOSE_LOG("Error in getAbByURI: " + e); }
   }
-}
+};
