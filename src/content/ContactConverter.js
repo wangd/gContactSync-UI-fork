@@ -136,13 +136,6 @@ var ContactConverter = {
       var value = ab.getCardValue(aCard, arr[i]);
       aContact.setExtendedProperty(arr[i], value);
     }
-    // set the home and work addresses
-    /*
-    var address = this.encodeAddress(aCard, "Home");
-    aContact.setValue("postalAddress", 0, "home", address);
-    var address = this.encodeAddress(aCard, "Work");
-    aContact.setValue("postalAddress", 0, "work", address);
-    */
     // set the groups
     var groups = [];
     for (var i in Sync.mLists) {
@@ -191,10 +184,6 @@ var ContactConverter = {
       ab.setCardValue(card, arr[i], value);
     }
 
-    // get the home and work addresses
-    //card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "home"), "Home");
-    //card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "work"), "Work");
-
     ab.updateCard(card);
     // get the groups after updating the card
     var groups = aContact.getValue("groupMembershipInfo");
@@ -212,18 +201,30 @@ var ContactConverter = {
         list.addCard(card);
     }
   },
+  /**
+   * ContactConverter.fixAddress
+   * Fixes the address with the given prefix (Home or Work) and combines the
+   * 6 address fields: Address Line 1, Address Line 2, City, State, Zip Code
+   * Country into the field that allows multiple lines.
+   * @param aCard   The card with the address to fix.
+   * @param aPrefix The prefix (Home or Work)
+   */
   fixAddress: function(aCard, aPrefix) {
-    if (!aCard || !aPrefix)
+    if (!aCard || !aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
       return;
     var ab = Overlay.mAddressBook;
+    // if there isn't a value in the Full (multi-lined address) then create one
+    // from the existing address, if present
     if (!ab.getCardValue(aCard, "Full" + aPrefix + "Address") &&
         ab.hasAddress(aCard, aPrefix)) {
+      // get the current info
       var address1 = ab.getCardValue(aCard, aPrefix + "Address");
       var address2 = ab.getCardValue(aCard, aPrefix + "Address2");
       var city = ab.getCardValue(aCard, aPrefix + "City");
       var state = ab.getCardValue(aCard, aPrefix + "State");
       var zip = ab.getCardValue(aCard, aPrefix + "ZipCode");
       var country = ab.getCardValue(aCard, aPrefix + "Country");
+      // form the new address
       var newAddress = "";
       if (address1)
         newAddress = address1;
@@ -255,7 +256,7 @@ var ContactConverter = {
           newAddress += "\n"
         newAddress += country;
       }
-      alert(newAddress);
+      // set the attribute and update the card
       ab.setCardValue(aCard, "Full" + aPrefix + "Address", newAddress);
       ab.updateCard(aCard);
     }
@@ -288,59 +289,5 @@ var ContactConverter = {
       toReturn = toReturn || secondEmail == email || secondEmail == email;
 
     return toReturn;
-  },
-  /**
-   * Returns an single string representing a card's address.
-   * XXX deprecated
-   * @param aCard   The card from which the address is taken.
-   * @param aPrefix "Home" or "Work"
-   */
-  encodeAddress: function(aCard, aPrefix) {
-    var ab = Overlay.mAddressBook;
-    ab.checkCard(aCard, "encodeAddress");
-    if (!aPrefix)
-      throw StringBundle.getStr("error") + "aPrefix" +
-            StringBundle.getStr("suppliedTo") + "encodeAddress" +
-            StringBundle.getStr("errorEnd");
-    var str = "";
-    var prefArr = Preferences.mAddressProperties;
-    var hasOne = false;
-    for (var i = 0; i < prefArr.length; i++) {
-        var value = ab.getCardValue(aCard, aPrefix + prefArr[i]);
-        if (value) {
-          str += value + "\n";
-          hasOne = true;
-        }
-        else
-          str += "\n";
-    }
-    if (hasOne)
-      return str;
-  },
-  /**
-   * Sets the home and work addresses for a card
-   * XXX deprecated
-   * @param aCard     The card to which the address is added.
-   * @param aAddress  The address to decode
-   * @param aPrefix   The prefix - "Home" or "Work"
-   */
-  decodeAddress: function(aCard, aAddress, aPrefix) {
-    Overlay.mAddressBook.checkCard(aCard, "decodeAddress");
-    if (!aPrefix)
-      throw StringBundle.getStr("error") + "aPrefix" +
-            StringBundle.getStr("suppliedTo") + "decodeAddress" +
-            StringBundle.getStr("errorEnd");
-    var address = {};
-    if (aAddress)
-      address = aAddress.split("\n");
-    var prefArr = Preferences.mAddressProperties;
-    var ab = Overlay.mAddressBook;
-    // set the value of each item in the preferences array as the value obtained
-    // from Google, or blank if there was no value
-    for (var i = 0, length = prefArr.length; i < length; i++) {
-      var value = address[i] ? address[i] : ""; 
-      ab.setCardValue(aCard, aPrefix + prefArr[i], value);
-    }
-    return aCard;
   }
 }
