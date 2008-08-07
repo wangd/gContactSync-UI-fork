@@ -39,9 +39,9 @@
 <prefwindow id="gContactSyncPrefs"
             title="&title.label;"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="synonyms.js"/>
   <script src="LoginManager.js"/>
   <script src="StringBundle.js"/>
-  <script src="synonyms.js"/>
   <script src="options.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="otherStringBundle"
@@ -104,24 +104,6 @@
       <preference id="syncExtended"
                   name="extensions.gContactSync.syncExtended"
                   type="bool"/>
-      <preference id="address1"
-                  name="extensions.gContactSync.address1"
-                  type="string"/>
-      <preference id="address2"
-                  name="extensions.gContactSync.address2"
-                  type="string"/>
-      <preference id="address3"
-                  name="extensions.gContactSync.address3"
-                  type="string"/>
-      <preference id="address4"
-                  name="extensions.gContactSync.address4"
-                  type="string"/>
-      <preference id="address5"
-                  name="extensions.gContactSync.address5"
-                  type="string"/>
-      <preference id="address6"
-                  name="extensions.gContactSync.address6"
-                  type="string"/>
     </preferences>
 
     <vbox>
@@ -129,7 +111,6 @@
         <tabs id="optionsTabs">
           <tab label="&main.tab;"/>
           <tab label="&extended.tab;"/>
-          <tab label="&address.tab;"/>
         </tabs>
 
         <tabpanels id="optionsPanels" flex="1">
@@ -167,11 +148,7 @@
             <checkbox preference="confirmDuplicates"
                      id="confirmDuplicates"
                      label="&confirmDuplicates.label;"/>
-                   
-            <checkbox preference="overrideCopy"
-                     id="overrideCopy"
-                     label="&overrideCopy.label;"/>
-                   
+
             <checkbox preference="syncExtended"
                      id="syncExtended"
                      label="&syncExtended.label;"/>
@@ -234,45 +211,6 @@
             <hbox>
               <label control="extended10" value="&extended10.value;"/>
               <textbox preference="extended10" id="extended10" maxlength="20"/>
-            </hbox>
-          </vbox>
-          <vbox index="address">
-            <label control="extendedDesc1"
-                   value="&addressDesc1.value;"/>
-            <label control="extendedDesc2"
-                   value="&addressDesc2.value;"/>
-            <label control="extendedDesc3"
-                   value="&addressDesc3.value;"/>
-            <label control="extendedDesc4"
-                   value="&addressDesc4.value;"/>
-            <label control="extendedDesc5"
-                   value="&addressDesc5.value;"/>
-            <label control="extendedDesc6"
-                   value="&addressDesc6.value;"/>
-            <label control="blank" value=""/>
-            <hbox>
-              <label control="address1" value="&address1.value;"/>
-              <textbox preference="address1" id="address1" maxlength="20"/>
-            </hbox>
-            <hbox>
-              <label control="address2" value="&address2.value;"/>
-              <textbox preference="address2" id="address2" maxlength="20"/>
-            </hbox>
-            <hbox>
-              <label control="address3" value="&address3.value;"/>
-              <textbox preference="address3" id="address3" maxlength="20"/>
-            </hbox>
-            <hbox>
-              <label control="address4" value="&address4.value;"/>
-              <textbox preference="address4" id="address4" maxlength="20"/>
-            </hbox>
-            <hbox>
-              <label control="address5" value="&address5.value;"/>
-              <textbox preference="address5" id="address5" maxlength="20"/>
-            </hbox>
-            <hbox>
-              <label control="address6" value="&address6.value;"/>
-              <textbox preference="address6" id="address6" maxlength="20"/>
             </hbox>
           </vbox>
         </tabpanels>

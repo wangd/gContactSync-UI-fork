@@ -47,7 +47,6 @@
   <script src="AbListener.js"/>
   <script src="Group.js"/>
   <script src="GContact.js"/>
-  <script src="AbCard.js"/>
   <script src="MailList.js"/>
   <script src="Pref.js"/>
   <script src="FileIO.js"/>

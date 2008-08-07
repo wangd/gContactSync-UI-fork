@@ -48,7 +48,6 @@ var Preferences = {
                .getBranch("extensions.gContactSync.")
                .QueryInterface(Ci.nsIPrefBranch2),
   mExtendedProperties: [],
-  mAddressProperties: [],
   // different types of preferences (bool, int, and char)
   mTypes: {
     BOOL: "bool",
@@ -144,10 +143,5 @@ var Preferences = {
         this.mExtendedProperties.push(this.getPref(this.mSyncBranch,
                                                    "extended" + i,
                                                    this.mTypes.CHAR));
-    this.mAddressProperties = [];
-    for (var i = 1; i <= 6; i++)
-        this.mAddressProperties.push(this.getPref(this.mSyncBranch,
-                                                  "address" + i,
-                                                  this.mTypes.CHAR));
   }
 };

@@ -126,10 +126,8 @@ var Sync = {
   },
   confirmFirst: function() {
     Overlay.setStatusBarText(StringBundle.getStr("initialSetup"));
-    if(confirm(StringBundle.getStr("confirmFirstSync"))) {
-      this.mFirstSync = true;
-      this.begin();
-    }
+    this.mFirstSync = true;
+    this.begin();
   },
   /**
    * Sync.sync

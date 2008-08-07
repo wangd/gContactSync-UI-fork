@@ -108,7 +108,7 @@ var Overlay = {
     if (gdata.isAuthValid()) {
       // get the Address Book
       this.mAddressBook = new AddressBook(Preferences.mSyncPrefs.addressBookName.value);
-
+      // override the display card view pane
       originalDisplayCardViewPane = DisplayCardViewPane;
       DisplayCardViewPane = this.myDisplayCardViewPane;
       AbListener.add(); // add the address book listener
@@ -408,7 +408,10 @@ var Overlay = {
     var otherVbox = document.createElement("vbox");
     otherVbox.setAttribute("flex", "1");
     cvData.cvOtherAddress = Overlay.makeDescElement("OtherAddress", "CardViewText");
-    cvData.cvOtherAddress.setAttribute("style", "white-space: pre-wrap;");
+    if (Cc["@mozilla.org/abmanager;1"])
+      cvData.cvOtherAddress.setAttribute("style", "white-space: pre-wrap;");
+    else
+      cvData.cvOtherAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
     cvData.cvbOtherMapItBox = document.createElement("vbox");
     cvData.cvbOtherMapItBox.setAttribute("id", "cvbOtherMapItBox");
     cvData.cvbOtherMapItBox.setAttribute("pack", "end");
@@ -429,7 +432,10 @@ var Overlay = {
     var FullHomeVbox = document.createElement("vbox");
     FullHomeVbox.setAttribute("flex", "1");
     cvData.cvFullHomeAddress = Overlay.makeDescElement("FullHomeAddress", "CardViewText");
-    cvData.cvFullHomeAddress.setAttribute("style", "white-space: pre-wrap;");
+    if (Cc["@mozilla.org/abmanager;1"])
+      cvData.cvFullHomeAddress.setAttribute("style", "white-space: pre-wrap;");
+    else
+      cvData.cvFullHomeAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
     cvData.cvbFullHomeMapItBox = document.createElement("vbox");
     cvData.cvbFullHomeMapItBox.setAttribute("id", "cvbFullHomeMapItBox");
     cvData.cvbFullHomeMapItBox.setAttribute("pack", "end");
@@ -454,7 +460,10 @@ var Overlay = {
     var FullWorkVbox = document.createElement("vbox");
     FullWorkVbox.setAttribute("flex", "1");
     cvData.cvFullWorkAddress = Overlay.makeDescElement("FullWorkAddress", "CardViewText");
-    cvData.cvFullWorkAddress.setAttribute("style", "white-space: pre-wrap;");
+    if (Cc["@mozilla.org/abmanager;1"])
+      cvData.cvFullWorkAddress.setAttribute("style", "white-space: pre-wrap;");
+    else
+      cvData.cvFullWorkAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
     cvData.cvbFullWorkMapItBox = document.createElement("vbox");
     cvData.cvbFullWorkMapItBox.setAttribute("id", "cvbFullWorkMapItBox");
     cvData.cvbFullWorkMapItBox.setAttribute("pack", "end");
