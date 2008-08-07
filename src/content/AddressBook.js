@@ -242,7 +242,18 @@ AddressBook.prototype = {
     }
     return obj;
   },
+  /**
+   * AddressBook.getListByDesc
+   * Finds and returns the first Mail List that matches the given description in
+   * this address book.
+   * @param aDescription The description to search for.  If null then this
+   *                     function returns nothing.
+   * @return A new MailList object containing a list that matches the
+   *         description or nothing if the list wasn't found.
+   */
   getListByDesc: function(aDescription) {
+    if (!aDescription)
+      return;
     // same in Thunderbird 2 and 3
     var iter = this.mDirectory.childNodes;
     while (iter.hasMoreElements()) {
@@ -254,9 +265,20 @@ AddressBook.prototype = {
       }
     }
   },
+  /**
+   * AddressBook.addList
+   * Creates a new mail list, adds it to the address book, and returns a
+   * MailList object containing the list.
+   * @param aName        The new name for the mail list.
+   * @param aDescription The description of the mail list.
+   * @return A new MailList object containing the newly-made Mail List with the
+   *         given name and description.
+   */
   addList: function(aName, aDescription) {
     if (!aName)
       throw "Error - aName sent to addList is invalid";
+    if (!aDescription)
+      throw "Error - aDescription sent to addList is invalid";
     var list = Cc["@mozilla.org/addressbook/directoryproperty;1"]
                 .createInstance(Ci.nsIAbDirectory);
     list.dirName = aName;
@@ -377,15 +399,17 @@ AddressBook.prototype = {
        if (this.isRegularAttribute(aAttrName))
          try { return aCard.getCardValue(aAttrName); }
          catch (e) { LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
-       else
+       else if (aCard instanceof Ci.nsIAbMDBCard)
          return this.getMDBCardValue(aCard, aAttrName);
+       else
+         LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
+                            + aCard);
      }
    },
   /**
    * AddressBook.getCardValue
-   * Sets the value of the specifiec property in the given card.  If the patch
-   * for Bug 413260 isn't applied setting values for unexisting properties will
-   * not set a new property.
+   * Sets the value of the specifiec property in the given card but does not
+   * update the card in the database.
    * @param aCard     The card to get the value from.
    * @param aAttrName The name of the attribute to set.
    * @param aValue    The value to set for the attribute.
@@ -446,8 +470,11 @@ AddressBook.prototype = {
        else if (this.isRegularAttribute(aAttrName))
          try { aCard.setCardValue(aAttrName, aValue); }
          catch (e) { LOGGER.LOG_WARNING("Error in setCardValue: " + e); }
-      else
+      else if (aCard instanceof Ci.nsIAbMDBCard)
          this.setMDBCardValue(aCard, aAttrName, aValue);
+      else
+        LOGGER.LOG_WARNING("Couldn't set the value " + aAttrName + " of the card "
+                           + aCard);
      }
    },
    /**
@@ -491,7 +518,6 @@ AddressBook.prototype = {
    },
   /**
    * AddressBook.hasAddress
-   * XXX move to AbCard.js
    * Returns true if the given card has at least one address-related property
    * for the given type.
    * @param aCard    The card to check.
@@ -510,7 +536,7 @@ AddressBook.prototype = {
   },
   /**
    * AddressBook.makeCard
-   * XXX move to AbCard.js
+   * Creates and returns a new address book card.
    * @return A new instantiation of nsIAbCard.
    */
   makeCard: function() {

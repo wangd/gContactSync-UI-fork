@@ -43,11 +43,14 @@
  * instance of nsIXULTreeBuilderObserver), which is called when the user drops
  * one or more cards.  The code is a modified version of onDrop found in
  * mailnews/addrbook/resources/content/abDragDrop.js
+ * It's purpose is to copy over extra attributes that this extension adds to
+ * address book cards.
  *
  * @param row          The row
  * @param orientation  An integer specifying on/after/before the given row
  */
 function myOnDrop(row, orientation) {
+  alert('on drop');
   var dragSession = dragService.getCurrentSession();
   if (!dragSession)
     return;
@@ -64,6 +67,7 @@ function myOnDrop(row, orientation) {
   var targetURI = targetResource.Value;
   var srcURI = GetSelectedDirectory();
   var toDirectory = GetDirectoryFromURI(targetURI);
+  var ab = new AddressBook(null, targetURI);
   var srcDirectory = GetDirectoryFromURI(srcURI);
   // iterate through each dropped item from the session
   for (var i = 0, dropItems = dragSession.numDropItems; i < dropItems; i++) {
@@ -119,10 +123,8 @@ function myOnDrop(row, orientation) {
     // iterate through each card and copy/move it
     for (var j = 0; j < numrows; j++) {
       var card = cards[j];
-      if (!card) {
-        alert('card is null');
+      if (!card)
         continue;
-      }
       if (card.isMailList) {
         // This check ensures we haven't slipped through by mistake
         if (needToCopyCard && actionIsMoving)
@@ -132,12 +134,15 @@ function myOnDrop(row, orientation) {
         var values = [];
         // put in a try/catch block in case the card can't be QI'd to nsIAbMDBCard
         var isMDBCard = false;
+        // only copy over the extra attributes if this is before Bug 413260 and
+        // if the card is an MDB Card (not an LDAP or different card)
         try {
-          // get the extra attributes of the card if it is an MDB card
-          card.QueryInterface(Ci.nsIAbMDBCard);
-          isMDBCard = true;
-          for (var k = 0; k < attributesLen; k++)
-            values[k] = card.getStringAttribute(attributes[k]);
+          if (!card.getProperty) {
+            card.QueryInterface(Ci.nsIAbMDBCard);  // MDB card was removed in 413260
+            isMDBCard = true;
+            for (var k = 0; k < attributesLen; k++)
+              values[k] = card.getStringAttribute(attributes[k]);
+          }
         }
         catch (e) {
           // ignore the error if the card wasn't an MDB card, otherwise log it
@@ -148,26 +153,28 @@ function myOnDrop(row, orientation) {
         if (actionIsMoving)
           deleteCard(srcDirectory, card);
         var newCard = toDirectory.addCard(card);
-        
-        if (isMDBCard) { // only update it if the original was an MDB card
+        if (isMDBCard) {
           try {
             newCard.QueryInterface(Ci.nsIAbMDBCard);
-            for (var k = 0; k < attributesLen; k++) {
-              var value = values[k] ? values[k] : "";
-              newCard.setStringAttribute(attributes[k], value);
+            if (isMDBCard) {
+              for (var k = 0; k < attributesLen; k++) {
+                var value = values[k] ? values[k] : "";
+                newCard.setStringAttribute(attributes[k], value);
+              }
             }
-            // now update the new card
-            if (newCard.editCardToDatabase) // Thunderbird 2
-              newCard.editCardToDatabase(targetURI);
-            else // Thunderbird 3
-              toDirectory.modifyCard(newCard);
           } catch (e) { LOGGER.LOG_WARNING('copy card error: ' + e); }
         }
+        try {
+          var now = (new Date).getTime()/1000;
+          // now set the new card's last modified date and update it
+          ab.setCardValue(newCard, "LastModifiedDate", now);
+          ab.updateCard(newCard);
+        } catch (e) { alert(e); LOGGER.LOG_WARNING('copy card error: ' + e); }
       }
     }
     var cardsTransferredText;
 
-    // set the status text
+    // set the status bar text
     if (actionIsMoving)
       cardsTransferredText = (numrows == 1 ? gAddressBookBundle.getString("cardMoved")
                                            : gAddressBookBundle.getFormattedString("cardsMoved", [numrows]));

@@ -185,11 +185,10 @@ var Sync = {
         // if the cards are the same...
         if (ab.getCardValue(abCard, "GoogleID") == id) {
           var gCardDate = gContact.getLastModifiedDate();
-          LOGGER.LOG(found + "  -  " + gCardDate);
-          var tbCardDate;
-          tbCardDate = Overlay.mAddressBook.getCardValue(abCard, "LastModifiedDate");
+          var tbCardDate = ab.getCardValue(abCard, "LastModifiedDate");
           if (!tbCardDate)
             tbCardDate = 0;
+          LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
           // TODO add pref to prompt user for each one.
           // If there is a conflict, looks at the updateGoogleInConflicts
           // preference and updates Google if it's true, or Thunderbird if false

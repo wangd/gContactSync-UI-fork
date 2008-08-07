@@ -63,6 +63,10 @@ var Overlay = {
     Overlay.setupButton(); // insert the Sync button
     gdata.contacts.init();
     ContactConverter.init();
+    // override the onDrop method of abDirTreeObserver
+    // so when a card is copied the extra attributes are copied with it
+    if (Preferences.mSyncPrefs.overrideCopy.value)
+      abDirTreeObserver.onDrop = myOnDrop;
     this.checkAuthentication(); // check if the Auth token is valid
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function(e) { Overlay.unload(); }, false);
@@ -104,11 +108,6 @@ var Overlay = {
     if (gdata.isAuthValid()) {
       // get the Address Book
       this.mAddressBook = new AddressBook(Preferences.mSyncPrefs.addressBookName.value);
-      // if this is pre-413260, override the onDrop method of abDirTreeObserver
-      // so when a card is copied the extra attributes are copied with it
-      if (this.mAddressBook && !this.mAddressBook.mBug413260 &&
-          Preferences.mSyncPrefs.overrideCopy.value)
-        abDirTreeObserver.onDrop = myOnDrop;
 
       originalDisplayCardViewPane = DisplayCardViewPane;
       DisplayCardViewPane = this.myDisplayCardViewPane;
@@ -257,6 +256,54 @@ var Overlay = {
         cvData.cvOtherMapIt.setAttribute("url", "");
         cvSetVisible(cvData.cvbOtherMapItBox, false);
       }
+      // setup the OtherAddress MapIt button 
+      if (cvData.cvOtherAddress && cvData.cvOtherAddress.childNodes[0] &&
+          cvData.cvOtherAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvOtherAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":")
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvOtherMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbOtherMapItBox, true);
+      }  
+      else {
+        cvData.cvOtherMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbOtherMapItBox, false);
+      }
+      // setup the HomeAddress MapIt button 
+      if (cvData.cvFullHomeAddress && cvData.cvFullHomeAddress.childNodes[0] &&
+          cvData.cvFullHomeAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvFullHomeAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":")
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvFullHomeMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbFullHomeMapItBox, true);
+      }  
+      else {
+        cvData.cvFullHomeMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbFullHomeMapItBox, false);
+      }
+      // setup the WorkAddress MapIt button 
+      if (cvData.cvFullWorkAddress && cvData.cvFullWorkAddress.childNodes[0] &&
+          cvData.cvFullWorkAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvFullWorkAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":")
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvFullWorkMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbFullWorkMapItBox, true);
+      }  
+      else {
+        cvData.cvWorkMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbWorkMapItBox, false);
+      }
       // Phone section (add OtherNumber and HomeFaxNumber)
       var visible = !cvData.cvhPhone.getAttribute("collapsed");
       visible = Overlay.getVisible(aCard, ["OtherNumber", "HomeFaxNumber"], visible);
@@ -348,7 +395,46 @@ var Overlay = {
     otherHbox.appendChild(otherVbox);
     otherHbox.appendChild(cvData.cvbOtherMapItBox);
     vbox.appendChild(otherHbox);
-  
+    // FullHomeAddress
+    vbox = document.getElementById("cvbHome");
+    var FullHomeHbox = document.createElement("hbox");
+    var FullHomeVbox = document.createElement("vbox");
+    FullHomeVbox.setAttribute("flex", "1");
+    cvData.cvFullHomeAddress = Overlay.makeDescElement("FullHomeAddress", "CardViewText");
+    cvData.cvbFullHomeMapItBox = document.createElement("vbox");
+    cvData.cvbFullHomeMapItBox.setAttribute("id", "cvbFullHomeMapItBox");
+    cvData.cvbFullHomeMapItBox.setAttribute("pack", "end");
+    cvData.cvFullHomeMapIt = document.createElement("button");
+    cvData.cvFullHomeMapIt.setAttribute("label", StringBundle.getStr("getMap"));
+    cvData.cvFullHomeMapIt.setAttribute("url", "");
+    cvData.cvFullHomeMapIt.setAttribute("oncommand", "MapIt('cvFullHomeMapIt');");
+    cvData.cvFullHomeMapIt.setAttribute("tooltip", StringBundle.getStr("getMapTooltip"));
+    cvData.cvFullHomeMapIt.setAttribute("id", "cvFullHomeMapIt");
+    FullHomeVbox.appendChild(cvData.cvFullHomeAddress);
+    cvData.cvbFullHomeMapItBox.appendChild(cvData.cvFullHomeMapIt);
+    FullHomeHbox.appendChild(FullHomeVbox);
+    FullHomeHbox.appendChild(cvData.cvbFullHomeMapItBox);
+    vbox.appendChild(FullHomeHbox);
+    // FullWorkAddress
+    vbox = document.getElementById("cvbWork");
+    var FullWorkHbox = document.createElement("hbox");
+    var FullWorkVbox = document.createElement("vbox");
+    FullWorkVbox.setAttribute("flex", "1");
+    cvData.cvFullWorkAddress = Overlay.makeDescElement("FullWorkAddress", "CardViewText");
+    cvData.cvbFullWorkMapItBox = document.createElement("vbox");
+    cvData.cvbFullWorkMapItBox.setAttribute("id", "cvbFullWorkMapItBox");
+    cvData.cvbFullWorkMapItBox.setAttribute("pack", "end");
+    cvData.cvFullWorkMapIt = document.createElement("button");
+    cvData.cvFullWorkMapIt.setAttribute("label", StringBundle.getStr("getMap"));
+    cvData.cvFullWorkMapIt.setAttribute("url", "");
+    cvData.cvFullWorkMapIt.setAttribute("oncommand", "MapIt('cvFullWorkMapIt');");
+    cvData.cvFullWorkMapIt.setAttribute("tooltip", StringBundle.getStr("getMapTooltip"));
+    cvData.cvFullWorkMapIt.setAttribute("id", "cvFullWorkMapIt");
+    FullWorkVbox.appendChild(cvData.cvFullWorkAddress);
+    cvData.cvbFullWorkMapItBox.appendChild(cvData.cvFullWorkMapIt);
+    FullWorkHbox.appendChild(FullWorkVbox);
+    FullWorkHbox.appendChild(cvData.cvbFullWorkMapItBox);
+    vbox.appendChild(FullWorkHbox);
     // Other Number and HomeFaxNumber
     cvData.cvOtherNumber = Overlay.makeDescElement("OtherNumber", "CardViewText");
     cvData.cvHomeFaxNumber = Overlay.makeDescElement("HomeFaxNumber", "CardViewText");

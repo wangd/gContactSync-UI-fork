@@ -54,7 +54,7 @@ var gdata = {
    */
   makeAuthBody: function(aEmail, aPassword) {
     return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" + aPassword +
-             "&service=cp&source=Josh-gContactSync-0-1a1";
+             "&service=cp&source=Josh-gContactSync-0-1a2";
   },
   // The namespaces used
   namespaces: {
@@ -71,9 +71,8 @@ var gdata = {
   contacts: {
     GET_ALL_URL: "https://www.google.com/m8/feeds/contacts/default/full?" +
                  "max-results=",
-    // XXX add pref?  shouldn't have more than 250 groups
     GROUPS_URL: "https://www.google.com/m8/feeds/groups/default/full?" +
-                "max-results=250",
+                "max-results=1000",
     ADD_GROUP_URL: "https://www.google.com/m8/feeds/groups/default/full",
     ADD_URL: "https://www.google.com/m8/feeds/contacts/default/full",
     requestTypes: {
@@ -83,9 +82,12 @@ var gdata = {
       ADD: "POST",
       DELETE: "DELETE"  // NOTE: should be set to POST and overridden
     },
-    // different types
+    // different "types" of contact elements
     types: {
+      // has a type (#home, #work, #other, etc.) and the value is stored in a
+      // child node
       TYPED_WITH_CHILD: 0,
+      // has a type and the value is stored in an attribute
       TYPED_WITH_ATTR: 1,
       UNTYPED: 2
     },

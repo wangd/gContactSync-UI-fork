@@ -42,7 +42,7 @@ var ContactConverter = {
   mAddedAttributes: [
     "OtherAddress", "ThirdEmail", "FourthEmail", "TalkScreenName",
     "JabberScreenName", "YahooScreenName", "MSNScreenName", "ICQScreenName",
-    "HomeFaxNumber", "OtherNumber"],
+    "HomeFaxNumber", "OtherNumber", "FullHomeAddress", "FullWorkAddress"],
   mInitialized: false,
   init: function() {
     this.GD = gdata.namespaces.GD;
