@@ -11,6 +11,8 @@
 <!ENTITY numbers.box "Additional Numbers">
 <!ENTITY homeFax.label "Home Fax">
 <!ENTITY otherNum.label "Other Number">
-<!ENTITY other.box "Additional Address">
+<!ENTITY address.box "Additional Addresses">
 <!ENTITY otherAddress.label "Other Address">
+<!ENTITY homeAddress.label "Home Address">
+<!ENTITY workAddress.label "Work Address">
 <!ENTITY initialStatus.label "">

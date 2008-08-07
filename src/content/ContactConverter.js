@@ -81,6 +81,8 @@ var ContactConverter = {
       new ConverterElement("PhotoURL", "PhotoURL", 0),
       new ConverterElement("SelfURL", "SelfURL", 0),
       new ConverterElement("EditURL", "EditURL", 0),
+      new ConverterElement("postalAddress", "FullHomeAddress", 0, "home"),
+      new ConverterElement("postalAddress", "FullWorkAddress", 0, "work"),
     ];
     this.mInitialized = true;
   },
@@ -110,6 +112,11 @@ var ContactConverter = {
     var ab = Overlay.mAddressBook;
     ab.checkCard(aCard, "cardToAtomXML");
     ab.mCurrentCard = aCard;
+    // use the address with multiple lines instead of the 6 fields
+    // if the full address doesn't exist, but the card has at least 1 of the
+    // fields convert those to the full address
+    this.fixAddress(aCard, "Home");
+    this.fixAddress(aCard, "Work");
     var arr = this.mConverterArr;
     // set the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
@@ -130,10 +137,12 @@ var ContactConverter = {
       aContact.setExtendedProperty(arr[i], value);
     }
     // set the home and work addresses
+    /*
     var address = this.encodeAddress(aCard, "Home");
     aContact.setValue("postalAddress", 0, "home", address);
     var address = this.encodeAddress(aCard, "Work");
     aContact.setValue("postalAddress", 0, "work", address);
+    */
     // set the groups
     var groups = [];
     for (var i in Sync.mLists) {
@@ -151,7 +160,7 @@ var ContactConverter = {
    * object.
    * @param aContact  
    * @param aCard Optional.  An existing card that can be QueryInterfaced to
-   *              Components.interfaces.nsIAbMDBCard
+   *              Components.interfaces.nsIAbMDBCard if this is before 413260
    * @return    An nsIAbCard of the contact.
    */
   makeCard: function(aContact, aCard) {
@@ -162,10 +171,10 @@ var ContactConverter = {
     var ab = Overlay.mAddressBook;
     var card;
     if (aCard)
-      card = aCard;//this.clearCard(aCard);
+      card = aCard;
     else
       card = ab.addCard(ab.makeCard());
-
+   
     var arr = this.mConverterArr;
     // get the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
@@ -183,8 +192,8 @@ var ContactConverter = {
     }
 
     // get the home and work addresses
-    card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "home"), "Home");
-    card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "work"), "Work");
+    //card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "home"), "Home");
+    //card = this.decodeAddress(card, aContact.getValue("postalAddress", 0, "work"), "Work");
 
     ab.updateCard(card);
     // get the groups after updating the card
@@ -201,6 +210,54 @@ var ContactConverter = {
       // add the card to the list, if necessary
       else if (group)
         list.addCard(card);
+    }
+  },
+  fixAddress: function(aCard, aPrefix) {
+    if (!aCard || !aPrefix)
+      return;
+    var ab = Overlay.mAddressBook;
+    if (!ab.getCardValue(aCard, "Full" + aPrefix + "Address") &&
+        ab.hasAddress(aCard, aPrefix)) {
+      var address1 = ab.getCardValue(aCard, aPrefix + "Address");
+      var address2 = ab.getCardValue(aCard, aPrefix + "Address2");
+      var city = ab.getCardValue(aCard, aPrefix + "City");
+      var state = ab.getCardValue(aCard, aPrefix + "State");
+      var zip = ab.getCardValue(aCard, aPrefix + "ZipCode");
+      var country = ab.getCardValue(aCard, aPrefix + "Country");
+      var newAddress = "";
+      if (address1)
+        newAddress = address1;
+      if (address2)
+        newAddress += "\n" + address2;
+      if (city) {
+        if (newAddress != "")
+          newAddress += "\n";
+        newAddress += city;
+        if (state)
+          newAddress += " " + state;
+        if (zip)
+          newAddress += "  " + zip;
+      }
+      else if (state) {
+        if (newAddress != "")
+          newAddress += "\n";
+        newAddress += state;
+        if (zip)
+          newAddress += "  " + zip;
+      }
+      else if (zip) {
+        if (newAddress != "")
+          newAddress += "\n";
+        newAddress += zip;
+      }
+      if (country) {
+        if (newAddress != "")
+          newAddress += "\n"
+        newAddress += country;
+      }
+      alert(newAddress);
+      ab.setCardValue(aCard, "Full" + aPrefix + "Address", newAddress);
+      ab.updateCard(aCard);
     }
   },
   /**
@@ -230,16 +287,11 @@ var ContactConverter = {
     if (secondEmail)
       toReturn = toReturn || secondEmail == email || secondEmail == email;
 
-    //if it doesn't have e-mail address, figure out if the names are the same
-    if (aCard.displayName && aContact.xml.getElementsByTagName('title')[0] 
-        && aContact.xml.getElementsByTagName('title')[0].childNodes[0])
-      toReturn = toReturn || aCard.displayName ==
-                 aContact.xml.getElementsByTagName('title')[0].childNodes[0].nodeValue;
     return toReturn;
   },
   /**
    * Returns an single string representing a card's address.
-   *
+   * XXX deprecated
    * @param aCard   The card from which the address is taken.
    * @param aPrefix "Home" or "Work"
    */
@@ -267,7 +319,7 @@ var ContactConverter = {
   },
   /**
    * Sets the home and work addresses for a card
-   *
+   * XXX deprecated
    * @param aCard     The card to which the address is added.
    * @param aAddress  The address to decode
    * @param aPrefix   The prefix - "Home" or "Work"

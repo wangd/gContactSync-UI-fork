@@ -50,7 +50,6 @@
  * @param orientation  An integer specifying on/after/before the given row
  */
 function myOnDrop(row, orientation) {
-  alert('on drop');
   var dragSession = dragService.getCurrentSession();
   if (!dragSession)
     return;
@@ -169,7 +168,7 @@ function myOnDrop(row, orientation) {
           // now set the new card's last modified date and update it
           ab.setCardValue(newCard, "LastModifiedDate", now);
           ab.updateCard(newCard);
-        } catch (e) { alert(e); LOGGER.LOG_WARNING('copy card error: ' + e); }
+        } catch (e) { LOGGER.LOG_WARNING('copy card error: ' + e); }
       }
     }
     var cardsTransferredText;

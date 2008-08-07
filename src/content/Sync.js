@@ -189,7 +189,6 @@ var Sync = {
           if (!tbCardDate)
             tbCardDate = 0;
           LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
-          // TODO add pref to prompt user for each one.
           // If there is a conflict, looks at the updateGoogleInConflicts
           // preference and updates Google if it's true, or Thunderbird if false
           if (gCardDate > lastSync && tbCardDate > lastSync/1000) {
@@ -290,7 +289,6 @@ var Sync = {
   /**
    * Deletes all cards from Google included in the this.mContactsToDelete global array one
    * at a time to avoid timing conflicts. Calls syncHelperAddCards when done
-   * XXX switch to batch processing for deletion
    */
   processDeleteQueue: function() {
     if (!this.mContactsToDelete || this.mContactsToDelete.length == 0) {

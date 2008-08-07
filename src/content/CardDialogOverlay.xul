@@ -118,8 +118,26 @@
            </hbox>
          </hbox>
        </groupbox>
+     </vbox>
+   </vbox>
+   <vbox index="gcontactsync" flex="1">
+     <vbox id="gcontactSyncFields" class="alignBoxWithFieldset">
        <groupbox flex="1">
-         <caption label="&other.box;"/>
+         <caption label="&address.box;"/>
+         <hbox>
+           <spacer flex="1"/>
+           <label control="fullHomeAddress" value="&homeAddress.label;" class="CardEditLabel"/>
+           <hbox class="CardEditWidth">
+             <textbox id="FullHomeAddress" multiline="true" wrap="virtual" flex="1"/>
+           </hbox>
+         </hbox>
+         <hbox>
+           <spacer flex="1"/>
+           <label control="fullWorkAddress" value="&workAddress.label;" class="CardEditLabel"/>
+           <hbox class="CardEditWidth">
+             <textbox id="FullWorkAddress" multiline="true" wrap="virtual" flex="1"/>
+           </hbox>
+         </hbox>
          <hbox>
            <spacer flex="1"/>
            <label control="otherAddress" value="&otherAddress.label;" class="CardEditLabel"/>

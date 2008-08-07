@@ -47,6 +47,8 @@ var gAttributes = [
   "OtherAddress",
   "HomeFaxNumber",
   "OtherNumber",
+  "FullHomeAddress",
+  "FullWorkAddress"
 ];
 const Ci = Components.interfaces;
 var abVersion;
@@ -87,7 +89,11 @@ var CardDialogOverlay = {
       var myTab = document.createElementNS(this.mNamespace, "tab");
       myTab.setAttribute("label", "gContactSync");
       myTab.setAttribute("id", "gContactSyncTab");
+      var myAddressTab = document.createElementNS(this.mNamespace, "tab");
+      myAddressTab.setAttribute("label", "gContactSync 2"); //StringBundle.getStr("AddressTab"));
+      myAddressTab.setAttribute("id", "gContactSyncTab2");
       document.getElementById("abTabs").appendChild(myTab);
+      document.getElementById("abTabs").appendChild(myAddressTab);
       // get the new card values
       myGetCardValues(gEditCard.card, document);
     } catch(e) {}
@@ -124,14 +130,16 @@ function myGetCardValues(aCard, aDoc) {
  */
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   for (var i in gAttributes) {
-    var value;
-    if (aDoc.getElementById(gAttributes[i])) {
-      value = aDoc.getElementById(gAttributes[i]).value;
-      if (aCard.getProperty) // post Bug 413260
-        aCard.setProperty(gAttributes[i], value);
-      else // pre Bug 413260
-        aCard.setStringAttribute(gAttributes[i], value);
-    }
+    try {
+      var value;
+      if (aDoc.getElementById(gAttributes[i])) {
+        value = aDoc.getElementById(gAttributes[i]).value;
+        if (aCard.getProperty) // post Bug 413260
+          aCard.setProperty(gAttributes[i], value);
+        else // pre Bug 413260
+          aCard.setStringAttribute(gAttributes[i], value);
+      }
+    } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues: " + e); }
   }
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }
