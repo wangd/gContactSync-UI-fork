@@ -272,26 +272,38 @@ var ContactConverter = {
    * @return True if the contacts are the same.
    */
   compareContacts: function(aCard, aContact) {
-    if (!aContact)
+    if (!aContact || !aContact.xml || !aContact.xml.getElementsByTagNameNS)
       return false;
     var ab = Overlay.mAddressBook;
     ab.checkCard(aCard, "compareContacts");
-    var aEmail = aContact.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, 'email');
-    var email = aEmail[0] ? aEmail[0].getAttribute("address") : null;
-    var email2 = aEmail[1] ? aEmail[1].getAttribute("address") : null;
+    // get all of the address from the google contact
+    var googleAddresses = aContact.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, 'email');
+    
+    // and from the Thunderbird card
+    var tbAddresses = {};
     var primaryEmail = ab.getCardValue(aCard, "PrimaryEmail");
+    if (primaryEmail)
+      tbAddresses[primaryEmail] = true;
     var secondEmail = ab.getCardValue(aCard, "SecondEmail");
-    var toReturn = false;
-
-    if (primaryEmail) {
-      var toReturn = primaryEmail == email || primaryEmail == email;
-      if (secondEmail)
-        toReturn = toReturn || secondEmail == email || secondEmail == email;
-    }
-    //if it has a second e-mail...
     if (secondEmail)
-      toReturn = toReturn || secondEmail == email || secondEmail == email;
-
+      tbAddresses[secondEmail] = true;
+    var thirdEmail = ab.getCardValue(aCard, "ThirdEmail");
+    if (thirdEmail)
+      tbAddresses[thirdEmail] = true;
+    var fourthEmail = ab.getCardValue(aCard, "FourthEmail");
+    if (fourthEmail)
+      tbAddresses[fourthEmail] = true;
+    
+    // then check for duplicate e-mail addresses
+    var toReturn = false;
+    for (var i = 0, length = googleAddresses.length; i < length; i++) {
+      var emailAddress;
+      if (googleAddresses[i] && googleAddresses[i].getAttribute)
+        emailAddress = googleAddresses[i].getAttribute("address");
+      if (!emailAddress)
+        continue;
+      toReturn = toReturn || tbAddresses[emailAddress];
+    }
     return toReturn;
   }
 }

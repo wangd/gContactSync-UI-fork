@@ -305,7 +305,8 @@ var Sync = {
   
     var httpReq = new GHttpRequest("delete", gdata.mAuthToken, editURL, null);
     httpReq.mOnSuccess = ["Sync.processDeleteQueue();"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting contact', " +
+                          "httpReq.responseText);",
                         "Sync.processDeleteQueue();"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
@@ -371,7 +372,8 @@ var Sync = {
         "Overlay.mAddressBook.updateCard(card);",
         "Sync.processAddQueue();"];
       httpReq.mOnCreated = onCreated;
-      httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+      httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while adding contact', " +
+                          "httpReq.responseText);",
                           "Sync.processAddQueue();"];
       httpReq.mOnOffline = this.mOfflineCommand;
       httpReq.send();
@@ -398,7 +400,8 @@ var Sync = {
     LOGGER.VERBOSE_LOG("\n" + string + "\n");
     var httpReq = new GHttpRequest("update", gdata.mAuthToken, editURL, string)
     httpReq.mOnSuccess = ["Sync.processUpdateQueue();"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating contact', " +
+                          "httpReq.responseText);",
                         "Sync.processUpdateQueue();"],
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
@@ -470,7 +473,7 @@ var Sync = {
             }
           }
         }
-        catch(e) { LOGGER.LOG_ERROR(e); }
+        catch(e) { LOGGER.LOG_ERROR("Error while syncing groups: " + e); }
       }
       LOGGER.VERBOSE_LOG("looking for unmatched mailing lists");
       for (var i in this.mLists) {
@@ -502,7 +505,8 @@ var Sync = {
     LOGGER.LOG("Deleting group: " + group.getTitle());
     var httpReq = new GHttpRequest("delete", gdata.mAuthToken, group.getEditURL());
     httpReq.mOnSuccess = ["Sync.deleteGroups();"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting group', " +
+                          "httpReq.responseText);",
                         "Sync.deleteGroups();"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
@@ -520,7 +524,8 @@ var Sync = {
     LOGGER.VERBOSE_LOG(body);
     var httpReq = new GHttpRequest("addGroup", gdata.mAuthToken, null, body);
     httpReq.mOnCreated = ["Sync.addGroups2(httpReq);"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while adding group', " +
+                          "httpReq.responseText);",
                         "Sync.mGroupsToAddURI.shift()",
                         "Sync.addGroups();"];
     httpReq.mOnOffline = this.mOfflineCommand;
@@ -544,7 +549,8 @@ var Sync = {
       LOGGER.LOG("beginning sync");
       var httpReq = new GHttpRequest("getAll", gdata.mAuthToken, null, null);
       httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
-      httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+      httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating group', " +
+                          "httpReq.responseText);",
                           "Sync.finish(httpReq.responseText);"];
       httpReq.mOnOffline = this.mOfflineCommand;
       httpReq.send();
@@ -560,7 +566,6 @@ var Sync = {
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
                         "Sync.updateGroups();"];
     httpReq.mOnOffline = this.mOfflineCommand;
-    //httpReq.addHeaderItem("Content-Length", group);
     httpReq.send();
   },
   /**
