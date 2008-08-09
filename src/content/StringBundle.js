@@ -44,12 +44,12 @@
 var StringBundle = {
   mBundles: {},
   init: function() {
-    this.mBundles.mStrings = document.getElementById("otherStringBundle")
+    this.mBundles.mStrings = document.getElementById("otherStringBundle");
   },
   /**
    * StringBundle.getStr
    * Searches every string bundle until a string is found with the given name.
-   * @param aName  The name of the string to search for.
+   * @param aName The name of the string to search for.
    */
   getStr: function(aName) {
     for (var i in this.mBundles) {
@@ -59,7 +59,7 @@ var StringBundle = {
                                // isn't in it skip to the next
     }
     // if it gets this far the string wasn't found...
-    //throw "Error - could not get the string named: " + aName;
-    alert("Could not get the string named: " + aName + "\n" + arguments.caller);
+    alert("Could not get the string named: " + aName);
+    return "";
   }
 };

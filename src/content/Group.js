@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 /**
  * Group
-
+ * A class for storing and editing the XML feed for a Group in Google Contacts.
  * @class
  * @constructor
  */
@@ -63,9 +63,12 @@ function Group(aXml, aTitle) {
     this.mTitle = this.getTitle();
   }
 }
-
 Group.prototype = {
-  mListURIName: "ListURI",
+  /**
+   * Group.setTitle
+   * Sets the title of this Group.
+   * @param aTitle The new title for this Group.
+   */
   setTitle: function(aTitle) {
     if (!aTitle)
       throw "Error - invalid title passed to Group.setTitle";
@@ -87,6 +90,11 @@ Group.prototype = {
       this.xml.appendChild(title);
     }
   },
+  /**
+   * Group.getEditURL
+   * Returns the title of this Group.
+   * @return the title of this Group.
+   */
   getTitle: function() {
     if (this.mTitle)
       return this.mTitle;
@@ -95,6 +103,11 @@ Group.prototype = {
     if (title && title.childNodes[0])
       return title.childNodes[0].nodeValue;
   },
+  /**
+   * Group.getEditURL
+   * Returns the URL used to edit this Group.
+   * @return the URL used to edit this Group.
+   */
   getEditURL: function() {
     var atom = gdata.namespaces.ATOM;
     var arr = this.xml.getElementsByTagNameNS(atom.url, "link");
@@ -102,26 +115,33 @@ Group.prototype = {
       if (arr[i].getAttribute("rel") == gdata.contacts.links.EditURL)
         return arr[i].getAttribute("href");
   },
+  /**
+   * Group.getID
+   * Retrieves and returns the ID of this Group.
+   * @return The ID of this Group.
+   */
   getID: function() {
     var atom = gdata.namespaces.ATOM;
     var id = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
     if (id && id.childNodes[0])
       return id.childNodes[0].nodeValue;
   },
-  getListURI: function() {
-    return this.getExtendedProperty(this.mListURIName);
-  },
-  setListURI: function(aURI) {
-    if (!aURI)
-      throw "Error - bad URI given to Group.setListURI";
-    this.removeExtendedProperties();
-    this.setExtendedProperty(this.mListURIName, aURI);
-  },
+  /**
+   * Group.removeExtendedProperties
+   * Removes all of the extended properties from this Group.
+   */
   removeExtendedProperties: function() {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = arr.length - 1; i > -1 ; i--)
       this.xml.removeChild(arr[i]);
   },
+  /**
+   * Group.getExtendedProperty
+   * Returns the extended property of this group's XML whose value for the
+   * name attribute matches aName, if any.
+   * @param aName The value of the name attribute to find.
+   * @return The value of an extended property whose name is the value of aName.
+   */
   getExtendedProperty: function(aName) {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = 0, length = arr.length; i < length; i++)
@@ -129,8 +149,10 @@ Group.prototype = {
         return arr[i].getAttribute("value");
   },
   /**
-   * Gets the last modified date from the group's XML feed in milliseconds from 1970
-   * @return The last modified date of the group in milliseconds from 1970
+   * Group.getLastModifiedDate
+   * Gets the last modified date from the group's XML feed in milliseconds since
+   * 1970
+   * @return The last modified date of the group in milliseconds since 1970
    */
   getLastModifiedDate: function() {
     try {
@@ -149,8 +171,10 @@ Group.prototype = {
     }
   },
   /**
+   * Group.setExtendedProperty
    * Sets an extended property with the given name and value if there are less
-   * than 10 existing.  Logs a warning if there are already 10 or more.
+   * than 10 existing.  Logs a warning if there are already 10 or more and does
+   * not add the property.
    * @param aName  The name of the property.
    * @param aValue The value of the property.
    */
@@ -168,4 +192,4 @@ Group.prototype = {
       this.xml.appendChild(property);
     }
   }
-}
+};

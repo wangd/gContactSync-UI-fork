@@ -302,6 +302,7 @@ GContact.prototype = {
     }
   },
   /**
+   * GContact.getLastModifiedDate
    * Gets the last modified date from an contacts's XML feed in milliseconds from 1970
    * @return The last modified date of the entry in milliseconds from 1970
    */
@@ -420,6 +421,8 @@ GContact.prototype = {
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
     var groups = {};
+    // iterate through each group and add the group as a new property of the
+    // groups object with the ID as the name of the property.
     for (var i = 0, length = arr.length; i < length; i++) {
       var id = arr[i].getAttribute("href");
       var group = Sync.mGroups[id];
@@ -428,44 +431,52 @@ GContact.prototype = {
       else
         LOGGER.LOG_WARNING("Unable to find group: " + id);
     }
+    // return the object with the groups this contact belongs to
     return groups;
   },
+  /**
+   * GContact.clearGroups
+   * Removes all groups from this contact.
+   */
   clearGroups: function() {
     var groupInfo = gdata.contacts.groupMembershipInfo;
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
+    // iterate through every group element and remove it from the XML
     for (var i = 0, length = arr.length; i < length; i++) {
       try {
         this.xml.removeChild(arr[i]);
       }
       catch(e) {
-        LOGGER.LOG_WARNING("Error while trying to clear groups: " + e + "\n" + arr[i]);
+        LOGGER.LOG_WARNING("Error while trying to clear group: " + arr[i], e);
       }
     }
     this.mGroups = {};
   },
   /**
    * GContact.setGroups
-   * Sets the groups of that this contact is in based on the name(s).  If a
-   * group does not exist, makes it and adds the contact to it.
-   * @param aGroups An array of the names of the groups to which the contact
+   * Sets the groups of that this contact is in based on the array of IDs.
+   * @param aGroups An array of the IDs of the groups to which the contact
    *                should belong.
    */
   setGroups: function(aGroups) {
     this.clearGroups(); // clear existing groups
     if (!aGroups)
       return;
-    // check if the contact needs to be added to one or more groups
+    // make sure the group 
     for (var i = 0, length = aGroups.length; i < length; i++) {
       var id = aGroups[i];
-      if (!id || !id.indexOf || id.indexOf("www.google.com/m8/feeds/groups") == -1)
+      // if the ID isn't valid log a warning and go to the next ID
+      if (!id || !id.indexOf || id.indexOf("www.google.com/m8/feeds/groups") == -1) {
+        LOGGER.LOG_WARNING("Invalid id in aGroups: " + id);
         continue;
+      }
       this.addToGroup(id);
     }
   },
   /**
    * GContact.removeFromGroup
-   * Removes the contact from the given group.
+   * Removes the contact from the given group element.
    * @param aGroup The group from which the contact should be removed.
    */
   removeFromGroup: function(aGroup) {
@@ -530,6 +541,7 @@ GContact.prototype = {
     return str == aType; // return true if the end is equal to aType
   },
   /**
+   * GContact.encodeString
    * Encodes a string replacing invalid characters.
    * @param str The string to encode
    */
@@ -540,6 +552,7 @@ GContact.prototype = {
   	return "";
   },
   /**
+   * GContact.decodeString
    * Decodes a string, replacing the representation of characters to the actual
    * characters themselves.
    * @param str The string to decode

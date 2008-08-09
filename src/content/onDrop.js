@@ -152,7 +152,7 @@ function myOnDrop(row, orientation) {
         if (actionIsMoving)
           deleteCard(srcDirectory, card);
         var newCard = toDirectory.addCard(card);
-        if (isMDBCard) {
+        if (isMDBCard) { // copy the attributes if this is an MDB card
           try {
             newCard.QueryInterface(Ci.nsIAbMDBCard);
             if (isMDBCard) {

@@ -2,11 +2,9 @@
 <!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
 <!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
 <!ENTITY abName.value "Name of the Address Book">
-<!ENTITY abName2.value "Re-synchronize contacts before changing this">
-<!ENTITY updateGoogle.label "Always update Gmail™ during conflicts">
+<!ENTITY updateGoogle.label "Always update Google™ during conflicts">
 <!ENTITY confirmDuplicates.label "Confirm before deleting duplicates">
-<!ENTITY overrideCopy.label "Copy extra attributes when copying/moving cards">
-<!ENTITY syncExtended.label "Sync Extended Properties (see next tab)">
+<!ENTITY syncExtended.label "Sync Extended Properties (see the next tab)">
 <!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY removeLogin.label "Remove Authentiation Token">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->

@@ -55,8 +55,8 @@ HttpRequest.prototype = {
   },
   /**
    * HttpRequest.addContentOverride
-   * Adds a content override to the header in case a firewall blocks
-   * DELETE or PUT requests.
+   * Adds a content override to the header in case a firewall blocks DELETE or
+   * PUT requests.
    * @param aType   The type of override.  Must be DELETE or PUT.
    */
   addContentOverride: function(aType) {
@@ -70,7 +70,7 @@ HttpRequest.prototype = {
         this.addHeaderItem("X-HTTP-Method-Override", "PUT");
         break;
       default:
-        throw NS_ERROR_ILLEGAL_VALUE;
+        throw "Error - type sent to addContentOverride must be DELETE or PUT";
     }
   },
   /**
@@ -90,7 +90,8 @@ HttpRequest.prototype = {
   /**
    * HttpRequest.send
    * Sends the HTTP Request with the information stored in the object.
-   * Note: Setup everything first.
+   * Note: Setup everything, including the callbacks for different statuses
+   *       including mOnSuccess, mOnError, mOnFail, and mOnCreated first.
    */
   send: function() {
     this.mHttpRequest.open(this.mType, this.mUrl, true); // open the request

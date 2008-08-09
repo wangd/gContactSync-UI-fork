@@ -39,7 +39,6 @@
  * contacts portion of the protocol.
  * http://code.google.com/apis/contacts/
  * @class
- * @requires Namespace.js
  */
 var gdata = {
   AUTH_URL: "https://www.google.com/accounts/ClientLogin",
@@ -53,6 +52,8 @@ var gdata = {
    * @param aPassword  The user's password
    */
   makeAuthBody: function(aEmail, aPassword) {
+    // NOTE: leave accountType as HOSTED_OR_GOOGLE or Google Apps for your
+    // domain accounts won't work
     return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" + aPassword +
              "&service=cp&source=Josh-gContactSync-0-1b1";
   },
@@ -95,6 +96,8 @@ var gdata = {
     /**
      * gdata.contacts.init
      * Initializes the values of the tagnames with an GElement object containing
+     * information about how an Atom/XML representation of a contact from Google
+     * is stored.
      */
     init: function() {
       var untyped = gdata.contacts.types.UNTYPED;

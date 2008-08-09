@@ -33,6 +33,19 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+/**
+ * ConverterElement
+ * Creates a new object used to convert data between a contact's XML
+ * representation and an address book card.
+ * @param aElementName The name of the GElement, in gdata.contacts to use.
+ * @param aTbName      The name of the attribute in Thunderbird.
+ * @param aIndex       The index of the element to retrieve, if non-zero.
+ * @param aType        The "type" of data as shown in the 'rel' attribute in the
+ *                     XML feed after the pound sign (#).
+ *                     Examples include 'home', 'work', and 'other'
+ * @constructor
+ * @class
+ */
 function ConverterElement(aElementName, aTbName, aIndex, aType) {
   this.elementName = aElementName;
   this.tbName = aTbName;

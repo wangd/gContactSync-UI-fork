@@ -117,8 +117,6 @@
           <vbox index="main">
             <label control="abNameLbl"
                    value="&abName.value;"/>
-            <label control="abNameLbl2"
-                   value="&abName2.value;"/>
             <textbox preference="addressBookName"
                      id="abName"
                      maxLength="25"/>
