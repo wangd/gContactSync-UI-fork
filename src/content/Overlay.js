@@ -115,7 +115,7 @@ var Overlay = {
       Sync.schedule(Preferences.mSyncPrefs.initialDelay.value);  
       return;
     }
-    this.setStatusBarText(StringBundle.getStr("notAuthString"));
+    this.setStatusBarText(StringBundle.getStr("notAuth"));
     this.promptLogin();
   },
   /**

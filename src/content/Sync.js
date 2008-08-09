@@ -84,12 +84,12 @@ var Sync = {
     Overlay.mAddressBook.mDirectory = Overlay.mAddressBook.getAbByName(Preferences
                                              .mSyncPrefs.addressBookName.value);
     if (!Overlay.mAddressBook.mDirectory)
-      throw StringBundle.getStr("couldntMakeAb") + StringBundle.getStr("pleaseReport");
+      throw "Unable to create Address Book" + StringBundle.getStr("pleaseReport");
 
     Overlay.setStatusBarText(StringBundle.getStr("syncing"));
     if (FileIO.mLogFile && FileIO.mLogFile.exists())
       FileIO.mLogFile.remove(false); // delete the old log file
-    LOGGER.LOG(StringBundle.getStr("startSync") + " " + Date() + "\n");
+    LOGGER.LOG("Starting Synchronization at: " + Date() + "\n");
 
     var httpReq = new GHttpRequest("getGroups", gdata.mAuthToken, null, null);
     httpReq.mOnSuccess = ["Sync.syncGroups(httpReq.responseXML);"],
@@ -109,13 +109,13 @@ var Sync = {
    */
   finish: function(aError, aStartOver) {
     if (aError)
-      LOGGER.LOG_ERROR(StringBundle.getStr("errDuringSync") + "\n" + aError);
+      LOGGER.LOG_ERROR("Error during sync", aError);
     if (LOGGER.mErrorCount > 0)
       Overlay.setStatusBarText(StringBundle.getStr("errDuringSync"));
     else {
       FileIO.writeLastSync();
       Overlay.writeTimeToStatusBar();
-      LOGGER.LOG("\n" + StringBundle.getStr("done") + " " + Date());
+      LOGGER.LOG("Finished Synchronization at: " + Date());
     }
     Overlay.mAddressBook.mCurrentCard = {};
     this.mSynced = true;
@@ -133,13 +133,11 @@ var Sync = {
    * Sync.sync
    * Synchronizes the Address Book with the contacts obtained from Google.
    * @param aAtom The contacts from Google in an Atom.
-   * XXX rename
    */
   sync: function(aAtom) {
     if (Preferences.mSyncPrefs.verboseLog.value) {
       var string = (new XMLSerializer()).serializeToString(aAtom);
-      LOGGER.LOG(string + "\n"); // VERBOSE_LOG checks the pref, but serializing isn't
-                          // always necessary.
+      LOGGER.LOG(string + "\n");
     }
     // have to update the lists or TB 2 won't work properly
     this.mLists = Overlay.mAddressBook.getAllLists();
@@ -157,7 +155,7 @@ var Sync = {
     if ((newMax = gdata.contacts.getNumberOfContacts(aAtom)) >= maxContacts.value) {
       Preferences.setPref(Preferences.mSyncBranch, maxContacts.label,
                           maxContacts.type, newMax + 50);
-      this.finish(StringBundle.getStr("maxContacts"), true);
+      this.finish("Max Contacts too low...resynchronizing", true);
       return;
     }
 
@@ -166,15 +164,16 @@ var Sync = {
     var gContact;
 
      // get the strings outside of the loop so they are only found once
-    var found = StringBundle.getStr("found");
-    var bothChanged = StringBundle.getStr("bothChanged");
-    var bothGoogle = StringBundle.getStr("bothGoogle");
-    var bothTB = StringBundle.getStr("bothThunderbird");
-
+    var found = " * Found a match Last Modified Dates:";
+    var bothChanged = " * Conflict detected: the contact has been updated in " +
+                      "both Google and Thunderbird";
+    var bothGoogle = " * The contact from Google will be updated";
+    var bothTB = " * The card from Thunderbird will be updated";
+    LOGGER.LOG("***Finding and matching contacts from Google and Thunderbird***");
     for (var i = 0, length = googleContacts.length; i < length; i++) {
       gContact = new GContact(googleContacts[i]);
-      var id = gContact.getValue("id")
-      LOGGER.LOG(gContact.getName());
+      var id = gContact.getValue("id");
+      LOGGER.LOG("-" + gContact.getName());
       // a new array with only the unmatched cards                 
       var abCards2 = [];
       for (var j = 0, length2 = abCards.length; j < length2; j++) {
@@ -205,24 +204,26 @@ var Sync = {
           }
           // if the card from google is newer
           else if (gCardDate > lastSync) {
-            LOGGER.LOG(StringBundle.getStr("gNewer"));
+            LOGGER.LOG(" * The contact from Google is newer...Updating the" +
+                       " card from Thunderbird");
             ContactConverter.makeCard(gContact, abCard);
           }
           // if the tbcard is newer
           else if (tbCardDate > lastSync/1000) {
-            LOGGER.LOG(StringBundle.getStr("tbNewer"));
+            LOGGER.LOG(" * The card from Thunderbird is newer...Updating the" +
+                       " contact from Google");
             var toUpdate = {};
             toUpdate.gContact = gContact;
             toUpdate.abCard = abCard;
             this.mContactsToUpdate.push(toUpdate);
           }
           else
-            LOGGER.LOG(StringBundle.getStr("noChange"));
+            LOGGER.LOG(" * Neither card has changed");
           gContact.matched = true;
         }
         // duplicate...
         else if (ContactConverter.compareContacts(abCard, gContact)) {
-          LOGGER.LOG(StringBundle.getStr("duplicate"));
+          LOGGER.LOG(" * Duplicate detected");
           // default to deleting duplicates, but if the user wants to confirm
           // each duplicate ask for confirmation
           if (!Preferences.mSyncPrefs.confirmDuplicates.value || 
@@ -230,10 +231,10 @@ var Sync = {
               + " " + abCard.displayName + " " + abCard.primaryEmail + 
               StringBundle.getStr("duplicatePrompt2"))) {
             cardsToDelete.push(abCard);
-            LOGGER.LOG(StringBundle.getStr("duplicateDeleted"));
+            LOGGER.LOG("   o Duplicate deleted");
           }
           else
-            LOGGER.LOG(StringBundle.getStr("duplicateIgnored"));
+            LOGGER.LOG("   o Duplicate ignored");
         }
         else
           abCards2.push(abCard);
@@ -244,53 +245,55 @@ var Sync = {
       abCards2 = [];
 
       if (!gContact.matched) {
-        LOGGER.LOG(StringBundle.getStr("noMatch"));
+        LOGGER.LOG(" * No match was found");
         if (gContact.getLastModifiedDate() > lastSync) {
-          LOGGER.LOG(StringBundle.getStr("addingToTb"));
+          LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
           ContactConverter.makeCard(gContact);
         }
         else {
-          LOGGER.LOG(StringBundle.getStr("willDelete"));
+          LOGGER.LOG(" * The contact is old will be deleted");
           this.mContactsToDelete.push(gContact);
         }
       }
     }// end of outer for loop
-
+    LOGGER.LOG("***Looking for unmatched Thunderbird cards***");
     for (var i = 0; i < abCards.length; i++) {
       var card = abCards[i];
       if (card != null && card instanceof nsIAbCard) {
-        LOGGER.LOG(card.displayName + StringBundle.getStr("noMatch"));
+        LOGGER.LOG("-" + card.displayName + " was not matched");
         // if it is a new card, add it to Google
         var id = ab.getCardValue(card, "GoogleID");
-        var date = ab.getCardValue(card, "LastModifiedDate")
+        var date = ab.getCardValue(card, "LastModifiedDate");
         var isNew = date > lastSync || date == 0;
-        // current will add the card if it doesn't have a GoogleID or if it's
-        // if was just added/modified
+        // will add the card if it doesn't have a GoogleID or if it was just
+        // added/modified
         if (!id || isNew) {
           this.mContactsToAdd.push(card);
-          LOGGER.LOG(StringBundle.getStr("addingToG"));
+          LOGGER.LOG(" * It is new and will be added to Google - " + date);
         }
         // otherwise it should be removed
         else {
           cardsToDelete.push(card);
-          LOGGER.LOG(StringBundle.getStr("willDelete"));
+          LOGGER.LOG(" * It is old and will be deleted from Thunderbird - " +
+                     date);
         }
       }
     } // end of for loop
     ab.deleteCards(cardsToDelete);
-    LOGGER.LOG("\n" + StringBundle.getStr("deleting"));
+    LOGGER.LOG("***Deleting contacts from Google***");
     this.mAddedEmails = [];
     
     // start with deleting ab cards
     this.processDeleteQueue();
   },
   /**
-   * Deletes all cards from Google included in the this.mContactsToDelete global array one
-   * at a time to avoid timing conflicts. Calls syncHelperAddCards when done
+   * Deletes all contacts from Google included in the mContactsToDelete
+   * array one at a time to avoid timing conflicts. Calls Sync.processAddQueue()
+   * when finished.
    */
   processDeleteQueue: function() {
     if (!this.mContactsToDelete || this.mContactsToDelete.length == 0) {
-      LOGGER.LOG("\n" + StringBundle.getStr("adding"));
+      LOGGER.LOG("***Adding contacts to Google***");
       this.processAddQueue();
       return;
     }
@@ -298,11 +301,9 @@ var Sync = {
                              this.mContactsToDelete.length + " " +
                              StringBundle.getStr("remaining"));
     var contact = this.mContactsToDelete.shift();
-    var string = (new XMLSerializer()).serializeToString(contact.xml);
-    LOGGER.VERBOSE_LOG("\n" + string + "\n");
-    LOGGER.LOG(contact.getName());
     var editURL = contact.getValue("EditURL");
-  
+    LOGGER.LOG(" * " + contact.getName() + "  -  " + editURL);
+
     var httpReq = new GHttpRequest("delete", gdata.mAuthToken, editURL, null);
     httpReq.mOnSuccess = ["Sync.processDeleteQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting contact', " +
@@ -312,12 +313,13 @@ var Sync = {
     httpReq.send();
   },
   /**
-   * Adds all cards to Google included in the this.mContactsToAdd global array one at a 
-   * time to avoid timing conflicts.  Calls syncHelperUpdateCards() when done
+   * Adds all cards to Google included in the mContactsToAdd array one at a 
+   * time to avoid timing conflicts.  Calls Sync.processUpdateQueue() when
+   * finished.
    */
   processAddQueue: function() {
     if (!this.mContactsToAdd || this.mContactsToAdd.length == 0) {
-      LOGGER.LOG("\n" + StringBundle.getStr("updating"));
+      LOGGER.LOG("***Updating contacts from Google***");
       this.processUpdateQueue();
       return;
     }
@@ -336,7 +338,7 @@ var Sync = {
         (second && this.mAddedEmails.indexOf(second) != -1) ||
         (third && this.mAddedEmails.indexOf(third) != -1) ||
         (primary && this.mAddedEmails.indexOf(fourth) != -1)) {
-      LOGGER.LOG(StringBundle.getStr("duplicate"));
+      LOGGER.LOG(" * Duplicate detected");
       // default to deleting duplicates, but if the user wants to confirm
       // each duplicate ask for confirmation
       if (!Preferences.mSyncPrefs.confirmDuplicates.value || 
@@ -344,10 +346,10 @@ var Sync = {
           + " " + cardToAdd.displayName + " " + cardToAdd.primaryEmail + 
           StringBundle.getStr("duplicatePrompt2"))) {
         this.ab.deleteCards([cardToAdd]);
-        LOGGER.LOG(StringBundle.getStr("duplicateDeleted"));
+        LOGGER.LOG("   o Duplicate deleted");
       }
       else
-        LOGGER.LOG(StringBundle.getStr("duplicateIgnored"));
+        LOGGER.LOG("   o Duplicate ignored");
       Sync.processAddQueue();              
     }
     else {
@@ -361,8 +363,10 @@ var Sync = {
         this.mAddedEmails.push(fourth);
 
       var xml = ContactConverter.cardToAtomXML(cardToAdd).xml;
-      var string = (new XMLSerializer()).serializeToString(xml);
-      LOGGER.VERBOSE_LOG("\n" + string + "\n");
+      if (Preferences.mSyncPrefs.verboseLog.value) {
+        var string = (new XMLSerializer()).serializeToString(xml);
+        LOGGER.LOG("  - XML of contact being added:\n" + string + "\n");
+      }
       var httpReq = new GHttpRequest("add", gdata.mAuthToken, null, string);
       var onCreated = [
         "var ab = Overlay.mAddressBook",
@@ -380,8 +384,8 @@ var Sync = {
     }
   },
   /**
-   * Updates all cards to Google included in the this.mContactsToUpdate global array one at a 
-   * time to avoid timing conflicts.  Calls finishSync() when done
+   * Updates all cards to Google included in the mContactsToUpdate array one at
+   * a time to avoid timing conflicts.  Calls Sync.finish() when done
    */
   processUpdateQueue: function() {
     if (!this.mContactsToUpdate || this.mContactsToUpdate.length == 0) {this.finish(); return;}
@@ -396,8 +400,10 @@ var Sync = {
     var xml = ContactConverter.cardToAtomXML(abCard, gContact).xml;
 
     LOGGER.LOG("\n" + gContact.getName());
-    var string = (new XMLSerializer()).serializeToString(xml);
-    LOGGER.VERBOSE_LOG("\n" + string + "\n");
+    if (Preferences.mSyncPrefs.verboseLog.value) {
+        var string = (new XMLSerializer()).serializeToString(xml);
+        LOGGER.LOG("  - XML of contact being updated:\n" + string + "\n");
+    }
     var httpReq = new GHttpRequest("update", gdata.mAuthToken, editURL, string)
     httpReq.mOnSuccess = ["Sync.processUpdateQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating contact', " +
@@ -417,13 +423,13 @@ var Sync = {
     if (aAtom) {
       if (Preferences.mSyncPrefs.verboseLog.value) {
         var string = (new XMLSerializer()).serializeToString(aAtom);
-        LOGGER.LOG(string + "\n"); // VERBOSE_LOG checks the pref, but serializing isn't
-                            // always necessary.
+        LOGGER.LOG("***Groups XML feed:\n" + string);
       }
       var ab = Overlay.mAddressBook;
-      var ns = gdata.namespaces.ATOM
+      var ns = gdata.namespaces.ATOM;
+      LOGGER.VERBOSE_LOG("***Getting all groups***");
       var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
-      LOGGER.VERBOSE_LOG("Getting all lists");
+      LOGGER.VERBOSE_LOG("***Getting all lists***");
       this.mLists = Overlay.mAddressBook.getAllLists(true);
       var lastSync = FileIO.getLastSync();
       for (var i = 0; i < arr.length; i++) {
@@ -434,32 +440,33 @@ var Sync = {
           var id = group.getID();
           var title = group.getTitle();
           var modifiedDate = group.getLastModifiedDate();
-          LOGGER.VERBOSE_LOG("Found group with ID: " + id + " name: " + title +
+          LOGGER.LOG("-Found group with ID: " + id + " name: " + title +
                              " last modified: " + modifiedDate);
           var list = this.mLists[id];
           this.mGroups[id] = group;
           if (modifiedDate < lastSync) { // it's an old group
             if (list) {
-              LOGGER.LOG("matched group " + title + " with mailing list " + 
-                         list.getName());
               list.matched = true;
               // if the name is different, update the group's title
               var listName = list.getName();
+              LOGGER.LOG(" * Matched with mailing list " + listName);
               if (listName != title) {
+                LOGGER.LOG(" * Going to rename the group to " + listName);
                 group.setTitle(listName);
                 this.mGroupsToUpdate.push(group);
               }
             }
             else {
               this.mGroupsToDelete.push(group);
-              LOGGER.LOG("didn't find match for group: " + title + ".  It will be deleted");
+              LOGGER.LOG(" * Didn't find a matching mail list.  It will be deleted");
             }
           }
           else { // it is new or updated
             if (list) { // the group has been updated
+              LOGGER.LOG(" * Matched with mailing list " + listName);
               // if the name changed, update the mail list's name
               if (list.getName() != title) {
-                LOGGER.VERBOSE_LOG("The group's name changed, updating the list");
+                LOGGER.LOG(" * The group's name changed, updating the list");
                 list.setName(title);
                 list.update();
                 list.matched = true;
@@ -467,42 +474,46 @@ var Sync = {
             }
             else { // the group is new
               // make a new mailing list with the same name
-              LOGGER.LOG("found new group: " + title);
+              LOGGER.LOG(" * The group is new");
               var list = ab.addList(title, id);
-              LOGGER.VERBOSE_LOG("List added to address book");
+              LOGGER.VERBOSE_LOG(" * List added to address book");
             }
           }
         }
         catch(e) { LOGGER.LOG_ERROR("Error while syncing groups: " + e); }
       }
-      LOGGER.VERBOSE_LOG("looking for unmatched mailing lists");
+      LOGGER.LOG("***Looking for unmatched mailing lists***");
       for (var i in this.mLists) {
         var list = this.mLists[i];
         if (list && !list.matched) {
           // if it is new, make a new group in Google
           if (list.getDescription().indexOf("http://www.google.com/m8/feeds/groups/") == -1) {
-            LOGGER.VERBOSE_LOG("found new list: " + list.getName());
+            LOGGER.LOG("-Found new list named " + list.getName());
+            LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
+            LOGGER.LOG(" * It will be added to Google");
             this.mGroupsToAdd.push(list);
           }
           // if it is old, delete it
           else {
-            LOGGER.VERBOSE_LOG("deleting list: " + list.getName());
+            LOGGER.LOG("-Found an old list named " + list.getName());
+            LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
+            LOGGER.LOG(" * It will be deleted from Thunderbird");
             list.delete();
           }
         }
       }
     }
-    LOGGER.LOG("deleting groups");
+    LOGGER.LOG("***Deleting old groups from Google***");
     this.deleteGroups();
   },
   deleteGroups: function() {
     if (this.mGroupsToDelete.length == 0) {
-      LOGGER.LOG("adding groups");
+      LOGGER.LOG("***Adding new groups to Google***");
       this.addGroups();
       return;
     }
     var group = this.mGroupsToDelete.shift();
-    LOGGER.LOG("Deleting group: " + group.getTitle());
+    LOGGER.LOG("-Deleting group: " + group.getTitle());
     var httpReq = new GHttpRequest("delete", gdata.mAuthToken, group.getEditURL());
     httpReq.mOnSuccess = ["Sync.deleteGroups();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting group', " +
@@ -513,19 +524,21 @@ var Sync = {
   },
   addGroups: function() {
     if (this.mGroupsToAdd.length == 0) {
-      LOGGER.LOG("updating groups");
+      LOGGER.LOG("***Updating groups from Google***");
       this.updateGroups();
       return;
     }
     var list = this.mGroupsToAdd[0];
     var group = new Group(null, list.getName());
-    LOGGER.LOG("Adding group: " + group.getTitle());
-    var body = (new XMLSerializer()).serializeToString(group.xml);
-    LOGGER.VERBOSE_LOG(body);
+    LOGGER.LOG("-Adding group: " + group.getTitle());
+    if (Preferences.mSyncPrefs.verboseLog.value) {
+      var body = (new XMLSerializer()).serializeToString(group.xml);
+      LOGGER.VERBOSE_LOG(" * XML feed of new group:\n" + body);
+    }
     var httpReq = new GHttpRequest("addGroup", gdata.mAuthToken, null, body);
     httpReq.mOnCreated = ["Sync.addGroups2(httpReq);"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while adding group', " +
-                          "httpReq.responseText);",
+                                          "httpReq.responseText);",
                         "Sync.mGroupsToAddURI.shift()",
                         "Sync.addGroups();"];
     httpReq.mOnOffline = this.mOfflineCommand;
@@ -545,8 +558,8 @@ var Sync = {
   },
   updateGroups: function() {
     if (this.mGroupsToUpdate.length == 0) {
-    // get the contacts from Google and sync the address book with the response
-      LOGGER.LOG("beginning sync");
+      // get the contacts from Google and sync the address book with the response
+      LOGGER.LOG("***Beginning Synchronization***");
       var httpReq = new GHttpRequest("getAll", gdata.mAuthToken, null, null);
       httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
       httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating group', " +
@@ -557,9 +570,11 @@ var Sync = {
       return;
     }
     var group = this.mGroupsToUpdate.shift();
-    LOGGER.LOG("Updating group: " + group.getTitle());
-    var body = (new XMLSerializer()).serializeToString(group.xml);
-    LOGGER.VERBOSE_LOG(body);
+    LOGGER.LOG("-Updating group: " + group.getTitle());
+    if (Preferences.mSyncPrefs.verboseLog.value) {
+      var body = (new XMLSerializer()).serializeToString(group.xml);
+      LOGGER.VERBOSE_LOG(" * XML feed of group: " + body);
+    }
     var httpReq = new GHttpRequest("update", gdata.mAuthToken, group.getEditURL(),
                                    body);
     httpReq.mOnSuccess = ["Sync.updateGroups();"];

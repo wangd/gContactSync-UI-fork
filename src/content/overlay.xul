@@ -61,35 +61,12 @@
   <script src="HttpRequest.js"/>
   <script src="GHttpRequest.js"/>
   <script src="LoginManager.js"/>
-  <!-- String bundle set containing localized error and status messages and more -->
+
   <stringbundleset id="stringbundleset">
     <stringbundle id="otherStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
-
-  <!-- Add a manual sync button on the button toolbar in the Address Book-->
-    <!-- insertbefore and insertafter do not work -->
-    <!--
-  <toolbar id="ab-bar2">
-    <toolbarseparator id="new-separator" />
-    <toolbarbutton class="gContactSync-Button toolbarbutton-1 chromeclass-toolbar-additional"
-                   id="gContactSyncButton"
-                   
-                   label="&sync.label;"
-                   tooltiptext="&sync.tooltip;"
-                   oncommand="Sync.begin();"/>
-  </toolbar>
-  -->
-  <!-- Add a File Menu option to sync -->
-  <!-- XXX keep this or remove it?
-  <menupopup id="menu_FilePopup">
-    <menuitem id="sync"
-              label="&sync.label;"
-              tooltiptext="&sync.tooltip;"
-              insertbefore="menu_New"
-              oncommand="initialize();"/>
-    <menuseparator insertbefore="menu_New"/>
-  </menupopup>-->
+  <!-- Allows the user to sort by one of the new attributes -->
   <treecols id="abResultsTreeCols">
     <splitter class="tree-splitter"/>
     <treecol id="ThirdEmail" class="sortDirectionIndicator" hidden="true"

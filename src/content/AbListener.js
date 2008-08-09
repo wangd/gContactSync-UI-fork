@@ -57,9 +57,7 @@ var AbListener = {
    * @param aOldValue The former value of the property.
    * @param aNewValue The new value of the property.
    */
-  onItemPropertyChanged: function(aItem, aProperty , aOldValue , aNewValue ) {
-    // do nothing
-  },
+  onItemPropertyChanged: function(aItem, aProperty , aOldValue , aNewValue ) { },
   /**
    * AbListener.onItemRemoved
    * Used just to update the lastModifiedDate of cards removed from a mail list.
@@ -76,13 +74,14 @@ var AbListener = {
     // if so, then update the card's lastModifiedDate in the mail list's parent
     if (aParentDir.isMailList && (aItem instanceof Ci.nsIAbCard) &&
         Overlay.mAddressBook) {
-      var uri = this.getURI(aParentDir);
-      uri = uri.substring(0, uri.lastIndexOf("/")); // the URI of the list's parent
-      var dir = this.getAbByURI(uri); // the list's parent directory
       try {
         aItem.QueryInterface(Ci.nsIAbCard);
         var now = (new Date).getTime()/1000;
         var ab = Overlay.mAddressBook;
+        var uri = this.getURI(aParentDir);
+        uri = uri.substring(0, uri.lastIndexOf("/")); // the URI of the list's parent
+        var dir = this.getAbByURI(uri); // the list's parent directory
+        // set the last modified date and update the card
         ab.setCardValue(aItem, "LastModifiedDate", now);
         this.updateCard(dir, aItem, uri);
       }
@@ -90,7 +89,6 @@ var AbListener = {
         LOGGER.LOG_WARNING("Error updating card after being removed: " + 
                             aItem + " " + e + " " + uri + " " + now);
       }
-      
     }
   },
   /**
@@ -119,12 +117,18 @@ var AbListener = {
    * @return The URI of aDirectory.
    */
   getURI: function(aDirectory) {
-    if (aDirectory.URI) // Thunderbird 3
-      return aDirectory.URI;
-    aDirectory.QueryInterface(Ci.nsIAbMDBDirectory); // Thunderbird 2
-    if (aDirectory.getDirUri)
-      return aDirectory.getDirUri();
-    LOGGER.LOG_WARNING('AbListener could not get a URI for: ' + aDirectory);
+    if (!aDirectory || !(aDirectory instanceof Ci.nsIAbDirectory)) {
+      LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory);
+      return;
+    }
+    try {
+      if (aDirectory.URI) // Thunderbird 3
+        return aDirectory.URI;
+      aDirectory.QueryInterface(Ci.nsIAbMDBDirectory); // Thunderbird 2
+      if (aDirectory.getDirUri)
+        return aDirectory.getDirUri();
+    } catch(e) {}
+    LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory);
   },
   /**
    * AbListener.add
@@ -167,18 +171,18 @@ var AbListener = {
    */
   getAbByURI: function(aURI) {
     if (!aURI)
-      throw StringBundle.getStr("error") + "aURI" + StringBundle.getStr("suppliedTo") +
-            "getAbByURI" + StringBundle.getStr("errorEnd");
+      throw "Error - invalid 'aURI' argument sent to getAbByURI" +
+            StringBundle.getStr("pleaseReport");
+    var dir;
     try {
-      var dir;
       if (Cc["@mozilla.org/abmanager;1"]) // Thunderbird 3, use the AB Manager
         dir = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager)
                .getDirectory(aURI).QueryInterface(Ci.nsIAbDirectory);
       else // Thunderbird 2, get the AB through the RDF service
         dir = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService)
                .GetResource(aURI).QueryInterface(Ci.nsIAbDirectory);
-      return dir;
     }
     catch(e) { LOGGER.VERBOSE_LOG("Error in getAbByURI: " + e); }
+    return dir;
   }
 };

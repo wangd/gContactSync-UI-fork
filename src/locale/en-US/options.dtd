@@ -1,9 +1,6 @@
 <!ENTITY title.label "gContactSync Preferences">
 <!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
-<!ENTITY refreshInterval2.value "Set to 0 to disable automatic synchronization">
-<!ENTITY refreshInterval3.value "after the inital sync.">
 <!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
-<!ENTITY initialDelay2.value "Set to 0 to disable the initial auto syncing">
 <!ENTITY abName.value "Name of the Address Book">
 <!ENTITY abName2.value "Re-synchronize contacts before changing this">
 <!ENTITY updateGoogle.label "Always update Gmail™ during conflicts">
@@ -12,7 +9,7 @@
 <!ENTITY syncExtended.label "Sync Extended Properties (see next tab)">
 <!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY removeLogin.label "Remove Authentiation Token">
-<!-- NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
 <!ENTITY extended1.value "Property 1  ">
 <!ENTITY extended2.value "Property 2  ">
 <!ENTITY extended3.value "Property 3  ">
@@ -24,6 +21,7 @@
 <!ENTITY extended9.value "Property 9  ">
 <!ENTITY extended10.value "Property 10">
 <!ENTITY extendedPropertiesDesc1.value "10 extra properties to sync.  Examples:">
+<!-- LOCALIZATION NOTE: These cannot change -->
 <!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName,">
 <!ENTITY extendedPropertiesDesc3.value " * NickName, PreferMailFormat, Department,">
 <!ENTITY extendedPropertiesDesc4.value " * AllowRemoteContent, Custom1, Custom2">

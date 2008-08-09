@@ -55,12 +55,12 @@ function AddressBook(aName, aURI) {
   else if (aName)
     this.mDirectory = this.getAbByName(aName);
   else
-    throw StringBundle.getStr("error") + "aURI" + StringBundle.getStr("suppliedTo") +
-          "AddressBook constructor" + StringBundle.getStr("errorEnd");
+    throw "Invalid aURI supplied to the AddressBook constructor" +
+          StringBundle.getStr("pleaseReport");
   // make sure the directory is valid
   if (!this.isDirectoryValid(this.mDirectory))
-    throw StringBundle.getStr("error") + "aURI or aName" + StringBundle.getStr("suppliedTo") +
-          "AddressBook constructor" + StringBundle.getStr("errorEnd");
+    throw "Invalid aURI or aName supplied to the AddressBook constructor" +
+          StringBundle.getStr("pleaseReport");
   this.mURI = this.mDirectory.URI;
   // figure out if this is post-bug 413260
   var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
@@ -104,9 +104,11 @@ AddressBook.prototype = {
    * @return  The Address Book with the given URI
    */
   getAbByURI: function(aURI) {
-    if (!aURI)
-      throw StringBundle.getStr("error") + "aURI" + StringBundle.getStr("suppliedTo") +
-            "getAbByURI" + StringBundle.getStr("errorEnd");
+    if (!aURI) {
+      LOGGER.LOG_WARNING("Invalid aURI supplied to the 'getAbByURI' method" +
+                         StringBundle.getStr("pleaseReport"));
+      return;
+    }
     try {
       var dir;
       if (this.mVersion == 3)
@@ -133,8 +135,8 @@ AddressBook.prototype = {
    */
   getAbByName: function(aDirName) {
     if (!aDirName || aDirName.length == 0)
-      throw StringBundle.getStr("error") + "aDirName" + StringBundle.getStr("suppliedTo") +
-            "getAbByName" + StringBundle.getStr("errorEnd");
+      throw "Invalid aDirName passed to the 'getAbByName' method." +
+            StringBundle.getStr("pleaseReport");
 
     if (this.mVersion == 3) { // TB 3
       var abManager = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager);
@@ -173,7 +175,7 @@ AddressBook.prototype = {
             return data;
       }
       // the AB doesn't exist...
-      // write a blank sync file to reset last sync date
+      // write a 0 to the data file to reset the last sync date
       FileIO.writeToFile(FileIO.mDataFile, "0");
       // setup the "properties" of the new address book
       var properties = Cc["@mozilla.org/addressbook/properties;1"]
@@ -341,8 +343,8 @@ AddressBook.prototype = {
     var card = aCard && aCard.mCard ? aCard.mCard : aCard;
     if (!card || (!(card instanceof Ci.nsIAbCard) &&
                   !(card instanceof Ci.nsIAbMDBCard))) {
-      throw StringBundle.getStr("invalidCard") + aMethodName +
-            StringBundle.getStr("errorEnd");
+      throw "Invalid card: " + aCard + "passed to the '" + aMethodName +
+            "' method." + StringBundle.getStr("pleaseReport");
     }
   },
   /**
@@ -356,8 +358,8 @@ AddressBook.prototype = {
     // if it is a MailList object, get it's actual list
     var list = aList && aList.mList ? aList.mList : aList;
     if (!list || !(list instanceof Ci.nsIAbDirectory) || !list.isMailList) {
-      throw StringBundle.getStr("invalidList") + aMethodName +
-            StringBundle.getStr("errorEnd");
+      throw "Invalid list: " + aList + " sent to the '" + aMethodName +
+            "' method" +  StringBundle.getStr("pleaseReport");
     }
   },
   /**
@@ -369,8 +371,8 @@ AddressBook.prototype = {
    */
   checkDirectory: function(aDirectory, aMethodName) {
     if (!this.isDirectoryValid(aDirectory))
-      throw StringBundle.getStr("invalidBook") + aMethodName +
-            StringBundle.getStr("Overlay.mErrors.errorEnd");
+      throw "Invalid Directory: " + aDirectory + " sent to the '" + aMethodName
+            + "' method" +  StringBundle.getStr("pleaseReport");
   },
   /**
    * AddressBook.checkDirectory
@@ -487,10 +489,7 @@ AddressBook.prototype = {
     */
    setMDBCardValue: function(aCard, aAttrName, aValue) {
      try {
-       //if (!(aCard instanceof Ci.nsIAbMDBCard))
-       //  aCard.QueryInterface(Ci.nsIAbMDBCard);
-       if (aCard instanceof Ci.nsIAbMDBCard)
-         aCard.setStringAttribute(aAttrName, aValue);
+       aCard.setStringAttribute(aAttrName, aValue);
      }
      catch(e) {
        LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
@@ -507,10 +506,7 @@ AddressBook.prototype = {
     */
    getMDBCardValue: function(aCard, aAttrName) {
      try {
-       //if (!(aCard instanceof Ci.nsIAbMDBCard))
-       //  aCard.QueryInterface(Ci.nsIAbMDBCard);
-       if (aCard instanceof Ci.nsIAbMDBCard)
-         return aCard.getStringAttribute(aAttrName);
+       return aCard.getStringAttribute(aAttrName);
      }
      catch(e) {
        LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);

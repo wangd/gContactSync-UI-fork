@@ -116,9 +116,8 @@ function GHttpRequest(aType, aAuth, aUrl, aBody) {
       break;
     default:
       // if the input doesn't match one of the above throw an error
-      throw StringBundle.getStr("error") + "aType" +
-            StringBundle.getStr("suppliedTo") + "GHttpRequest constructor" +
-            StringBundle.getStr("errorEnd");
+      throw "Invalid aType parameter supplied to the GHttpRequest constructor" +
+            StringBundle.getStr("pleaseReport");
   }
 }
 

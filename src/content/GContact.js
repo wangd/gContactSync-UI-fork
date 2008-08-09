@@ -38,24 +38,22 @@
  * Makes a new GContact object that has functions to get and set various values
  * for a Google Contact's Atom/XML representation.  If the parameter aXml is not
  * supplied, this constructor will make a new contact.
- * XXX update (localize) error strings and add some try/catches so one mistake
- * won't crash the extension
  * @param aXml Optional.  The Atom/XML representation of this contact.  If not
  *             supplied, will make a new contact.
  * @class
  * @constructor
  */
 function GContact(aXml) {
+  // if the contact exists, check its IM addresses
   if (aXml) {
     this.xml = aXml;
-    // check for invalid IM addresses
-    this.checkIMAddress();
+    this.checkIMAddress(); // check for invalid IM addresses
   }
+  // otherwise, make a new contact
   else {
     var atom = gdata.namespaces.ATOM;
     var gd = gdata.namespaces.GD;
     var xml = document.createElementNS(atom.url, atom.prefix + "entry");
-    //xml.setAttribute("xmlns:" + gd.prefix.substring(0, gd.prefix.length - 1), gd.url);
     var category = document.createElementNS(atom.url, atom.prefix + "category");
     category.setAttribute("scheme", gd.url + "/#kind");
     category.setAttribute("term", gd.url + "/#contact");
@@ -63,7 +61,6 @@ function GContact(aXml) {
     this.xml = xml;
   }
 }
-
 GContact.prototype = {
   mElementsToRemove: [],
   mCurrentElement: null,
@@ -84,6 +81,11 @@ GContact.prototype = {
         arr[i].setAttribute("address", address.replace(": ", ""));
     }
   },
+  /**
+   * GContact.removeElements
+   * Removes all elements in the mElementsToRemoveArray, if possible, from this
+   * contact.
+   */
   removeElements: function() {
     for (var i = 0, length = this.mElementsToRemove.length; i < length; i++) {
       try { this.xml.removeChild(this.mElementsToRemove[i]); }
@@ -101,13 +103,20 @@ GContact.prototype = {
    */
   getName: function() {
     var contactName = "";
-    if (this.xml.getElementsByTagName('title')[0] && 
-        this.xml.getElementsByTagName('title')[0].childNodes[0])
-      contactName = this.xml.getElementsByTagName('title')[0].childNodes[0]
-                                                             .nodeValue;
-    if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "email")[0])
+    try {
+    
+    var titleElem = this.xml.getElementsByTagName('title')[0];
+    if (titleElem && titleElem.childNodes[0])
+      contactName =titleElem.childNodes[0].nodeValue;
+    var emailElem = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
+                                                    "email")[0];
+    if (emailElem && emailElem.getAttribute)
       contactName += this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
                                                      "email")[0].getAttribute("address");
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Unable to get the name or e-mail address of a contact", e);
+    }
     return contactName;
   },
   /**
@@ -147,19 +156,20 @@ GContact.prototype = {
             return null;
           case gdata.contacts.types.TYPED_WITH_ATTR:
             if (!aElement.attribute)
-              throw StringBundle.getStr("error") + "aElement.attribute" +
-                    StringBundle.getStr("suppliedTo") + "GContact.getElementValue" +
-                    StringBundle.getStr("errorEnd");
-            return arr[i].getAttribute(aElement.attribute);
+              LOGGER.LOG_WARNING("Error - invalid element passed to the " +
+                                 "getElementValue method." +
+                                 StringBundle.getStr("pleaseReport"));
+            else
+              return arr[i].getAttribute(aElement.attribute);
           case gdata.contacts.types.UNTYPED:
             if (arr[i].childNodes[0])
               return arr[i].childNodes[0].nodeValue;
             return null;
           default:
-            LOGGER.LOG_WARNING(
-              StringBundle.getStr("error") + "aElement.contactType" +
-              StringBundle.getStr("suppliedTo") + "GContact.getElementValue" +
-              StringBundle.getStr("errorEnd"));
+            LOGGER.LOG_WARNING("Error - invalid contact type passed to the " +
+                               "getElementValue method." +
+                               StringBundle.getStr("pleaseReport"));
+            return null;
         }
       }
     }
@@ -175,10 +185,11 @@ GContact.prototype = {
    */
   setOrg: function(aElement, aValue) {
     var tagName = aElement ? aElement.tagName : null;
-    if (tagName != "orgName" && tagName != "orgTitle")
-      throw StringBundle.getStr("error") + "aElement" +
-            StringBundle.getStr("suppliedTo") + "GContact setOrg" +
-            StringBundle.getStr("errorEnd");
+    if (!tagName && tagName != "orgName" && tagName != "orgTitle") {
+      LOGGER.LOG_WARNING("Error - invalid element passed to the 'setOrg'" +
+                         "method." + StringBundle.getStr("pleaseReport"))
+      return;
+    }
 
     var organization = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
                                                        "organization")[0];
@@ -231,10 +242,8 @@ GContact.prototype = {
       return this.setOrg(aElement, aValue, value);
     
     // if the element should be removed
-    if (!aValue && this.mCurrentElement) {
-      LOGGER.VERBOSE_LOG("Will remove element");
+    if (!aValue && this.mCurrentElement)
       this.mElementsToRemove.push(this.mCurrentElement);
-    }
     // otherwise set the value of the element
     else {
       switch (aElement.contactType) {
@@ -242,10 +251,11 @@ GContact.prototype = {
           if (this.mCurrentElement && this.mCurrentElement.childNodes[0])
             this.mCurrentElement.childNodes[0].nodeValue = aValue;
           else {
-            if (!aType)
-              throw StringBundle.getStr("error") + "aType" +
-                    StringBundle.getStr("suppliedTo") + "GContact.setElementValue" +
-                    StringBundle.getStr("errorEnd");
+            if (!aType) {
+              LOGGER.LOG_WARNING("Invalid aType supplied to the 'setElementValue' "
+                                 + "method." + StringBundle.getStr("pleaseReport"));
+              return;
+            }
             var elem = this.mCurrentElement ? this.mCurrentElement :
                                               document.createElementNS
                                                        (aElement.namespace.url,
@@ -286,10 +296,8 @@ GContact.prototype = {
           }
           break;
         default:
-          LOGGER.LOG_WARNING(
-            StringBundle.getStr("error") + "aType" +
-            StringBundle.getStr("suppliedTo") + "GContact.setElementValue" +
-            StringBundle.getStr("errorEnd"));
+          LOGGER.LOG_WARNING("Invalid aType parameter sent to the setElementValue"
+                             + "method" + StringBundle.getStr("pleaseReport"));
       }
     }
   },

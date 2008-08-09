@@ -108,7 +108,11 @@ var FileIO = {
 
       istream.close();
       return lines;
-    } catch(e) { return ""; }
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Unable to read from file: " + aFile, e);
+      return "";
+    }
   },
   /**
    * FileIO.writeToFile
@@ -129,7 +133,10 @@ var FileIO = {
       foStream.write(aData, aData.length);
       foStream.close();
       return true;
-    } catch(e) {}
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Unable to write '" + aData + "' to file: " + aFile, e);
+    }
   },
   /**
    * FileIO.appendToFile
@@ -152,7 +159,10 @@ var FileIO = {
       foStream.write(aData, aData.length);
       foStream.close();
       return true;
-    } catch(e) {}
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Unable to append '" + aData + "' to file: " + aFile, e);
+    }
   },
   /**
    * FileIO.checkFile
@@ -163,7 +173,7 @@ var FileIO = {
    */
   checkFile: function(aFile, aCaller) {
     if (!aFile || !aFile instanceof Ci.nsIFile || (aFile.exists() && !aFile.isFile()))
-      throw StringBundle.getStr("invalidFile") + aCaller + 
-            StringBundle.getStr("errorEnd");
+      throw "Invalid File: " + aFile + " sent to the '" + aCaller + "' method" +
+            StringBundle.getStr("pleaseReport");
   }
 };

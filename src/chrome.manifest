@@ -1,6 +1,7 @@
 content    gcontactsync  content/
 skin       gcontactsync	 classic/1.0  skin/
 locale     gcontactsync  en-US        locale/en-US/
+locale     gcontactsync  es-ES        locale/es-ES/
 
 # the style for the button
 style	chrome://gcontactsync/content/overlay.xul	 chrome://gContactSync/skin/overlay.css

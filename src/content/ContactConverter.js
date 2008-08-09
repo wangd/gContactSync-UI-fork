@@ -158,9 +158,8 @@ var ContactConverter = {
    */
   makeCard: function(aContact, aCard) {
     if (!aContact)
-      throw StringBundle.getStr("error") + "aXml" +
-            StringBundle.getStr("suppliedTo") +
-           "makeCard" + StringBundle.getStr("errorEnd");
+      throw "Invalid aXml parameter supplied to the 'makeCard' method" +
+            StringBundle.getStr("pleaseReport");
     var ab = Overlay.mAddressBook;
     var card;
     if (aCard)

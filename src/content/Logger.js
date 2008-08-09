@@ -42,7 +42,8 @@ var LOGGER = {
   mWarningCount: 0,
   /**
    * Logger.LOG
-   * Appends the message to the log file.
+   * Appends the message to the log file and adds a newline character after the
+   * message.
    * @param aMessage The message to append.
    */
   LOG: function(aMessage) {
@@ -65,10 +66,10 @@ var LOGGER = {
    * @param aErrorMessage The error message.
    */
    LOG_ERROR: function(aMessage, aError) {
-     str = "***ERROR: " + aMessage;
+     var str = "***ERROR: " + aMessage;
      if (aError)
        str += "\nError Message:\n" + aError;
-     str += StringBundle.getStr("errorEnd");
+     str += StringBundle.getStr("pleaseReport");
      this.LOG(str);
      Sync.mError = true;
      this.mErrorCount++;
@@ -78,8 +79,12 @@ var LOGGER = {
     * Logs a warning and updates the warning count.
     * @param aWarningMessage The warning message.
     */
-   LOG_WARNING: function(aWarningMessage) {
-     this.LOG("***WARNING: " + aWarningMessage + "\n" + StringBundle.getStr("warningEnd"));
+   LOG_WARNING: function(aWarningMessage, aError) {
+     var str = "***WARNING: " + aWarningMessage;
+     if (aError)
+       str += "\nError Message:\n" + aError;
+     str += "\n" + StringBundle.getStr("pleaseReport");
+     this.LOG(str);
      this.mWarningCount++;
    }
 };

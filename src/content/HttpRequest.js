@@ -42,18 +42,17 @@ function HttpRequest() {
   if (window.XMLHttpRequest)
     this.mHttpRequest = new XMLHttpRequest();
   if (!this.mHttpRequest)
-    throw StringBundle.getStr("xmlRequestErr");
+    throw "Error - could not create an XMLHttpRequest" +
+          StringBundle.getStr("pleaseReport");
 }
 
 HttpRequest.prototype = {
-
   // content types
   CONTENT_TYPES: {
     URL_ENC: "application/x-www-form-urlencoded", 
     ATOM: "application/atom+xml",
     XML: "application/xml"
   },
-
   /**
    * HttpRequest.addContentOverride
    * Adds a content override to the header in case a firewall blocks

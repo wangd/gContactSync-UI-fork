@@ -76,9 +76,8 @@ var Preferences = {
    */
   getPref: function(aBranch, aName, aType) {
     if (!aBranch)
-      throw StringBundle.getStr("error") + "aBranch" +
-            StringBundle.getStr("suppliedTo") + "Preferences.getPref" +
-            StringBundle.getStr("errorEnd");
+      throw "Invalid aBranch parameter supplied to the getPref method" +
+            StringBundle.getStr("pleaseReport");
     switch (aType) {
       case this.mTypes.INT:
         return aBranch.getIntPref(aName);
@@ -87,9 +86,8 @@ var Preferences = {
       case this.mTypes.CHAR:
         return aBranch.getCharPref(aName);
       default:
-        throw StringBundle.getStr("error") + "aType" +
-              StringBundle.getStr("suppliedTo") + "Preferences.getPref" +
-              StringBundle.getStr("errorEnd");
+        throw "Invalid aType parameter supplied to the getPref method" +
+              StringBundle.getStr("pleaseReport");
     }
   },
   /**
@@ -102,9 +100,8 @@ var Preferences = {
    */
   setPref: function(aBranch, aName, aType, aValue) {
     if (!aBranch)
-      throw StringBundle.getStr("error") + "aBranch" +
-            StringBundle.getStr("suppliedTo") + "Preferences.setPref" +
-            StringBundle.getStr("errorEnd");
+      throw "Invalid aBranch parameter supplied to the setPref method" +
+            StringBundle.getStr("pleaseReport");
     switch (aType) {
       case this.mTypes.INT:
         return aBranch.setIntPref(aName, aValue);
@@ -113,9 +110,8 @@ var Preferences = {
       case this.mTypes.CHAR:
         return aBranch.setCharPref(aName, aValue);
       default:
-        throw StringBundle.getStr("error") + "aType" +
-              StringBundle.getStr("suppliedTo") + "Preferences.setPref" +
-              StringBundle.getStr("errorEnd");
+        throw "Invalid aType parameter supplied to the setPref method" +
+              StringBundle.getStr("pleaseReport");
     }
   },
   /**

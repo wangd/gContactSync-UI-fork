@@ -125,18 +125,12 @@
 
             <label control="refreshIntervalLbl"
                    value="&refreshInterval.value;"/>
-            <label control="refreshIntervalLbl2"
-                   value="&refreshInterval2.value;"/>
-            <label control="refreshIntervalLbl3"
-                   value="&refreshInterval3.value;"/>
             <textbox preference="refreshInterval"
                      id="refreshIntervalBox"
                      maxlength="8"/>
 
             <label control="initialDelayLbl"
                    value="&initialDelay.value;"/>
-            <label control="initialDelayLbl2"
-                   value="&initialDelay2.value;"/>
             <textbox preference="initialDelay"
                      id="initialDelayBox"
                      maxlength="8"/>
