@@ -54,6 +54,10 @@ var originalDisplayCardViewPane;
  */
 var Overlay = {
   mAddressBook: null,
+  /**
+   * Called when the overlay is loaded and initializes everything and begins
+   * the authentication check and sync or login prompt.
+   */
   initialize: function() {
     StringBundle.init(); // initialize the string bundle
     Preferences.getSyncPrefs(); // get the preferences
@@ -71,6 +75,9 @@ var Overlay = {
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function(e) { Overlay.unload(); }, false);
   },
+  /**
+   * Called when the overlay is unloaded and removes the address book listener.
+   */
   unload: function() {
     AbListener.remove();
   },
@@ -120,7 +127,7 @@ var Overlay = {
   },
   /**
    * Overlay.promptLogin
-   * Prompts the user to enter his or her Gmail™ username and password and then
+   * Prompts the user to enter his or her Google™ username and password and then
    * gets an authentication token to store and use.
    */
   promptLogin: function() {
@@ -150,6 +157,12 @@ var Overlay = {
                           "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
     httpReq.send();
   },
+  /**
+   * Overlay.login
+   * Stores the given auth token in the login manager and starts the setup
+   * window that will begin the first synchronization when closed.
+   * @param aAuthToken The authentication token to store.
+   */
   login: function(aAuthToken) {
     gdata.mAuthToken = 'GoogleLogin ' + aAuthToken;
     LoginManager.setAuthToken(gdata.mAuthToken);
@@ -204,7 +217,7 @@ var Overlay = {
     originalDisplayCardViewPane(aCard); // call the original first
     if (aCard.isMailList) {
       // collapse all the attributes added
-      Overlay.clearNodes(ContactConverter.getExtraSyncAttributes());
+      Overlay.hideNodes(ContactConverter.getExtraSyncAttributes());
       try {
         // and then collapse the e-mail boxes
         cvData.cvThirdEmailBox.collapsed = true;
@@ -287,8 +300,8 @@ var Overlay = {
           address = address.substring(address.indexOf(":") + 2);
         cvData.cvFullHomeMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
         cvSetVisible(cvData.cvbFullHomeMapItBox, true);
-        // hide the old home address stuff...
-        Overlay.hideAddress("Home");
+        // hide the old home address...
+        Overlay.collapseAddress("Home");
       }  
       else {
         cvData.cvFullHomeMapIt.setAttribute("url", "");
@@ -310,8 +323,8 @@ var Overlay = {
           address = address.substring(address.indexOf(":") + 2);
         cvData.cvFullWorkMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
         cvSetVisible(cvData.cvbFullWorkMapItBox, true);
-        // hide the old Work address stuff...
-        Overlay.hideAddress("Work");
+        // hide the old Work address...
+        Overlay.collapseAddress("Work");
       }  
       else {
         cvData.cvFullWorkMapIt.setAttribute("url", "");
@@ -324,8 +337,14 @@ var Overlay = {
       cvSetVisible(cvData.cvbPhone, visible);
     } catch(e) {alert(e);}
   },
-  hideAddress: function(aPrefix) {
-    if (!aPrefix)
+  /**
+   * Overlay.collapseAddress
+   * Collapses (hides) the old components of an address: Address Line 1 and 2,
+   * the City, State Zip line, and the Country of the given type (Home or Work).
+   * @param aPrefix The type of address.  Must be 'Home' or 'Work'.
+   */
+  collapseAddress: function(aPrefix) {
+    if (!aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
       return;
     var arr = ["Address", "Address2", "CityStZip", "Country"];
     for (var i = 0, length = arr.length; i < length; i++) {
@@ -338,13 +357,42 @@ var Overlay = {
     if (mapItBox && mapItBox.setAttribute)
       mapItBox.setAttribute("collapsed", true);
   },
-  clearNodes: function(aArray) {
-    for (var i = 0, length = aArray.length; i < length; i++)
-      try { cvSetVisible(cvData["cv" + aArray[i]], false); } catch (e) { alert('clear nodes error: ' + e); }
+  /**
+   * Overlay.hideNodes
+   * Hides all of the nodes based on the array.  The node must be a propery of
+   * cvData with the same name as the element in aArray prefixed with a 'cv'.
+   * For example, to hide cvData.cvHomeAddress the element would be
+   * 'HomeAddress'.
+   * @param aArray An array of names as described above.
+   */
+  hideNodes: function(aArray) {
+    for (var i = 0, length = aArray.length; i < length; i++) {
+      try {
+        cvSetVisible(cvData["cv" + aArray[i]], false);
+      }
+      catch (e) {
+        LOGGER.LOG_WARNING("Error while hiding nodes: ", e);
+      }
+    }
   },
+  /**
+   * Overlay.showNodes
+   * Shows all of the nodes based on the array.  The node must be a propery of
+   * cvData with the same name as the element in aArray prefixed with a 'cv'.
+   * For example, to show cvData.cvHomeAddress the element would be
+   * 'HomeAddress'.
+   * @param aArray An array of names as described above.
+   */
   showNodes: function(aArray) {
-    for (var i = 0, length = aArray.length; i < length; i++)
-      try { cvSetVisible(cvData["cv" + aArray[i]], true); } catch (e) { alert('show nodes error' + e); }
+    for (var i = 0, length = aArray.length; i < length; i++) {
+      for (var i = 0, length = aArray.length; i < length; i++)
+      try {
+        cvSetVisible(cvData["cv" + aArray[i]], true);
+      }
+      catch (e) {
+        LOGGER.LOG_WARNING("Error while showing nodes: ", e);
+      }
+    }
   },
   /**
    * A helper method for myDisplayCardViewPane that iterates through an array of
@@ -408,10 +456,11 @@ var Overlay = {
     var otherVbox = document.createElement("vbox");
     otherVbox.setAttribute("flex", "1");
     cvData.cvOtherAddress = Overlay.makeDescElement("OtherAddress", "CardViewText");
-    if (Cc["@mozilla.org/abmanager;1"])
+    if (Cc["@mozilla.org/abmanager;1"]) // TB 3 - style should be pre-wrap
       cvData.cvOtherAddress.setAttribute("style", "white-space: pre-wrap;");
-    else
+    else // TB 2 - the style should be -moz-pre-wrap
       cvData.cvOtherAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
+    // setup the MapIt box
     cvData.cvbOtherMapItBox = document.createElement("vbox");
     cvData.cvbOtherMapItBox.setAttribute("id", "cvbOtherMapItBox");
     cvData.cvbOtherMapItBox.setAttribute("pack", "end");
@@ -432,10 +481,11 @@ var Overlay = {
     var FullHomeVbox = document.createElement("vbox");
     FullHomeVbox.setAttribute("flex", "1");
     cvData.cvFullHomeAddress = Overlay.makeDescElement("FullHomeAddress", "CardViewText");
-    if (Cc["@mozilla.org/abmanager;1"])
+    if (Cc["@mozilla.org/abmanager;1"]) // TB 3 - style should be pre-wrap
       cvData.cvFullHomeAddress.setAttribute("style", "white-space: pre-wrap;");
-    else
+    else // TB 2 - the style should be -moz-pre-wrap
       cvData.cvFullHomeAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
+    // setup the MapIt box
     cvData.cvbFullHomeMapItBox = document.createElement("vbox");
     cvData.cvbFullHomeMapItBox.setAttribute("id", "cvbFullHomeMapItBox");
     cvData.cvbFullHomeMapItBox.setAttribute("pack", "end");
@@ -460,10 +510,11 @@ var Overlay = {
     var FullWorkVbox = document.createElement("vbox");
     FullWorkVbox.setAttribute("flex", "1");
     cvData.cvFullWorkAddress = Overlay.makeDescElement("FullWorkAddress", "CardViewText");
-    if (Cc["@mozilla.org/abmanager;1"])
+    if (Cc["@mozilla.org/abmanager;1"]) // TB 3 - style should be pre-wrap
       cvData.cvFullWorkAddress.setAttribute("style", "white-space: pre-wrap;");
-    else
+    else // TB 2 - the style should be -moz-pre-wrap
       cvData.cvFullWorkAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
+    // setup the MapIt box
     cvData.cvbFullWorkMapItBox = document.createElement("vbox");
     cvData.cvbFullWorkMapItBox.setAttribute("id", "cvbFullWorkMapItBox");
     cvData.cvbFullWorkMapItBox.setAttribute("pack", "end");
@@ -503,4 +554,4 @@ var Overlay = {
     elem.setAttribute("id", "cv" + aName);
     return elem;
   }
-}
+};
