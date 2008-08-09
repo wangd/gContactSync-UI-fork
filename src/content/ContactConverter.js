@@ -33,7 +33,15 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+/**
+ * ContactConverter
+ * Converts contacts between Thunderbird's format (a 'card') and the Atom/XML
+ * representation of a contact.  Must be initialized before the first use by
+ * calling the init() function.
+ * @class
+ */
 var ContactConverter = {
+  // two namespaces
   GD: {},
   ATOM: {},
   mConverterArr: [],
@@ -44,10 +52,15 @@ var ContactConverter = {
     "JabberScreenName", "YahooScreenName", "MSNScreenName", "ICQScreenName",
     "HomeFaxNumber", "OtherNumber", "FullHomeAddress", "FullWorkAddress"],
   mInitialized: false,
+  /**
+   * ContactConverter.init
+   * Initializes this object by populating the array of ConverterElement
+   * objects and the two namespaces most commonly used by this object.
+   */
   init: function() {
     this.GD = gdata.namespaces.GD;
     this.ATOM = gdata.namespaces.ATOM;
-    // function ConverterElement(aElement, aTbName, aIndex, aType)
+    // ConverterElement(aElement, aTbName, aIndex, aType)
     this.mConverterArr = [
       // general
       new ConverterElement("title", "DisplayName", 0),
@@ -59,7 +72,7 @@ var ContactConverter = {
       new ConverterElement("email", "SecondEmail", 1, "other"),
       new ConverterElement("email", "ThirdEmail", 2, "other"),
       new ConverterElement("email", "FourthEmail", 3, "other"),
-      // IM
+      // IM screennames
       new ConverterElement("im", "_AimScreenName", 0, "AIM"),
       new ConverterElement("im", "TalkScreenName", 0, "GOOGLE_TALK"),
       new ConverterElement("im", "JabberScreenName", 0, "JABBER"),
@@ -77,10 +90,11 @@ var ContactConverter = {
       // company info
       new ConverterElement("orgTitle", "Company", 0),
       new ConverterElement("orgName", "JobTitle", 0),
-      // "PhotoURL", "SelfURL", "EditURL"
+      // the URLs from Google - Photo, Self, and Edit
       new ConverterElement("PhotoURL", "PhotoURL", 0),
       new ConverterElement("SelfURL", "SelfURL", 0),
       new ConverterElement("EditURL", "EditURL", 0),
+      // the new address fields
       new ConverterElement("postalAddress", "FullHomeAddress", 0, "home"),
       new ConverterElement("postalAddress", "FullWorkAddress", 0, "work"),
     ];
@@ -99,12 +113,14 @@ var ContactConverter = {
     return arr;
   },
   /**
-   * Updates or creates a Google contact using its complementary Address Book
-   * card.
-   * @param aCard   The address book card used to update the Atom feed.
-   * @param aXml    Optional. The Atom/XML representation of the contact, if
-   *                it exists.
-   * @return The contact as a serialized string of a card's Atom/XML representation.
+   * ContactConverter.cardToAtomXML
+   * Updates or creates a GContact object's Atom/XML representation using its 
+   * complementary Address Book card.
+   * @param aCard    The address book card used to update the Atom feed.
+   * @param aContact Optional. The GContact object with the Atom/XML
+   *                 representation of the contact, if it exists.  If not
+   *                 supplied, a contact and feed will be created.
+   * @return A GContact object with the Atom feed for the contact.
    */
   cardToAtomXML: function(aCard, aContact) {
     if (!aContact)
@@ -149,12 +165,12 @@ var ContactConverter = {
     return aContact;
   },
   /**
-   * Converts an Atom/XML representation of a contact to Thunderbird's nsIAbCard
-   * object.
-   * @param aContact  
+   * Converts an GContact's Atom/XML representation of a contact to
+   * Thunderbird's address book card format.
+   * @param aContact A GContact object with the contact to convert.
    * @param aCard Optional.  An existing card that can be QueryInterfaced to
    *              Components.interfaces.nsIAbMDBCard if this is before 413260
-   * @return    An nsIAbCard of the contact.
+   * @return An nsIAbCard of the contact.
    */
   makeCard: function(aContact, aCard) {
     if (!aContact)
@@ -203,8 +219,8 @@ var ContactConverter = {
   /**
    * ContactConverter.fixAddress
    * Fixes the address with the given prefix (Home or Work) and combines the
-   * 6 address fields: Address Line 1, Address Line 2, City, State, Zip Code
-   * Country into the field that allows multiple lines.
+   * 6 address fields: Address Line 1, Address Line 2, City, State, Zip Code,
+   * and Country into a field that allows multiple lines.
    * @param aCard   The card with the address to fix.
    * @param aPrefix The prefix (Home or Work)
    */
@@ -223,7 +239,7 @@ var ContactConverter = {
       var state = ab.getCardValue(aCard, aPrefix + "State");
       var zip = ab.getCardValue(aCard, aPrefix + "ZipCode");
       var country = ab.getCardValue(aCard, aPrefix + "Country");
-      // form the new address
+      // form the new address from the old
       var newAddress = "";
       if (address1)
         newAddress = address1;
@@ -265,10 +281,12 @@ var ContactConverter = {
     }
   },
   /**
-   * Compares two contacts and returns true if they are considered equal
-   * @param aCard   The nsIAbCard to compare.
-   * @param aContact The contact from Google to compare.
-   * @return True if the contacts are the same.
+   * ContactConverter.compareContacts
+   * Compares two contacts and returns true if they share at least one e-mail
+   * address.
+   * @param aCard    The nsIAbCard to compare.
+   * @param aContact A GContact element containing the Google contact to compare.
+   * @return True if the contacts share at least one e-mail address.
    */
   compareContacts: function(aCard, aContact) {
     if (!aContact || !aContact.xml || !aContact.xml.getElementsByTagNameNS)
@@ -276,9 +294,11 @@ var ContactConverter = {
     var ab = Overlay.mAddressBook;
     ab.checkCard(aCard, "compareContacts");
     // get all of the address from the google contact
-    var googleAddresses = aContact.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, 'email');
-    
-    // and from the Thunderbird card
+    var googleAddresses = aContact.xml
+                                  .getElementsByTagNameNS(gdata.namespaces.GD.url,
+                                                          'email');
+    // and from the Thunderbird card as an object with the e-mail addresses
+    // as the names of properties whose values are set as the boolean value true
     var tbAddresses = {};
     var primaryEmail = ab.getCardValue(aCard, "PrimaryEmail");
     if (primaryEmail)
@@ -292,10 +312,10 @@ var ContactConverter = {
     var fourthEmail = ab.getCardValue(aCard, "FourthEmail");
     if (fourthEmail)
       tbAddresses[fourthEmail] = true;
-    
+
     // then check for duplicate e-mail addresses
     var toReturn = false;
-    for (var i = 0, length = googleAddresses.length; i < length; i++) {
+    for (var i = 0, length = googleAddresses.length; i < length && !toReturn; i++) {
       var emailAddress;
       if (googleAddresses[i] && googleAddresses[i].getAttribute)
         emailAddress = googleAddresses[i].getAttribute("address");
@@ -305,4 +325,4 @@ var ContactConverter = {
     }
     return toReturn;
   }
-}
+};
