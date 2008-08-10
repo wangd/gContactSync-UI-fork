@@ -88,8 +88,8 @@ var ContactConverter = {
       new ConverterElement("phoneNumber", "HomeFaxNumber", 0, "home_fax"),
       new ConverterElement("phoneNumber", "OtherNumber", 0, "other"),
       // company info
-      new ConverterElement("orgTitle", "Company", 0),
-      new ConverterElement("orgName", "JobTitle", 0),
+      new ConverterElement("orgTitle", "JobTitle", 0),
+      new ConverterElement("orgName", "Company", 0),
       // the URLs from Google - Photo, Self, and Edit
       new ConverterElement("PhotoURL", "PhotoURL", 0),
       new ConverterElement("SelfURL", "SelfURL", 0),
