@@ -4,15 +4,19 @@
 <!ENTITY msn.label "MSN">
 <!ENTITY yahoo.label "Yahoo">
 <!ENTITY jabber.label "Jabber">
-<!ENTITY thirdEmail.label "Third Email">
-<!ENTITY fourthEmail.label "Fourth Email">
+<!ENTITY thirdEmail.label "Third E-mail Address">
+<!ENTITY fourthEmail.label "Fourth E-mail Address">
+<!ENTITY third.label "Third">
+<!ENTITY fourth.label "Fourth">
 <!ENTITY email.box "Additional Email Addresses">
 <!ENTITY screenname.box "Additional Screennames">
 <!ENTITY numbers.box "Additional Numbers">
 <!ENTITY homeFax.label "Home Fax">
 <!ENTITY otherNum.label "Other">
+<!ENTITY homeFax.label "Home Fax">
+<!ENTITY otherNum.label "Other">
 <!ENTITY address.box "Additional Addresses">
-<!ENTITY homeAddress.label "Home">
-<!ENTITY workAddress.label "Work">
-<!ENTITY otherAddress.label "Other">
+<!ENTITY home.label "Home">
+<!ENTITY work.label "Work">
+<!ENTITY other.label "Other">
 <!ENTITY initialStatus.label "">

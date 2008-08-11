@@ -148,7 +148,7 @@ AddressBook.prototype = {
           if (data.dirName == aDirName)
             return data;
       }
-      // the AB doesn"t exist, so make one:
+      // the AB doesn't exist, so make one:
       abManager.newAddressBook(aDirName, "moz-abmdbdirectory://", 2);
       // write a blank sync file to reset last sync date
       FileIO.writeToFile(FileIO.mDataFile, "0");
@@ -237,31 +237,41 @@ AddressBook.prototype = {
       data = iter.getNext();
       if (data instanceof Ci.nsIAbDirectory && data.isMailList)
         var list = new MailList(data, this, skipGetCards);
-        var description = list.getDescription();
-        if (!description)
-         description = "no description " + (new Date).getTime();
-        obj[description] = list;
+        var nickname = list.getNickName();
+        var id;
+        if (nickname &&
+            nickname.indexOf("http://www.google.com/m8/feeds/groups") != -1)
+         id = nickname
+        else {
+          var description = list.getDescription();
+          if (description &&
+              description.indexOf("http://www.google.com/m8/feeds/groups") != -1)
+            id = description;
+        }
+        if (!id)
+         id = "no id found " + (new Date).getTime();
+       obj[id] = list; 
     }
     return obj;
   },
   /**
    * AddressBook.getListByDesc
-   * Finds and returns the first Mail List that matches the given description in
+   * Finds and returns the first Mail List that matches the given nickname in
    * this address book.
-   * @param aDescription The description to search for.  If null then this
-   *                     function returns nothing.
+   * @param aNickName The nickname to search for.  If null then this
+   *                  function returns nothing.
    * @return A new MailList object containing a list that matches the
-   *         description or nothing if the list wasn't found.
+   *         nickname or nothing if the list wasn't found.
    */
-  getListByDesc: function(aDescription) {
-    if (!aDescription)
+  getListByNickName: function(aNickName) {
+    if (!aNickName)
       return;
     // same in Thunderbird 2 and 3
     var iter = this.mDirectory.childNodes;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Ci.nsIAbDirectory && data.isMailList &&
-          data.description == aDescription) {
+          data.listNickName == aNickName) {
         var list = new MailList(data, this, true);
         return list;
       }
@@ -271,25 +281,25 @@ AddressBook.prototype = {
    * AddressBook.addList
    * Creates a new mail list, adds it to the address book, and returns a
    * MailList object containing the list.
-   * @param aName        The new name for the mail list.
-   * @param aDescription The description of the mail list.
+   * @param aName     The new name for the mail list.
+   * @param aNickName The nickname for the mail list.
    * @return A new MailList object containing the newly-made Mail List with the
-   *         given name and description.
+   *         given name and nickname.
    */
-  addList: function(aName, aDescription) {
+  addList: function(aName, aNickName) {
     if (!aName)
       throw "Error - aName sent to addList is invalid";
-    if (!aDescription)
-      throw "Error - aDescription sent to addList is invalid";
+    if (!aNickName)
+      throw "Error - aNickName sent to addList is invalid";
     var list = Cc["@mozilla.org/addressbook/directoryproperty;1"]
                 .createInstance(Ci.nsIAbDirectory);
     list.dirName = aName;
-    list.description = aDescription;
+    list.listNickName = aNickName;
     list.isMailList = true;
     this.mDirectory.addMailList(list);
     LOGGER.VERBOSE_LOG("getting the new list");
     // list can't be QI'd to an MDBDirectory, so the new list has to be found...
-    var realList = this.getListByDesc(aDescription);
+    var realList = this.getListByNickName(aNickName);
     return realList;
   },
   /**

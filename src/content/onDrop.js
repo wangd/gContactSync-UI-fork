@@ -182,6 +182,11 @@ function myOnDrop(row, orientation) {
                                            : gAddressBookBundle.getFormattedString("cardsCopied", [numrows]));
 
     document.getElementById("statusText").label = cardsTransferredText;
+    // update the address book view so it doesn't show the card twice
+    SetAbView(GetSelectedDirectory(), false);
+    // select the first card, if any
+    if (gAbView && gAbView.getCardFromRow(0))
+      SelectFirstCard();
   }
 }
 

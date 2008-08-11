@@ -50,14 +50,14 @@
          <caption label="&email.box;"/>
          <hbox>
            <spacer flex="1"/>
-           <label control="thirdEmail" value="&thirdEmail.label;" class="CardEditLabel"/>
+           <label control="thirdEmail" value="&third.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="ThirdEmail" flex="1" class="uri-element"/>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="fourthEmail" value="&fourthEmail.label;" class="CardEditLabel"/>
+           <label control="fourthEmail" value="&fourth.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="FourthEmail" flex="1" class="uri-element"/>
            </hbox>
@@ -126,21 +126,21 @@
          <caption label="&address.box;"/>
          <hbox>
            <spacer flex="1"/>
-           <label control="fullHomeAddress" value="&homeAddress.label;" class="CardEditLabel"/>
+           <label control="fullHomeAddress" value="&home.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="FullHomeAddress" multiline="true" wrap="virtual" flex="1"/>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="fullWorkAddress" value="&workAddress.label;" class="CardEditLabel"/>
+           <label control="fullWorkAddress" value="&work.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="FullWorkAddress" multiline="true" wrap="virtual" flex="1"/>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="otherAddress" value="&otherAddress.label;" class="CardEditLabel"/>
+           <label control="otherAddress" value="&other.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="OtherAddress" multiline="true" wrap="virtual" flex="1"/>
            </hbox>

@@ -119,6 +119,8 @@ var Sync = {
     }
     Overlay.mAddressBook.mCurrentCard = {};
     this.mSynced = true;
+    if (UpdateCardView)
+      UpdateCardView(); // refresh the card view in case a contact was updated
     if (aStartOver)
       this.begin();
     else
@@ -487,7 +489,7 @@ var Sync = {
         var list = this.mLists[i];
         if (list && !list.matched) {
           // if it is new, make a new group in Google
-          if (list.getDescription().indexOf("http://www.google.com/m8/feeds/groups/") == -1) {
+          if (i.indexOf("http://www.google.com/m8/feeds/groups/") == -1) {
             LOGGER.LOG("-Found new list named " + list.getName());
             LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
             LOGGER.LOG(" * It will be added to Google");
@@ -551,7 +553,7 @@ var Sync = {
     LOGGER.VERBOSE_LOG(aResponse.responseText);
     var list = this.mGroupsToAdd.shift();
     var id = group.getID();
-    list.setDescription(id);
+    list.setNickName(id);
     list.update();
     this.mLists[id] = list;
     this.addGroups();

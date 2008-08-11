@@ -77,38 +77,21 @@ var AbListener = {
       try {
         aItem.QueryInterface(Ci.nsIAbCard);
         var now = (new Date).getTime()/1000;
-        var ab = Overlay.mAddressBook;
         var uri = this.getURI(aParentDir);
-        uri = uri.substring(0, uri.lastIndexOf("/")); // the URI of the list's parent
-        var dir = this.getAbByURI(uri); // the list's parent directory
+        // the URI of the list's parent
+        uri = uri.substring(0, uri.lastIndexOf("/"));
+        // the parent of aParentDir (aParentDir is a mailing list, dir is the
+        // directory in which aParentDir is stored)
+        var dir = new AddressBook(null, uri);
         // set the last modified date and update the card
-        ab.setCardValue(aItem, "LastModifiedDate", now);
-        this.updateCard(dir, aItem, uri);
+        dir.setCardValue(aItem, "LastModifiedDate", now);
+        dir.updateCard(aItem);
       }
       catch(e) {
         LOGGER.LOG_WARNING("Error updating card after being removed: " + 
-                            aItem + " " + e + " " + uri + " " + now);
+                           aItem + " " + e + " " + uri + " " + now);
       }
     }
-  },
-  /**
-   * AbListener.updateCard
-   * Updates the card passed in to the given directory (aDirectory or the
-   * directory specified by aURI, depending on the version of Thunderbird).
-   * @param aDirectory The directory to which the card should be updated.
-   *                   Ignored if this isn't Thunderbird 3.
-   * @param aCard      The card to update.
-   * @param aURI       The URI of the directory to which this card should be
-   *                   updated.  Ignored if this isn't Thunderbird 2.
-   */
-  updateCard: function(aDirectory, aCard, aURI) {
-    if (aDirectory && aDirectory.modifyCard) // Thunderbird 3
-      aDirectory.modifyCard(aCard);
-    else if (aCard && aURI && aCard.editCardToDatabase) // Thunderbird 2
-      aCard.editCardToDatabase(aURI);
-    else // error...
-      LOGGER.LOG_WARNING("unable to update card " + aCard + " to directory "
-                         + aDirectory + " with URI " + aURI);
   },
   /**
    * AbListener.getURI
@@ -117,18 +100,17 @@ var AbListener = {
    * @return The URI of aDirectory.
    */
   getURI: function(aDirectory) {
-    if (!aDirectory || !(aDirectory instanceof Ci.nsIAbDirectory)) {
-      LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory);
-      return;
-    }
+    var error;
     try {
-      if (aDirectory.URI) // Thunderbird 3
-        return aDirectory.URI;
-      aDirectory.QueryInterface(Ci.nsIAbMDBDirectory); // Thunderbird 2
-      if (aDirectory.getDirUri)
-        return aDirectory.getDirUri();
-    } catch(e) {}
-    LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory);
+      if (aDirectory && (aDirectory instanceof Ci.nsIAbDirectory)) {
+        if (aDirectory.URI) // Thunderbird 3
+          return aDirectory.URI;
+        aDirectory.QueryInterface(Ci.nsIAbMDBDirectory); // Thunderbird 2
+        if (aDirectory.getDirUri)
+          return aDirectory.getDirUri();
+     } 
+    } catch(e) { error = e; }
+    LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory, error);
   },
   /**
    * AbListener.add
@@ -164,25 +146,4 @@ var AbListener = {
        .getService(Ci.nsIAddrBookSession)
        .removeAddressBookListener(AbListener);
   },
-  /**
-   * AbListener.getAbByURI
-   * Returns the directory with the given Uniform Resource Identifier (URI).
-   * @return The directory with the given URI.
-   */
-  getAbByURI: function(aURI) {
-    if (!aURI)
-      throw "Error - invalid 'aURI' argument sent to getAbByURI" +
-            StringBundle.getStr("pleaseReport");
-    var dir;
-    try {
-      if (Cc["@mozilla.org/abmanager;1"]) // Thunderbird 3, use the AB Manager
-        dir = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager)
-               .getDirectory(aURI).QueryInterface(Ci.nsIAbDirectory);
-      else // Thunderbird 2, get the AB through the RDF service
-        dir = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService)
-               .GetResource(aURI).QueryInterface(Ci.nsIAbDirectory);
-    }
-    catch(e) { LOGGER.VERBOSE_LOG("Error in getAbByURI: " + e); }
-    return dir;
-  }
 };

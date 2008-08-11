@@ -118,6 +118,74 @@ MailList.prototype = {
     return this.mList.listNickName;
   },
   /**
+   * MailList.setPrefId
+   * Sets the preference id for this mailing list.  The update method must be
+   * called in order for the change to become permanent.
+   * @param aPrefId The new preference ID for this mailing list.
+   */
+  setPrefId: function(aPrefId) {
+    this.mList.dirPrefId = aPrefId;
+  },
+  /**
+   * MailList.getPrefId
+   * Returns the preference ID of this mailing list.
+   * @return The preference ID of this mailing list.
+   */
+  getPrefId: function() {
+    return this.mList.dirPrefId;
+  },
+  /**
+   * MailList.getStringPref
+   * Gets and returns the string preference, if possible, with the given name.
+   * Returns null if this list doesn't have a preference ID or if there was an
+   * error getting the preference.
+   * @param aName         The name of the preference to get.
+   * @param aDefaultValue The value to set the preference at if it fails.  Only
+   *                      used in Thunderbird 3.
+   * @return The value of the preference with the given name in the preference
+   *         branch specified by the preference ID, if possible.  Otherwise null.
+   */
+  getStringPref: function(aName, aDefaultValue) {
+    if (this.mList.getStringValue) {
+      try {
+        return this.mList.getStringValue(aName, aDefaultValue);
+      } catch (e) { LOGGER.LOG_WARNING("Error while setting list pref", e); }
+    }
+    var id = this.getPrefId();
+    if (!id)
+      return;
+    try {
+      var branch = Cc["@mozilla.org/preferences-service;1"]
+                    .getService(Ci.nsIPrefService)
+                    .getBranch(dirPrefId)
+                    .QueryInterface(Ci.nsIPrefBranch2);
+      branch.getCharPref(aName);
+    } catch(e) { LOGGER.LOG_WARNING("Error while getting list pref", e); }
+  },
+  /**
+   * MailList.getStringPref
+   * Gets and returns the string preference, if possible, with the given name.
+   * @param aName  The name of the preference to get.
+   * @param aValue The value to set the preference to.
+   */
+  setStringPref: function(aName, aValue) {
+    if (this.mList.getStringValue) {
+      try {
+        return this.mList.setStringValue(aName, aValue);
+      } catch (e) { LOGGER.LOG_WARNING("Error while setting list pref", e); }
+    }
+    var id = this.getPrefId();
+    if (!id)
+      return;
+    try {
+      var branch = Cc["@mozilla.org/preferences-service;1"]
+                    .getService(Ci.nsIPrefService)
+                    .getBranch(dirPrefId)
+                    .QueryInterface(Ci.nsIPrefBranch2);
+      branch.setCharPref(aName, aValue);
+    } catch(e) { LOGGER.LOG_WARNING("Error while setting list pref", e); }
+  },
+  /**
    * MailList.setDescription
    * Sets the description for this mailing list.  The update method must be
    * called in order for the change to become permanent.
