@@ -18,6 +18,8 @@ pref("extensions.gContactSync.initialDelay", 500);
 pref("extensions.gContactSync.verboseLog", true);
 // set to true to enable automatic synchronizing when Thunderbird opens and after the sync delay
 pref("extensions.gContactSync.autoSync", true);
+// set to true to synchronize groups with mailing lists
+pref("extensions.gContactSync.syncGroups", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

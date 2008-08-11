@@ -35,7 +35,7 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<!DOCTYPE window SYSTEM "chrome://gContactSync/locale/FirstLogin.dtd">
+<!DOCTYPE window SYSTEM "chrome://gContactSync/locale/options.dtd">
 <prefwindow id="gContactSyncSetup"
             title="&title.label;"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -61,6 +61,9 @@
                   type="bool"/>
       <preference id="autoSync"
                   name="extensions.gContactSync.autoSync"
+                  type="bool"/>
+      <preference id="syncGroups"
+                  name="extensions.gContactSync.syncGroups"
                   type="bool"/>
     </preferences>
     <vbox>
@@ -93,6 +96,10 @@
         <checkbox preference="confirmDuplicates"
                  id="confirmDuplicates"
                  label="&confirmDuplicates.label;"/>
+                   
+        <checkbox preference="syncGroups"
+                 id="syncGroups"
+                 label="&syncGroups.label;"/>
       </vbox>
     </vbox>
   </prefpane>

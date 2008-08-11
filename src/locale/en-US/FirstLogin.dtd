@@ -1,7 +1,0 @@
-<!ENTITY title.label "gContactSync Initial Setup">
-<!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
-<!ENTITY abName.value "Name of the Address Book to synchronize with (new or existing)">
-<!ENTITY updateGoogle.label "Always update Gmail™ when a contact changes in Gmail and Thunderbird">
-<!ENTITY confirmDuplicates.label "Ask for confirmation before deleting duplicates">
-<!ENTITY autoSync.label "Sync contacts automatically when the Address Book opens">
-<!ENTITY gettingStarted1.value "Before you start synchronizing your contacts, please check these settings">

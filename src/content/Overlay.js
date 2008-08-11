@@ -110,8 +110,9 @@ var Overlay = {
    * Overlay.checkAuthentication
    * Checks to see whether or not there is an authentication token in the login
    * manager.  If so, it begins a sync.  If not, it shows the login prompt.
+   * @param firstLogin 
    */
-  checkAuthentication: function() {
+  checkAuthentication: function(firstLogin) {
     if (gdata.isAuthValid()) {
       // get the Address Book
       this.mAddressBook = new AddressBook(Preferences.mSyncPrefs.addressBookName.value);
@@ -119,7 +120,10 @@ var Overlay = {
       originalDisplayCardViewPane = DisplayCardViewPane;
       DisplayCardViewPane = this.myDisplayCardViewPane;
       AbListener.add(); // add the address book listener
-      Sync.schedule(Preferences.mSyncPrefs.initialDelay.value);  
+      if (firstLogin)
+        Sync.begin();
+      else
+        Sync.schedule(Preferences.mSyncPrefs.initialDelay.value);  
       return;
     }
     this.setStatusBarText(StringBundle.getStr("notAuth"));
@@ -173,7 +177,7 @@ var Overlay = {
     // when the setup window loads, set its onunload property to begin a sync
     setup.onload = function() {
       setup.onunload = function () {
-        Overlay.checkAuthentication(); 
+        Overlay.checkAuthentication(true); 
       };
     };
   },

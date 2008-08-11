@@ -152,14 +152,16 @@ var ContactConverter = {
       var value = ab.getCardValue(aCard, arr[i]);
       aContact.setExtendedProperty(arr[i], value);
     }
-    // set the groups
-    var groups = [];
-    for (var i in Sync.mLists) {
-      var list = Sync.mLists[i];
-      if (list.hasCard(aCard))
-        groups.push(i);
+    if (Preferences.mSyncPrefs.syncGroups.value) {
+      // set the groups
+      var groups = [];
+      for (var i in Sync.mLists) {
+        var list = Sync.mLists[i];
+        if (list.hasCard(aCard))
+          groups.push(i);
+      }
+      aContact.setGroups(groups);
     }
-    aContact.setGroups(groups);
     // cleanup
     aContact.removeElements();
     return aContact;
@@ -200,20 +202,22 @@ var ContactConverter = {
     }
 
     ab.updateCard(card);
-    // get the groups after updating the card
-    var groups = aContact.getValue("groupMembershipInfo");
-    var lists = Sync.mLists;
-    for (var i in lists) {
-      var group = groups[i];
-      var list = lists[i];
-      // delete the card from the list, if necessary
-      if (list.hasCard(card)) {
-        if (!group)
-          list.deleteCards([card]);
+    if (Preferences.mSyncPrefs.syncGroups.value) {
+      // get the groups after updating the card
+      var groups = aContact.getValue("groupMembershipInfo");
+      var lists = Sync.mLists;
+      for (var i in lists) {
+        var group = groups[i];
+        var list = lists[i];
+        // delete the card from the list, if necessary
+        if (list.hasCard(card)) {
+          if (!group)
+            list.deleteCards([card]);
+        }
+        // add the card to the list, if necessary
+        else if (group)
+          list.addCard(card);
       }
-      // add the card to the list, if necessary
-      else if (group)
-        list.addCard(card);
     }
   },
   /**

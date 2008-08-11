@@ -145,8 +145,10 @@ AddressBook.prototype = {
       while(iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName)
+          if (data.dirName == aDirName) {
+            this.mName = aDirName;
             return data;
+          }
       }
       // the AB doesn't exist, so make one:
       abManager.newAddressBook(aDirName, "moz-abmdbdirectory://", 2);
@@ -156,8 +158,10 @@ AddressBook.prototype = {
       while(iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName)
+          if (data.dirName == aDirName) {
+            this.mName = aDirName;
             return data;
+          }
       }// end of while loop
       return null;
     }
@@ -171,8 +175,10 @@ AddressBook.prototype = {
       while(iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName)
+          if (data.dirName == aDirName) {
+            this.mName = aDirName;
             return data;
+          }
       }
       // the AB doesn't exist...
       // write a 0 to the data file to reset the last sync date
@@ -187,8 +193,10 @@ AddressBook.prototype = {
       while(iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName)
+          if (data.dirName == aDirName) {
+            this.mName = aDirName;
             return data;
+          }
       }
    }
     return null;

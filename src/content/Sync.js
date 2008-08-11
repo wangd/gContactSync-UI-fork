@@ -57,10 +57,12 @@ var Sync = {
   mSyncScheduled: false,
   mGroups: {}, // used to store groups
   mLists: {}, // stores the mail lists
-  mFirstSync: false,
+  mAbName: null,
+  mLastAbName: null,
   /**
    * Sync.begin
    * Performs the first steps of the sync process.
+   * @param firstLog Should be true if the user just logged in.
    */
   begin: function() {
     if (!gdata.isAuthValid()) {
@@ -70,32 +72,63 @@ var Sync = {
     // quit if still syncing.
     if (!this.mSynced)
       return;
-    // if this is the first sync, have the user setup some prefs
-    if (!this.mFirstSync && FileIO.getLastSync() == 0) {
-      this.confirmFirst();
-      return;
-    }
+
     Preferences.getSyncPrefs(); // get the preferences
     this.mSyncScheduled = false;
     this.mSynced = false;
     LOGGER.mErrorCount = 0; // reset the error count
-
+    this.mAbName = Preferences.mSyncPrefs.addressBookName.value;
     // get (and make, if necessary) the Google address book
-    Overlay.mAddressBook.mDirectory = Overlay.mAddressBook.getAbByName(Preferences
-                                             .mSyncPrefs.addressBookName.value);
+    Overlay.mAddressBook.mDirectory = Overlay.mAddressBook.getAbByName(this.mAbName);
     if (!Overlay.mAddressBook.mDirectory)
       throw "Unable to create Address Book" + StringBundle.getStr("pleaseReport");
-
+    // avoid bug 401496 https://bugzilla.mozilla.org/show_bug.cgi?id=401496
+    // check if the address book had to be made and Thunderbird wasn't restarted
+    if (this.mLastAbName && this.mAbName == this.mLastAbName &&
+        FileIO.getLastSync() == 0) {
+      if (confirm(StringBundle.getStr("warning")))
+         // returning will prevent another sync from ocurring before at least
+         // the address book is closed and reopened
+        return;
+    }
     Overlay.setStatusBarText(StringBundle.getStr("syncing"));
     if (FileIO.mLogFile && FileIO.mLogFile.exists())
       FileIO.mLogFile.remove(false); // delete the old log file
     LOGGER.LOG("Starting Synchronization at: " + Date() + "\n");
-
+    if (Preferences.mSyncPrefs.syncGroups.value)
+      this.getGroups();
+    else
+      this.getContacts();
+  },
+  /**
+   * Sync.getGroups
+   * Sends an HTTP Request to Google for a feed of all of the user's groups.
+   * Calls Sync.begin() when there is a successful response on an error other
+   * than offline.
+   */
+  getGroups: function() {
+    LOGGER.LOG("***Beginning Group - Mail List Synchronization***");
     var httpReq = new GHttpRequest("getGroups", gdata.mAuthToken, null, null);
     httpReq.mOnSuccess = ["Sync.syncGroups(httpReq.responseXML);"],
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
                         "Sync.begin();"]; // if there is an error, try to sync w/o groups                   
     httpReq.mOnOffline = this.mOfflineCommand
+    httpReq.send();
+  },
+  /**
+   * Sync.getContacts
+   * Sends an HTTP Request to Google for a feed of all the user's contacts.
+   * Calls Sync.sync with the response if successful or Sync.finish with the
+   * error.
+   */
+  getContacts: function() {
+    LOGGER.LOG("***Beginning Contact Synchronization***");
+    var httpReq = new GHttpRequest("getAll", gdata.mAuthToken, null, null);
+    httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
+    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating group', " +
+                        "httpReq.responseText);",
+                        "Sync.finish(httpReq.responseText);"];
+    httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
   /**
@@ -119,17 +152,13 @@ var Sync = {
     }
     Overlay.mAddressBook.mCurrentCard = {};
     this.mSynced = true;
+    this.mLastAbName = this.mAbName;
     if (UpdateCardView)
       UpdateCardView(); // refresh the card view in case a contact was updated
     if (aStartOver)
       this.begin();
     else
       this.schedule(Preferences.mSyncPrefs.refreshInterval.value * 60000);
-  },
-  confirmFirst: function() {
-    Overlay.setStatusBarText(StringBundle.getStr("initialSetup"));
-    this.mFirstSync = true;
-    this.begin();
   },
   /**
    * Sync.sync
@@ -560,15 +589,7 @@ var Sync = {
   },
   updateGroups: function() {
     if (this.mGroupsToUpdate.length == 0) {
-      // get the contacts from Google and sync the address book with the response
-      LOGGER.LOG("***Beginning Synchronization***");
-      var httpReq = new GHttpRequest("getAll", gdata.mAuthToken, null, null);
-      httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
-      httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating group', " +
-                          "httpReq.responseText);",
-                          "Sync.finish(httpReq.responseText);"];
-      httpReq.mOnOffline = this.mOfflineCommand;
-      httpReq.send();
+      this.getContacts();
       return;
     }
     var group = this.mGroupsToUpdate.shift();

@@ -65,7 +65,8 @@ var Preferences = {
     verboseLog: new Pref("verboseLog", "bool", true),
     syncExtended: new Pref("syncExtended", "bool", true),
     overrideCopy: new Pref("overrideCopy", "bool", true),
-    autoSync: new Pref("autoSync", "bool", true)
+    autoSync: new Pref("autoSync", "bool", true),
+    syncGroups: new Pref("syncGroups", "bool", true)
   },
   /**
    * Preferences.getPref

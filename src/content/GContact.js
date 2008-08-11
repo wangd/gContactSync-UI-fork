@@ -190,7 +190,6 @@ GContact.prototype = {
                          "method." + StringBundle.getStr("pleaseReport"))
       return;
     }
-
     var organization = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
                                                        "organization")[0];
     var thisElem = this.mCurrentElement;
@@ -204,7 +203,6 @@ GContact.prototype = {
         var otherTagName = tagName == "orgName" ? "orgTitle" : "orgName";
         var other = this.xml.getElementsByTagNameNS(aElement.namespace.url,
                                                     otherTagName)[0];
-
         if (!other)
           this.xml.removeChild(organization);
         else if (organization)
@@ -221,7 +219,6 @@ GContact.prototype = {
       organization.setAttribute("rel", gdata.contacts.rel + "#other");
       this.xml.appendChild(organization);
     }
-
     var elem = document.createElementNS(aElement.namespace.url,
                                         aElement.tagName);
     var text = document.createTextNode(aValue);
@@ -229,8 +226,16 @@ GContact.prototype = {
 
     organization.appendChild(elem);
   },
-  // removeElements MUST be called after all elements are set
-  // needs to be given the encoded value...
+  /**
+   * GContact.setElementValue
+   * Sets the value of the specified element.
+   * NOTE: removeElements MUST be called after all elements are set
+   * @param aElement The GElement object with information about the value to get.
+   * @param aIndex   The index of the value (ie 0 for primary email, 1 for
+   *                 second...).  Set to 0 if not supplied.
+   * @param aType    The type, if the element can have types.
+   * @param aValue   The value to set for the element.
+   */
   setElementValue: function(aElement, aIndex, aType, aValue) {
     // get the current element (as this.mCurrentElement) and it's value (returned)
     var value = this.getElementValue(aElement, aIndex, aType);
@@ -322,11 +327,21 @@ GContact.prototype = {
       LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
     }
   },
+  /**
+   * GContact.removeExtendedProperties
+   * Removes all extended properties from this contact.
+   */
   removeExtendedProperties: function() {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = arr.length - 1; i > -1 ; i--)
       this.xml.removeChild(arr[i]);
   },
+  /**
+   * GContact.getExtendedProperty
+   * Returns the value of the extended property with a matching name attribute.
+   * @param aName The name of the extended property to return
+   * @return The value of the extended property with the name attribute aName
+   */
   getExtendedProperty: function(aName) {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = 0, length = arr.length; i < length; i++)
@@ -334,6 +349,7 @@ GContact.prototype = {
         return arr[i].getAttribute("value");
   },
   /**
+   * GContact.setExtendedProperty
    * Sets an extended property with the given name and value if there are less
    * than 10 existing.  Logs a warning if there are already 10 or more.
    * @param aName  The name of the property.
@@ -354,6 +370,7 @@ GContact.prototype = {
     }
   },
   /**
+   * GContact.getValue
    * Returns the value of the XML Element with the supplied tag name at the
    * given index of the given type (home, work, other, etc.)
    * @param aName  The tag name of the value to get.  See gdata for valid tag
@@ -376,8 +393,7 @@ GContact.prototype = {
         return this.getGroups();
       // otherwise, if it is a normal attribute, get it's value
       else if (gdata.contacts[aName])
-        return this.decodeString(this.getElementValue(gdata.contacts[aName],
-                                aIndex, aType));
+        return this.getElementValue(gdata.contacts[aName], aIndex, aType);
       // if the name of the value to get is something else, throw an error
       else
         LOGGER.LOG_WARNING("Unable to getValue for " + aName);
@@ -397,13 +413,12 @@ GContact.prototype = {
    */
   setValue: function(aName, aIndex, aType, aValue) {
     try {
+      if (aValue == "")
+        aValue = null;
       LOGGER.VERBOSE_LOG(aName + " - " + aIndex + " - " + aType + " - " + aValue);
-      var value = null;
-      if (aValue && aValue != "")
-        value = this.encodeString(aValue);
       if (gdata.contacts[aName] && aName != "groupMembershipInfo")
         return this.setElementValue(gdata.contacts[aName],
-                                    aIndex, aType, value);
+                                    aIndex, aType, aValue);
       // if the name of the value to get is something else, throw an error
       else
         LOGGER.LOG_WARNING("Unable to SetValue for " + aName + " - " + aValue);
@@ -539,28 +554,5 @@ GContact.prototype = {
     // get only the very end
     var str = str.substring(str.length - aType.length);
     return str == aType; // return true if the end is equal to aType
-  },
-  /**
-   * GContact.encodeString
-   * Encodes a string replacing invalid characters.
-   * @param str The string to encode
-   */
-  encodeString: function(str) {
-    if (str && str.replace)
-  	  return str.replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
-  	           .replace(">", "&gt;").replace("'", "&apos;");
-  	return "";
-  },
-  /**
-   * GContact.decodeString
-   * Decodes a string, replacing the representation of characters to the actual
-   * characters themselves.
-   * @param str The string to decode
-   */
-  decodeString: function(str) {
-  	if (str && str.replace)
-  	  return str.replace("&amp;", "&").replace("&quot;", '"').replace("&lt;", "<")
-  	            .replace("&gt;", ">").replace("&apos;", "'");
-    return "";
   }
 };

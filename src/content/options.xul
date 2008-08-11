@@ -71,6 +71,9 @@
       <preference id="autoSync"
                   name="extensions.gContactSync.autoSync"
                   type="bool"/>
+      <preference id="syncGroups"
+                  name="extensions.gContactSync.syncGroups"
+                  type="bool"/>
       <preference id="extended1"
                   name="extensions.gContactSync.extended1"
                   type="string"/>
@@ -148,6 +151,10 @@
             <checkbox preference="autoSync"
                      id="autoSync"
                      label="&autoSync.label;"/>
+                   
+            <checkbox preference="syncGroups"
+                     id="syncGroups"
+                     label="&syncGroups.label;"/>
             <hbox>
               <button id="removeLogin"
                       label="&removeLogin.label;"
