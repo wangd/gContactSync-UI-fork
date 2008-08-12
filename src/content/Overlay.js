@@ -436,12 +436,11 @@ var Overlay = {
     for (var i = 0, length = aArray.length; i < length; i++) {
       if (aArray[i].indexOf("Type") != -1)
         continue;
-      for (var i = 0, length = aArray.length; i < length; i++)
       try {
         cvSetVisible(cvData["cv" + aArray[i]], true);
       }
       catch (e) {
-        LOGGER.LOG_WARNING("Error while showing nodes: ", e);
+        LOGGER.LOG_WARNING("Error while showing nodes", e);
       }
     }
   },
