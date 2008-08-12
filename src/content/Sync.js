@@ -203,7 +203,7 @@ var Sync = {
     LOGGER.LOG("***Finding and matching contacts from Google and Thunderbird***");
     for (var i = 0, length = googleContacts.length; i < length; i++) {
       gContact = new GContact(googleContacts[i]);
-      var id = gContact.getValue("id");
+      var id = gContact.getValue("id").value;
       LOGGER.LOG("-" + gContact.getName());
       // a new array with only the unmatched cards                 
       var abCards2 = [];
@@ -332,7 +332,7 @@ var Sync = {
                              this.mContactsToDelete.length + " " +
                              StringBundle.getStr("remaining"));
     var contact = this.mContactsToDelete.shift();
-    var editURL = contact.getValue("EditURL");
+    var editURL = contact.getValue("EditURL").value;
     LOGGER.LOG(" * " + contact.getName() + "  -  " + editURL);
 
     var httpReq = new GHttpRequest("delete", gdata.mAuthToken, editURL, null);
@@ -427,7 +427,7 @@ var Sync = {
     var gContact = obj.gContact;
     var abCard = obj.abCard;
 
-    var editURL = gContact.getValue("EditURL");
+    var editURL = gContact.getValue("EditURL").value;
     var xml = ContactConverter.cardToAtomXML(abCard, gContact).xml;
 
     LOGGER.LOG("\n" + gContact.getName());
@@ -617,6 +617,7 @@ var Sync = {
     if (aDelay && this.mSynced && !this.mSyncScheduled && aDelay > 0 &&
         Preferences.mSyncPrefs.autoSync.value) {
       this.mSyncScheduled = true;
+      LOGGER.VERBOSE_LOG("Next sync in: " + aDelay + " milliseconds");
       setTimeout("Sync.begin();", aDelay);  
     }
   }

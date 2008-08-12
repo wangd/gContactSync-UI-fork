@@ -75,12 +75,59 @@ var CardDialogOverlay = {
       this.mLoadNumber++;
       return;
     }
+    StringBundle.init(); // initialize the string bundle
     // try to QI the card.  If it cannot be done, don't add the tab 
     try {
       // QI the card if it doesn't have the getProperty method
       if (!gEditCard.card.getProperty)
         gEditCard.card.QueryInterface(Ci.nsIAbMDBCard);
-
+      // add the type for the primary and second email addresses
+      try {
+      var primaryEmail = document.getElementById("PrimaryEmail");
+      if (primaryEmail && primaryEmail.parentNode) {
+        var box = primaryEmail.parentNode;
+        var menuList = document.createElement("menulist");
+        menuList.setAttribute("id", "PrimaryEmailType");
+        var menuPopup = document.createElement("menupopup");
+        var other = document.createElement("menuitem");
+        other.setAttribute("value", "other");
+        other.setAttribute("label", StringBundle.getStr("other"));
+        var home = document.createElement("menuitem");
+        home.setAttribute("value", "home");
+        home.setAttribute("label", StringBundle.getStr("home"));
+        var work = document.createElement("menuitem");
+        work.setAttribute("value", "work");
+        work.setAttribute("label", StringBundle.getStr("work"));
+        menuPopup.appendChild(other);
+        menuPopup.appendChild(home);
+        menuPopup.appendChild(work);
+        menuList.appendChild(menuPopup);
+        box.appendChild(menuList);
+      }
+      } catch(e) {alert(e);}
+      try {
+      var secondEmail = document.getElementById("SecondEmail");
+      if (secondEmail && secondEmail.parentNode) {
+        var box = secondEmail.parentNode;
+        var menuList = document.createElement("menulist");
+        menuList.setAttribute("id", "SecondEmailType");
+        var menuPopup = document.createElement("menupopup");
+        var other = document.createElement("menuitem");
+        other.setAttribute("value", "other");
+        other.setAttribute("label", StringBundle.getStr("other"));
+        var home = document.createElement("menuitem");
+        home.setAttribute("value", "home");
+        home.setAttribute("label", StringBundle.getStr("home"));
+        var work = document.createElement("menuitem");
+        work.setAttribute("value", "work");
+        work.setAttribute("label", StringBundle.getStr("work"));
+        menuPopup.appendChild(other);
+        menuPopup.appendChild(home);
+        menuPopup.appendChild(work);
+        menuList.appendChild(menuPopup);
+        box.appendChild(menuList);
+      }
+      } catch(e) {alert(e);}
       myGetCardValues(gEditCard.card, document);
       // override the check and set card values function
       originalCheckAndSetCardValues = CheckAndSetCardValues;
@@ -111,14 +158,58 @@ window.addEventListener("load", function(e) { CardDialogOverlay.init(); }, false
  */
 function myGetCardValues(aCard, aDoc) {
   for (var i in gAttributes) {
+    if (gAttributes[i].indexOf("Type") != -1)
+      continue;
     try {
-      if (aCard.getProperty) // post Bug 413260
+      var typeElem = aDoc.getElementById(gAttributes[i] + "Type");
+      if (aCard.getProperty) { // post Bug 413260
         aDoc.getElementById(gAttributes[i]).value = aCard.getProperty(gAttributes[i], null);
-      else // pre Bug 413260
+        if (typeElem) {
+          var type = aCard.getProperty(gAttributes[i] + "Type", "");
+          // default type is "other" if not present
+          type = type && type != "" ? type : "other";
+          typeElem.value = type;
+        }
+      }
+      else { // pre Bug 413260
         aDoc.getElementById(gAttributes[i]).value = aCard.getStringAttribute(gAttributes[i]);
+        if (typeElem) {
+          var type = aCard.getStringAttribute(gAttributes[i] + "Type");
+          // default type is "other" if not present
+          type = type && type != "" ? type : "other";
+          typeElem.value = type;
+        }
+      }
     }
     catch(e) { LOGGER.LOG_WARNING("Error in myGetCardValues: " + e); }
   }
+  // get the primary and second email types
+  try {
+    var typeElem1 = aDoc.getElementById("PrimaryEmailType");
+    var typeElem2 = aDoc.getElementById("SecondEmailType");
+    if (typeElem1 && typeElem2) {
+      if (aCard.getProperty) { // post Bug 413260
+        var type1 = aCard.getProperty("PrimaryEmailType", "");
+        // default type is "other" if not present
+        type1 = type1 && type1 != "" ? type1 : "other";
+        typeElem1.value = type1;
+        var type2 = aCard.getProperty("SecondEmailType", "");
+        // default type is "other" if not present
+        type2 = type2 && type2 != "" ? type2 : "other";
+        typeElem2.value = type2;
+      }
+      else { // pre Bug 413260
+        var type1 = aCard.getStringAttribute("PrimaryEmailType");
+        // default type is "other" if not present
+        type1 = type && type1 != "" ? type1 : "other";
+        typeElem1.value = type1;
+        var type2 = aCard.getStringAttribute("PrimaryEmailType");
+        // default type is "other" if not present
+        type2 = type2 && type2 != "" ? type2 : "other";
+        typeElem2.value = type2;
+      }
+    }
+  } catch(e) { LOGGER.LOG_WARNING("Error in myGetCardValues: " + e); }
 }
 /**
  * Sets the attributes added by this extension as the value in the textboxes
@@ -130,16 +221,47 @@ function myGetCardValues(aCard, aDoc) {
  */
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   for (var i in gAttributes) {
+    if (gAttributes[i].indexOf("Type") != -1)
+      continue;
     try {
       var value;
+      var type;
       if (aDoc.getElementById(gAttributes[i])) {
         value = aDoc.getElementById(gAttributes[i]).value;
-        if (aCard.getProperty) // post Bug 413260
+        type = aDoc.getElementById(gAttributes[i] + "Type");
+        if (type)
+          type = type.value;
+        type = type ? type : ""; // make sure type isn't null
+        if (aCard.getProperty) { // post Bug 413260
           aCard.setProperty(gAttributes[i], value);
-        else // pre Bug 413260
+          aCard.setProperty(gAttributes[i] + "Type", type);
+        }
+        else { // pre Bug 413260
           aCard.setStringAttribute(gAttributes[i], value);
+          aCard.setStringAttribute(gAttributes[i] + "Type", type);
+        }
       }
     } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues: " + e); }
   }
+  // set the primary and second email types
+  try {
+    var type;
+    type1 = aDoc.getElementById("PrimaryEmailType");
+    type2 = aDoc.getElementById("SecondEmailType");
+    if (type1)
+      type1 = type1.value;
+    type1 = type1 ? type1 : ""; // make sure type isn't null
+    if (type2)
+      type2 = type2.value;
+    type2 = type2 ? type2 : ""; // make sure type isn't null
+    if (aCard.getProperty) { // post Bug 413260
+      aCard.setProperty("PrimaryEmailType", type1);
+      aCard.setProperty("SecondEmailType", type2);
+    }
+    else { // pre Bug 413260
+      aCard.setStringAttribute("PrimaryEmailType", type1);
+      aCard.setStringAttribute("SecondEmailType", type2);
+    }
+  } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues: " + e); }
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }

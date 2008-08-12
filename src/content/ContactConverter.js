@@ -50,7 +50,8 @@ var ContactConverter = {
   mAddedAttributes: [
     "OtherAddress", "ThirdEmail", "FourthEmail", "TalkScreenName",
     "JabberScreenName", "YahooScreenName", "MSNScreenName", "ICQScreenName",
-    "HomeFaxNumber", "OtherNumber", "FullHomeAddress", "FullWorkAddress"],
+    "HomeFaxNumber", "OtherNumber", "FullHomeAddress", "FullWorkAddress",
+    "PrimaryEmailType", "SecondEmailType"],
   mInitialized: false,
   /**
    * ContactConverter.init
@@ -142,8 +143,12 @@ var ContactConverter = {
       var obj = arr[i];
       LOGGER.VERBOSE_LOG(obj.tbName);
       var value = ab.getCardValue(aCard, obj.tbName);
-      LOGGER.VERBOSE_LOG(value);
-      aContact.setValue(obj.elementName, obj.index, obj.type, value);
+      // for the type, get the type from the card, or use its default
+      var type = ab.getCardValue(aCard, obj.tbName + "Type");
+      if (!type || type == "")
+        type = obj.type;
+      LOGGER.VERBOSE_LOG(value + " type: " + type);
+      aContact.setValue(obj.elementName, obj.index, type, value);
     }
     // set the extended properties
     aContact.removeExtendedProperties();
@@ -184,23 +189,25 @@ var ContactConverter = {
       card = aCard;
     else
       card = ab.addCard(ab.makeCard());
-   
     var arr = this.mConverterArr;
     // get the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
       var obj = arr[i];
       LOGGER.VERBOSE_LOG(obj.tbName);
-      var value = aContact.getValue(obj.elementName, obj.index, obj.type);
-      LOGGER.VERBOSE_LOG(value);
-      ab.setCardValue(card, obj.tbName, value);
+      var property = aContact.getValue(obj.elementName, obj.index, obj.type);
+      property = property ? property : new Property("", "");
+      LOGGER.VERBOSE_LOG(property.value + " - " + property.type);
+      ab.setCardValue(card, obj.tbName, property.value);
+      // set the type
+      ab.setCardValue(card, obj.tbName + "Type", property.type);
     }
     // get the extended properties
     arr = Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
       var value = aContact.getExtendedProperty(arr[i]);
+      value = value ? value.value : null;
       ab.setCardValue(card, arr[i], value);
     }
-
     ab.updateCard(card);
     if (Preferences.mSyncPrefs.syncGroups.value) {
       // get the groups after updating the card

@@ -105,8 +105,8 @@ var Overlay = {
     // it is a postal address
     for (var i = 0, length = ids.length; i < length; i++) {
       var id = ids[i];
-      if (id.indexOf("Address") != -1) // skip addresses
-        continue;
+      if (id.indexOf("Address") != -1 || id.indexOf("Type") != -1) 
+        continue; // skip addresses and Types
       // make and add the splitter first
       var splitter = document.createElement("splitter");
       splitter.setAttribute("class", "tree-splitter");
@@ -414,6 +414,8 @@ var Overlay = {
    */
   hideNodes: function(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++) {
+      if (aArray[i].indexOf("Type") != -1)
+        continue;
       try {
         cvSetVisible(cvData["cv" + aArray[i]], false);
       }
@@ -432,6 +434,8 @@ var Overlay = {
    */
   showNodes: function(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++) {
+      if (aArray[i].indexOf("Type") != -1)
+        continue;
       for (var i = 0, length = aArray.length; i < length; i++)
       try {
         cvSetVisible(cvData["cv" + aArray[i]], true);

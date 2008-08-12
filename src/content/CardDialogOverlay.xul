@@ -41,8 +41,13 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <!-- since the tabbox doesn't have an ID, this overlay uses JavaScript to
        add a tab -->
+  <script src="StringBundle.js"/>
   <script src="CardDialogOverlay.js"/>
-
+  
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="otherStringBundle"
+                  src="chrome://gContactSync/locale/gcontactsync.properties"/>
+  </stringbundleset>
   <tabpanels id="abTabPanels" flex="1">
    <vbox index="gcontactsync" flex="1">
      <vbox id="gcontactSyncFields" class="alignBoxWithFieldset">
@@ -53,6 +58,13 @@
            <label control="thirdEmail" value="&third.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="ThirdEmail" flex="1" class="uri-element"/>
+             <menulist id="ThirdEmailType">
+              <menupopup>
+                <menuitem value="other" label="&other.label;"/>
+                <menuitem value="home" label="&home.label;"/>
+                <menuitem value="work" label="&work.label;"/>
+              </menupopup>
+            </menulist>
            </hbox>
          </hbox>
          <hbox>
@@ -60,6 +72,13 @@
            <label control="fourthEmail" value="&fourth.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="FourthEmail" flex="1" class="uri-element"/>
+             <menulist id="FourthEmailType">
+              <menupopup>
+                <menuitem value="other" label="&other.label;"/>
+                <menuitem value="home" label="&home.label;"/>
+                <menuitem value="work" label="&work.label;"/>
+              </menupopup>
+            </menulist>
            </hbox>
          </hbox>
        </groupbox>

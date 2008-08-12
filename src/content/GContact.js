@@ -127,6 +127,8 @@ GContact.prototype = {
    * @param aIndex   The index of the value (ie 0 for primary email, 1 for
    *                 second...).  Set to 0 if not supplied.
    * @param aType    The type, if the element can have types.
+   * @return A new Property object with the value of the element, if found.  The
+   *         type of the Property will be aType.
    */
   getElementValue: function(aElement, aIndex, aType) {
     if (!aIndex)
@@ -151,19 +153,29 @@ GContact.prototype = {
         // value based on where the value is actually stored in the element
         switch (aElement.contactType) {
           case gdata.contacts.types.TYPED_WITH_CHILD:
-            if (arr[i].childNodes[0])
-              return arr[i].childNodes[0].nodeValue;
+            if (arr[i].childNodes[0]) {
+              var type = arr[i].getAttribute("rel");
+              type = type.substring(type.indexOf("#") + 1);
+              return new Property(arr[i].childNodes[0].nodeValue, type);
+            }
             return null;
           case gdata.contacts.types.TYPED_WITH_ATTR:
             if (!aElement.attribute)
               LOGGER.LOG_WARNING("Error - invalid element passed to the " +
                                  "getElementValue method." +
                                  StringBundle.getStr("pleaseReport"));
-            else
-              return arr[i].getAttribute(aElement.attribute);
+            else {
+              var type;
+              if (aElement.tagName == "im")
+                type = arr[i].getAttribute("protocol");
+              else
+                type = arr[i].getAttribute("rel");
+              type = type.substring(type.indexOf("#") + 1);
+              return new Property(arr[i].getAttribute(aElement.attribute), type);
+            }
           case gdata.contacts.types.UNTYPED:
             if (arr[i].childNodes[0])
-              return arr[i].childNodes[0].nodeValue;
+              return new Property(arr[i].childNodes[0].nodeValue);
             return null;
           default:
             LOGGER.LOG_WARNING("Error - invalid contact type passed to the " +
@@ -207,8 +219,6 @@ GContact.prototype = {
           this.xml.removeChild(organization);
         else if (organization)
           organization.removeChild(thisElem);
-        else
-          {} // XXX fix
       }
       return;
     }
@@ -238,10 +248,19 @@ GContact.prototype = {
    */
   setElementValue: function(aElement, aIndex, aType, aValue) {
     // get the current element (as this.mCurrentElement) and it's value (returned)
-    var value = this.getElementValue(aElement, aIndex, aType);
-    // if the current value is already good, return
-    if (value == aValue)
+    var property = this.getElementValue(aElement, aIndex, aType);
+    property = property ? property : new Property("", "");
+    var value = property.value;
+    // if the current value is already good, check the type and return
+    if (value == aValue) {
+      if (property.type != aType) {
+        LOGGER.VERBOSE_LOG("value is already good, changing type to: " + aType);
+        this.mCurrentElement.setAttribute("rel", gdata.contacts.rel + "#" + aType);
+      }
+      else
+        LOGGER.VERBOSE_LOG("value " + value + " and type " + property.type + " are good");
       return;
+    }
     // orgName and orgTitle are special cases
     if (aElement.tagName == "orgTitle" || aElement.tagName == "orgName")
       return this.setOrg(aElement, aValue, value);
@@ -340,13 +359,14 @@ GContact.prototype = {
    * GContact.getExtendedProperty
    * Returns the value of the extended property with a matching name attribute.
    * @param aName The name of the extended property to return
-   * @return The value of the extended property with the name attribute aName
+   * @return A Property object with the value of the extended property with the
+   *        name attribute aName
    */
   getExtendedProperty: function(aName) {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("name") == aName)
-        return arr[i].getAttribute("value");
+        return new Property(arr[i].getAttribute("value"));
   },
   /**
    * GContact.setExtendedProperty
@@ -378,7 +398,8 @@ GContact.prototype = {
    * @param aIndex Optional.  The index, if non-zero, of the value to get.
    * @param aType  The type of element to get if the tag name has different
    *               types (home, work, other, etc.).
-   * @return The value.
+   * @return A new Property object with the value and type, if applicable.
+   *         If aName is groupMembership info, returns an array of the group IDs
    */
   getValue: function(aName, aIndex, aType) {
     try {
@@ -387,7 +408,7 @@ GContact.prototype = {
         var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "link");
         for (var i = 0, length = arr.length; i < length; i++)
           if (arr[i].getAttribute("rel") == gdata.contacts.links[aName])
-            return arr[i].getAttribute("href");
+            return new Property(arr[i].getAttribute("href"));
       }
       else if (aName == "groupMembershipInfo")
         return this.getGroups();
@@ -421,7 +442,7 @@ GContact.prototype = {
                                     aIndex, aType, aValue);
       // if the name of the value to get is something else, throw an error
       else
-        LOGGER.LOG_WARNING("Unable to SetValue for " + aName + " - " + aValue);
+        LOGGER.LOG_WARNING("Unable to setValue for " + aName + " - " + aValue);
     }
     catch(e) {
       LOGGER.LOG_WARNING("Error in GContact.setValue:\n" + e);
@@ -537,12 +558,13 @@ GContact.prototype = {
    * @param aXmlElem The XML Element to check
    * @param aType    The type (home, work, other, etc.)
    */
-  isMatch: function(aElement, aXmlElem, aType) {
+  isMatch: function(aElement, aXmlElem, aType, aDontSkip) {
     if (aElement.contactType == gdata.contacts.types.UNTYPED)
       return true;
     switch (aElement.tagName) {
-      case "email": // always return true for e-mail
-        return true;
+      case "email":
+        if (!aDontSkip) // always return true for e-mail
+          return true;
       case "im":
         var str = aXmlElem.getAttribute("protocol");
         break;
