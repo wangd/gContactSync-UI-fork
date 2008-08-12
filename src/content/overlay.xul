@@ -46,6 +46,7 @@
   <script src="gdata.js"/>
   <script src="AbListener.js"/>
   <script src="Group.js"/>
+  <script src="Property.js"/>
   <script src="GContact.js"/>
   <script src="MailList.js"/>
   <script src="Pref.js"/>
@@ -66,45 +67,6 @@
     <stringbundle id="otherStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
-  <!-- Allows the user to sort by one of the new attributes -->
-  <treecols id="abResultsTreeCols">
-    <splitter class="tree-splitter"/>
-    <treecol id="ThirdEmail" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&thirdEmail.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="FourthEmail" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&fourthEmail.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="TalkScreenName" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&googleTalk.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="JabberScreenName" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&jabber.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="YahooScreenName" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&yahoo.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="MSNScreenName" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&msn.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="ICQScreenName" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&icq.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="HomeFaxNumber" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&homeFax.label;"/>
-    <splitter class="tree-splitter"/>
-    <treecol id="OtherNumber" class="sortDirectionIndicator" hidden="true"
-                   persist="hidden ordinal width sortDirection"  flex="1"
-                   label="&otherNum.label;"/>
-  </treecols>
   
   <!-- Add some text to the status bar -->
   <statusbar id="status-bar" class="chromeclass-status">

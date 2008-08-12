@@ -59,6 +59,10 @@ var Overlay = {
    * the authentication check and sync or login prompt.
    */
   initialize: function() {
+    // determine if this is before or after Bug 413260 landed
+    var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
+              .createInstance(nsIAbCard);
+    this.mBug413260 = card.getProperty ? true : false;
     StringBundle.init(); // initialize the string bundle
     Preferences.getSyncPrefs(); // get the preferences
     FileIO.init(); // initialize the FileIO class
@@ -67,6 +71,8 @@ var Overlay = {
     Overlay.setupButton(); // insert the Sync button
     gdata.contacts.init();
     ContactConverter.init();
+    if (this.mBug413260) // add the extra attributes as tree columns to show and
+      this.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver
     // so when a card is copied the extra attributes are copied with it
     if (Preferences.mSyncPrefs.overrideCopy.value)
@@ -80,6 +86,43 @@ var Overlay = {
    */
   unload: function() {
     AbListener.remove();
+  },
+  /**
+   * ContactConverter.addTreeCols
+   * Adds treecol elements to the address book results tree that shows cards in
+   * the currently selected directory.  These treecols allow the user to show
+   * and sort by extra attributes that are added by this extension.  This will
+   * only work after Bug 413260 landed, so in Thunderbird 3.0b1pre and after.
+   */
+  addTreeCols: function() {
+    // get the treecols XUL element
+    var treeCols = document.getElementById("abResultsTreeCols");
+    if (!treeCols || !treeCols.appendChild)
+      return;
+    // get the added attributes
+    var ids = ContactConverter.getExtraSyncAttributes(false);
+    // iterate through every added attribute and add a treecol for it unless
+    // it is a postal address
+    for (var i = 0, length = ids.length; i < length; i++) {
+      var id = ids[i];
+      if (id.indexOf("Address") != -1) // skip addresses
+        continue;
+      // make and add the splitter first
+      var splitter = document.createElement("splitter");
+      splitter.setAttribute("class", "tree-splitter");
+      treeCols.appendChild(splitter);
+      // make the new treecol
+      var treeCol = document.createElement("treecol");
+      // then set it up with the ID and other attributes
+      treeCol.setAttribute("id", id);
+      treeCol.setAttribute("class", "sortDirectionIndicator");
+      treeCol.setAttribute("hidden", "true");
+      treeCol.setAttribute("persist", "hidden ordinal width sortDirection");
+      treeCol.setAttribute("flex", "1");
+      treeCol.setAttribute("label", StringBundle.getStr(id));
+      // append it to the treecols element
+      treeCols.appendChild(treeCol);
+    }
   },
   /**
    * Overlay.setupButton

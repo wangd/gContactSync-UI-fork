@@ -229,6 +229,8 @@ MailList.prototype = {
    * @return An array containing all of the cards in this mailing list.
    */
   getAllCards: function() {
+    // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
+    // properly, but it shouldn't be caught or the sync won't function properly
     var arr = [];
     var iter = this.mList.childCards;
     if (this.mParent.mVersion == 3) { // TB 3

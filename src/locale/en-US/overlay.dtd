@@ -1,18 +1,14 @@
 <!ENTITY gContactSync.tab "gContactSync">
+<!ENTITY screenname.box "Additional Screennames">
 <!ENTITY googleTalk.label "Google Talk">
 <!ENTITY icq.label "ICQ">
 <!ENTITY msn.label "MSN">
 <!ENTITY yahoo.label "Yahoo">
 <!ENTITY jabber.label "Jabber">
-<!ENTITY thirdEmail.label "Third E-mail Address">
-<!ENTITY fourthEmail.label "Fourth E-mail Address">
+<!ENTITY email.box "Additional Email Addresses">
 <!ENTITY third.label "Third">
 <!ENTITY fourth.label "Fourth">
-<!ENTITY email.box "Additional Email Addresses">
-<!ENTITY screenname.box "Additional Screennames">
 <!ENTITY numbers.box "Additional Numbers">
-<!ENTITY homeFax.label "Home Fax">
-<!ENTITY otherNum.label "Other">
 <!ENTITY homeFax.label "Home Fax">
 <!ENTITY otherNum.label "Other">
 <!ENTITY address.box "Additional Addresses">
