@@ -228,7 +228,7 @@ function myGetCardValues(aCard, aDoc) {
       }
       else { // pre Bug 413260
         var type1 = aCard.getStringAttribute("PrimaryEmailType");
-        var type2 = aCard.getStringAttribute("PrimaryEmailType");
+        var type2 = aCard.getStringAttribute("SecondEmailType");
       }
       // default type is "other" if not present
       type1 = type1 && type1 != "" ? type1 : "other";
@@ -245,7 +245,7 @@ function myGetCardValues(aCard, aDoc) {
       if (aCard.getProperty) // post Bug 413260
         var type = aCard.getProperty("_AimScreenNameType", "");
       else // pre Bug 413260
-        var type = aCard.getStringAttribute("PrimaryEmailType");
+        var type = aCard.getStringAttribute("_AimScreenNameType");
       if (type)
         typeElem.value = type;
     }
