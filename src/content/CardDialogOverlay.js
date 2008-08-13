@@ -71,7 +71,7 @@ var CardDialogOverlay = {
     if (!document.getElementById("abTabs")) {
       // if it has tried to load more than 50 times something is wrong, so quit
       if (this.mLoadNumber < 50)
-        setTimeout("editCardDialog.init", 200);
+        setTimeout("CardDialogOverlay.init", 200);
       this.mLoadNumber++;
       return;
     }
@@ -79,6 +79,8 @@ var CardDialogOverlay = {
     // try to QI the card.  If it cannot be done, don't add the tab 
     try {
       // QI the card if it doesn't have the getProperty method
+      // if the card cannot accept custom attributes, quit and do not add the
+      // extra tabs
       if (!gEditCard.card.getProperty)
         gEditCard.card.QueryInterface(Ci.nsIAbMDBCard);
       // add the PrimaryEmail type drop down menu

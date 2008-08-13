@@ -38,6 +38,8 @@
 <!DOCTYPE window SYSTEM "chrome://gContactSync/locale/options.dtd">
 <prefwindow id="gContactSyncPrefs"
             title="&title.label;"
+            width="480"
+            height="520"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="synonyms.js"/>
   <script src="LoginManager.js"/>

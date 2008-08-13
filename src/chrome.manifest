@@ -9,5 +9,6 @@ style	chrome://gcontactsync/content/overlay.xul	 chrome://gContactSync/skin/over
 overlay  chrome://messenger/content/addressbook/addressbook.xul        chrome://gcontactsync/content/overlay.xul
 # add the extra attributes to the edit card dialog
 overlay  chrome://messenger/content/addressbook/abEditCardDialog.xul   chrome://gcontactsync/content/CardDialogOverlay.xul
-#disable the overlay for the New Card dialog since it only works with the patch for Bug 413260
-#overlay  chrome://messenger/content/addressbook/abNewCardDialog.xul    chrome://gcontactsync/content/CardDialogOverlay.xul
+# the overlay for the new card dialog only appears in new versions of Thunderbird
+# after the patch for Bug 413260 landed (3.0b1pre+)
+overlay  chrome://messenger/content/addressbook/abNewCardDialog.xul    chrome://gcontactsync/content/CardDialogOverlay.xul
