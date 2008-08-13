@@ -491,15 +491,15 @@ var Overlay = {
     vbox.insertBefore(cvData.cvThirdEmailBox, cvData.cvFourthEmailBox);
     // the screennames
     cvData.cvTalkScreenName = Overlay.makeDescElement("TalkScreenName", "CardViewText");
-    cvData.cvJabberScreenName = Overlay.makeDescElement("JabberScreenName", "CardViewText");
+    cvData.cvICQScreenName = Overlay.makeDescElement("ICQScreenName", "CardViewText");
     cvData.cvYahooScreenName = Overlay.makeDescElement("YahooScreenName", "CardViewText");
     cvData.cvMSNScreenName = Overlay.makeDescElement("MSNScreenName", "CardViewText");
-    cvData.cvICQScreenName = Overlay.makeDescElement("ICQScreenName", "CardViewText");
-    vbox.insertBefore(cvData.cvICQScreenName, document.getElementById("cvScreennameBox"));
-    vbox.insertBefore(cvData.cvMSNScreenName, cvData.cvICQScreenName);
-    vbox.insertBefore(cvData.cvYahooScreenName, cvData.cvMSNScreenName);
-    vbox.insertBefore(cvData.cvJabberScreenName, cvData.cvYahooScreenName);
-    vbox.insertBefore(cvData.cvTalkScreenName, cvData.cvJabberScreenName);
+    cvData.cvJabberScreenName = Overlay.makeDescElement("JabberScreenName", "CardViewText");
+    vbox.appendChild(cvData.cvTalkScreenName);
+    vbox.appendChild(cvData.cvICQScreenName);
+    vbox.appendChild(cvData.cvMSNScreenName);
+    vbox.appendChild(cvData.cvYahooScreenName);
+    vbox.appendChild(cvData.cvJabberScreenName);
     // Other Address
     vbox = document.getElementById("cvbOther");
     var otherHbox = document.createElement("hbox");

@@ -38,6 +38,10 @@
  * Converts contacts between Thunderbird's format (a 'card') and the Atom/XML
  * representation of a contact.  Must be initialized before the first use by
  * calling the init() function.
+ * NOTE: The first 6 screennames of a contact from Google are stored as:
+ * _AimScreenName, TalkScreenName, ICQScreenName, YahooScreenName, MSNScreenName
+ * and JabberScreenName for compatibility with gContactSync 0.1b1 and the
+ * default type for those textboxes.
  * @class
  */
 var ContactConverter = {
@@ -51,7 +55,7 @@ var ContactConverter = {
     "OtherAddress", "ThirdEmail", "FourthEmail", "TalkScreenName",
     "JabberScreenName", "YahooScreenName", "MSNScreenName", "ICQScreenName",
     "HomeFaxNumber", "OtherNumber", "FullHomeAddress", "FullWorkAddress",
-    "PrimaryEmailType", "SecondEmailType"],
+    "PrimaryEmailType", "SecondEmailType", "_AimScreenNameType"],
   mInitialized: false,
   /**
    * ContactConverter.init
@@ -75,11 +79,11 @@ var ContactConverter = {
       new ConverterElement("email", "FourthEmail", 3, "other"),
       // IM screennames
       new ConverterElement("im", "_AimScreenName", 0, "AIM"),
-      new ConverterElement("im", "TalkScreenName", 0, "GOOGLE_TALK"),
-      new ConverterElement("im", "JabberScreenName", 0, "JABBER"),
-      new ConverterElement("im", "YahooScreenName", 0, "YAHOO"),
-      new ConverterElement("im", "MSNScreenName", 0, "MSN"),
-      new ConverterElement("im", "ICQScreenName", 0, "ICQ"),
+      new ConverterElement("im", "TalkScreenName", 1, "GOOGLE_TALK"),
+      new ConverterElement("im", "ICQScreenName", 2, "ICQ"),
+      new ConverterElement("im", "YahooScreenName", 3, "YAHOO"),
+      new ConverterElement("im", "MSNScreenName", 4, "MSN"),
+      new ConverterElement("im", "JabberScreenName", 5, "JABBER"),
       // the phone numbers
       new ConverterElement("phoneNumber", "HomePhone", 0, "home"),
       new ConverterElement("phoneNumber", "WorkPhone", 0, "work"),

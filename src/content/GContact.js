@@ -249,13 +249,16 @@ GContact.prototype = {
   setElementValue: function(aElement, aIndex, aType, aValue) {
     // get the current element (as this.mCurrentElement) and it's value (returned)
     var property = this.getElementValue(aElement, aIndex, aType);
-    property = property ? property : new Property("", "");
+    property = property ? property : new Property(null, null);
     var value = property.value;
     // if the current value is already good, check the type and return
     if (value == aValue) {
-      if (property.type != aType) {
+      if (value && property.type != aType) {
         LOGGER.VERBOSE_LOG("value is already good, changing type to: " + aType);
-        this.mCurrentElement.setAttribute("rel", gdata.contacts.rel + "#" + aType);
+        if (aElement.tagName == "im")
+          this.mCurrentElement.setAttribute("protocol", gdata.contacts.rel + "#" + aType);
+        else
+          this.mCurrentElement.setAttribute("rel", gdata.contacts.rel + "#" + aType);
       }
       else
         LOGGER.VERBOSE_LOG("value " + value + " and type " + property.type + " are good");
@@ -566,6 +569,8 @@ GContact.prototype = {
         if (!aDontSkip) // always return true for e-mail
           return true;
       case "im":
+        if (!aDontSkip) // always return true for e-mail
+          return true;
         var str = aXmlElem.getAttribute("protocol");
         break;
       default:
