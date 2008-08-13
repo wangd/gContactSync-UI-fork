@@ -312,7 +312,7 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
     if (aCard.getProperty) // post Bug 413260
       aCard.setProperty("_AimScreenNameType", type);
     else // pre Bug 413260
-      aCard.setStringAttribute("_AimScreenNameType", type1);
+      aCard.setStringAttribute("_AimScreenNameType", type);
   } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues3: " + e); }
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
