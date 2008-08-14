@@ -40,12 +40,12 @@
  * @class
  */
 var FileIO = {
+  mDataFile: null,
+  mLogFile: null,
   fileNames: {
     DATA_FILE: "data.txt", // stores the last sync time
     LOG_FILE: "log.txt" // stores the log from the last sync
   },
-  mDataFile: null,
-  mLogFile: null,
   /**
    * FileIO.init
    * Initializes the files contained in this class.
@@ -85,15 +85,15 @@ var FileIO = {
     return em.getInstallLocation(MY_ID).getItemFile(MY_ID, aName);
   },
   /**
-   * FileIO.readFile.
-   * Opens the given file and returns an array of the lines within it..
+   * FileIO.readFile
+   * Opens the given file and returns an array of the lines within it.
    * @param aFile  The nsIFile to read.
-   * @return An array of the lines in the file or "" if there is an error.
+   * @return An array of the lines in the file or [] if there is an error.
    */
   readFile: function(aFile) {
     this.checkFile(aFile, "FileIO.readFile");
     if (!aFile.exists())
-      return "";
+      return [];
     try {
       var istream = Cc["@mozilla.org/network/file-input-stream;1"]
                      .createInstance(Ci.nsIFileInputStream);
@@ -111,7 +111,7 @@ var FileIO = {
     }
     catch(e) {
       LOGGER.LOG_WARNING("Unable to read from file: " + aFile, e);
-      return "";
+      return [];
     }
   },
   /**

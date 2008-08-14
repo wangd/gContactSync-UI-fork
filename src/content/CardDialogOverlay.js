@@ -170,13 +170,15 @@ var CardDialogOverlay = {
       // override the check and set card values function
       originalCheckAndSetCardValues = CheckAndSetCardValues;
       CheckAndSetCardValues = myCheckAndSetCardValues;
-      // setup the new tab
+      // setup the new screenname/e-mail address/phone numbers tab
       var myTab = document.createElementNS(this.mNamespace, "tab");
       myTab.setAttribute("label", "gContactSync");
       myTab.setAttribute("id", "gContactSyncTab");
+      // setup the new address tab
       var myAddressTab = document.createElementNS(this.mNamespace, "tab");
-      myAddressTab.setAttribute("label", "gContactSync 2"); //StringBundle.getStr("AddressTab"));
+      myAddressTab.setAttribute("label", "gContactSync 2");
       myAddressTab.setAttribute("id", "gContactSyncTab2");
+      // add the new tabs to the dialog
       document.getElementById("abTabs").appendChild(myTab);
       document.getElementById("abTabs").appendChild(myAddressTab);
       // get the new card values
@@ -196,8 +198,6 @@ window.addEventListener("load", function(e) { CardDialogOverlay.init(); }, false
  */
 function myGetCardValues(aCard, aDoc) {
   for (var i in gAttributes) {
-    if (gAttributes[i].indexOf("Type") != -1)
-      continue;
     try {
       var typeElem = aDoc.getElementById(gAttributes[i] + "Type");
       if (aCard.getProperty) { // post Bug 413260
@@ -263,8 +263,6 @@ function myGetCardValues(aCard, aDoc) {
  */
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   for (var i in gAttributes) {
-    if (gAttributes[i].indexOf("Type") != -1)
-      continue;
     try {
       var value;
       var type;

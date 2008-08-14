@@ -55,7 +55,7 @@ var gdata = {
     // NOTE: leave accountType as HOSTED_OR_GOOGLE or Google Apps for your
     // domain accounts won't work
     return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" + aPassword +
-             "&service=cp&source=Josh-gContactSync-0-1b1";
+             "&service=cp&source=Josh-gContactSync-0-1b2";
   },
   // The namespaces used
   namespaces: {
@@ -158,8 +158,7 @@ var gdata = {
   },
   /**
    * gdata.isAuthValid
-   * Returns true if the authorization token is valid
-   * XXX find some way of actually testing if it is valid...
+   * Returns true if the authorization token is 'valid'
    */ 
   isAuthValid: function() {
     if (!this.mAuthToken)

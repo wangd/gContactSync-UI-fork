@@ -67,13 +67,11 @@
     <stringbundle id="otherStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
-  
+
   <!-- Add some text to the status bar -->
   <statusbar id="status-bar" class="chromeclass-status">
          <statusbarpanel id="statusText2"
                          href="chrome://gcontactsync/log.txt"
-                         label="&initialStatus.label;"
-                         />
+                         label="&initialStatus.label;"/>
   </statusbar>  
-
 </overlay>

@@ -566,10 +566,10 @@ GContact.prototype = {
       return true;
     switch (aElement.tagName) {
       case "email":
-        if (!aDontSkip) // always return true for e-mail
+        if (!aDontSkip) // always return true for e-mail by default
           return true;
       case "im":
-        if (!aDontSkip) // always return true for e-mail
+        if (!aDontSkip) // always return true for e-mail by default
           return true;
         var str = aXmlElem.getAttribute("protocol");
         break;
