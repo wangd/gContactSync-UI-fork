@@ -66,14 +66,15 @@ function myOnDrop(row, orientation) {
   var targetURI = targetResource.Value;
   var srcURI = GetSelectedDirectory();
   var toDirectory = GetDirectoryFromURI(targetURI);
-  var ab = new AddressBook(null, targetURI);
   var srcDirectory = GetDirectoryFromURI(srcURI);
+  var ab = new AddressBook(null, targetURI);
   // iterate through each dropped item from the session
   for (var i = 0, dropItems = dragSession.numDropItems; i < dropItems; i++) {
     dragSession.getData(trans, i);
     var dataObj = {};
     var flavor = {};
     var len = {};
+    var needToRefresh = false;
     try {
       trans.getAnyTransferData(flavor, dataObj, len);
       dataObj = dataObj.value.QueryInterface(Ci.nsISupportsString);
@@ -82,7 +83,6 @@ function myOnDrop(row, orientation) {
     var transData = dataObj.data.split("\n");
     var rows = transData[0].split(",");
     var numrows = rows.length;
-
     var result;
     // needToCopyCard is used for whether or not we should be creating
     // copies of the cards in a mailing list in a different address book
@@ -90,17 +90,27 @@ function myOnDrop(row, orientation) {
     var needToCopyCard = true;
     if (srcURI.length > targetURI.length) {
       result = srcURI.split(targetURI);
-      if (result[0] != srcURI)
+      if (result[0] != srcURI) {
         // src directory is a mailing list on target directory, no need to copy card
         needToCopyCard = false;
+        // workaround for a mailnews bug, get the childCards enumerator to
+        // update the mIsMailingList variable in the directory
+        // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
+        toDirectory.childCards;
+      }
     }
     else {
       result = targetURI.split(srcURI);
-      if (result[0] != targetURI) 
+      if (result[0] != targetURI) {
         // target directory is a mailing list on src directory, no need to copy card
         needToCopyCard = false;
+        // workaround for a mailnews bug, get the childCards enumerator to
+        // update the mIsMailingList variable in the directory
+        // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
+        toDirectory.childCards;
+        needToRefresh = true;
+      }
     }
-
     // if we still think we have to copy the card,
     // check if srcURI and targetURI are mailing lists on same directory
     // if so, we don't have to copy the card
@@ -110,7 +120,6 @@ function myOnDrop(row, orientation) {
                               GetParentDirectoryFromMailingListURI(srcURI)))
         needToCopyCard = false;
     }
-
     // Only move if we are not transferring to a mail list
     var actionIsMoving = (dragSession.dragAction & dragSession.DRAGDROP_ACTION_MOVE)
                          && !toDirectory.isMailList;
@@ -138,7 +147,11 @@ function myOnDrop(row, orientation) {
         // if the card is an MDB Card (not an LDAP or different card)
         try {
           if (!card.getProperty) {
-            card.QueryInterface(Ci.nsIAbMDBCard);  // MDB card was removed in 413260
+            // MDB card was removed in 413260, but after that patch it is no
+            // longer necessary to copy the extra attributes manually
+            // the card may also be an LDAP card in which case it won't have
+            // extra attributes to copy
+            card.QueryInterface(Ci.nsIAbMDBCard);
             isMDBCard = true;
             for (var k = 0; k < attributesLen; k++) {
               values[k] = card.getStringAttribute(attributes[k]);
@@ -185,16 +198,18 @@ function myOnDrop(row, orientation) {
     else
       cardsTransferredText = (numrows == 1 ? gAddressBookBundle.getString("cardCopied")
                                            : gAddressBookBundle.getFormattedString("cardsCopied", [numrows]));
-
+    // refresh the results tree if necessary to avoid showing the same card twice
+    if (needToRefresh) {
+      // update the address book view so it doesn't show the card twice
+      SetAbView(GetSelectedDirectory(), false);
+      // select the first card, if any
+      if (gAbView && gAbView.getCardFromRow(0))
+        SelectFirstCard();
+    }
+    // set the status text after refreshing the results list
     document.getElementById("statusText").label = cardsTransferredText;
-    // update the address book view so it doesn't show the card twice
-    SetAbView(GetSelectedDirectory(), false);
-    // select the first card, if any
-    if (gAbView && gAbView.getCardFromRow(0))
-      SelectFirstCard();
   }
 }
-
 /**
  * deleteCard
  * Deletes the given card from the given directory.

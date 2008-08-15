@@ -206,6 +206,7 @@ MailList.prototype = {
    * MailList.addCard
    * Adds a card to this mailing list without checking if it already exists.
    * @param aCard The card to add to this mailing list.
+   * @return A real card (MDB card prior to 413260).
    */
   addCard: function(aCard) {
     this.mParent.checkCard(aCard);

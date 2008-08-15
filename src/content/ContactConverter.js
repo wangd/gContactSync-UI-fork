@@ -289,9 +289,11 @@ var ContactConverter = {
       // set the attribute and update the card
       ab.setCardValue(aCard, "Full" + aPrefix + "Address", newAddress);
       // clear the old attributes (so an address can be removed)
-      var arr = ["Address", "Address2", "City", "State", "ZipCode", "Country"];
-      for (var i = 0, length = arr.length; i < length; i++)
-        ab.setCardValue(aCard, aPrefix + arr[i], "");
+      if (Preferences.mSyncPrefs.removeOldAddresses.value) {
+        var arr = ["Address", "Address2", "City", "State", "ZipCode", "Country"];
+        for (var i = 0, length = arr.length; i < length; i++)
+          ab.setCardValue(aCard, aPrefix + arr[i], "");
+      }
       ab.updateCard(aCard);
     }
   },

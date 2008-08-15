@@ -153,8 +153,13 @@ var Sync = {
     Overlay.mAddressBook.mCurrentCard = {};
     this.mSynced = true;
     this.mLastAbName = this.mAbName;
-    if (UpdateCardView)
-      UpdateCardView(); // refresh the card view in case a contact was updated
+    // refresh the ab results pane
+    // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
+    SetAbView(GetSelectedDirectory(), false);
+    // select the first card, if any
+    if (gAbView && gAbView.getCardFromRow(0))
+      SelectFirstCard();
+    // start over, if necessary, or schedule the next synchronization
     if (aStartOver)
       this.begin();
     else

@@ -20,6 +20,8 @@ pref("extensions.gContactSync.verboseLog", true);
 pref("extensions.gContactSync.autoSync", true);
 // set to true to synchronize groups with mailing lists
 pref("extensions.gContactSync.syncGroups", true);
+// set to true to remove the old addresses when they are converted to the new format
+pref("extensions.gContactSync.removeOldAddresses", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");
