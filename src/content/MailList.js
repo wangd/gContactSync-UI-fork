@@ -251,7 +251,7 @@ MailList.prototype = {
             arr.push(data);
           iter.next();
         } while (Components.lastResult == 0);
-      } catch(e) {} // error is expected when finished   
+      } catch(e) {LOGGER.VERBOSE_LOG(e);} // error is expected when finished   
     }
     return arr;
   },

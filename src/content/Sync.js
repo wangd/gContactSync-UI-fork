@@ -40,7 +40,7 @@
  * @class
  */
 var Sync = {
-// a few arrays treated as queues to add/delete/update contacts and cards
+  // a few arrays treated as queues to add/delete/update contacts and cards
   mContactsToDelete: [],
   mContactsToAdd: [],
   mContactsToUpdate: [],
@@ -84,6 +84,7 @@ var Sync = {
       throw "Unable to create Address Book" + StringBundle.getStr("pleaseReport");
     // avoid bug 401496 https://bugzilla.mozilla.org/show_bug.cgi?id=401496
     // check if the address book had to be made and Thunderbird wasn't restarted
+    // if so, warn the user with a confirm dialog
     if (this.mLastAbName && this.mAbName == this.mLastAbName &&
         FileIO.getLastSync() == 0) {
       if (confirm(StringBundle.getStr("warning")))
@@ -150,7 +151,7 @@ var Sync = {
       Overlay.writeTimeToStatusBar();
       LOGGER.LOG("Finished Synchronization at: " + Date());
     }
-    Overlay.mAddressBook.mCurrentCard = {};
+    ContactConverter.mCurrentCard = {};
     this.mSynced = true;
     this.mLastAbName = this.mAbName;
     // refresh the ab results pane
@@ -175,16 +176,18 @@ var Sync = {
       var string = (new XMLSerializer()).serializeToString(aAtom);
       LOGGER.LOG(string + "\n");
     }
+    // get the address book and QI the directory
+    var ab = this.ab = Overlay.mAddressBook;
+    ab.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
     // have to update the lists or TB 2 won't work properly
-    this.mLists = Overlay.mAddressBook.getAllLists();
+    this.mLists = ab.getAllLists();
+    // get all the contacts from the feed and the cards from the address book
     var googleContacts = aAtom.getElementsByTagName('entry');
-    var abCards = Overlay.mAddressBook.getAllCards();
+    var abCards = ab.getAllCards();
+    // get and log the last sync time (milliseconds since 1970 UTC)
     var lastSync = FileIO.getLastSync();
     LOGGER.VERBOSE_LOG("Last sync was at: " + lastSync);
     var cardsToDelete = [];
-    this.ab = Overlay.mAddressBook;
-    var ab = this.ab;
-    ab.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
     var maxContacts = Preferences.mSyncPrefs.maxContacts.value;
     // if there are more contacts than returned, increase the pref
     var newMax;
@@ -194,11 +197,9 @@ var Sync = {
       this.finish("Max Contacts too low...resynchronizing", true);
       return;
     }
-
     this.mContactsToAdd = [];
     this.mContactsToDelete = [];
     var gContact;
-
      // get the strings outside of the loop so they are only found once
     var found = " * Found a match Last Modified Dates:";
     var bothChanged = " * Conflict detected: the contact has been updated in " +
@@ -214,8 +215,7 @@ var Sync = {
       var abCards2 = [];
       for (var j = 0, length2 = abCards.length; j < length2; j++) {
         var abCard = abCards[j];
-
-        // if the cards are the same...
+        // if the contacts have the same ID then check if one of them must be updated
         if (ab.getCardValue(abCard, "GoogleID") == id) {
           var gCardDate = gContact.getLastModifiedDate();
           var tbCardDate = ab.getCardValue(abCard, "LastModifiedDate");
@@ -238,13 +238,13 @@ var Sync = {
               ContactConverter.makeCard(gContact, abCard);
             }
           }
-          // if the card from google is newer
+          // if the contact from google is newer update the TB card
           else if (gCardDate > lastSync) {
             LOGGER.LOG(" * The contact from Google is newer...Updating the" +
                        " card from Thunderbird");
             ContactConverter.makeCard(gContact, abCard);
           }
-          // if the tbcard is newer
+          // if the TB card is newer update Google
           else if (tbCardDate > lastSync/1000) {
             LOGGER.LOG(" * The card from Thunderbird is newer...Updating the" +
                        " contact from Google");
@@ -253,11 +253,13 @@ var Sync = {
             toUpdate.abCard = abCard;
             this.mContactsToUpdate.push(toUpdate);
           }
+          // otherwise nothing needs to be done
           else
             LOGGER.LOG(" * Neither card has changed");
           gContact.matched = true;
         }
-        // duplicate...
+        // if the Google contact and the current card share at least one e-mail
+        // address then the card is a duplicate, and the user is prompted to delete it
         else if (ContactConverter.compareContacts(abCard, gContact)) {
           LOGGER.LOG(" * Duplicate detected");
           // default to deleting duplicates, but if the user wants to confirm
@@ -350,10 +352,11 @@ var Sync = {
   },
   /**
    * Adds all cards to Google included in the mContactsToAdd array one at a 
-   * time to avoid timing conflicts.  Calls Sync.processUpdateQueue() when
-   * finished.
+   * time to avoid timing conflicts and duplicates.  Calls
+   * Sync.processUpdateQueue() when finished.
    */
   processAddQueue: function() {
+    // if all contacts were added then update all necessary contacts
     if (!this.mContactsToAdd || this.mContactsToAdd.length == 0) {
       LOGGER.LOG("***Updating contacts from Google***");
       this.processUpdateQueue();
@@ -362,6 +365,8 @@ var Sync = {
     Overlay.setStatusBarText(StringBundle.getStr("adding") + " " +
                              this.mContactsToAdd.length + " " +
                              StringBundle.getStr("remaining"));
+    // make sure this card wasn't already added because the sync method doesn't
+    // check new cards for duplicates
     var cardToAdd = this.mContactsToAdd.shift();
     LOGGER.LOG("\n" + cardToAdd.displayName);
     var primary = this.ab.getCardValue(cardToAdd, "PrimaryEmail");
@@ -369,47 +374,56 @@ var Sync = {
     var third = this.ab.getCardValue(cardToAdd, "ThirdEmail");
     var fourth = this.ab.getCardValue(cardToAdd, "FourthEmail");
 
-    // if a similar card was already added, prompt to delete it
-    if ((primary && this.mAddedEmails.indexOf(primary) != -1) ||
-        (second && this.mAddedEmails.indexOf(second) != -1) ||
-        (third && this.mAddedEmails.indexOf(third) != -1) ||
-        (primary && this.mAddedEmails.indexOf(fourth) != -1)) {
+    // if a similar card was already added, prompt to delete it, otherwise
+    // ignore the card
+    if ((primary && this.mAddedEmails[primary]) ||
+        (second && this.mAddedEmails[second]) ||
+        (third && this.mAddedEmails[third]) ||
+        (fourth && this.mAddedEmails[fourth])) {
       LOGGER.LOG(" * Duplicate detected");
+      var confirmStr = StringBundle.getStr("duplicatePrompt") + " " +
+                       cardToAdd.displayName + " " + cardToAdd.primaryEmail + 
+                       StringBundle.getStr("duplicatePrompt2")
       // default to deleting duplicates, but if the user wants to confirm
       // each duplicate ask for confirmation
-      if (!Preferences.mSyncPrefs.confirmDuplicates.value || 
-          confirm(StringBundle.getStr("duplicatePrompt")
-          + " " + cardToAdd.displayName + " " + cardToAdd.primaryEmail + 
-          StringBundle.getStr("duplicatePrompt2"))) {
+      if (!Preferences.mSyncPrefs.confirmDuplicates.value || confirm(confirmStr)) {
         this.ab.deleteCards([cardToAdd]);
         LOGGER.LOG("   o Duplicate deleted");
       }
       else
         LOGGER.LOG("   o Duplicate ignored");
+      // continue updating the next contact
       Sync.processAddQueue();              
     }
     else {
+      // if it isn't a duplicate, update mAddedEmails with this card's addresses
       if (primary)
-        this.mAddedEmails.push(primary);
+        this.mAddedEmails[primary] = true;
       if (second)
-        this.mAddedEmails.push(second);
+        this.mAddedEmails[second] = true;
       if (third)
-        this.mAddedEmails.push(third);
+        this.mAddedEmails[third] = true;
       if (fourth)
-        this.mAddedEmails.push(fourth);
-
+        this.mAddedEmails[fourth] = true;
+      // get the XML representation of the card
       var xml = ContactConverter.cardToAtomXML(cardToAdd).xml;
       if (Preferences.mSyncPrefs.verboseLog.value) {
         var string = (new XMLSerializer()).serializeToString(xml);
         LOGGER.LOG("  - XML of contact being added:\n" + string + "\n");
       }
       var httpReq = new GHttpRequest("add", gdata.mAuthToken, null, string);
+      /* When the contact is successfully created:
+       *  1. Get the card from which the contact was made
+       *  2. Set the card's GoogleID attribute to match the new contact's ID
+       *  3. Update the card in the address book
+       *  4. Call this method again
+       */
       var onCreated = [
         "var ab = Overlay.mAddressBook",
-        "var card = ab.mCurrentCard;",
+        "var card = ContactConverter.mCurrentCard;",
         "ab.setCardValue(card, 'GoogleID', httpReq.responseXML.getElementsByTagNameNS"
         + "(gdata.namespaces.ATOM.url, 'id')[0].childNodes[0].nodeValue);",
-        "Overlay.mAddressBook.updateCard(card);",
+        "ab.updateCard(card);",
         "Sync.processAddQueue();"];
       httpReq.mOnCreated = onCreated;
       httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while adding contact', " +
@@ -424,7 +438,10 @@ var Sync = {
    * a time to avoid timing conflicts.  Calls Sync.finish() when done
    */
   processUpdateQueue: function() {
-    if (!this.mContactsToUpdate || this.mContactsToUpdate.length == 0) {this.finish(); return;}
+    if (!this.mContactsToUpdate || this.mContactsToUpdate.length == 0) {
+      this.finish();
+      return;
+    }
     Overlay.setStatusBarText(StringBundle.getStr("updating") + " " +
                              this.mContactsToUpdate.length + " " +
                              StringBundle.getStr("remaining"));
@@ -542,6 +559,11 @@ var Sync = {
     LOGGER.LOG("***Deleting old groups from Google***");
     this.deleteGroups();
   },
+  /**
+   * Sync.deleteGroups
+   * Deletes all of the groups in mGroupsToDelete one at a time to avoid timing
+   * issues.  Calls Sync.addGroups() when finished.
+   */
   deleteGroups: function() {
     if (this.mGroupsToDelete.length == 0) {
       LOGGER.LOG("***Adding new groups to Google***");
@@ -558,6 +580,12 @@ var Sync = {
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
+  /**
+   * Sync.addGroups
+   * The first part of adding a group involves creating the XML representation
+   * of the mail list and then calling Sync.addGroups2() upon successful
+   * creation of a group.
+   */
   addGroups: function() {
     if (this.mGroupsToAdd.length == 0) {
       LOGGER.LOG("***Updating groups from Google***");
@@ -580,6 +608,11 @@ var Sync = {
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
+  /**
+   * Sync.addGroups2
+   * The second part of adding a group involves updating the list from which
+   * this group was created so the two can be matched during the next sync.
+   */
   addGroups2: function(aResponse) {
     var group = new Group(aResponse.responseXML
                                    .getElementsByTagNameNS(gdata.namespaces.ATOM.url,
@@ -592,6 +625,11 @@ var Sync = {
     this.mLists[id] = list;
     this.addGroups();
   },
+  /**
+   * Sync.updateGroups
+   * Updates all groups in mGroupsToUpdate one at a time to avoid timing issues
+   * and calls Sync.getContacts() when finished.
+   */
   updateGroups: function() {
     if (this.mGroupsToUpdate.length == 0) {
       this.getContacts();
@@ -619,6 +657,8 @@ var Sync = {
    * @param aDelay The duration of time to wait before synchronizing again
    */
   schedule: function(aDelay) {
+    // only schedule a sync if the delay is greater than 0, a sync is not
+    // already schedule, and autosyncing is enabled
     if (aDelay && this.mSynced && !this.mSyncScheduled && aDelay > 0 &&
         Preferences.mSyncPrefs.autoSync.value) {
       this.mSyncScheduled = true;

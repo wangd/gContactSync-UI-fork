@@ -48,9 +48,10 @@ var ContactConverter = {
   // two namespaces
   GD: {},
   ATOM: {},
+  mCurrentCard: {},
   mConverterArr: [],
   // extra attributes added by this extension.  Doesn't include GoogleID or any
-  // of the URLs
+  // of the URLs.  Should be obtained w/ ContactConverter.getExtraSyncAttributes
   mAddedAttributes: [
     "OtherAddress", "ThirdEmail", "FourthEmail", "TalkScreenName",
     "JabberScreenName", "YahooScreenName", "MSNScreenName", "ICQScreenName",
@@ -132,7 +133,7 @@ var ContactConverter = {
       aContact = new GContact();
     var ab = Overlay.mAddressBook;
     ab.checkCard(aCard, "cardToAtomXML");
-    ab.mCurrentCard = aCard;
+    this.mCurrentCard = aCard;
     // use the address with multiple lines instead of the 6 fields
     // if the full address doesn't exist, but the card has at least 1 of the
     // fields convert those to the full address

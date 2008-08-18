@@ -89,7 +89,7 @@ var AbListener = {
       }
       catch(e) {
         LOGGER.LOG_WARNING("Error updating card after being removed: " + 
-                           aItem + " " + e + " " + uri + " " + now);
+                           aItem + " " + uri + " " + now, e);
       }
     }
   },

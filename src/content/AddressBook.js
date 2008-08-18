@@ -39,7 +39,7 @@
  * and delete cards.
  * @param aName The name of the address book.
  * @param aURI  Optional.  The URI of the address book to obtain.  If present,
- *              ignores the given name.
+ *              ignores the aName.
  * @constructor
  * @class
  */
@@ -69,7 +69,6 @@ function AddressBook(aName, aURI) {
 }
 
 AddressBook.prototype = {
-  mCurrentCard: {}, // the last card modified
   mBug413260: false, // true if bug 413260 has landed
   mURI: {}, // the uniform resource identifier of the directory
   // attributes that can be set by getCardValue and setCardValue

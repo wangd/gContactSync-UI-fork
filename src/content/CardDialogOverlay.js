@@ -34,24 +34,33 @@
  *
  * ***** END LICENSE BLOCK ***** */
 var originalCheckAndSetCardValues;
-var gAttributes = [
-  "ThirdEmail", 
-  "FourthEmail",
-  "TalkScreenName",
-  "JabberScreenName",
-  "YahooScreenName",
-  "MSNScreenName",
-  "ICQScreenName",
-  "ThirdEmail",
-  "FourthEmail",
-  "OtherAddress",
-  "HomeFaxNumber",
-  "OtherNumber",
-  "FullHomeAddress",
-  "FullWorkAddress"
-];
-const Ci = Components.interfaces;
-var abVersion;
+var gAttributes = {
+  "ThirdEmail" : true, 
+  "FourthEmail" : true,
+  "TalkScreenName" : true,
+  "JabberScreenName" : true,
+  "YahooScreenName" : true,
+  "MSNScreenName" : true,
+  "ICQScreenName" : true,
+  "ThirdEmail" : true,
+  "FourthEmail" : true,
+  "OtherAddress" : true,
+  "HomeFaxNumber" : true,
+  "OtherNumber" : true,
+  "FullHomeAddress" : true,
+  "FullWorkAddress" : true,
+  "PrimaryEmailType" : true,
+  "SecondEmailType" : true,
+  "ThirdEmailType" : true,
+  "FourthEmailType" : true,
+  "_AimScreenNameType" : true,
+  "TalkScreenNameType" : true,
+  "JabberScreenNameType" : true,
+  "YahooScreenNameType" : true,
+  "MSNScreenNameType" : true,
+  "ICQScreenNameType" : true
+};
+var Ci = Components.interfaces;
 /**
  * CardDialogOverlay
  * Adds a tab to the tab box in the New and Edit Card Dialogs.  Using JavaScript
@@ -132,6 +141,7 @@ var CardDialogOverlay = {
         }
       } catch(e) { LOGGER.LOG_WARNING("Unable to setup SecondEmailType", e); }
       try {
+        // add the Screen Name drop down
         var screenName = document.getElementById("ScreenName");
         if (screenName && screenName.parentNode) {
           var box = screenName.parentNode;
@@ -190,130 +200,57 @@ var CardDialogOverlay = {
 window.addEventListener("load", function(e) { CardDialogOverlay.init(); }, false);
 
 /**
- * A method that sets the gets all of the attributes added by this extension and
- * sets the value of the textbox in aDoc whose ID is the same as the attribute's
- * name.
+ * A method that gets all of the attributes added by this extension and sets
+ * the value of the textbox or drop down menu in aDoc whose ID is identical to
+ * the attribute's name.
  * @param aCard The card to get the values from.
  * @param aDoc  The document.
  */
 function myGetCardValues(aCard, aDoc) {
-  for (var i in gAttributes) {
+  // iterate through all the added type elements and get the card's value for
+  // each one of them to set as the value for the element
+  for (var attr in gAttributes) {
     try {
-      var typeElem = aDoc.getElementById(gAttributes[i] + "Type");
-      if (aCard.getProperty) { // post Bug 413260
-        aDoc.getElementById(gAttributes[i]).value = aCard.getProperty(gAttributes[i], null);
-        if (typeElem) {
-          var type = aCard.getProperty(gAttributes[i] + "Type", null);
-          if (type)
-            typeElem.value = type;
-        }
+      var elem = aDoc.getElementById(attr);
+      // if the element exists, set its value as the card's value
+      if (elem) {
+        var value;
+        if (aCard.getProperty) // post Bug 413260
+          value = aCard.getProperty(attr, null);
+        else // pre Bug 413260
+          value = aCard.getStringAttribute(attr);
+        // set the element's value if attr isn't a type OR it is a type and
+        // the card's value for the attribute isn't null or blank
+        if (attr.indexOf("Type") == -1 || (value && value != ""))
+          elem.value = value;
       }
-      else { // pre Bug 413260
-        aDoc.getElementById(gAttributes[i]).value = aCard.getStringAttribute(gAttributes[i]);
-        if (typeElem) {
-          var type = aCard.getStringAttribute(gAttributes[i] + "Type");
-          if (type)
-            typeElem.value = type;
-        }
-      }
-    }
-    catch(e) { LOGGER.LOG_WARNING("Error in myGetCardValues: " + e); }
+    } catch(e) { LOGGER.LOG_WARNING("Error in myGetCardValues: " + attr, e); }
   }
-  // get the primary and second email types
-  try {
-    var typeElem1 = aDoc.getElementById("PrimaryEmailType");
-    var typeElem2 = aDoc.getElementById("SecondEmailType");
-    if (typeElem1 && typeElem2) {
-      if (aCard.getProperty) { // post Bug 413260
-        var type1 = aCard.getProperty("PrimaryEmailType", "");
-        var type2 = aCard.getProperty("SecondEmailType", "");
-      }
-      else { // pre Bug 413260
-        var type1 = aCard.getStringAttribute("PrimaryEmailType");
-        var type2 = aCard.getStringAttribute("SecondEmailType");
-      }
-      // default type is "other" if not present
-      type1 = type1 && type1 != "" ? type1 : "other";
-      type2 = type2 && type2 != "" ? type2 : "other";
-      // set the value of the menu
-      typeElem1.value = type1;
-      typeElem2.value = type2;
-    }
-  } catch(e) { LOGGER.LOG_WARNING("Error in myGetCardValues2: " + e); }
-  // get the first screenname type
-  try {
-    var typeElem = aDoc.getElementById("_AimScreenNameType");
-    if (typeElem) {
-      if (aCard.getProperty) // post Bug 413260
-        var type = aCard.getProperty("_AimScreenNameType", "");
-      else // pre Bug 413260
-        var type = aCard.getStringAttribute("_AimScreenNameType");
-      if (type)
-        typeElem.value = type;
-    }
-  } catch(e) { LOGGER.LOG_WARNING("Error in myGetCardValues3: " + e); }
 }
 /**
- * Sets the attributes added by this extension as the value in the textboxes
- * in aDoc that have the same ID as the attribute's name.
+ * Sets the attributes added by this extension as the value in the textbox or
+ * drop down menu in aDoc whose ID is identical to the attribute's name.
  * Calls the original CheckAndSetCardValues function when finished.
  * @param aCard  The card to set the values for.
  * @param aDoc   The document.
  * @param aCheck Unused, but passed to the original method.
  */
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
-  for (var i in gAttributes) {
+  // iterate through all the added attributes and types and set the card's value
+  // for each one of them
+  for (var attr in gAttributes) {
     try {
-      var value;
-      var type;
-      if (aDoc.getElementById(gAttributes[i])) {
-        value = aDoc.getElementById(gAttributes[i]).value;
-        type = aDoc.getElementById(gAttributes[i] + "Type");
-        if (type)
-          type = type.value;
-        type = type ? type : ""; // make sure type isn't null
-        if (aCard.getProperty) { // post Bug 413260
-          aCard.setProperty(gAttributes[i], value);
-          aCard.setProperty(gAttributes[i] + "Type", type);
-        }
-        else { // pre Bug 413260
-          aCard.setStringAttribute(gAttributes[i], value);
-          aCard.setStringAttribute(gAttributes[i] + "Type", type);
-        }
+      // if the element exists, set the card's value as its value
+      var elem = aDoc.getElementById(attr);
+      if (elem) {
+        var value = elem.value;
+        if (aCard.getProperty) // post Bug 413260
+          aCard.setProperty(attr, value);
+        else // pre Bug 413260
+          aCard.setStringAttribute(attr, value);
       }
-    } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues: " + e); }
+    } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues: " + attr, e); }
   }
-  // set the primary and second email types
-  try {
-    var type1 = aDoc.getElementById("PrimaryEmailType");
-    var type2 = aDoc.getElementById("SecondEmailType");
-    if (type1)
-      type1 = type1.value;
-    type1 = type1 ? type1 : ""; // make sure type isn't null
-    if (type2)
-      type2 = type2.value;
-    type2 = type2 ? type2 : ""; // make sure type isn't null
-    if (aCard.getProperty) { // post Bug 413260
-      aCard.setProperty("PrimaryEmailType", type1);
-      aCard.setProperty("SecondEmailType", type2);
-    }
-    else { // pre Bug 413260
-      aCard.setStringAttribute("PrimaryEmailType", type1);
-      aCard.setStringAttribute("SecondEmailType", type2);
-    }
-  } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues2: " + e); }
-  // set the aimscreenname type
-  try {
-    var type = aDoc.getElementById("_AimScreenNameType");
-    if (type)
-      type = type.value;
-    // make sure the type isn't null
-    type = type ? type : "";
-    if (aCard.getProperty) // post Bug 413260
-      aCard.setProperty("_AimScreenNameType", type);
-    else // pre Bug 413260
-      aCard.setStringAttribute("_AimScreenNameType", type);
-  } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues3: " + e); }
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }

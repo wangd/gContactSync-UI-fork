@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 /**
- * A simple, static, class that logs messages.
+ * A simple, class that logs messages.
  * @class
  */
 var LOGGER = {
@@ -63,28 +63,30 @@ var LOGGER = {
   /**
    * LOGGER.LOG_ERROR
    * Logs an error and updates the error count.
-   * @param aErrorMessage The error message.
+   * @param aMessage The error message.
+   * @param aError   Optional.  The exception caught.
    */
-   LOG_ERROR: function(aMessage, aError) {
-     var str = "***ERROR: " + aMessage;
-     if (aError)
-       str += "\nError Message:\n" + aError;
-     str += StringBundle.getStr("pleaseReport");
-     this.LOG(str);
-     Sync.mError = true;
-     this.mErrorCount++;
-   },
-   /**
-    * LOGGER.LOG_WARNING
-    * Logs a warning and updates the warning count.
-    * @param aWarningMessage The warning message.
-    */
-   LOG_WARNING: function(aWarningMessage, aError) {
-     var str = "***WARNING: " + aWarningMessage;
-     if (aError)
-       str += "\nError Message:\n" + aError;
-     str += "\n" + StringBundle.getStr("pleaseReport");
-     this.LOG(str);
-     this.mWarningCount++;
-   }
+  LOG_ERROR: function(aMessage, aError) {
+    var str = "***ERROR: " + aMessage;
+    if (aError)
+      str += "\nError Message:\n" + aError;
+    str += StringBundle.getStr("pleaseReport");
+    this.LOG(str);
+    Sync.mError = true;
+    this.mErrorCount++;
+  },
+  /**
+   * LOGGER.LOG_WARNING
+   * Logs a warning and updates the warning count.
+   * @param aWarningMessage The warning message with info about the problem.
+   * @param aError          Optional.  The exception caught.
+   */
+  LOG_WARNING: function(aWarningMessage, aError) {
+    var str = "***WARNING: " + aWarningMessage;
+    if (aError)
+      str += "\nError Message:\n" + aError;
+    str += "\n" + StringBundle.getStr("pleaseReport");
+    this.LOG(str);
+    this.mWarningCount++;
+  }
 };

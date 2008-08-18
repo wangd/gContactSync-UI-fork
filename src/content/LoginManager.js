@@ -64,7 +64,7 @@ var LoginManager = {
       var extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
                                          this.mHttpRealm, this.mUsername, aToken,
                                          this.mUsernameField, this.mPasswordField);
-      loginManager.addLogin(loginInfo);
+      loginManager.addLogin(extLoginInfo);
     }
   },
   /**
@@ -117,7 +117,7 @@ var LoginManager = {
     else if ("@mozilla.org/login-manager;1" in Cc) {
       var loginManager = Cc["@mozilla.org/login-manager;1"]
                           .getService(Ci.nsILoginManager);
-      // Find users for the given parameters
+      // Find logins for the given parameters
       var logins = loginManager.findLogins({}, this.mHostname, this.mSubmitURL,
                                             this.mHttpRealm);
       // Find user from returned array of nsILoginInfo objects
