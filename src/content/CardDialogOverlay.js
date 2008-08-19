@@ -42,8 +42,6 @@ var gAttributes = {
   "YahooScreenName" : true,
   "MSNScreenName" : true,
   "ICQScreenName" : true,
-  "ThirdEmail" : true,
-  "FourthEmail" : true,
   "OtherAddress" : true,
   "HomeFaxNumber" : true,
   "OtherNumber" : true,

@@ -145,5 +145,5 @@ var AbListener = {
       Cc["@mozilla.org/addressbook/services/session;1"]
        .getService(Ci.nsIAddrBookSession)
        .removeAddressBookListener(AbListener);
-  },
+  }
 };
