@@ -43,7 +43,7 @@
 var gdata = {
   AUTH_URL: "https://www.google.com/accounts/ClientLogin",
   AUTH_REQUEST_TYPE: "POST",
-  mAuthToken: null,
+
   /**
    * gdata.makeAuthBody
    * Sets up the body for an authentication request given the e-mail address
@@ -158,11 +158,11 @@ var gdata = {
   },
   /**
    * gdata.isAuthValid
-   * Returns true if the authorization token is 'valid'
+   * Returns true if there is at least one auth token.
    */ 
   isAuthValid: function() {
-    if (!this.mAuthToken)
-      this.mAuthToken = LoginManager.getAuthToken();
-    return this.mAuthToken && this.mAuthToken.length > 10; 
+    if (LoginManager.mNumAuthTokens == 0)
+      LoginManager.getAuthTokens();
+    return LoginManager.mNumAuthTokens > 0;
   }
 }

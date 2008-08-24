@@ -49,16 +49,20 @@ var Sync = {
   mGroupsToAdd: [],
   mGroupsToUpdate: [],
   mGroupsToAddURI: [],
+  mCurrentAuthToken: {},
+  mCurrentUsername: {},
+  mCurrentAb: {},
+  mAddressBooks: [],
+  mIndex: 0,
   // an array of commands to execute when offline during an HTTP Request
-  mOfflineCommand: ["Overlay.setStatusBarText(StringBundle.getStr('offlineStatusText'));", "Sync.finish();"],
+  mOfflineCommand: ["Overlay.setStatusBarText(StringBundle.getStr('offlineStatusText'));", 
+                    "Sync.finish();"],
 
   // booleans used for timing to make sure things don't happen out order
   mSynced: true,
   mSyncScheduled: false,
   mGroups: {}, // used to store groups
   mLists: {}, // stores the mail lists
-  mAbName: null,
-  mLastAbName: null,
   /**
    * Sync.begin
    * Performs the first steps of the sync process.
@@ -72,30 +76,41 @@ var Sync = {
     // quit if still syncing.
     if (!this.mSynced)
       return;
-
+    // get the next auth token
     Preferences.getSyncPrefs(); // get the preferences
     this.mSyncScheduled = false;
     this.mSynced = false;
     LOGGER.mErrorCount = 0; // reset the error count
-    this.mAbName = Preferences.mSyncPrefs.addressBookName.value;
-    // get (and make, if necessary) the Google address book
-    Overlay.mAddressBook.mDirectory = Overlay.mAddressBook.getAbByName(this.mAbName);
-    if (!Overlay.mAddressBook.mDirectory)
-      throw "Unable to create Address Book" + StringBundle.getStr("pleaseReport");
-    // avoid bug 401496 https://bugzilla.mozilla.org/show_bug.cgi?id=401496
-    // check if the address book had to be made and Thunderbird wasn't restarted
-    // if so, warn the user with a confirm dialog
-    if (this.mLastAbName && this.mAbName == this.mLastAbName &&
-        FileIO.getLastSync() == 0) {
-      if (confirm(StringBundle.getStr("warning")))
-         // returning will prevent another sync from ocurring before at least
-         // the address book is closed and reopened
-        return;
-    }
     Overlay.setStatusBarText(StringBundle.getStr("syncing"));
     if (FileIO.mLogFile && FileIO.mLogFile.exists())
       FileIO.mLogFile.remove(false); // delete the old log file
-    LOGGER.LOG("Starting Synchronization at: " + Date() + "\n");
+    this.mIndex = 0;
+    this.mAddressBooks = AbManager.getSyncedAddressBooks(true);
+    this.syncNextUser()
+  },
+  syncNextUser: function() {
+    // set the previous address book's last sync date (if it exists)
+    if (this.mCurrentAb && this.mCurrentAb.setLastSyncDate)
+      this.mCurrentAb.setLastSyncDate((new Date()).getTime());
+    var obj = this.mAddressBooks[this.mIndex++];
+    if (!obj) {
+      this.finish();
+      return;
+    }
+    this.mCurrentUsername = obj.username;
+    LOGGER.LOG("Starting Synchronization for " + this.mCurrentUsername +
+               " at: " + Date() + "\n");
+    this.mCurrentAb = obj.primary;
+    this.mCurrentAuthToken = LoginManager.getAuthTokens()[this.mCurrentUsername];
+    if (!this.mCurrentAuthToken) {
+      LOGGER.LOG_WARNING("Unable to find the auth token for: " + this.mCurrentUsername);
+      this.syncNextUser();
+      return;
+    }
+    LOGGER.VERBOSE_LOG("Found Address Book with name: " +
+                       this.mCurrentAb.mDirectory.dirName +
+                       "\n - URI: " + this.mCurrentAb.mURI +
+                       "\n - Pref ID: " + this.mCurrentAb.getPrefId());
     if (Preferences.mSyncPrefs.syncGroups.value)
       this.getGroups();
     else
@@ -109,7 +124,8 @@ var Sync = {
    */
   getGroups: function() {
     LOGGER.LOG("***Beginning Group - Mail List Synchronization***");
-    var httpReq = new GHttpRequest("getGroups", gdata.mAuthToken, null, null);
+    var httpReq = new GHttpRequest("getGroups", this.mCurrentAuthToken, null,
+                                   null, this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.syncGroups(httpReq.responseXML);"],
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
                         "Sync.begin();"]; // if there is an error, try to sync w/o groups                   
@@ -119,16 +135,17 @@ var Sync = {
   /**
    * Sync.getContacts
    * Sends an HTTP Request to Google for a feed of all the user's contacts.
-   * Calls Sync.sync with the response if successful or Sync.finish with the
+   * Calls Sync.sync with the response if successful or Sync.syncNextUser with the
    * error.
    */
   getContacts: function() {
     LOGGER.LOG("***Beginning Contact Synchronization***");
-    var httpReq = new GHttpRequest("getAll", gdata.mAuthToken, null, null);
+    var httpReq = new GHttpRequest("getAll", this.mCurrentAuthToken, null, null,
+                                   this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating group', " +
                         "httpReq.responseText);",
-                        "Sync.finish(httpReq.responseText);"];
+                        "Sync.syncNextUser(httpReq.responseText);"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
@@ -147,13 +164,14 @@ var Sync = {
     if (LOGGER.mErrorCount > 0)
       Overlay.setStatusBarText(StringBundle.getStr("errDuringSync"));
     else {
-      FileIO.writeLastSync();
       Overlay.writeTimeToStatusBar();
       LOGGER.LOG("Finished Synchronization at: " + Date());
     }
     ContactConverter.mCurrentCard = {};
     this.mSynced = true;
-    this.mLastAbName = this.mAbName;
+    this.mCurrentAb = {};
+    this.mCurrentUsername = {};
+    this.mCurrentAuthToken = {};
     // refresh the ab results pane
     // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
     SetAbView(GetSelectedDirectory(), false);
@@ -177,7 +195,7 @@ var Sync = {
       LOGGER.LOG(string + "\n");
     }
     // get the address book and QI the directory
-    var ab = this.ab = Overlay.mAddressBook;
+    var ab = this.mCurrentAb;
     ab.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
     // have to update the lists or TB 2 won't work properly
     this.mLists = ab.getAllLists();
@@ -185,7 +203,7 @@ var Sync = {
     var googleContacts = aAtom.getElementsByTagName('entry');
     var abCards = ab.getAllCards();
     // get and log the last sync time (milliseconds since 1970 UTC)
-    var lastSync = FileIO.getLastSync();
+    var lastSync = parseInt(this.mCurrentAb.getLastSyncDate());
     LOGGER.VERBOSE_LOG("Last sync was at: " + lastSync);
     var cardsToDelete = [];
     var maxContacts = Preferences.mSyncPrefs.maxContacts.value;
@@ -199,6 +217,8 @@ var Sync = {
     }
     this.mContactsToAdd = [];
     this.mContactsToDelete = [];
+    this.mContactsToUpdate = [];
+    contactsToUpdate = {};
     var gContact;
      // get the strings outside of the loop so they are only found once
     var found = " * Found a match Last Modified Dates:";
@@ -231,7 +251,8 @@ var Sync = {
               var toUpdate = {};
               toUpdate.gContact = gContact;
               toUpdate.abCard = abCard;
-              this.mContactsToUpdate.push(toUpdate);
+              contactsToUpdate[ab.getCardValue(abCard, "GoogleID")] = toUpdate;
+              abCards2.push(abCard); // continue checking the card for dups
             }
             else { // update thunderbird
               LOGGER.LOG(bothTB);
@@ -251,7 +272,8 @@ var Sync = {
             var toUpdate = {};
             toUpdate.gContact = gContact;
             toUpdate.abCard = abCard;
-            this.mContactsToUpdate.push(toUpdate);
+            contactsToUpdate[ab.getCardValue(abCard, "GoogleID")] = toUpdate;
+            abCards2.push(abCard); // continue checking the card for dups
           }
           // otherwise nothing needs to be done
           else
@@ -264,6 +286,9 @@ var Sync = {
           LOGGER.LOG(" * Duplicate detected");
           // default to deleting duplicates, but if the user wants to confirm
           // each duplicate ask for confirmation
+          var id = ab.getCardValue(abCard, "GoogleID");
+          if (id)
+            contactsToUpdate[id] = null;
           if (!Preferences.mSyncPrefs.confirmDuplicates.value || 
               confirm(StringBundle.getStr("duplicatePrompt")
               + " " + abCard.displayName + " " + abCard.primaryEmail + 
@@ -294,18 +319,18 @@ var Sync = {
         }
       }
     }// end of outer for loop
+
     LOGGER.LOG("***Looking for unmatched Thunderbird cards***");
     for (var i = 0; i < abCards.length; i++) {
       var card = abCards[i];
-      if (card != null && card instanceof nsIAbCard) {
+      // if the card is new it is being updated already, so skip it
+      if (card != null && card instanceof nsIAbCard &&
+          ab.getCardValue(card, "LastModifiedDate") < lastSync/1000) {
         LOGGER.LOG("-" + card.displayName + " was not matched");
         // if it is a new card, add it to Google
         var id = ab.getCardValue(card, "GoogleID");
-        var date = ab.getCardValue(card, "LastModifiedDate");
-        var isNew = date > lastSync || date == 0;
-        // will add the card if it doesn't have a GoogleID or if it was just
-        // added/modified
-        if (!id || isNew) {
+        // will add the card if it doesn't have a GoogleID
+        if (!id || id == "") {
           this.mContactsToAdd.push(card);
           LOGGER.LOG(" * It is new and will be added to Google - " + date);
         }
@@ -317,6 +342,11 @@ var Sync = {
         }
       }
     } // end of for loop
+    // now copy over the contacts that will be updated that aren't duplicates
+    for (var i in contactsToUpdate) {
+      if (contactsToUpdate[i])
+        this.mContactsToUpdate.push(contactsToUpdate[i]);
+    }
     ab.deleteCards(cardsToDelete);
     LOGGER.LOG("***Deleting contacts from Google***");
     this.mAddedEmails = [];
@@ -342,7 +372,8 @@ var Sync = {
     var editURL = contact.getValue("EditURL").value;
     LOGGER.LOG(" * " + contact.getName() + "  -  " + editURL);
 
-    var httpReq = new GHttpRequest("delete", gdata.mAuthToken, editURL, null);
+    var httpReq = new GHttpRequest("delete", this.mCurrentAuthToken, editURL,
+                                   null, this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.processDeleteQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting contact', " +
                           "httpReq.responseText);",
@@ -369,10 +400,10 @@ var Sync = {
     // check new cards for duplicates
     var cardToAdd = this.mContactsToAdd.shift();
     LOGGER.LOG("\n" + cardToAdd.displayName);
-    var primary = this.ab.getCardValue(cardToAdd, "PrimaryEmail");
-    var second = this.ab.getCardValue(cardToAdd, "SecondEmail");
-    var third = this.ab.getCardValue(cardToAdd, "ThirdEmail");
-    var fourth = this.ab.getCardValue(cardToAdd, "FourthEmail");
+    var primary = this.mCurrentAb.getCardValue(cardToAdd, "PrimaryEmail");
+    var second = this.mCurrentAb.getCardValue(cardToAdd, "SecondEmail");
+    var third = this.mCurrentAb.getCardValue(cardToAdd, "ThirdEmail");
+    var fourth = this.mCurrentAb.getCardValue(cardToAdd, "FourthEmail");
 
     // if a similar card was already added, prompt to delete it, otherwise
     // ignore the card
@@ -387,7 +418,7 @@ var Sync = {
       // default to deleting duplicates, but if the user wants to confirm
       // each duplicate ask for confirmation
       if (!Preferences.mSyncPrefs.confirmDuplicates.value || confirm(confirmStr)) {
-        this.ab.deleteCards([cardToAdd]);
+        this.mCurrentAb.deleteCards([cardToAdd]);
         LOGGER.LOG("   o Duplicate deleted");
       }
       else
@@ -411,7 +442,8 @@ var Sync = {
         var string = (new XMLSerializer()).serializeToString(xml);
         LOGGER.LOG("  - XML of contact being added:\n" + string + "\n");
       }
-      var httpReq = new GHttpRequest("add", gdata.mAuthToken, null, string);
+      var httpReq = new GHttpRequest("add", this.mCurrentAuthToken, null,
+                                     string, this.mCurrentUsername);
       /* When the contact is successfully created:
        *  1. Get the card from which the contact was made
        *  2. Set the card's GoogleID attribute to match the new contact's ID
@@ -419,7 +451,7 @@ var Sync = {
        *  4. Call this method again
        */
       var onCreated = [
-        "var ab = Overlay.mAddressBook",
+        "var ab = Sync.mCurrentAb",
         "var card = ContactConverter.mCurrentCard;",
         "ab.setCardValue(card, 'GoogleID', httpReq.responseXML.getElementsByTagNameNS"
         + "(gdata.namespaces.ATOM.url, 'id')[0].childNodes[0].nodeValue);",
@@ -435,11 +467,11 @@ var Sync = {
   },
   /**
    * Updates all cards to Google included in the mContactsToUpdate array one at
-   * a time to avoid timing conflicts.  Calls Sync.finish() when done
+   * a time to avoid timing conflicts.  Calls Sync.syncNextUser() when done
    */
   processUpdateQueue: function() {
     if (!this.mContactsToUpdate || this.mContactsToUpdate.length == 0) {
-      this.finish();
+      this.syncNextUser();
       return;
     }
     Overlay.setStatusBarText(StringBundle.getStr("updating") + " " +
@@ -457,7 +489,8 @@ var Sync = {
         var string = (new XMLSerializer()).serializeToString(xml);
         LOGGER.LOG("  - XML of contact being updated:\n" + string + "\n");
     }
-    var httpReq = new GHttpRequest("update", gdata.mAuthToken, editURL, string)
+    var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, editURL,
+                                   string, this.mCurrentUsername)
     httpReq.mOnSuccess = ["Sync.processUpdateQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating contact', " +
                           "httpReq.responseText);",
@@ -472,19 +505,20 @@ var Sync = {
   syncGroups: function(aAtom) {
     // reset the groups object
     this.mGroups = {};
+    this.mLists = {};
     // if there wasn't an error, setup groups
     if (aAtom) {
       if (Preferences.mSyncPrefs.verboseLog.value) {
         var string = (new XMLSerializer()).serializeToString(aAtom);
         LOGGER.LOG("***Groups XML feed:\n" + string);
       }
-      var ab = Overlay.mAddressBook;
+      var ab = this.mCurrentAb;
       var ns = gdata.namespaces.ATOM;
       LOGGER.VERBOSE_LOG("***Getting all groups***");
       var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
       LOGGER.VERBOSE_LOG("***Getting all lists***");
-      this.mLists = Overlay.mAddressBook.getAllLists(true);
-      var lastSync = FileIO.getLastSync();
+      this.mLists = this.mCurrentAb.getAllLists(true);
+      var lastSync = parseInt(this.mCurrentAb.getLastSyncDate());
       for (var i = 0; i < arr.length; i++) {
         try {
           var group = new Group(arr[i]);
@@ -494,7 +528,7 @@ var Sync = {
           var title = group.getTitle();
           var modifiedDate = group.getLastModifiedDate();
           LOGGER.LOG("-Found group with ID: " + id + " name: " + title +
-                             " last modified: " + modifiedDate);
+                     " last modified: " + modifiedDate);
           var list = this.mLists[id];
           this.mGroups[id] = group;
           if (modifiedDate < lastSync) { // it's an old group
@@ -572,7 +606,9 @@ var Sync = {
     }
     var group = this.mGroupsToDelete.shift();
     LOGGER.LOG("-Deleting group: " + group.getTitle());
-    var httpReq = new GHttpRequest("delete", gdata.mAuthToken, group.getEditURL());
+    var httpReq = new GHttpRequest("delete", this.mCurrentAuthToken,
+                                   group.getEditURL(), null,
+                                   this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.deleteGroups();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting group', " +
                           "httpReq.responseText);",
@@ -599,7 +635,8 @@ var Sync = {
       var body = (new XMLSerializer()).serializeToString(group.xml);
       LOGGER.VERBOSE_LOG(" * XML feed of new group:\n" + body);
     }
-    var httpReq = new GHttpRequest("addGroup", gdata.mAuthToken, null, body);
+    var httpReq = new GHttpRequest("addGroup", this.mCurrentAuthToken, null,
+                                   body, this.mCurrentUsername);
     httpReq.mOnCreated = ["Sync.addGroups2(httpReq);"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while adding group', " +
                                           "httpReq.responseText);",
@@ -621,7 +658,8 @@ var Sync = {
     var list = this.mGroupsToAdd.shift();
     var id = group.getID();
     list.setNickName(id);
-    list.update();
+    if (list.update)
+      list.update();
     this.mLists[id] = list;
     this.addGroups();
   },
@@ -641,8 +679,8 @@ var Sync = {
       var body = (new XMLSerializer()).serializeToString(group.xml);
       LOGGER.VERBOSE_LOG(" * XML feed of group: " + body);
     }
-    var httpReq = new GHttpRequest("update", gdata.mAuthToken, group.getEditURL(),
-                                   body);
+    var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, group.getEditURL(),
+                                   body, this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.updateGroups();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
                         "Sync.updateGroups();"];

@@ -53,7 +53,6 @@ var originalDisplayCardViewPane;
  * @class
  */
 var Overlay = {
-  mAddressBook: null,
   /**
    * Called when the overlay is loaded and initializes everything and begins
    * the authentication check and sync or login prompt.
@@ -71,15 +70,19 @@ var Overlay = {
     Overlay.setupButton(); // insert the Sync button
     gdata.contacts.init();
     ContactConverter.init();
-    if (this.mBug413260) // add the extra attributes as tree columns to show and
-      this.addTreeCols(); // sort by in the results pane if this is after 413260 
+    // add the extra attributes as tree columns to show and
+    this.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver
     // so when a card is copied the extra attributes are copied with it
     if (Preferences.mSyncPrefs.overrideCopy.value)
       abDirTreeObserver.onDrop = myOnDrop;
-    this.checkAuthentication(); // check if the Auth token is valid
+    // override the display card view pane
+    originalDisplayCardViewPane = DisplayCardViewPane;
+    DisplayCardViewPane = this.myDisplayCardViewPane;
+    AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function(e) { Overlay.unload(); }, false);
+    this.checkAuthentication(); // check if the Auth token is valid
   },
   /**
    * Called when the overlay is unloaded and removes the address book listener.
@@ -98,6 +101,22 @@ var Overlay = {
     // get the treecols XUL element
     var treeCols = document.getElementById("abResultsTreeCols");
     if (!treeCols || !treeCols.appendChild)
+      return;
+    // fix the existing phone numbers
+    var arr = ["WorkPhone", "HomePhone", "FaxNumber","CellularNumber",
+               "PagerNumber"];
+    for (var i = 0; i < arr.length; i++) {
+      var elem = document.getElementById(arr[i]);
+      if (!elem)
+        continue;
+      // remove it
+      treeCols.removeChild(elem);
+      elem.setAttribute("label", StringBundle.getStr(arr[i]));
+      // and then add it to the end of the treecols element
+      treeCols.appendChild(elem);
+    }
+    // if Bug 413260 isn't applied in this version of TB, stop here
+    if (!this.mBug413260)
       return;
     // get the added attributes
     var ids = ContactConverter.getExtraSyncAttributes(false);
@@ -130,24 +149,27 @@ var Overlay = {
    * a separator between Sync and Delete.
    */
   setupButton: function() {
-    // get the toolbar with the buttons
-    var toolbar = document.getElementById("ab-bar2");
-    // setup the separator
-    var separator = document.createElement("toolbarseparator");
-    separator.setAttribute("id", "new-separator");
-    // setup the button
-    var button = document.createElement("toolbarbutton");
-    button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
-                        " chromeclass-toolbar-additional");
-    button.setAttribute("id", "gContactSyncButton");
-    button.setAttribute("label", StringBundle.getStr("syncButton"));
-    button.setAttribute("oncommand", "Sync.begin();");
-    button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
-    button.setAttribute("insertbefore", "new-separator");
-    // insert the separator before the Delete button
-    toolbar.insertBefore(separator, document.getElementById("button-abdelete"));
-    // insert the button before the separator
-    toolbar.insertBefore(button, separator);
+    try {
+      // get the toolbar with the buttons
+      var toolbar = document.getElementById("ab-bar2");
+      // setup the separator
+      var separator = document.createElement("toolbarseparator");
+      separator.setAttribute("id", "new-separator");
+      // setup the button
+      var button = document.createElement("toolbarbutton");
+      button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
+                          " chromeclass-toolbar-additional");
+      button.setAttribute("id", "gContactSyncButton");
+      button.setAttribute("label", StringBundle.getStr("syncButton"));
+      button.setAttribute("oncommand", "Sync.begin();");
+      button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
+      button.setAttribute("insertbefore", "new-separator");
+      // insert the separator before the Delete button
+      toolbar.insertBefore(separator, document.getElementById("button-abdelete"));
+      // insert the button before the separator
+      toolbar.insertBefore(button, separator);
+    }
+    catch(e) { LOGGER.LOG_WARNING("Couldn't setup the sync button", e); }
   },
   /**
    * Overlay.checkAuthentication
@@ -155,16 +177,16 @@ var Overlay = {
    * manager.  If so, it begins a sync.  If not, it shows the login prompt.
    * @param firstLogin 
    */
-  checkAuthentication: function(firstLogin) {
+  checkAuthentication: function() {
     if (gdata.isAuthValid()) {
-      // get the Address Book
-      this.mAddressBook = new AddressBook(Preferences.mSyncPrefs.addressBookName.value);
-      // override the display card view pane
-      originalDisplayCardViewPane = DisplayCardViewPane;
-      DisplayCardViewPane = this.myDisplayCardViewPane;
-      AbListener.add(); // add the address book listener
-      if (firstLogin)
+      if (this.mUsername) {
+        var name = Preferences.mSyncPrefs.addressBookName.value;
+        var ab = new AddressBook(AbManager.getAbByName(name));
+        ab.setUsername(this.mUsername);
+        ab.setPrimary(true);
+        ab.setLastSyncDate(0);
         Sync.begin();
+      }
       else
         Sync.schedule(Preferences.mSyncPrefs.initialDelay.value);  
       return;
@@ -193,7 +215,8 @@ var Overlay = {
     var httpReq = new GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["Overlay.login(httpReq.responseText.split(\"\\n\")[2]);"];
+    httpReq.mOnSuccess = ["Overlay.login('" + username.value +
+                          "', httpReq.responseText.split(\"\\n\")[2]);"];
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError = ["alert(StringBundle.getStr('authErr'));",
                         "LOGGER.LOG_ERROR('Authentication Error - ' + " +
@@ -210,21 +233,20 @@ var Overlay = {
    * window that will begin the first synchronization when closed.
    * @param aAuthToken The authentication token to store.
    */
-  login: function(aAuthToken) {
-    gdata.mAuthToken = 'GoogleLogin ' + aAuthToken;
-    LoginManager.setAuthToken(gdata.mAuthToken);
+  login: function(aUsername, aAuthToken) {
+    LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
     this.setStatusBarText(StringBundle.getStr("initialSetup"));
     var setup = window.open("chrome://gcontactsync/content/FirstLogin.xul",
                             "SetupWindow",
                             "chrome,resizable=yes,scrollbars=no,status=no");
+    this.mUsername = aUsername;
     // when the setup window loads, set its onunload property to begin a sync
     setup.onload = function() {
       setup.onunload = function () {
-        Overlay.checkAuthentication(true); 
+        Overlay.checkAuthentication(); 
       };
     };
   },
-
   /**
    * Overlay.setStatusBarText
    * Sets the text of the status bar to the given value.
@@ -276,7 +298,7 @@ var Overlay = {
       Overlay.showNodes(ContactConverter.getExtraSyncAttributes());
       cvData.cvThirdEmailBox.collapsed = false;
       cvData.cvFourthEmailBox.collapsed = false;
-      var ab = Overlay.mAddressBook;
+      var ab = AbManager;
       // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
       // JabberScreenName, YahooScreenName, ICQScreenName)
       var visible = !cvData.cvbContact.getAttribute("collapsed");
@@ -291,7 +313,7 @@ var Overlay = {
     
       visible = Overlay.getVisible(aCard, ["TalkScreenName", "JabberScreenName",
                                            "YahooScreenName", "MSNScreenName",
-                                           "ICQScreenName"], visible);
+                                           "ICQScreenName"], visible, true);
       cvSetVisible(cvData.cvhContact, visible);
       cvSetVisible(cvData.cvbContact, visible);
       // Other section (OtherAddress)
@@ -378,8 +400,19 @@ var Overlay = {
         cvSetVisible(cvData.cvbFullWorkMapItBox, false);
       }
       // Phone section (add OtherNumber and HomeFaxNumber)
+      // first, add the existing nodes to cvData under a name that actually
+      // matches the attribute
+      cvData.cvWorkPhone = cvData.cvPhWork;
+      cvData.cvHomePhone = cvData.cvPhHome;
+      cvData.cvFaxNumber = cvData.cvPhFax;
+      cvData.cvCellularNumber = cvData.cvPhCellular;
+      cvData.cvPagerNumber = cvData.cvPhPager;
+      // then set the value and labels for the new and old phone nodes
       var visible = !cvData.cvhPhone.getAttribute("collapsed");
-      visible = Overlay.getVisible(aCard, ["OtherNumber", "HomeFaxNumber"], visible);
+      visible = Overlay.getVisible(aCard, ["WorkPhone", "HomePhone", "FaxNumber",
+                                           "CellularNumber", "PagerNumber",
+                                           "OtherNumber", "HomeFaxNumber"],
+                                   visible, true);
       cvSetVisible(cvData.cvhPhone, visible);
       cvSetVisible(cvData.cvbPhone, visible);
     } catch(e) {alert(e);}
@@ -448,19 +481,29 @@ var Overlay = {
    * A helper method for myDisplayCardViewPane that iterates through an array of
    * attributes and returns true if at least one of them is present in the given
    * card.
-   * @param aCard  The card whose attributes are checked.
-   * @param aArray The array of attributes to check the presence of in the card.
+   * @param aCard         The card whose attributes are checked.
+   * @param aArray        The array of attributes to check the for in the card.
+   * @param aVisible      Optional. True if the element was previously visible.
+   * @param aUseTypeLabel Optional.  True if the labels should be determined by
+   *                      the type of the attribute instead of the attribute's
+   *                      name.
    * @return True if at least one attribute in aArray is present in aCard.
    */
-  getVisible: function(aCard, aArray, aVisible) {
-    var ab = this.mAddressBook;
+  getVisible: function(aCard, aArray, aVisible, aUseTypeLabel) {
     var visible = aVisible;
     // return true if the card has the current attribute
     for (var i = 0; i < aArray.length; i++) {
       var attr = aArray[i];
-      var value = ab.getCardValue(aCard, attr);
-      visible = cvSetNodeWithLabel(cvData["cv" + attr], StringBundle.getStr(attr),
-                                   value) || visible;
+      var value = AbManager.getCardValue(aCard, attr);
+      // get the name of the string to find in the bundle
+      var label = aUseTypeLabel ? AbManager.getCardValue(aCard, attr + "Type")
+                                : attr;
+      // get the actual string
+      // if the label is null (ie aUseTypeLabel was true, but there wasn't a type)
+      // then use the attribute's string as a default value
+      var str = label && label != "" ? StringBundle.getStr(label)
+                                     : StringBundle.getStr(attr);
+      visible = cvSetNodeWithLabel(cvData["cv" + attr], str, value) || visible;
     }
     return visible;
   },

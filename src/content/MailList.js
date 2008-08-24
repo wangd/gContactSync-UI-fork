@@ -50,11 +50,12 @@ function MailList(aList, aParentDirectory, aNew) {
   this.mList.QueryInterface(Ci.nsIAbMDBDirectory);
   this.mNew = aNew;
   if (!aNew)
-    this.mCards = this.getAllCards();
+    this.getAllCards();
 }
 
 MailList.prototype = {
   mCards: [],
+  mCardsUpdate: false,
   /**
    * MailList.setName
    * Sets the name of this list. The update method must be called in order for
@@ -83,7 +84,10 @@ MailList.prototype = {
    *         display name, primary, and second emails are the same.
    */
   hasCard: function(aCard) {
-    this.mParent.checkCard(aCard);
+    this.mParent.checkCard(aCard, "MailList.hasCard");
+    // get all of the cards in this list again, if necessary
+    if (this.mCardsUpdate || this.mCards.length == 0)
+      this.getAllCards();
     var ab = this.mParent;
     for (var i = 0, length = this.mCards.length; i < length; i++) {
       var card = this.mCards[i];
@@ -94,9 +98,12 @@ MailList.prototype = {
           return card;
       }
       // else check that display name, primary and second email are equal
-      else if (ab.getCardValue(aCard, "DisplayName") == ab.getCardValue(card, "DisplayName")
-              && ab.getCardValue(aCard, "PrimaryEmail") == ab.getCardValue(card, "PrimaryEmail")
-              && ab.getCardValue(aCard, "SecondEmail") == ab.getCardValue(card, "SecondEmail"))
+      else if (ab.getCardValue(aCard, "DisplayName") ==
+                                           ab.getCardValue(card,"DisplayName")
+              && ab.getCardValue(aCard, "PrimaryEmail") ==
+                                           ab.getCardValue(card, "PrimaryEmail")
+              && ab.getCardValue(aCard, "SecondEmail") ==
+                                           ab.getCardValue(card, "SecondEmail"))
         return card;
     }
   },
@@ -157,7 +164,7 @@ MailList.prototype = {
     try {
       var branch = Cc["@mozilla.org/preferences-service;1"]
                     .getService(Ci.nsIPrefService)
-                    .getBranch(dirPrefId)
+                    .getBranch(id)
                     .QueryInterface(Ci.nsIPrefBranch2);
       branch.getCharPref(aName);
     } catch(e) { LOGGER.LOG_WARNING("Error while getting list pref", e); }
@@ -180,7 +187,7 @@ MailList.prototype = {
     try {
       var branch = Cc["@mozilla.org/preferences-service;1"]
                     .getService(Ci.nsIPrefService)
-                    .getBranch(dirPrefId)
+                    .getBranch(id)
                     .QueryInterface(Ci.nsIPrefBranch2);
       branch.setCharPref(aName, aValue);
     } catch(e) { LOGGER.LOG_WARNING("Error while setting list pref", e); }
@@ -232,13 +239,13 @@ MailList.prototype = {
   getAllCards: function() {
     // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
     // properly, but it shouldn't be caught or the sync won't function properly
-    var arr = [];
+    this.mCards = [];
     var iter = this.mList.childCards;
     if (this.mParent.mVersion == 3) { // TB 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof nsIAbCard)
-          arr.push(data);
+          this.mCards.push(data);
       }
     }
     else { // TB 2
@@ -248,12 +255,12 @@ MailList.prototype = {
         do {
           var data = iter.currentItem();
           if(data instanceof nsIAbCard)
-            arr.push(data);
+            this.mCards.push(data);
           iter.next();
         } while (Components.lastResult == 0);
       } catch(e) {LOGGER.VERBOSE_LOG(e);} // error is expected when finished   
     }
-    return arr;
+    return this.mCards;
   },
   /**
    * MailList.deleteCards
@@ -272,18 +279,21 @@ MailList.prototype = {
       }
     }
     else { // TB 2
-      arr =  Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
+      arr =  Cc["@mozilla.org/supports-array;1"]
+              .createInstance(Ci.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
         this.mParent.checkCard(aCards[i], "deleteAbCard");
         arr.AppendElement(aCards[i], false);
       }
     }
     try {
-      if (arr) // make sure arr isn't null (mailnews bug 448165)
+      if (arr) { // make sure arr isn't null (mailnews bug 448165)
+        this.mCardsUpdate = true; // update mCards when used
         this.mList.deleteCards(arr);
+      }
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Error while deleting cards from a mailing list: " + e);
+      LOGGER.LOG_WARNING("Error while deleting cards from a mailing list", e);
     }
     this.mCards = this.getAllCards();
   },
@@ -294,6 +304,11 @@ MailList.prototype = {
   delete: function() {
     this.mParent.mDirectory.deleteDirectory(this.mList);
     this.mCards = [];
+    // make sure the functions don't do anything
+    for (var i in this) {
+      if (i instanceof Function)
+        i = function() {};
+    }
   },
   /**
    * MailList.update
@@ -306,6 +321,32 @@ MailList.prototype = {
       else
         this.mList.editMailListToDatabase(this.getURI(), null);
     }
-    catch(e) { LOGGER.LOG_WARNING("Unable to update mail list: " + e);}
-  }
+    catch(e) { LOGGER.LOG_WARNING("Unable to update mail list", e);}
+  },
+  /**
+   * MailList.getGroupID
+   * Gets and returns the ID of the group in Google with which this Mail List
+   * is synchronized, if any.  If not found, returns "no id found" with a space
+   * and the current time in microseconds since the epoch.
+   * @return The ID of the group with which this directory is synchronized.
+   */
+   getGroupID: function() {
+     // first see if the nickname is the group id
+     var id = this.getNickName();
+     if (id.indexOf("http://www.google.com/m8/feeds/groups") == -1)
+       id = this.getDescription(); // if it isn't, get the description
+     // finally, set it as "no id found" with the current time
+     if (id.indexOf("http://www.google.com/m8/feeds/groups") == -1)
+       id = "no id found " + (new Date).getTime();
+     return id;
+   },
+   /**
+   * AddressBook.getGroupID
+   * Setsthe ID of the group in Google with which this Mail List is
+   * synchronized.
+   * @return The ID of the group with which this directory is synchronized.
+   */
+   setGroupID: function(aGroupID) {
+     this.setNickName(aGroupID);
+   }
 };

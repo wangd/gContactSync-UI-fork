@@ -45,11 +45,12 @@
  * @param aUrl       The url for the request, if unique for the type of request.
  *                   Not required for authenticate, getAll, getGroups, and add.
  * @param aBody      The body of the request.
+ * @param aUsername  Optional.  Replaces "default" in the URL.
  * @constructor
  * @class
  * @extends HttpRequest
  */
-function GHttpRequest(aType, aAuth, aUrl, aBody) {
+function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
   HttpRequest.call(this);  // call the superclass' constructor
   this.mBody = aBody;
   // all urls in gdata use SSL.  If a URL is supplied, make sure it uses SSL
@@ -119,6 +120,8 @@ function GHttpRequest(aType, aAuth, aUrl, aBody) {
       throw "Invalid aType parameter supplied to the GHttpRequest constructor" +
             StringBundle.getStr("pleaseReport");
   }
+  if (aUsername)
+    this.mUrl = this.mUrl.replace("default", encodeURIComponent(aUsername));
 }
 
 GHttpRequest.prototype = new HttpRequest(); // get the superclass' prototype

@@ -53,10 +53,12 @@ var ContactConverter = {
   // extra attributes added by this extension.  Doesn't include GoogleID or any
   // of the URLs.  Should be obtained w/ ContactConverter.getExtraSyncAttributes
   mAddedAttributes: [
-    "OtherAddress", "ThirdEmail", "FourthEmail", "TalkScreenName",
-    "JabberScreenName", "YahooScreenName", "MSNScreenName", "ICQScreenName",
-    "HomeFaxNumber", "OtherNumber", "FullHomeAddress", "FullWorkAddress",
-    "PrimaryEmailType", "SecondEmailType", "_AimScreenNameType"],
+    "HomeFaxNumber", "OtherNumber", "OtherAddress", "ThirdEmail", "FourthEmail",
+    "TalkScreenName", "ICQScreenName", "YahooScreenName", "MSNScreenName", 
+    "JabberScreenName", "FullHomeAddress", "FullWorkAddress", "PrimaryEmailType",
+    "SecondEmailType", "_AimScreenNameType", "HomePhoneType", "WorkPhoneType",
+    "FaxNumberType", "CellularNumberType", "PagerNumberType",
+    "HomeFaxNumberType", "OtherNumberType"],
   mInitialized: false,
   /**
    * ContactConverter.init
@@ -86,13 +88,13 @@ var ContactConverter = {
       new ConverterElement("im", "MSNScreenName", 4, "MSN"),
       new ConverterElement("im", "JabberScreenName", 5, "JABBER"),
       // the phone numbers
-      new ConverterElement("phoneNumber", "HomePhone", 0, "home"),
       new ConverterElement("phoneNumber", "WorkPhone", 0, "work"),
-      new ConverterElement("phoneNumber", "CellularNumber", 0, "mobile"),
-      new ConverterElement("phoneNumber", "PagerNumber", 0, "pager"),
-      new ConverterElement("phoneNumber", "FaxNumber", 0, "work_fax"),
-      new ConverterElement("phoneNumber", "HomeFaxNumber", 0, "home_fax"),
-      new ConverterElement("phoneNumber", "OtherNumber", 0, "other"),
+      new ConverterElement("phoneNumber", "HomePhone", 1, "home"),
+      new ConverterElement("phoneNumber", "FaxNumber", 2, "work_fax"),
+      new ConverterElement("phoneNumber", "CellularNumber", 3, "mobile"),
+      new ConverterElement("phoneNumber", "PagerNumber", 4, "pager"),
+      new ConverterElement("phoneNumber", "HomeFaxNumber", 5, "home_fax"),
+      new ConverterElement("phoneNumber", "OtherNumber", 6, "other"),
       // company info
       new ConverterElement("orgTitle", "JobTitle", 0),
       new ConverterElement("orgName", "Company", 0),
@@ -131,7 +133,7 @@ var ContactConverter = {
   cardToAtomXML: function(aCard, aContact) {
     if (!aContact)
       aContact = new GContact();
-    var ab = Overlay.mAddressBook;
+    var ab = Sync.mCurrentAb;
     ab.checkCard(aCard, "cardToAtomXML");
     this.mCurrentCard = aCard;
     // use the address with multiple lines instead of the 6 fields
@@ -188,7 +190,7 @@ var ContactConverter = {
     if (!aContact)
       throw "Invalid aXml parameter supplied to the 'makeCard' method" +
             StringBundle.getStr("pleaseReport");
-    var ab = Overlay.mAddressBook;
+    var ab = Sync.mCurrentAb;
     var card;
     if (aCard)
       card = aCard;
@@ -203,8 +205,9 @@ var ContactConverter = {
       property = property ? property : new Property("", "");
       LOGGER.VERBOSE_LOG(property.value + " - " + property.type);
       ab.setCardValue(card, obj.tbName, property.value);
-      // set the type
-      ab.setCardValue(card, obj.tbName + "Type", property.type);
+      // set the type, if it is an attribute with a type
+      if (property.type)
+        ab.setCardValue(card, obj.tbName + "Type", property.type);
     }
     // get the extended properties
     arr = Preferences.mExtendedProperties;
@@ -225,6 +228,10 @@ var ContactConverter = {
         if (list.hasCard(card)) {
           if (!group)
             list.deleteCards([card]);
+          // if the 'list' is a directory, update the card there, too
+          // this isn't necessary if the list is a mail list
+          else if (list.updateCard)
+            list.updateCard(card);
         }
         // add the card to the list, if necessary
         else if (group)
@@ -243,7 +250,7 @@ var ContactConverter = {
   fixAddress: function(aCard, aPrefix) {
     if (!aCard || !aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
       return;
-    var ab = Overlay.mAddressBook;
+    var ab = Sync.mCurrentAb;
     // if there isn't a value in the Full (multi-lined address) then create one
     // from the existing address, if present
     if (!ab.getCardValue(aCard, "Full" + aPrefix + "Address") &&
@@ -309,7 +316,7 @@ var ContactConverter = {
   compareContacts: function(aCard, aContact) {
     if (!aContact || !aContact.xml || !aContact.xml.getElementsByTagNameNS)
       return false;
-    var ab = Overlay.mAddressBook;
+    var ab = Sync.mCurrentAb;
     ab.checkCard(aCard, "compareContacts");
     // get all of the address from the google contact
     var googleAddresses = aContact.xml
@@ -330,7 +337,7 @@ var ContactConverter = {
     var fourthEmail = ab.getCardValue(aCard, "FourthEmail");
     if (fourthEmail)
       tbAddresses[fourthEmail] = true;
-
+    var str = primaryEmail + ", " + secondEmail + ", " + thirdEmail + ", " + fourthEmail + "\n";
     // then check for duplicate e-mail addresses
     var toReturn = false;
     for (var i = 0, length = googleAddresses.length; i < length && !toReturn; i++) {
@@ -339,6 +346,7 @@ var ContactConverter = {
         emailAddress = googleAddresses[i].getAttribute("address");
       if (!emailAddress)
         continue;
+      str += emailAddress + "  -  " + tbAddresses[emailAddress] + "\n";
       toReturn = toReturn || tbAddresses[emailAddress];
     }
     return toReturn;

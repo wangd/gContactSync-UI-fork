@@ -55,30 +55,16 @@
          <caption label="&email.box;"/>
          <hbox>
            <spacer flex="1"/>
-           <label control="thirdEmail" value="&third.label;" class="CardEditLabel"/>
+           <label control="ThirdEmail" value="&third.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="ThirdEmail" flex="1" class="uri-element"/>
-             <menulist id="ThirdEmailType">
-               <menupopup>
-                 <menuitem value="other" label="&other.label;"/>
-                 <menuitem value="home" label="&home.label;"/>
-                 <menuitem value="work" label="&work.label;"/>
-               </menupopup>
-             </menulist>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="fourthEmail" value="&fourth.label;" class="CardEditLabel"/>
+           <label control="FourthEmail" value="&fourth.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="FourthEmail" flex="1" class="uri-element"/>
-             <menulist id="FourthEmailType">
-               <menupopup>
-                 <menuitem value="other" label="&other.label;"/>
-                 <menuitem value="home" label="&home.label;"/>
-                 <menuitem value="work" label="&work.label;"/>
-               </menupopup>
-             </menulist>
            </hbox>
          </hbox>
        </groupbox>
@@ -86,87 +72,37 @@
          <caption label="&screenname.box;"/>
          <hbox>
            <spacer flex="1"/>
-           <label control="googleTalk" value="&second.label;" class="CardEditLabel"/>
+           <label control="TalkScreenName" value="&second.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="TalkScreenName" flex="1"/>
-             <menulist id="TalkScreenNameType">
-               <menupopup>
-                 <menuitem value="GOOGLE_TALK" label="Google Talk"/>
-                 <menuitem value="AIM" label="AIM"/>
-                 <menuitem value="MSN" label="MSN"/>
-                 <menuitem value="YAHOO" label="Yahoo"/>
-                 <menuitem value="JABBER" label="Jabber"/>
-                 <menuitem value="ICQ" label="ICQ"/>
-               </menupopup>
-             </menulist>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="icq" value="&third.label;" class="CardEditLabel"/>
+           <label control="ICQScreenName" value="&third.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="ICQScreenName" flex="1"/>
-             <menulist id="ICQScreenNameType">
-               <menupopup>
-                 <menuitem value="ICQ" label="ICQ"/>
-                 <menuitem value="GOOGLE_TALK" label="Google Talk"/>
-                 <menuitem value="AIM" label="AIM"/>
-                 <menuitem value="MSN" label="MSN"/>
-                 <menuitem value="YAHOO" label="Yahoo"/>
-                 <menuitem value="JABBER" label="Jabber"/>
-               </menupopup>
-             </menulist>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="yahoo" value="&fourth.label;" class="CardEditLabel"/>
+           <label control="YahooScreenName" value="&fourth.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="YahooScreenName" flex="1"/>
-             <menulist id="YahooScreenNameType">
-               <menupopup>
-                 <menuitem value="YAHOO" label="Yahoo"/>
-                 <menuitem value="GOOGLE_TALK" label="Google Talk"/>
-                 <menuitem value="AIM" label="AIM"/>
-                 <menuitem value="MSN" label="MSN"/>
-                 <menuitem value="JABBER" label="Jabber"/>
-                 <menuitem value="ICQ" label="ICQ"/>
-               </menupopup>
-             </menulist>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="msn" value="&fifth.label;" class="CardEditLabel"/>
+           <label control="MSNScreenName" value="&fifth.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="MSNScreenName" flex="1"/>
-             <menulist id="MSNScreenNameType">
-               <menupopup>
-                 <menuitem value="MSN" label="MSN"/>
-                 <menuitem value="GOOGLE_TALK" label="Google Talk"/>
-                 <menuitem value="AIM" label="AIM"/>
-                 <menuitem value="YAHOO" label="Yahoo"/>
-                 <menuitem value="JABBER" label="Jabber"/>
-                 <menuitem value="ICQ" label="ICQ"/>
-               </menupopup>
-             </menulist>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="jabber" value="&sixth.label;" class="CardEditLabel"/>
+           <label control="JabberScreenName" value="&sixth.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="JabberScreenName" flex="1"/>
-             <menulist id="JabberScreenNameType">
-               <menupopup>
-                 <menuitem value="JABBER" label="Jabber"/>
-                 <menuitem value="GOOGLE_TALK" label="Google Talk"/>
-                 <menuitem value="AIM" label="AIM"/>
-                 <menuitem value="MSN" label="MSN"/>
-                 <menuitem value="YAHOO" label="Yahoo"/>
-                 <menuitem value="ICQ" label="ICQ"/>
-               </menupopup>
-             </menulist>
            </hbox>
          </hbox>
        </groupbox>
@@ -174,14 +110,14 @@
          <caption label="&numbers.box;"/>
          <hbox>
            <spacer flex="1"/>
-           <label control="homeFax" value="&homeFax.label;" class="CardEditLabel"/>
+           <label control="HomeFaxNumber" value="&sixth.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="HomeFaxNumber" flex="1"/>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="otherNumber" value="&other.label;" class="CardEditLabel"/>
+           <label control="OtherNumber" value="&seventh.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="OtherNumber" flex="1"/>
            </hbox>
@@ -195,21 +131,21 @@
          <caption label="&address.box;"/>
          <hbox>
            <spacer flex="1"/>
-           <label control="fullHomeAddress" value="&home.label;" class="CardEditLabel"/>
+           <label control="FullHomeAddress" value="&home.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="FullHomeAddress" multiline="true" wrap="virtual" flex="1"/>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="fullWorkAddress" value="&work.label;" class="CardEditLabel"/>
+           <label control="FullWorkAddress" value="&work.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="FullWorkAddress" multiline="true" wrap="virtual" flex="1"/>
            </hbox>
          </hbox>
          <hbox>
            <spacer flex="1"/>
-           <label control="otherAddress" value="&other.label;" class="CardEditLabel"/>
+           <label control="OtherAddress" value="&other.label;" class="CardEditLabel"/>
            <hbox class="CardEditWidth">
              <textbox id="OtherAddress" multiline="true" wrap="virtual" flex="1"/>
            </hbox>

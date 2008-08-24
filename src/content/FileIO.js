@@ -40,10 +40,8 @@
  * @class
  */
 var FileIO = {
-  mDataFile: null,
   mLogFile: null,
   fileNames: {
-    DATA_FILE: "data.txt", // stores the last sync time
     LOG_FILE: "log.txt" // stores the log from the last sync
   },
   /**
@@ -51,26 +49,7 @@ var FileIO = {
    * Initializes the files contained in this class.
    */
   init: function() {
-    this.mDataFile = this.getFileInExtDir(this.fileNames.DATA_FILE);
     this.mLogFile = this.getFileInExtDir(this.fileNames.LOG_FILE);
-  },
-  /**
-   * FileIO.writeLastSync
-   * Writes the current time in milliseconds since 1970 to the data file
-   * and adds 1 second.
-   */
-  writeLastSync: function(){ 
-    this.writeToFile(this.mDataFile, new String(new Date().getTime() + 1000));
-  },
-  /**
-   * FileIO.getLastSync
-   * Returns the last sync date from the data file
-   * @return The last date/time of synchronization, in milliseconds from 1970
-   */
-  getLastSync: function() {
-    if (this.mDataFile.exists())
-      return this.readFile(this.mDataFile)[0];
-    return 0;
   },
   /**
    * FileIO.getFileInExtDir

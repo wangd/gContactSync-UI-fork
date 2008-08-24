@@ -70,16 +70,15 @@
       <vbox index="main">
         <label control="gettingStarted1"
                value="&gettingStarted1.value;"/>
-        <label control="blank"
-               value=""/>
+        <label value=""/>
 
-        <label control="abNameLbl"
+        <label control="abName"
                value="&abName.value;"/>
         <textbox preference="addressBookName"
                  id="abName"
                  maxLength="25"/>
 
-        <label control="refreshIntervalLbl"
+        <label control="refreshInterval"
                value="&refreshInterval.value;"/>
         <textbox preference="refreshInterval"
                  id="refreshIntervalBox"

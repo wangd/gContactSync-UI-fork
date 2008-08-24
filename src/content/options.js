@@ -34,17 +34,205 @@
  *
  * ***** END LICENSE BLOCK ***** */
 window.addEventListener("load", function(e) { initialize(); }, false);
-
+var usernames = {};
 /**
  * Initializes the string bundle.
  */
 function initialize() {
-  StringBundle.init(); 
+  StringBundle.init();
+  FileIO.init();
+  Preferences.getSyncPrefs();
+  fillLoginTree();
+}
+
+function fillLoginTree() {
+  var tree = document.getElementById("loginTree");
+  var treechildren = document.getElementById("loginTreeChildren");
+  if (treechildren)
+    try { tree.removeChild(treechildren); } catch(e) {}
+  var newTreeChildren = document.createElement("treechildren");
+  newTreeChildren.setAttribute("id", "loginTreeChildren");
+  tree.appendChild(newTreeChildren);
+  var logins = LoginManager.getAuthTokens();
+  var abs = AbManager.getSyncedAddressBooks();
+  for (var i in logins) {
+    var dirName = "";
+    if (abs[i] && abs[i].primary && abs[i].primary.mDirectory)
+      dirName = abs[i].primary.mDirectory.dirName;
+    usernames[i] = true;
+    addLoginToTree(newTreeChildren, i, dirName)
+  }
 }
 /**
  * Removes the auth token from the login manager.
  */
-function removeLogin() {
-  if (confirm(StringBundle.getStr("removeLogin")))
-    LoginManager.removeAuthToken();
+function removeSelectedLogin() {
+  var tree = document.getElementById("loginTree");
+  if (!tree)
+    return;
+  var cellText = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
+  if (cellText && confirm(StringBundle.getStr("removeLogin"))) {
+    LoginManager.removeAuthToken(cellText);
+    usernames[cellText] = null;
+    // remove the saved prefs from the address books
+    var abs = AbManager.getSyncedAddressBooks();
+    var abObj = abs[cellText];
+    if (abObj && abObj.primary && abObj.secondary) {
+      var primary = abObj.primary;
+      primary.setUsername("");
+      primary.setPrimary("");
+      primary.setLastSyncDate(0);
+      var secondary = abObj.secondary;
+      for (var j in secondary) {
+        secondary[j].setUsername("");
+        secondary[j].setPrimary("");
+        secondary[j].setLastSyncDate(0);
+      }
+    }
+    var treeitem = document.getElementById(cellText);
+    var treechildren = document.getElementById("loginTreeChildren");
+    if (treeitem && treechildren)
+      try { treechildren.removeChild(treeitem); } catch(e) {}
+  }
+}
+
+/**
+ * Adds an auth token to the login manager.
+ */
+function addLogin() {
+  var prompt = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+                .getService(Ci.nsIPromptService)
+                .promptUsernameAndPassword;
+  var username = {};
+  var password = {};
+  // opens a username/password prompt
+  var ok = prompt(window, StringBundle.getStr("loginTitle"),
+                  StringBundle.getStr("loginText"), username, password, null,
+                  {value: false});
+  if (!ok)
+    return;
+  if (usernames[username.value]) { // the username already exists
+    alert(StringBundle.getStr("usernameExists"));
+    return;
+  }
+  var body = gdata.makeAuthBody(username.value, password.value);
+  var httpReq = new GHttpRequest("authenticate", null, null, body);
+  // if it succeeds and Google returns the auth token, store it and then start
+  // a new sync
+  httpReq.mOnSuccess = ["addToken('" + username.value +
+                        "', httpReq.responseText.split(\"\\n\")[2]);"];
+  // if it fails, alert the user and prompt them to try again
+  httpReq.mOnError = ["alert(StringBundle.getStr('authErr'));",
+                      "LOGGER.LOG_ERROR('Authentication Error - ' + " +
+                      "httpReq.responseText);",
+                      "addLogin();"];
+  // if the user is offline, alert them and quit
+  httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
+                        "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
+  httpReq.send();
+}
+
+function addToken(aUsername, aAuthToken) {
+  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                        .getService(Components.interfaces.nsIPromptService);
+  var input = {value: aUsername};
+  var check = {};
+  var result = prompts.prompt(null, StringBundle.getStr("abNameTitle") + " " +
+                              aUsername, StringBundle.getStr("abName"), input,
+                              null, check);
+  if (result && input.value && input.value != "") {
+    if (AbManager.getAbByName(input.value, true)) {
+      // if an address book already exists with the name, warn the user and let
+      // him or her choose a new name
+      if(!confirm(StringBundle.getStr("abExists"))) {
+        addToken(aUsername, aAuthToken);
+        return;
+      }
+    }
+    LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
+    usernames[aUsername] = true;
+    var ab = new AddressBook(AbManager.getAbByName(input.value));
+    ab.setUsername(aUsername);
+    ab.setPrimary(true);
+    ab.setLastSyncDate(0);
+    var treechildren = document.getElementById("loginTreeChildren");
+    addLoginToTree(treechildren, aUsername, input.value);
+  }
+
+}
+
+function addLoginToTree(aTreeChildren, aUsername, aDirName) {
+  var treeitem = document.createElement("treeitem");
+  var treerow = document.createElement("treerow");
+  treeitem.setAttribute("id", aUsername);
+  var username = document.createElement("treecell");
+  username.setAttribute("label", aUsername);
+  var addressbook = document.createElement("treecell");
+
+  addressbook.setAttribute("label", aDirName);
+  treerow.appendChild(username);
+  treerow.appendChild(addressbook);
+  treeitem.appendChild(treerow);
+  aTreeChildren.appendChild(treeitem);
+}
+
+function changeAbName() {
+  var tree = document.getElementById("loginTree");
+  if (!tree)
+    return;
+  var username = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
+  var oldAb = AbManager.getSyncedAddressBooks()[username];
+  if (oldAb)
+    oldAb = oldAb.primary;
+  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                        .getService(Components.interfaces.nsIPromptService);
+  // set the default to the existing name or, if not present, the username
+  var input = {value: oldAb && oldAb.mDirectory ? oldAb.mDirectory.dirName : username};
+  var check = {};
+  var result = prompts.prompt(null, StringBundle.getStr("abNameTitle") + " " +
+                              username, StringBundle.getStr("abName"), input,
+                              null, check);
+  // change the synced address book if:
+  //  * the user clicked OK
+  //  * there was a valid, non-blank response
+  //  * the new name isn't the same as the old name
+  if (result && input.value && input.value != "" &&
+      !(oldAb && input.value == oldAb.mDirectory.dirName)) {
+    var existingAb = AbManager.getAbByName(input.value, true);
+    var newAb;
+    if (existingAb) {
+      // if an ab with the name already exists, warn the user and let him or her
+      // choose a new name
+      if(!confirm(StringBundle.getStr("abExists"))) {
+        changeAbName();
+        return;
+      }
+      // if they still want it, setup the new one and remove the prefs from the old
+      existingAb.dirName = input.value;
+      newAb = new AddressBook(existingAb);
+      // remove the prefs from the old address book
+      if (oldAb) {
+        oldAb.setUsername("");
+        oldAb.setPrimary(false);
+        oldAb.setLastSyncDate(0);
+      }
+      // setup the prefs for the new address book
+      newAb.setUsername(username);
+      newAb.setPrimary(true);
+      newAb.setLastSyncDate(0);
+    }
+    // rename the old address book, if present, and don't change any prefs
+    else if (oldAb)
+      oldAb.mDirectory.dirName = input.value;
+    // otherwise, make the new address book
+    else {
+      newAb = new AddressBook(AbManager.getAbByName(input.value));
+      // setup the prefs for the new address book
+      newAb.setUsername(username);
+      newAb.setPrimary(true);
+      newAb.setLastSyncDate(0);
+    }
+    tree.view.setCellText(tree.currentIndex, tree.columns.getColumnAt(1), input.value);
+  }
+  
 }

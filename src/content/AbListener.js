@@ -72,8 +72,7 @@ var AbListener = {
     aParentDir.QueryInterface(Ci.nsIAbDirectory);
     // only update if a card was removed from a mail list
     // if so, then update the card's lastModifiedDate in the mail list's parent
-    if (aParentDir.isMailList && (aItem instanceof Ci.nsIAbCard) &&
-        Overlay.mAddressBook) {
+    if (aParentDir.isMailList && (aItem instanceof Ci.nsIAbCard)) {
       try {
         aItem.QueryInterface(Ci.nsIAbCard);
         var now = (new Date).getTime()/1000;
@@ -82,7 +81,7 @@ var AbListener = {
         uri = uri.substring(0, uri.lastIndexOf("/"));
         // the parent of aParentDir (aParentDir is a mailing list, dir is the
         // directory in which aParentDir is stored)
-        var dir = new AddressBook(null, uri);
+        var dir = new AddressBook(AbManager.getAbByURI(uri));
         // set the last modified date and update the card
         dir.setCardValue(aItem, "LastModifiedDate", now);
         dir.updateCard(aItem);

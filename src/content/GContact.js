@@ -566,6 +566,7 @@ GContact.prototype = {
       return true;
     switch (aElement.tagName) {
       case "email":
+      case "phoneNumber":
         if (!aDontSkip) // always return true for e-mail by default
           return true;
       case "im":

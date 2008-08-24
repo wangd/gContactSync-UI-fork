@@ -42,19 +42,24 @@ var LoginManager = {
   mHostname: "chrome://gContactSync",
   mSubmitURL: "User Auth Token",
   mHttpRealm: null,
-  mUsername: "gContactSyncUser",
   mUsernameField: "",
   mPasswordField: "",
+  mAuthTokens: {},
+  mNumAuthTokens: 0,
   /**
-   * LoginManager.setAuthToken
+   * LoginManager.addAuthToken
    * Stores the token in the Login Manager.
-   * @param aToken The authentication token from Google.
+   * @param aUsername        The username (e-mail address).
+   * @param aToken           The authentication token from Google.
    */
-  setAuthToken: function(aToken) {
-     if ("@mozilla.org/passwordmanager;1" in Cc) {
-      var passwordManager =  Cc["@mozilla.org/passwordmanager;1"]
-                             .getService(Ci.nsIPasswordManager);
-      passwordManager.addUser(this.mHostname, this.mUsername, aToken);
+  addAuthToken: function(aUsername, aToken) {
+    if (this.mNumAuthTokens == 0)
+      this.getAuthTokens();
+    if ("@mozilla.org/passwordmanager;1" in Cc) {
+     var passwordManager =  Cc["@mozilla.org/passwordmanager;1"]
+                            .getService(Ci.nsIPasswordManager);
+     passwordManager.addUser(this.mHostname, aUsername, aToken);
+     this.mNumAuthTokens++;
     }
     else if ("@mozilla.org/login-manager;1" in Cc) {
       var loginManager =  Cc["@mozilla.org/login-manager;1"]
@@ -62,17 +67,20 @@ var LoginManager = {
       var nsLoginInfo = new CC("@mozilla.org/login-manager/loginInfo;1",
                               Ci.nsILoginInfo, "init");
       var extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
-                                         this.mHttpRealm, this.mUsername, aToken,
+                                         this.mHttpRealm, aUsername, aToken,
                                          this.mUsernameField, this.mPasswordField);
       loginManager.addLogin(extLoginInfo);
+      this.mNumAuthTokens++;
     }
   },
   /**
-   * LoginManager.getAuthToken
+   * LoginManager.getAuthTokens
    * Gets the token in the Login Manager.
    * @return The auth token, if present, null otherwise.
    */
-  getAuthToken: function() {
+  getAuthTokens: function() {
+    this.mAuthTokens = {};
+    this.mNumAuthTokens = 0;
     if ("@mozilla.org/passwordmanager;1" in Cc) {
       var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
                              .getService(Ci.nsIPasswordManager);
@@ -80,8 +88,10 @@ var LoginManager = {
       while (iter.hasMoreElements()) {
         try {
           var pass = iter.getNext().QueryInterface(Ci.nsIPassword);
-          if (pass.host == this.mHostname)
-             return pass.password;
+          if (pass.host == this.mHostname) {
+            this.mAuthTokens[pass.user] = pass.password;
+            this.mNumAuthTokens++;
+          }
         } catch (e) {}
       }
     }
@@ -92,26 +102,39 @@ var LoginManager = {
       var logins = loginManager.findLogins({}, this.mHostname, this.mSubmitURL,
                                            this.mHttpRealm);
       // Find user from returned array of nsILoginInfo objects
-      for (var i = 0; i < logins.length; i++)
-         if (logins[i].username == this.mUsername)
-            return logins[i].password;
+      for (var i = 0; i < logins.length; i++) {
+        this.mAuthTokens[logins[i].username] = logins[i].password;
+        this.mNumAuthTokens++;
+      }
     }
-    return null;
+    return this.mAuthTokens;
+  },
+  /**
+   * LoginManager.getAuthToken
+   * Gets the token in the Login Manager.
+   * @return The auth token, if present, null otherwise.
+   */
+  getAuthToken: function(aUsername) {
+    if  (this.mNumAuthTokens == 0)
+      this.getAuthTokens();
+    return this.mAuthTokens ? this.mAuthTokens[aUsername] : null;
   },
   /**
    * LoginManager.removeAuthToken
    * Removes the auth token from the Login Manager.
    * @return True if the auth token was successfully removed.
    */
-  removeAuthToken: function() {
+  removeAuthToken: function(aUsername) {
     if ("@mozilla.org/passwordmanager;1" in Cc) {
       var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
                              .getService(Ci.nsIPasswordManager);
       try {
-        passwordManager.removeUser(this.mHostname, this.mUsername);
+        passwordManager.removeUser(this.mHostname, aUsername);
+        this.mAuthTokens[aUsername] = null;
+        this.mNumAuthTokens--;
       }
       catch (e) {
-        alert(StringBundle.getStr("removeLoginFailure"));
+        alert(StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
       }
     }
     else if ("@mozilla.org/login-manager;1" in Cc) {
@@ -122,9 +145,11 @@ var LoginManager = {
                                             this.mHttpRealm);
       // Find user from returned array of nsILoginInfo objects
       for (var i = 0; i < logins.length; i++) {
-        if (logins[i].username == this.mUsername) {
+        if (logins[i].username == aUsername) {
           try {
             loginManager.removeLogin(logins[i]);
+            this.mAuthTokens[aUsername] = null;
+            this.mNumAuthTokens--;
             return;
           }
           catch (e) {
@@ -133,7 +158,7 @@ var LoginManager = {
         }
       }
       // it didn't find the login...
-      alert(StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
+      alert(StringBundle.getStr("removeLoginFailure"));
     }
   }
 }

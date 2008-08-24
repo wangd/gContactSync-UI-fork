@@ -9,7 +9,12 @@
 <!ENTITY syncExtended.label "Sync Extended Properties (see the next tab)">
 <!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY syncGroups.label "Synchronize Groups with Mailing Lists">
-<!ENTITY removeLogin.label "Remove Authentiation Token">
+<!ENTITY accounts.tab "Accounts">
+<!ENTITY emailAddress.label "E-mail Address">
+<!ENTITY addressBook.label "Main Address Book">
+<!ENTITY removeLogin.label "Remove Login">
+<!ENTITY addLogin.label "Add Login">
+<!ENTITY changeAbName.label "Change Address Book">
 <!ENTITY extended.tab "Extended">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
 <!ENTITY extended1.value "Property 1  ">
@@ -23,7 +28,8 @@
 <!ENTITY extended9.value "Property 9  ">
 <!ENTITY extended10.value "Property 10">
 <!ENTITY extendedPropertiesDesc1.value "10 extra properties to sync.  Examples:">
-<!-- LOCALIZATION NOTE: These 3 lines cannot change -->
+<!-- LOCALIZATION NOTE: These 4 lines cannot change -->
 <!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName">
-<!ENTITY extendedPropertiesDesc3.value " * PreferMailFormat, Department, AllowRemoteContent,">
-<!ENTITY extendedPropertiesDesc4.value " * Custom1, Custom2">
+<!ENTITY extendedPropertiesDesc3.value " * PreferMailFormat, Department, AllowRemoteContent">
+<!ENTITY extendedPropertiesDesc4.value " * Custom1, Custom2, Custom3, Custom4, BirthYear">
+<!ENTITY extendedPropertiesDesc5.value " * BirthMonth, BirthDay, AnniversaryYear">

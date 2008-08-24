@@ -72,7 +72,6 @@ var LOGGER = {
       str += "\nError Message:\n" + aError;
     str += StringBundle.getStr("pleaseReport");
     this.LOG(str);
-    Sync.mError = true;
     this.mErrorCount++;
   },
   /**

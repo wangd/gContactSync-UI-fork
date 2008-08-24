@@ -33,6 +33,9 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+// when the window is loaded wait 200 ms and try to add the tab
+window.addEventListener("load", function(e) { CardDialogOverlay.init(); }, false);
+// the original method CheckAndSetCardValues
 var originalCheckAndSetCardValues;
 var gAttributes = {
   "ThirdEmail" : true, 
@@ -56,7 +59,14 @@ var gAttributes = {
   "JabberScreenNameType" : true,
   "YahooScreenNameType" : true,
   "MSNScreenNameType" : true,
-  "ICQScreenNameType" : true
+  "ICQScreenNameType" : true,
+  "WorkPhoneType" : true,
+  "HomePhoneType" : true,
+  "FaxNumberType" : true,
+  "CellularNumberType" : true,
+  "PagerNumberType" : true,
+  "HomeFaxNumberType" : true,
+  "OtherNumberType" : true
 };
 var Ci = Components.interfaces;
 /**
@@ -83,101 +93,108 @@ var CardDialogOverlay = {
       return;
     }
     StringBundle.init(); // initialize the string bundle
-    // try to QI the card.  If it cannot be done, don't add the tab 
+
     try {
       // QI the card if it doesn't have the getProperty method
       // if the card cannot accept custom attributes, quit and do not add the
       // extra tabs
       if (!gEditCard.card.getProperty)
         gEditCard.card.QueryInterface(Ci.nsIAbMDBCard);
-      // add the PrimaryEmail type drop down menu
-      try {
-        var primaryEmail = document.getElementById("PrimaryEmail");
-        if (primaryEmail && primaryEmail.parentNode) {
-          var box = primaryEmail.parentNode;
-          var menuList = document.createElement("menulist");
-          menuList.setAttribute("id", "PrimaryEmailType");
-          var menuPopup = document.createElement("menupopup");
-          var other = document.createElement("menuitem");
-          other.setAttribute("value", "other");
-          other.setAttribute("label", StringBundle.getStr("other"));
-          var home = document.createElement("menuitem");
-          home.setAttribute("value", "home");
-          home.setAttribute("label", StringBundle.getStr("home"));
-          var work = document.createElement("menuitem");
-          work.setAttribute("value", "work");
-          work.setAttribute("label", StringBundle.getStr("work"));
-          menuPopup.appendChild(other);
-          menuPopup.appendChild(home);
-          menuPopup.appendChild(work);
-          menuList.appendChild(menuPopup);
-          box.appendChild(menuList);
-        }
-      } catch(e) { LOGGER.LOG_WARNING("Unable to setup PrimaryEmailType", e); }
-      // setup the SecondEmail type drop-down menu
-      try {
-        var secondEmail = document.getElementById("SecondEmail");
-        if (secondEmail && secondEmail.parentNode) {
-          var box = secondEmail.parentNode;
-          var menuList = document.createElement("menulist");
-          menuList.setAttribute("id", "SecondEmailType");
-          var menuPopup = document.createElement("menupopup");
-          var other = document.createElement("menuitem");
-          other.setAttribute("value", "other");
-          other.setAttribute("label", StringBundle.getStr("other"));
-          var home = document.createElement("menuitem");
-          home.setAttribute("value", "home");
-          home.setAttribute("label", StringBundle.getStr("home"));
-          var work = document.createElement("menuitem");
-          work.setAttribute("value", "work");
-          work.setAttribute("label", StringBundle.getStr("work"));
-          menuPopup.appendChild(other);
-          menuPopup.appendChild(home);
-          menuPopup.appendChild(work);
-          menuList.appendChild(menuPopup);
-          box.appendChild(menuList);
-        }
-      } catch(e) { LOGGER.LOG_WARNING("Unable to setup SecondEmailType", e); }
-      try {
-        // add the Screen Name drop down
-        var screenName = document.getElementById("ScreenName");
-        if (screenName && screenName.parentNode) {
-          var box = screenName.parentNode;
-          var menuList = document.createElement("menulist");
-          menuList.setAttribute("id", "_AimScreenNameType");
-          var menuPopup = document.createElement("menupopup");
-          var aim = document.createElement("menuitem");
-          aim.setAttribute("value", "AIM");
-          aim.setAttribute("label", "AIM");
-          var gtalk = document.createElement("menuitem");
-          gtalk.setAttribute("value", "GOOGLE_TALK");
-          gtalk.setAttribute("label", "Google Talk");
-          var icq = document.createElement("menuitem");
-          icq.setAttribute("value", "ICQ");
-          icq.setAttribute("label", "ICQ");
-          var yahoo = document.createElement("menuitem");
-          yahoo.setAttribute("value", "YAHOO");
-          yahoo.setAttribute("label", "Yahoo");
-          var msn = document.createElement("menuitem");
-          msn.setAttribute("value", "MSN");
-          msn.setAttribute("label", "MSN");
-          var jabber = document.createElement("menuitem");
-          jabber.setAttribute("value", "JABBER");
-          jabber.setAttribute("label", "Jabber");
-          menuPopup.appendChild(aim);
-          menuPopup.appendChild(gtalk);
-          menuPopup.appendChild(icq);
-          menuPopup.appendChild(yahoo);
-          menuPopup.appendChild(msn);
-          menuPopup.appendChild(jabber);
-          menuList.appendChild(menuPopup);
-          box.appendChild(menuList);
-        }
-      } catch(e) { LOGGER.LOG_WARNING("Unable to setup _AimScreenNameType", e); }
-      myGetCardValues(gEditCard.card, document);
-      // override the check and set card values function
-      originalCheckAndSetCardValues = CheckAndSetCardValues;
-      CheckAndSetCardValues = myCheckAndSetCardValues;
+    } catch(e) { return; }
+    
+    // add the email type drop down menus
+    try {
+      var arr = ["other", "home", "work"];
+      var primaryEmailBox = document.getElementById("PrimaryEmail").parentNode;
+      addMenuItems(primaryEmailBox, arr, "PrimaryEmailType", "other");
+      var secondEmailBox = document.getElementById("SecondEmail").parentNode;
+      addMenuItems(secondEmailBox, arr, "SecondEmailType", "other");
+      var thirdEmailBox = document.getElementById("ThirdEmail").parentNode;
+      addMenuItems(thirdEmailBox, arr, "ThirdEmailType", "other");
+      var fourthEmailBox = document.getElementById("FourthEmail").parentNode;
+      addMenuItems(fourthEmailBox, arr, "FourthEmailType", "other");
+    } catch(e) { alert("Unable to setup email types: " + e); }
+    try {
+      // add drop down menus for screen name protocols
+      var arr = ["AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER"];
+      var aimBox = document.getElementById("ScreenName").parentNode;
+      addMenuItems(aimBox, arr, "_AimScreenNameType", "AIM");
+      var talkBox = document.getElementById("TalkScreenName").parentNode;
+      addMenuItems(talkBox, arr, "TalkScreenNameType", "GOOGLE_TALK");
+      var icqBox = document.getElementById("ICQScreenName").parentNode;
+      addMenuItems(icqBox, arr, "ICQScreenNameType", "ICQ");
+      var yahooBox = document.getElementById("YahooScreenName").parentNode;
+      addMenuItems(yahooBox, arr, "YahooScreenNameType", "YAHOO");
+      var msnBox = document.getElementById("MSNScreenName").parentNode;
+      addMenuItems(msnBox, arr, "MSNScreenNameType", "MSN");
+      var jabberBox = document.getElementById("JabberScreenName").parentNode;
+      addMenuItems(jabberBox, arr, "JabberScreenNameType", "JABBER");
+    }
+    catch(e) {
+      alert("Unable to setup screen name protocol menus\n" + e);
+    }
+    try {
+      //swap pager and mobile phone textboxes and values
+      var pager = document.getElementById("PagerNumber");
+      pager.setAttribute("id", "tmp");
+      var pagerValue = pager.value;
+      var mobile = document.getElementById("CellularNumber");
+      mobile.setAttribute("id", "PagerNumber");
+      pager.setAttribute("id", "CellularNumber");
+      pager.value = mobile.value;
+      mobile.value = pagerValue;
+    }
+    catch (e) {
+      alert("Unable to swap pager and mobile number values\n" + e);
+    }
+    try {
+      // then replace all phone labels and remove the access keys
+      var work = document.getElementById("WorkPhone");
+      var workLabel = work.parentNode.previousSibling;
+      workLabel.value = StringBundle.getStr("first");
+      workLabel.setAttribute("accesskey", "");
+      var home = document.getElementById("HomePhone");
+      var homeLabel = home.parentNode.previousSibling;
+      homeLabel.value = StringBundle.getStr("second");
+      homeLabel.setAttribute("accesskey", "");
+      var fax = document.getElementById("FaxNumber");
+      var faxLabel = fax.parentNode.previousSibling;
+      faxLabel.value = StringBundle.getStr("third");
+      faxLabel.setAttribute("accesskey", "");
+      var mobile = document.getElementById("CellularNumber");
+      var mobileLabel = mobile.parentNode.previousSibling;
+      mobileLabel.value = StringBundle.getStr("fourth");
+      mobileLabel.setAttribute("accesskey", "");
+      var pager = document.getElementById("PagerNumber");
+      var pagerLabel = pager.parentNode.previousSibling;
+      pagerLabel.value = StringBundle.getStr("fifth");
+      pagerLabel.setAttribute("accesskey", "");
+    }
+    catch(e) {
+      alert("Unable to replace phone labels and remove access keys\n" + e);
+    }
+    try {
+      // setup the types for the phone numbers
+      var arr = ["work", "home", "work_fax", "mobile", "pager", "home_fax", "other"];
+      var workBox = work.parentNode;
+      addMenuItems(workBox, arr, "WorkPhoneType", "work");
+      var homeBox = home.parentNode;
+      addMenuItems(homeBox, arr, "HomePhoneType", "home");
+      var faxBox = fax.parentNode;
+      addMenuItems(faxBox, arr, "FaxNumberType", "work_fax");
+      var mobileBox = mobile.parentNode;
+      addMenuItems(mobileBox, arr, "CellularNumberType", "mobile");
+      var pagerBox = pager.parentNode;
+      addMenuItems(pagerBox, arr, "PagerNumberType", "pager");
+      var homeFaxBox = document.getElementById("HomeFaxNumber").parentNode;
+      addMenuItems(homeFaxBox, arr, "HomeFaxNumberType", "home_fax");
+      var otherNumberBox = document.getElementById("OtherNumber").parentNode;
+      addMenuItems(otherNumberBox, arr, "OtherNumberType", "other");
+    }
+    catch(e) {
+      alert("Unable to setup phone number types\n" + e);
+    }
+    try {
       // setup the new screenname/e-mail address/phone numbers tab
       var myTab = document.createElementNS(this.mNamespace, "tab");
       myTab.setAttribute("label", "gContactSync");
@@ -189,14 +206,57 @@ var CardDialogOverlay = {
       // add the new tabs to the dialog
       document.getElementById("abTabs").appendChild(myTab);
       document.getElementById("abTabs").appendChild(myAddressTab);
-      // get the new card values
-      myGetCardValues(gEditCard.card, document);
-    } catch(e) {}
+    }
+    catch(e) {
+      alert("Unable to setup the extra tabs\n" + e);
+    }
+    // override the check and set card values function
+    originalCheckAndSetCardValues = CheckAndSetCardValues;
+    CheckAndSetCardValues = myCheckAndSetCardValues;
+    // get the extra card values
+    myGetCardValues(gEditCard.card, document);
   }
 }
-// when the window is loaded wait 200 ms and try to add the tab
-window.addEventListener("load", function(e) { CardDialogOverlay.init(); }, false);
-
+/**
+ * addMenuItems
+ * Sets up a type menu list element with a menuitem for each string in the
+ * array.
+ * @param aBox   The box element to which this menu list is added.
+ * @param aArray The array of values to set for the menuitems.  There must be a
+ *               a string in the string bundle with the same name as the value.
+ * @param aID    The ID for this menu list, which should be the name of the
+ *               attribute with Type added to the end, such as WorkNumberType
+ * @param aValue The default value to set for this list.
+ */
+function addMenuItems(aBox, aArray, aID, aValue) {
+  var menuList = document.createElement("menulist");
+  menuList.setAttribute("id", aID);
+  var menuPopup = document.createElement("menupopup");
+  // put the default value first in the menupopup, if possible
+  var index = aArray.indexOf(aValue);
+  if (index != -1) {
+    var elem = document.createElement("menuitem");
+    elem.setAttribute("value", aValue);
+    elem.setAttribute("label", StringBundle.getStr(aValue));
+    aArray[index] = null;
+    menuPopup.appendChild(elem);
+  }
+  // then add the other values
+  for (var i = 0; i < aArray.length; i++) {
+    if (!aArray[i]) { // if this element is null it was the default value
+      aArray[i] = aValue; // so restore its value and skip adding it again
+      continue;
+    }
+    var elem = document.createElement("menuitem");
+    elem.setAttribute("value", aArray[i]);
+    elem.setAttribute("label", StringBundle.getStr(aArray[i]));
+    menuPopup.appendChild(elem);
+  }
+  // add the popup to the menu list
+  menuList.appendChild(menuPopup);
+  // add the menu list to the box
+  aBox.appendChild(menuList);
+}
 /**
  * A method that gets all of the attributes added by this extension and sets
  * the value of the textbox or drop down menu in aDoc whose ID is identical to
@@ -219,10 +279,11 @@ function myGetCardValues(aCard, aDoc) {
           value = aCard.getStringAttribute(attr);
         // set the element's value if attr isn't a type OR it is a type and
         // the card's value for the attribute isn't null or blank
-        if (attr.indexOf("Type") == -1 || (value && value != ""))
+        if (attr.indexOf("Type") == -1 || (value && value != "")) {
           elem.value = value;
+        }
       }
-    } catch(e) { LOGGER.LOG_WARNING("Error in myGetCardValues: " + attr, e); }
+    } catch(e) { alert("Error in myGetCardValues: " + attr + "\n" + e); }
   }
 }
 /**
@@ -234,6 +295,14 @@ function myGetCardValues(aCard, aDoc) {
  * @param aCheck Unused, but passed to the original method.
  */
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
+  
+  var existingTypes = {
+    "WorkPhoneType" : true,
+    "HomePhoneType" : true,
+    "FaxNumberType" : true,
+    "CellularNumberType" : true,
+    "PagerNumberType" : true,
+  }
   // iterate through all the added attributes and types and set the card's value
   // for each one of them
   for (var attr in gAttributes) {
@@ -242,13 +311,20 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
       var elem = aDoc.getElementById(attr);
       if (elem) {
         var value = elem.value;
-        if (aCard.getProperty) // post Bug 413260
+        if (aCard.setProperty) // post Bug 413260
           aCard.setProperty(attr, value);
-        else // pre Bug 413260
-          aCard.setStringAttribute(attr, value);
+        else { // pre Bug 413260
+          // if it is a number type, use setCardValue
+          if (existingTypes[attr])
+            aCard.setCardValue(attr, value);
+          else
+            aCard.setStringAttribute(attr, value);
+        }
       }
-    } catch(e) { LOGGER.LOG_WARNING("Error in myCheckAndSetCardValues: " + attr, e); }
+    } catch(e) { alert("Error in myCheckAndSetCardValues: " + attr + "\n" + e); }
   }
+  if (!aCard.getProperty)
+    aCard.editCardToDatabase(gEditCard.abURI);
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }

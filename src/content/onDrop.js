@@ -67,7 +67,7 @@ function myOnDrop(row, orientation) {
   var srcURI = GetSelectedDirectory();
   var toDirectory = GetDirectoryFromURI(targetURI);
   var srcDirectory = GetDirectoryFromURI(srcURI);
-  var ab = new AddressBook(null, targetURI);
+  var ab = new AddressBook(toDirectory);
   // iterate through each dropped item from the session
   for (var i = 0, dropItems = dragSession.numDropItems; i < dropItems; i++) {
     dragSession.getData(trans, i);

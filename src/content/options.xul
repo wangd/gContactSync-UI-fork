@@ -39,12 +39,21 @@
 <prefwindow id="gContactSyncPrefs"
             title="&title.label;"
             width="480"
-            height="520"
+            height="540"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="synonyms.js"/>
   <script src="LoginManager.js"/>
   <script src="StringBundle.js"/>
   <script src="options.js"/>
+  <script src="AddressBook.js"/>
+  <script src="AbManager.js"/>
+  <script src="FileIO.js"/>
+  <script src="Logger.js"/>
+  <script src="gdata.js"/>
+  <script src="HttpRequest.js"/>
+  <script src="GHttpRequest.js"/>
+  <script src="Pref.js"/>
+  <script src="Preferences.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="otherStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
@@ -58,9 +67,6 @@
       <preference id="initialDelay"
                   name="extensions.gContactSync.initialDelay"
                   type="int"/>
-      <preference id="addressBookName"
-                  name="extensions.gContactSync.addressBookName"
-                  type="string"/>
       <preference id="updateGoogleInConflicts"
                   name="extensions.gContactSync.updateGoogleInConflicts"
                   type="bool"/>
@@ -115,24 +121,18 @@
       <tabbox>
         <tabs id="optionsTabs">
           <tab label="&main.tab;"/>
+          <tab label="&accounts.tab;"/>
           <tab label="&extended.tab;"/>
         </tabs>
-
         <tabpanels id="optionsPanels" flex="1">
           <vbox index="main">
-            <label control="abNameLbl"
-                   value="&abName.value;"/>
-            <textbox preference="addressBookName"
-                     id="abName"
-                     maxLength="25"/>
-
-            <label control="refreshIntervalLbl"
+            <label control="refreshInterval"
                    value="&refreshInterval.value;"/>
             <textbox preference="refreshInterval"
                      id="refreshIntervalBox"
                      maxlength="8"/>
 
-            <label control="initialDelayLbl"
+            <label control="initialDelay"
                    value="&initialDelay.value;"/>
             <textbox preference="initialDelay"
                      id="initialDelayBox"
@@ -157,10 +157,26 @@
             <checkbox preference="syncGroups"
                      id="syncGroups"
                      label="&syncGroups.label;"/>
-            <hbox>
+          </vbox>
+          <vbox index="accounts">
+            <tree flex="1" id="loginTree" seltype="single">
+              <treecols>
+                <treecol id="email" label="E-mail Address" flex="1"/>
+                <splitter class="tree-splitter"/>
+                <treecol id="addressBook" label="Address Book" flex="1"/>
+              </treecols>
+              <treechildren id="loginTreeChildren"/>
+            </tree>
+            <hbox id="accountButtons">
+              <button id="addLogin"
+                        label="&addLogin.label;"
+                        oncommand="addLogin()"/>
               <button id="removeLogin"
-                      label="&removeLogin.label;"
-                      oncommand="removeLogin()"/>
+                        label="&removeLogin.label;"
+                        oncommand="removeSelectedLogin()"/>
+              <button id="changeAbName"
+                        label="&changeAbName.label;"
+                        oncommand="changeAbName()"/>
             </hbox>
           </vbox>
           <vbox index="extended">
@@ -172,6 +188,8 @@
                    value="&extendedPropertiesDesc3.value;"/>
             <label control="extendedDesc4"
                    value="&extendedPropertiesDesc4.value;"/>
+            <label control="extendedDesc5"
+                   value="&extendedPropertiesDesc5.value;"/>
             <label control="blank" value=""/>
             <hbox>
               <label control="extended1" value="&extended1.value;"/>

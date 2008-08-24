@@ -37,31 +37,29 @@
  * AddressBook
  * A class for a Thunderbird Address Book with methods to add, modify, obtain, 
  * and delete cards.
- * @param aName The name of the address book.
- * @param aURI  Optional.  The URI of the address book to obtain.  If present,
- *              ignores the aName.
+ * @param aDirectory The actual directory.
  * @constructor
  * @class
  */
-function AddressBook(aName, aURI) {
+function AddressBook(aDirectory) {
   // get the version of Thunderbird
   if (Cc["@mozilla.org/abmanager;1"]) // The AB Manager is in Thunderbird 3
     this.mVersion = 3;
   else
     this.mVersion = 2;
-  // get the address book by either the URI or name or throw an error
-  if (aURI)
-    this.mDirectory = this.getAbByURI(aURI);
-  else if (aName)
-    this.mDirectory = this.getAbByName(aName);
-  else
-    throw "Invalid aURI supplied to the AddressBook constructor" +
-          StringBundle.getStr("pleaseReport");
+  
+  this.mDirectory = aDirectory
   // make sure the directory is valid
   if (!this.isDirectoryValid(this.mDirectory))
-    throw "Invalid aURI or aName supplied to the AddressBook constructor" +
+    throw "Invalid directory supplied to the AddressBook constructor" +
           StringBundle.getStr("pleaseReport");
-  this.mURI = this.mDirectory.URI;
+  // get the directory's URI
+  if (this.mDirectory.URI)
+  this.mURI = this.mDirectory.URI
+  else {
+    this.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
+    this.mURI = this.mDirectory.getDirUri();
+  }
   // figure out if this is post-bug 413260
   var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
               .createInstance(nsIAbCard);
@@ -71,15 +69,8 @@ function AddressBook(aName, aURI) {
 AddressBook.prototype = {
   mBug413260: false, // true if bug 413260 has landed
   mURI: {}, // the uniform resource identifier of the directory
-  // attributes that can be set by getCardValue and setCardValue
-  mBasicAttributes: [
-    "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
-    "PagerNumber", "FaxNumber", "_AimScreenName", "PrimaryEmail", "SecondEmail",
-    "Company", "JobTitle", "HomeAddress", "WorkAddress", "NickName",
-    "FirstName", "LastName", "HomeAddress2", "HomeCity", "HomeState",
-    "HomeZipCode", "HomeCountry", "WorkAddress2", "WorkCity", "WorkState",
-    "WorkZipCode", "WorkCountry", "WebPage1", "WebPage2", "Department",
-    "Custom1", "Custom2", "Custom3", "Custom4"],
+  mCards: [], // the cards within this address book
+  mCardsUpdate: false, // set to true when mCards should be updated
   /**
    * AddressBook.addCard
    * Adds the card to this address book and returns the added card.
@@ -89,6 +80,7 @@ AddressBook.prototype = {
   addCard: function(aCard) {
     this.checkCard(aCard, "addCardTo"); // check the card's validity first
     try {
+      this.mCards.push(aCard);
       return this.mDirectory.addCard(aCard); // then add it and return the MDBCard
     }
     catch(e) {
@@ -97,122 +89,18 @@ AddressBook.prototype = {
     }
   },
   /**
-   * AddressBook.getAbByURI
-   * Returns the address book with the given URI, if found.  Does not attempt
-   * to make a new address book if not found and returns null.
-   * @return  The Address Book with the given URI
-   */
-  getAbByURI: function(aURI) {
-    if (!aURI) {
-      LOGGER.LOG_WARNING("Invalid aURI supplied to the 'getAbByURI' method" +
-                         StringBundle.getStr("pleaseReport"));
-      return;
-    }
-    try {
-      var dir;
-      if (this.mVersion == 3)
-        dir = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager)
-               .getDirectory(aURI).QueryInterface(Ci.nsIAbDirectory);
-      else
-       dir = Cc["@mozilla.org/rdf/rdf-service;1"]
-              .getService(Ci.nsIRDFService)
-              .GetResource(aURI)
-              .QueryInterface(Ci.nsIAbDirectory);
-      // checks that the directory exists and is valid.  returns null if not.
-      if (!this.isDirectoryValid(dir))
-        return null;
-      return dir;
-    }
-    catch(e) { LOGGER.LOG_ERROR("Error in getAbByURI" + e); }
-  },
-  /**
-   * AddressBook.getAbByName
-   * Returns the Address Book if it can be found.  If it cannot be found
-   * it tries once to make it and return the newly made address book.
-   * @param aDirName     The name of the address book
-   * @return             The Address Book with the name given
-   */
-  getAbByName: function(aDirName) {
-    if (!aDirName || aDirName.length == 0)
-      throw "Invalid aDirName passed to the 'getAbByName' method." +
-            StringBundle.getStr("pleaseReport");
-
-    if (this.mVersion == 3) { // TB 3
-      var abManager = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager);
-      var data;
-      var iter = abManager.directories;
-      while(iter.hasMoreElements()) {
-        data = iter.getNext();
-        if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName) {
-            this.mName = aDirName;
-            return data;
-          }
-      }
-      // the AB doesn't exist, so make one:
-      abManager.newAddressBook(aDirName, "moz-abmdbdirectory://", 2);
-      // write a blank sync file to reset last sync date
-      FileIO.writeToFile(FileIO.mDataFile, "0");
-      iter = abManager.directories;
-      while(iter.hasMoreElements()) {
-        data = iter.getNext();
-        if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName) {
-            this.mName = aDirName;
-            return data;
-          }
-      }// end of while loop
-      return null;
-    }
-    else { // TB 2
-      // obtain the main directory through the RDF service
-      var dir = Cc["@mozilla.org/rdf/rdf-service;1"]
-                 .getService(Ci.nsIRDFService)
-                 .GetResource("moz-abdirectory://")
-                 .QueryInterface(Ci.nsIAbDirectory);
-      var iter = dir.childNodes;
-      while(iter.hasMoreElements()) {
-        data = iter.getNext();
-        if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName) {
-            this.mName = aDirName;
-            return data;
-          }
-      }
-      // the AB doesn't exist...
-      // write a 0 to the data file to reset the last sync date
-      FileIO.writeToFile(FileIO.mDataFile, "0");
-      // setup the "properties" of the new address book
-      var properties = Cc["@mozilla.org/addressbook/properties;1"]
-	                     .createInstance(Ci.nsIAbDirectoryProperties);
-	    properties.description = aDirName;
-	    properties.dirType = 2; // address book
-      dir.createNewDirectory(properties);
-      var iter = dir.childNodes;
-      while(iter.hasMoreElements()) {
-        data = iter.getNext();
-        if (data instanceof Ci.nsIAbDirectory)
-          if (data.dirName == aDirName) {
-            this.mName = aDirName;
-            return data;
-          }
-      }
-   }
-    return null;
-  },
-  /**
    * AddressBook.getAllCards
    * Returns an array of all of the cards in this Address Book.
    * @return  An array of the nsIAbCards in this Address Book.
    */
   getAllCards: function() {
-    var arr = [];
+    this.mCards = [];
     var iter = this.mDirectory.childCards;
     if (this.mVersion == 3) { // TB 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof nsIAbCard && !data.isMailList)
-          arr.push(data);
+          this.mCards.push(data);
       }
     }
     else { // TB 2
@@ -222,12 +110,12 @@ AddressBook.prototype = {
         do {
           var data = iter.currentItem();
           if(data instanceof nsIAbCard && !data.isMailList)
-            arr.push(data);
+            this.mCards.push(data);
           iter.next();
         } while (Components.lastResult == 0);
       } catch(e) {} // error is expected when finished   
     }
-    return arr;
+    return this.mCards;
   },
   /**
    * AddressBook.getAllLists
@@ -242,22 +130,11 @@ AddressBook.prototype = {
     var obj = {};
     while (iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory && data.isMailList)
+      if (data instanceof Ci.nsIAbDirectory && data.isMailList) {
         var list = new MailList(data, this, skipGetCards);
-        var nickname = list.getNickName();
-        var id;
-        if (nickname &&
-            nickname.indexOf("http://www.google.com/m8/feeds/groups") != -1)
-         id = nickname
-        else {
-          var description = list.getDescription();
-          if (description &&
-              description.indexOf("http://www.google.com/m8/feeds/groups") != -1)
-            id = description;
-        }
-        if (!id)
-         id = "no id found " + (new Date).getTime();
-       obj[id] = list; 
+        var id = list.getGroupID();
+        obj[id] = list; 
+      }
     }
     return obj;
   },
@@ -334,8 +211,10 @@ AddressBook.prototype = {
         arr.AppendElement(aCards[i], false);
       }
     }
-    if (arr) // make sure arr isn't null (mailnews bug 448165)
+    if (arr) { // make sure arr isn't null (mailnews bug 448165)
+      this.mCardsUpdate = true;
       this.mDirectory.deleteCards(arr);
+    }
   },
   /**
    * AddressBook.updateCard
@@ -344,6 +223,7 @@ AddressBook.prototype = {
    */
   updateCard: function(aCard) {
     this.checkCard(aCard, "updateCard");
+    this.mCardsUpdate = true;
     if (this.mDirectory && this.mDirectory.modifyCard)
       this.mDirectory.modifyCard(aCard);
     else
@@ -357,12 +237,7 @@ AddressBook.prototype = {
    *                     throwing the error)
    */
   checkCard: function(aCard, aMethodName) {
-    var card = aCard && aCard.mCard ? aCard.mCard : aCard;
-    if (!card || (!(card instanceof Ci.nsIAbCard) &&
-                  !(card instanceof Ci.nsIAbMDBCard))) {
-      throw "Invalid card: " + aCard + "passed to the '" + aMethodName +
-            "' method." + StringBundle.getStr("pleaseReport");
-    }
+    AbManager.checkCard(aCard, aMethodName);
   },
   /**
    * AddressBook.checkList
@@ -408,22 +283,7 @@ AddressBook.prototype = {
    * @param aAttrName The name of the attribute to get.
    */
    getCardValue: function(aCard, aAttrName) {
-     this.checkCard(aCard, "getCardValue");
-     if (this.mBug413260) // if the patch for Bug 413260 is applied
-       return aCard.getProperty(aAttrName, null);
-     else {
-       if (aAttrName == "LastModifiedDate")
-         return aCard.lastModifiedDate; // workaround for lastModifiedDate bug
-       var value;
-       if (this.isRegularAttribute(aAttrName))
-         try { return aCard.getCardValue(aAttrName); }
-         catch (e) { LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
-       else if (aCard instanceof Ci.nsIAbMDBCard)
-         return this.getMDBCardValue(aCard, aAttrName);
-       else
-         LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
-                            + aCard);
-     }
+     return AbManager.getCardValue(aCard, aAttrName);
    },
   /**
    * AddressBook.getCardValue
@@ -434,100 +294,7 @@ AddressBook.prototype = {
    * @param aValue    The value to set for the attribute.
    */
    setCardValue: function(aCard, aAttrName, aValue) {
-     this.checkCard(aCard, "setCardValue");
-     if (!aValue)
-       aValue = "";
-     if (this.mBug413260) { // if the patch for Bug 413260 is applied
-       if (aAttrName == "PreferMailFormat") {
-         switch (aValue) {
-           case "plaintext":
-           case "text":
-           case "1":
-             aValue = 1;
-             break;
-           case "html":
-           case "2":
-             aValue = 2;
-             break;
-           default: // if it is anything else set as unknown
-             aValue = 0;
-         }
-       }
-       aCard.setProperty(aAttrName, aValue);
-     }
-     else {
-       // workaround a last modified date bug
-       if (aAttrName == "LastModifiedDate")
-         try {
-           if (aValue == "")
-             aValue = 0;
-           aCard.lastModifiedDate = aValue;
-         } catch(e) { LOGGER.LOG_WARNING("Invalid lastModifiedDate"); }
-       else if (aAttrName == "AllowRemoteContent") {
-         // AllowRemoteContent may be 1/0 if the patch or true/false otherwise
-         var value = aValue == "1" || (aValue != "0" && aValue);
-         aCard.allowRemoteContent = value;
-       }
-       else if (aAttrName == "PreferMailFormat") {
-         // can be a 0/1/2 or unknown/plaintext/html
-         var value;
-         switch (aValue) {
-           case "plaintext":
-           case "text":
-           case "1":
-             value = 1;
-             break;
-           case "html":
-           case "2":
-             value = 2;
-             break;
-           default: // if it is anything else set as unknown
-             value = 0;
-         }
-         aCard.preferMailFormat = value;
-       }
-       else if (this.isRegularAttribute(aAttrName))
-         try { aCard.setCardValue(aAttrName, aValue); }
-         catch (e) { LOGGER.LOG_WARNING("Error in setCardValue: " + e); }
-      else if (aCard instanceof Ci.nsIAbMDBCard)
-         this.setMDBCardValue(aCard, aAttrName, aValue);
-      else
-        LOGGER.LOG_WARNING("Couldn't set the value " + aAttrName + " of the card "
-                           + aCard);
-     }
-   },
-   /**
-    * AddressBook.setMDBCardValue
-    * Sets the requested value of an MDB card's attribute.  Performs a
-    * QueryInterface if necessary.
-    * @param aCard     The MDB card to set the value for.
-    * @param aAttrName The name of the attribute whose value is set.
-    * @param aValue    The value to set for aAttrName.
-    */
-   setMDBCardValue: function(aCard, aAttrName, aValue) {
-     try {
-       aCard.setStringAttribute(aAttrName, aValue);
-     }
-     catch(e) {
-       LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
-                          "\n" + aValue);
-     }
-   },
-   /**
-    * AddressBook.getMDBCardValue
-    * Returns the requested value of an MDB card's attribute.  Performs a
-    * QueryInterface if necessary.
-    * @param aCard     The MDB card to get the value from.
-    * @param aAttrName The name of the attribute whose value is returned.
-    * @return The value of aCard's attribute aAttrName.
-    */
-   getMDBCardValue: function(aCard, aAttrName) {
-     try {
-       return aCard.getStringAttribute(aAttrName);
-     }
-     catch(e) {
-       LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
-     }
+     AbManager.setCardValue(aCard, aAttrName, aValue);
    },
   /**
    * AddressBook.hasAddress
@@ -556,16 +323,7 @@ AddressBook.prototype = {
     return Cc["@mozilla.org/addressbook/cardproperty;1"]
            .createInstance(Ci.nsIAbCard);
   },
-  /**
-   * AddressBook.isRegularAttribute
-   * Returns true if the given attribute is able to be set/obtained through the
-   * setCardValue and getCardValue functions of nsIAbCard.
-   * @param aAttribute The attribute to check.
-   * @return True if aAttribute is usable with set/getCardValue.
-   */
-  isRegularAttribute: function(aAttribute) {
-    return this.mBasicAttributes.indexOf(aAttribute) != -1;
-  },
+  
   /**
    * AddressBook.equals
    * Returns true if the directory passed in is the same as the directory
@@ -583,5 +341,150 @@ AddressBook.prototype = {
     if (this.mDirectory.URI)
       return this.mDirectory.URI == aOtherDir.URI;
     return this.mDirectory.getDirUri() == aOtherDir.getDirUri();
-  }
+  },
+  /**
+   * AddressBook.hasCard
+   * Returns the card in this directory, if any, with the same (not-null)
+   * value for the GoogleID attribute, or, if the GoogleID is null, if the
+   *         display name, primary, and second emails are the same.
+   * @param aCard The card being searched for.
+   * @return The card in this list, if any, with the same, and non-null value
+   *         for its GoogleID attribute, or, if the GoogleID is null, if the
+   *         display name, primary, and second emails are the same.
+   */
+  hasCard: function(aCard) {
+    this.checkCard(aCard, "AddressBook.hasCard");
+    if (this.mCardsUpdate)
+      this.getAllCards();
+    var ab = this.mDirectory;
+    for (var i = 0, length = this.mCards.length; i < length; i++) {
+      var card = this.mCards[i];
+      var aCardID = ab.getCardValue(aCard, "GoogleID");
+      // if it is an old card (has id) compare IDs
+      if (aCardID) {
+        if (aCardID == ab.getCardValue(card, "GoogleID"))
+          return card;
+      }
+      // else check that display name, primary and second email are equal
+      else if (ab.getCardValue(aCard, "DisplayName") ==
+                                           ab.getCardValue(card,"DisplayName")
+              && ab.getCardValue(aCard, "PrimaryEmail") ==
+                                           ab.getCardValue(card, "PrimaryEmail")
+              && ab.getCardValue(aCard, "SecondEmail") ==
+                                           ab.getCardValue(card, "SecondEmail"))
+        return card;
+    }
+  },
+  /**
+   * AddressBook.setPrefId
+   * Sets the preference id for this mailing list.  The update method must be
+   * called in order for the change to become permanent.
+   * @param aPrefId The new preference ID for this mailing list.
+   */
+  setPrefId: function(aPrefId) {
+    this.mDirectory.dirPrefId = aPrefId;
+  },
+  /**
+   * AddressBook.getPrefId
+   * Returns the preference ID of this mailing list.
+   * @return The preference ID of this mailing list.
+   */
+  getPrefId: function() {
+    return this.mDirectory.dirPrefId;
+  },
+  /**
+   * AddressBook.getStringPref
+   * Gets and returns the string preference, if possible, with the given name.
+   * Returns null if this list doesn't have a preference ID or if there was an
+   * error getting the preference.
+   * @param aName         The name of the preference to get.
+   * @param aDefaultValue The value to set the preference at if it fails.  Only
+   *                      used in Thunderbird 3.
+   * @return The value of the preference with the given name in the preference
+   *         branch specified by the preference ID, if possible.  Otherwise null.
+   */
+  getStringPref: function(aName, aDefaultValue) {
+    var id = this.getPrefId();
+    LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
+    // don't try to set a string pref this way in TB 2 or it will crash
+    if (this.mVersion == 3 && this.mDirectory.getStringValue) {
+      try {
+        var value = this.mDirectory.getStringValue(aName, aDefaultValue);
+        LOGGER.VERBOSE_LOG("-Found the value: " + value);
+        return value;
+      } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+    }
+    if (!id)
+      return;
+    try {
+      var branch = Cc["@mozilla.org/preferences-service;1"]
+                    .getService(Ci.nsIPrefService)
+                    .getBranch(id)
+                    .QueryInterface(Ci.nsIPrefBranch2);
+      var value = branch.getCharPref(aName);
+      LOGGER.VERBOSE_LOG("-Found the value: " + value);
+      return value;
+    } catch(e) {} // an error is expected if the value isn't present
+  },
+  /**
+   * AddressBook.setStringPref
+   * Setshe string preference, if possible, with the given name and value.
+   * @param aName  The name of the preference to get.
+   * @param aValue The value to set the preference to.
+   */
+  setStringPref: function(aName, aValue) {
+    var id = this.getPrefId();
+    LOGGER.VERBOSE_LOG("Setting pref named: " + aName + " to value: " + aValue +
+                       " to the branch: " + id);
+    if (this.mDirectory.setStringValue) {
+      try {
+        this.mDirectory.setStringValue(aName, aValue);
+      } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+    }
+    if (!id)
+      return;
+    try {
+      var branch = Cc["@mozilla.org/preferences-service;1"]
+                    .getService(Ci.nsIPrefService)
+                    .getBranch(id)
+                    .QueryInterface(Ci.nsIPrefBranch2);
+      branch.setCharPref(aName, aValue);
+    } catch(e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+  },
+  setUsername: function(aUsername) {
+    this.setStringPref("gContactSyncUsername", aUsername);
+  },
+  getUsername: function() {
+    return this.getStringPref("gContactSyncUsername");
+  },
+  setPrimary: function(aPrimary) {
+    this.setStringPref("gContactSyncPrimary", aPrimary);
+  },
+  getPrimary: function() {
+    return this.getStringPref("gContactSyncPrimary");
+  },
+  /**
+   * AddressBook.getGroupID
+   * Gets and returns the ID of the group in Google with which this Address
+   * Book is synchronized, if any.
+   * @return The ID of the group with which this directory is synchronized.
+   */
+   getGroupID: function() {
+     return this.getStringPref("GroupID");
+   },
+   /**
+   * AddressBook.getGroupID
+   * Setsthe ID of the group in Google with which this Address Book is
+   * synchronized.
+   * @return The ID of the group with which this directory is synchronized.
+   */
+   setGroupID: function(aGroupID) {
+     this.setStringPref("GroupID", aGroupID);
+   },
+   getLastSyncDate: function() {
+     return this.getStringPref("lastSync");
+   },
+   setLastSyncDate: function(aLastSync) {
+     this.setStringPref("lastSync", aLastSync);
+   }
 };
