@@ -55,7 +55,7 @@ function AddressBook(aDirectory) {
           StringBundle.getStr("pleaseReport");
   // get the directory's URI
   if (this.mDirectory.URI)
-  this.mURI = this.mDirectory.URI
+    this.mURI = this.mDirectory.URI
   else {
     this.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
     this.mURI = this.mDirectory.getDirUri();
@@ -484,6 +484,44 @@ AddressBook.prototype = {
   },
   getPrimary: function() {
     return this.getStringPref("gContactSyncPrimary");
+  },
+  getName: function() {
+    return this.mDirectory.dirName;
+  },
+  setName: function(aName) {
+    // make sure it isn't being set to the PAB or CAB name and make sure that
+    // this isn't the PAB or CAB
+    var pab = AbManager.getAbByURI("moz-abmdbdirectory://abook.mab");
+    var cab = AbManager.getAbByURI("moz-abmdbdirectory://history.mab");
+    if (aName == pab.dirName || aName == cab.dirName)
+      throw "Error - cannot rename a directory to the PAB or CAB's name";
+    if (this.getName() == pab.dirName || this.getName() == cab.dirName)
+      throw "Error - cannot rename the PAB or CAB";
+    // in TB 3, it is as simple as changing a property of the directory
+    if (this.mVersion == 3)
+      this.mDirectory.dirName = aName;
+    // in TB 2 a few extra steps are necessary...
+    else {
+      /* NOTE: this code is originally from
+      * mailnews/addrbook/resources/content/addressbook.js:
+      * http://mxr.mozilla.org/mozilla1.8/source/mailnews/addrbook/resources/content/addressbook.js#353
+      */
+      var addressbook = Cc["@mozilla.org/addressbook;1"]
+                         .createInstance(Ci.nsIAddressBook);
+      // the rdf service
+      var RDF = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
+      // get the datasource for the addressdirectory
+      var datasource = RDF.GetDataSource("rdf:addressdirectory");
+
+      // moz-abdirectory:// is the RDF root to get all types of addressbooks.
+      var parent = RDF.GetResource("moz-abdirectory://")
+                         .QueryInterface(Ci.nsIAbDirectory);
+      // Copy existing dir type category id and mod time so they won't get reset.
+      var properties = this.mDirectory.directoryProperties;
+      properties.description = aName;
+      // Now do the modification.
+      addressbook.modifyAddressBook(datasource, parent, this.mDirectory, properties);
+    }
   },
   /**
    * AddressBook.getGroupID

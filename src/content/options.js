@@ -56,11 +56,11 @@ function fillLoginTree() {
   var logins = LoginManager.getAuthTokens();
   var abs = AbManager.getSyncedAddressBooks();
   for (var i in logins) {
-    var dirName = "";
+    var abName = "";
     if (abs[i] && abs[i].primary && abs[i].primary.mDirectory)
-      dirName = abs[i].primary.mDirectory.dirName;
+      abName = abs[i].primary.getName();
     usernames[i] = true;
-    addLoginToTree(newTreeChildren, i, dirName)
+    addLoginToTree(newTreeChildren, i, abName)
   }
 }
 /**
@@ -222,8 +222,35 @@ function changeAbName() {
       newAb.setLastSyncDate(0);
     }
     // rename the old address book, if present, and don't change any prefs
-    else if (oldAb)
-      oldAb.mDirectory.dirName = input.value;
+    else if (oldAb) {
+      // if the old address book is either the PAB or CAB, don't rename and
+      // make a new address book instead
+      if (oldAb.mURI == "moz-abmdbdirectory://abook.mab" ||
+          oldAb.mURI == "moz-abmdbdirectory://history.mab") {
+        newAb = new AddressBook(AbManager.getAbByName(input.value));
+        // setup the prefs for the new address book
+        newAb.setUsername(username);
+        newAb.setPrimary(true);
+        newAb.setLastSyncDate(0);
+        // remove the prefs from the old one
+        oldAb.setUsername("");
+        oldAb.setPrimary(false);
+        oldAb.setLastSyncDate(0);
+      }
+      else {
+        try {
+          // this will only fail if input.value is the PAB or CAB's name, which
+          // should not ever happen since the PAB and CAB should already exist
+          oldAb.setName(input.value);
+        }
+        
+        catch(e) {
+          LOGGER.LOG_WARNING("Attempt to rename a directory to the PAB or CAB aborted");
+          alert(StringBundle.getStr("invalidDirName"));
+          changeAbName();
+        }
+      }
+    }
     // otherwise, make the new address book
     else {
       newAb = new AddressBook(AbManager.getAbByName(input.value));
