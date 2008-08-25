@@ -386,8 +386,8 @@ AddressBook.prototype = {
   },
   /**
    * AddressBook.getPrefId
-   * Returns the preference ID of this mailing list.
-   * @return The preference ID of this mailing list.
+   * Returns the preference ID of this directory.
+   * @return The preference ID of this directory.
    */
   getPrefId: function() {
     return this.mDirectory.dirPrefId;
@@ -406,14 +406,23 @@ AddressBook.prototype = {
   getStringPref: function(aName, aDefaultValue) {
     var id = this.getPrefId();
     LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
-    // don't try to set a string pref this way in TB 2 or it will crash
-    if (this.mVersion == 3 && this.mDirectory.getStringValue) {
+    /* The code below is commented out for backward compatibility with TB 2,
+     * which crashes if you set a custom pref for a directory.  It is a somewhat
+     * sloppy workaround that, instead of using preferences from the directory's
+     * actual branch, uses a preference with from the directory's pref. ID
+     * and appends the preference name to that ID without a period in between
+     * ex. "ldap_2.servers.emailaddrgmailcomgContactSyncPrimary" instead of
+     * "ldap_2.servers.emailaddrgmailcom.gContactSyncPrimary" 
+     */
+    /*
+    if (this.mDirectory.getStringValue) {
       try {
         var value = this.mDirectory.getStringValue(aName, aDefaultValue);
         LOGGER.VERBOSE_LOG("-Found the value: " + value);
         return value;
       } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
-    }
+      return null;
+    }*/
     if (!id)
       return;
     try {
@@ -424,7 +433,10 @@ AddressBook.prototype = {
       var value = branch.getCharPref(aName);
       LOGGER.VERBOSE_LOG("-Found the value: " + value);
       return value;
-    } catch(e) {} // an error is expected if the value isn't present
+    }
+    catch(e) {
+      LOGGER.VERBOSE_LOG("getStringPref: (this error is usually expected)\n" + e);
+    } // an error is expected if the value isn't present
   },
   /**
    * AddressBook.setStringPref
@@ -436,11 +448,21 @@ AddressBook.prototype = {
     var id = this.getPrefId();
     LOGGER.VERBOSE_LOG("Setting pref named: " + aName + " to value: " + aValue +
                        " to the branch: " + id);
+    /* The code below is commented out for backward compatibility with TB 2,
+     * which crashes if you set a custom pref for a directory.  It is a somewhat
+     * sloppy workaround that, instead of using preferences from the directory's
+     * actual branch, uses a preference with from the directory's pref. ID
+     * and appends the preference name to that ID without a period in between
+     * ex. "ldap_2.servers.emailaddrgmailcomgContactSyncPrimary" instead of
+     * "ldap_2.servers.emailaddrgmailcom.gContactSyncPrimary"
+     */
+    /*
     if (this.mDirectory.setStringValue) {
       try {
         this.mDirectory.setStringValue(aName, aValue);
       } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
-    }
+      return;
+    }*/
     if (!id)
       return;
     try {
