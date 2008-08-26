@@ -103,24 +103,71 @@ var AbManager = {
    * @param aCard     The card to get the value from.
    * @param aAttrName The name of the attribute to get.
    */
-   getCardValue: function(aCard, aAttrName) {
-     this.checkCard(aCard, "getCardValue");
-     if (this.mBug413260) // if the patch for Bug 413260 is applied
-       return aCard.getProperty(aAttrName, null);
-     else {
-       if (aAttrName == "LastModifiedDate")
-         return aCard.lastModifiedDate; // workaround for lastModifiedDate bug
-       var value;
-       if (this.isRegularAttribute(aAttrName))
-         try { return aCard.getCardValue(aAttrName); }
-         catch (e) { LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
-       else if (Ci.nsIAbMDBCard && aCard instanceof Ci.nsIAbMDBCard)
-         return this.getMDBCardValue(aCard, aAttrName);
-       else
-         LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
-                            + aCard);
-     }
-   },
+  getCardValue: function(aCard, aAttrName) {
+    this.checkCard(aCard, "getCardValue");
+    if (this.mBug413260) // if the patch for Bug 413260 is applied
+      return aCard.getProperty(aAttrName, null);
+    else {
+      if (aAttrName == "LastModifiedDate")
+        return aCard.lastModifiedDate; // workaround for lastModifiedDate bug
+      var value;
+      if (this.isRegularAttribute(aAttrName))
+        try { return aCard.getCardValue(aAttrName); }
+        catch (e) { LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
+      else if (Ci.nsIAbMDBCard && aCard instanceof Ci.nsIAbMDBCard)
+        return this.getMDBCardValue(aCard, aAttrName);
+      else
+        LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
+                           + aCard);
+    }
+  },
+  /**
+   * AbManager.getCardEmailAddresses
+   * Returns an object with a property for each of the e-mail addresses of this
+   * card as recognized by gContactSync (PrimaryEmail, SecondEmail, ThirdEmail,
+   * and FourthEmail)
+   * @param aCard The card from which the e-mail addresses are obtained.
+   * @return An object with the card's e-mail addresses.
+   */
+  getCardEmailAddresses: function(aCard) {
+    this.checkCard(aCard, "getCardEmailAddresses");
+    var primaryEmail = this.getCardValue(aCard, "PrimaryEmail");
+    var addresses = [];
+    if (primaryEmail)
+      addresses[primaryEmail] = true;
+    var secondEmail = this.getCardValue(aCard, "SecondEmail");
+    if (secondEmail)
+      addresses[secondEmail] = true;
+    var thirdEmail = this.getCardValue(aCard, "ThirdEmail");
+    if (thirdEmail)
+      addresses[thirdEmail] = true;
+    var fourthEmail = this.getCardValue(aCard, "FourthEmail");
+    if (fourthEmail)
+      addresses[fourthEmail] = true;
+    return addresses;
+  },
+  /**
+   * AbManager.getCardEmailAddresses
+   * Returns an object with a property for each of the e-mail addresses of this
+   * card as recognized by gContactSync (PrimaryEmail, SecondEmail, ThirdEmail,
+   * and FourthEmail)
+   * @param aCard      The card from which the e-mail addresses are obtained.
+   * @param aAddresses An object with the card's e-mail addresses as returned by
+   *                   AbManager.getCardEmailAddresses
+   * @return True if the card has at least one e-mail address in common with
+   *         aAddresses
+   */
+  cardHasEmailAddress: function(aCard, aAddresses) {
+    this.checkCard(aCard, "getCardEmailAddresses");
+    if (!aAddresses)
+      return;
+    var cardAddresses = this.getCardEmailAddresses(aCard);
+    for (var i in cardAddresses) {
+      if (aAddresses[i])
+        return true;
+    }
+    return false;
+  },
   /**
    * AbManager.getCardValue
    * Sets the value of the specifiec property in the given card but does not
@@ -129,75 +176,75 @@ var AbManager = {
    * @param aAttrName The name of the attribute to set.
    * @param aValue    The value to set for the attribute.
    */
-   setCardValue: function(aCard, aAttrName, aValue) {
-     this.checkCard(aCard, "setCardValue");
-     if (!aValue)
-       aValue = "";
-     // make sure the last modified date is in milliseconds since 1/1/1970 UTC
-     // and not in microseconds
-     if (aAttrName == "LastModifiedDate" && parseInt(aValue) > 2147483647) {
-       LOGGER.LOG_WARNING("Had to adjust last modified date from " + aValue);
-       aValue = aValue/1000;
-     }
-     if (this.mBug413260) { // if the patch for Bug 413260 is applied
-       if (aAttrName == "PreferMailFormat") {
-         switch (aValue) {
-           case "plaintext":
-           case "text":
-           case "1":
-             aValue = 1;
-             break;
-           case "html":
-           case "2":
-             aValue = 2;
-             break;
-           default: // if it is anything else set as unknown
-             aValue = 0;
-         }
-       }
-       aCard.setProperty(aAttrName, aValue);
-     }
-     else {
-       // workaround a last modified date bug
-       if (aAttrName == "LastModifiedDate")
-         try {
-           if (aValue == "")
-             aValue = 0;
-           aCard.lastModifiedDate = aValue;
-         } catch(e) { LOGGER.LOG_WARNING("Invalid lastModifiedDate"); }
-       else if (aAttrName == "AllowRemoteContent") {
-         // AllowRemoteContent may be 1/0 if the patch or true/false otherwise
-         var value = aValue == "1" || (aValue != "0" && aValue);
-         aCard.allowRemoteContent = value;
-       }
-       else if (aAttrName == "PreferMailFormat") {
-         // can be a 0/1/2 or unknown/plaintext/html
-         var value;
-         switch (aValue) {
-           case "plaintext":
-           case "text":
-           case "1":
-             value = 1;
-             break;
-           case "html":
-           case "2":
-             value = 2;
-             break;
-           default: // if it is anything else set as unknown
-             value = 0;
-         }
-         aCard.preferMailFormat = value;
-       }
-       else if (this.isRegularAttribute(aAttrName))
-         try { aCard.setCardValue(aAttrName, aValue); }
-         catch (e) { LOGGER.LOG_WARNING("Error in setCardValue: " + e); }
-      else if (Ci.nsIAbMDBCard && aCard instanceof Ci.nsIAbMDBCard)
-         this.setMDBCardValue(aCard, aAttrName, aValue);
-      else
-        LOGGER.LOG_WARNING("Couldn't set the value " + aAttrName + " of the card "
-                           + aCard);
-     }
-   },
+  setCardValue: function(aCard, aAttrName, aValue) {
+    this.checkCard(aCard, "setCardValue");
+    if (!aValue)
+      aValue = "";
+    // make sure the last modified date is in milliseconds since 1/1/1970 UTC
+    // and not in microseconds
+    if (aAttrName == "LastModifiedDate" && parseInt(aValue) > 2147483647) {
+      LOGGER.LOG_WARNING("Had to adjust last modified date from " + aValue);
+      aValue = aValue/1000;
+    }
+    if (this.mBug413260) { // if the patch for Bug 413260 is applied
+      if (aAttrName == "PreferMailFormat") {
+        switch (aValue) {
+          case "plaintext":
+          case "text":
+          case "1":
+            aValue = 1;
+            break;
+          case "html":
+          case "2":
+            aValue = 2;
+            break;
+          default: // if it is anything else set as unknown
+            aValue = 0;
+        }
+      }
+      aCard.setProperty(aAttrName, aValue);
+    }
+    else {
+      // workaround a last modified date bug
+      if (aAttrName == "LastModifiedDate")
+        try {
+          if (aValue == "")
+            aValue = 0;
+          aCard.lastModifiedDate = aValue;
+        } catch(e) { LOGGER.LOG_WARNING("Invalid lastModifiedDate"); }
+      else if (aAttrName == "AllowRemoteContent") {
+        // AllowRemoteContent may be 1/0 if the patch or true/false otherwise
+        var value = aValue == "1" || (aValue != "0" && aValue);
+        aCard.allowRemoteContent = value;
+      }
+      else if (aAttrName == "PreferMailFormat") {
+        // can be a 0/1/2 or unknown/plaintext/html
+        var value;
+        switch (aValue) {
+          case "plaintext":
+          case "text":
+          case "1":
+            value = 1;
+            break;
+          case "html":
+          case "2":
+            value = 2;
+            break;
+          default: // if it is anything else set as unknown
+            value = 0;
+        }
+        aCard.preferMailFormat = value;
+      }
+      else if (this.isRegularAttribute(aAttrName))
+        try { aCard.setCardValue(aAttrName, aValue); }
+        catch (e) { LOGGER.LOG_WARNING("Error in setCardValue: " + e); }
+     else if (Ci.nsIAbMDBCard && aCard instanceof Ci.nsIAbMDBCard)
+        this.setMDBCardValue(aCard, aAttrName, aValue);
+     else
+       LOGGER.LOG_WARNING("Couldn't set the value " + aAttrName + " of the card "
+                          + aCard);
+    }
+  },
   /**
     * AbManager.setMDBCardValue
     * Sets the requested value of an MDB card's attribute.  Performs a
@@ -206,31 +253,31 @@ var AbManager = {
     * @param aAttrName The name of the attribute whose value is set.
     * @param aValue    The value to set for aAttrName.
     */
-   setMDBCardValue: function(aCard, aAttrName, aValue) {
-     try {
-       aCard.setStringAttribute(aAttrName, aValue);
-     }
-     catch(e) {
-       LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
-                          "\n" + aValue);
-     }
-   },
-   /**
-    * AbManager.getMDBCardValue
-    * Returns the requested value of an MDB card's attribute.  Performs a
-    * QueryInterface if necessary.
-    * @param aCard     The MDB card to get the value from.
-    * @param aAttrName The name of the attribute whose value is returned.
-    * @return The value of aCard's attribute aAttrName.
-    */
-   getMDBCardValue: function(aCard, aAttrName) {
-     try {
-       return aCard.getStringAttribute(aAttrName);
-     }
-     catch(e) {
-       LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
-     }
-   },
+  setMDBCardValue: function(aCard, aAttrName, aValue) {
+    try {
+      aCard.setStringAttribute(aAttrName, aValue);
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
+                         "\n" + aValue);
+    }
+  },
+  /**
+   * AbManager.getMDBCardValue
+   * Returns the requested value of an MDB card's attribute.  Performs a
+   * QueryInterface if necessary.
+   * @param aCard     The MDB card to get the value from.
+   * @param aAttrName The name of the attribute whose value is returned.
+   * @return The value of aCard's attribute aAttrName.
+   */
+  getMDBCardValue: function(aCard, aAttrName) {
+    try {
+      return aCard.getStringAttribute(aAttrName);
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
+    }
+  },
   /**
    * AbManager.getAbByURI
    * Returns the address book with the given URI, if found.  Does not attempt

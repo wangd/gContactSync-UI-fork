@@ -233,6 +233,7 @@ var Sync = {
       LOGGER.LOG("-" + gContact.getName());
       // a new array with only the unmatched cards                 
       var abCards2 = [];
+      var matchedAddresses = {}; // the e-mail addresses of the contact
       for (var j = 0, length2 = abCards.length; j < length2; j++) {
         var abCard = abCards[j];
         // make sure there is an ID
@@ -290,10 +291,13 @@ var Sync = {
           else
             LOGGER.LOG(" * Neither card has changed");
           gContact.matched = true;
+          // now store the e-mail addresses of this contact to detect duplicates
+          // the card now stores the most updated info, so use its addresses
+          matchedAddresses = AbManager.getCardEmailAddresses(abCard);
         }
-        // if the Google contact and the current card share at least one e-mail
-        // address then the card is a duplicate, and the user is prompted to delete it
-        else if (ContactConverter.compareContacts(abCard, gContact)) {
+        // if the matched card and the current card share at least one e-mail
+        // address then the card is a duplicate
+        else if (AbManager.cardHasEmailAddress(abCard, matchedAddresses)) {
           LOGGER.LOG(" * Duplicate detected");
           // default to deleting duplicates, but if the user wants to confirm
           // each duplicate ask for confirmation

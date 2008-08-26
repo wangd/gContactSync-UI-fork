@@ -304,51 +304,5 @@ var ContactConverter = {
       }
       ab.updateCard(aCard);
     }
-  },
-  /**
-   * ContactConverter.compareContacts
-   * Compares two contacts and returns true if they share at least one e-mail
-   * address.
-   * @param aCard    The nsIAbCard to compare.
-   * @param aContact A GContact element containing the Google contact to compare.
-   * @return True if the contacts share at least one e-mail address.
-   */
-  compareContacts: function(aCard, aContact) {
-    if (!aContact || !aContact.xml || !aContact.xml.getElementsByTagNameNS)
-      return false;
-    var ab = Sync.mCurrentAb;
-    ab.checkCard(aCard, "compareContacts");
-    // get all of the address from the google contact
-    var googleAddresses = aContact.xml
-                                  .getElementsByTagNameNS(gdata.namespaces.GD.url,
-                                                          'email');
-    // and from the Thunderbird card as an object with the e-mail addresses
-    // as the names of properties whose values are set as the boolean value true
-    var tbAddresses = {};
-    var primaryEmail = ab.getCardValue(aCard, "PrimaryEmail");
-    if (primaryEmail)
-      tbAddresses[primaryEmail] = true;
-    var secondEmail = ab.getCardValue(aCard, "SecondEmail");
-    if (secondEmail)
-      tbAddresses[secondEmail] = true;
-    var thirdEmail = ab.getCardValue(aCard, "ThirdEmail");
-    if (thirdEmail)
-      tbAddresses[thirdEmail] = true;
-    var fourthEmail = ab.getCardValue(aCard, "FourthEmail");
-    if (fourthEmail)
-      tbAddresses[fourthEmail] = true;
-    var str = primaryEmail + ", " + secondEmail + ", " + thirdEmail + ", " + fourthEmail + "\n";
-    // then check for duplicate e-mail addresses
-    var toReturn = false;
-    for (var i = 0, length = googleAddresses.length; i < length && !toReturn; i++) {
-      var emailAddress;
-      if (googleAddresses[i] && googleAddresses[i].getAttribute)
-        emailAddress = googleAddresses[i].getAttribute("address");
-      if (!emailAddress)
-        continue;
-      str += emailAddress + "  -  " + tbAddresses[emailAddress] + "\n";
-      toReturn = toReturn || tbAddresses[emailAddress];
-    }
-    return toReturn;
   }
 };
