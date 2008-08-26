@@ -181,7 +181,6 @@ AddressBook.prototype = {
     list.listNickName = aNickName;
     list.isMailList = true;
     this.mDirectory.addMailList(list);
-    LOGGER.VERBOSE_LOG("getting the new list");
     // list can't be QI'd to an MDBDirectory, so the new list has to be found...
     var realList = this.getListByNickName(aNickName);
     return realList;

@@ -235,6 +235,15 @@ var Sync = {
       var abCards2 = [];
       for (var j = 0, length2 = abCards.length; j < length2; j++) {
         var abCard = abCards[j];
+        // make sure there is an ID
+        if (!id) {
+          id = gContact.getValue("id").value;
+          // if the ID still couldn't be found go to the next contact in the outer loop
+          if (!id) {
+            LOGGER.LOG_ERROR("Could not get an ID from the contact " + gContact.getName());
+            break;
+          }
+        }
         // if the contacts have the same ID then check if one of them must be updated
         if (ab.getCardValue(abCard, "GoogleID") == id) {
           var gCardDate = gContact.getLastModifiedDate();
@@ -242,6 +251,7 @@ var Sync = {
           if (!tbCardDate)
             tbCardDate = 0;
           LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
+          LOGGER.VERBOSE_LOG(" * " + id + "\n * " + ab.getCardValue(abCard, "GoogleID"));
           // If there is a conflict, looks at the updateGoogleInConflicts
           // preference and updates Google if it's true, or Thunderbird if false
           if (gCardDate > lastSync && tbCardDate > lastSync/1000) {
@@ -252,6 +262,7 @@ var Sync = {
               toUpdate.gContact = gContact;
               toUpdate.abCard = abCard;
               contactsToUpdate[ab.getCardValue(abCard, "GoogleID")] = toUpdate;
+              abCard.updating = true;
               abCards2.push(abCard); // continue checking the card for dups
             }
             else { // update thunderbird
@@ -286,9 +297,9 @@ var Sync = {
           LOGGER.LOG(" * Duplicate detected");
           // default to deleting duplicates, but if the user wants to confirm
           // each duplicate ask for confirmation
-          var id = ab.getCardValue(abCard, "GoogleID");
-          if (id)
-            contactsToUpdate[id] = null;
+          var cardId = ab.getCardValue(abCard, "GoogleID");
+          if (cardId)
+            contactsToUpdate[cardId] = "duplicate";
           if (!Preferences.mSyncPrefs.confirmDuplicates.value || 
               confirm(StringBundle.getStr("duplicatePrompt")
               + " " + abCard.displayName + " " + abCard.primaryEmail + 
@@ -323,18 +334,21 @@ var Sync = {
     LOGGER.LOG("***Looking for unmatched Thunderbird cards***");
     for (var i = 0; i < abCards.length; i++) {
       var card = abCards[i];
-      // if the card is new it is being updated already, so skip it
-      if (card != null && card instanceof nsIAbCard &&
-          ab.getCardValue(card, "LastModifiedDate") < lastSync/1000) {
+      // skip if the card isn't valid if it it is being updated
+      if (card != null && card instanceof nsIAbCard) {
+        var cardId = ab.getCardValue(card, "GoogleID");
+        // skip this contact if it is being updated
+        if (cardId && cardId != "" && contactsToUpdate[cardId])
+          continue;
+        var date = ab.getCardValue(card, "LastModifiedDate");
         LOGGER.LOG("-" + card.displayName + " was not matched");
         // if it is a new card, add it to Google
-        var id = ab.getCardValue(card, "GoogleID");
         // will add the card if it doesn't have a GoogleID
-        if (!id || id == "") {
+        if (!cardId || cardId == "") {
           this.mContactsToAdd.push(card);
           LOGGER.LOG(" * It is new and will be added to Google - " + date);
         }
-        // otherwise it should be removed
+        // otherwise, if it is old, it should be removed
         else {
           cardsToDelete.push(card);
           LOGGER.LOG(" * It is old and will be deleted from Thunderbird - " +
@@ -344,7 +358,7 @@ var Sync = {
     } // end of for loop
     // now copy over the contacts that will be updated that aren't duplicates
     for (var i in contactsToUpdate) {
-      if (contactsToUpdate[i])
+      if (contactsToUpdate[i] && contactsToUpdate[i] != "duplicate")
         this.mContactsToUpdate.push(contactsToUpdate[i]);
     }
     ab.deleteCards(cardsToDelete);

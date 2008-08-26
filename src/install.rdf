@@ -4,7 +4,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:creator>Josh Geenen</em:creator>
         <em:id>gContactSync@pirules.net</em:id>
-        <em:version>0.1</em:version>
+        <em:version>0.1.0b3</em:version>
         <em:optionsURL>chrome://gContactSync/content/options.xul</em:optionsURL>
         <em:homepageURL>http://www.pirules.net/gcontactsync/index.html</em:homepageURL>
         <em:name>gContactSync</em:name>

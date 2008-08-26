@@ -243,7 +243,6 @@ function changeAbName() {
           // should not ever happen since the PAB and CAB should already exist
           oldAb.setName(input.value);
         }
-        
         catch(e) {
           LOGGER.LOG_WARNING("Attempt to rename a directory to the PAB or CAB aborted");
           alert(StringBundle.getStr("invalidDirName"));
