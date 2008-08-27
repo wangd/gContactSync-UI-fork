@@ -116,7 +116,7 @@ HttpRequest.prototype = {
           case 0: // the user is offline
             commands = onOffline;
             break;
-          case 201: // if it is 201 CREATED get the ID then modify the currentCard
+          case 201: // if it is 201 CREATED
             commands = onCreated;
             break;
           case 200:

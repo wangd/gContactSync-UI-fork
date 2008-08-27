@@ -203,7 +203,7 @@ var Sync = {
     var googleContacts = aAtom.getElementsByTagName('entry');
     var abCards = ab.getAllCards();
     // get and log the last sync time (milliseconds since 1970 UTC)
-    var lastSync = parseInt(this.mCurrentAb.getLastSyncDate());
+    var lastSync = parseInt(ab.getLastSyncDate());
     LOGGER.VERBOSE_LOG("Last sync was at: " + lastSync);
     var cardsToDelete = [];
     var maxContacts = Preferences.mSyncPrefs.maxContacts.value;
@@ -263,7 +263,6 @@ var Sync = {
               toUpdate.gContact = gContact;
               toUpdate.abCard = abCard;
               contactsToUpdate[ab.getCardValue(abCard, "GoogleID")] = toUpdate;
-              abCard.updating = true;
               abCards2.push(abCard); // continue checking the card for dups
             }
             else { // update thunderbird
@@ -418,10 +417,10 @@ var Sync = {
     // check new cards for duplicates
     var cardToAdd = this.mContactsToAdd.shift();
     LOGGER.LOG("\n" + cardToAdd.displayName);
-    var primary = this.mCurrentAb.getCardValue(cardToAdd, "PrimaryEmail");
-    var second = this.mCurrentAb.getCardValue(cardToAdd, "SecondEmail");
-    var third = this.mCurrentAb.getCardValue(cardToAdd, "ThirdEmail");
-    var fourth = this.mCurrentAb.getCardValue(cardToAdd, "FourthEmail");
+    var primary = AbManager.getCardValue(cardToAdd, "PrimaryEmail");
+    var second = AbManager.getCardValue(cardToAdd, "SecondEmail");
+    var third = AbManager.getCardValue(cardToAdd, "ThirdEmail");
+    var fourth = AbManager.getCardValue(cardToAdd, "FourthEmail");
 
     // if a similar card was already added, prompt to delete it, otherwise
     // ignore the card
@@ -535,8 +534,8 @@ var Sync = {
       LOGGER.VERBOSE_LOG("***Getting all groups***");
       var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
       LOGGER.VERBOSE_LOG("***Getting all lists***");
-      this.mLists = this.mCurrentAb.getAllLists(true);
-      var lastSync = parseInt(this.mCurrentAb.getLastSyncDate());
+      this.mLists = ab.getAllLists(true);
+      var lastSync = parseInt(ab.getLastSyncDate());
       for (var i = 0; i < arr.length; i++) {
         try {
           var group = new Group(arr[i]);

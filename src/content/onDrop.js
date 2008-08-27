@@ -162,7 +162,7 @@ function myOnDrop(row, orientation) {
         catch (e) {
           // ignore the error if the card wasn't an MDB card, otherwise log it
           if (isMDBCard)
-            LOGGER.LOG_WARNING("Error while getting extra card attributes.\n" + e);
+            LOGGER.LOG_WARNING("Error while getting extra card attributes.", e);
         }
         // delete the card if the user chose to move it (rather than copy it)
         if (actionIsMoving)
@@ -179,7 +179,7 @@ function myOnDrop(row, orientation) {
                 newCard.getStringAttribute(attributes[k] + "Type", type);
               }
             }
-          } catch (e) { LOGGER.LOG_WARNING('copy card error: ' + e); }
+          } catch (e) { LOGGER.LOG_WARNING("Error while copying card", e); }
         }
         try {
           var now = (new Date).getTime()/1000;

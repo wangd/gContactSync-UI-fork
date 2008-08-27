@@ -36,7 +36,9 @@
 window.addEventListener("load", function(e) { initialize(); }, false);
 var usernames = {};
 /**
- * Initializes the string bundle.
+ * initialize
+ * Initializes the string bundle, FileIO and Preferences scripts and fills the
+ * login tree.
  */
 function initialize() {
   StringBundle.init();
@@ -45,6 +47,11 @@ function initialize() {
   fillLoginTree();
 }
 
+/**
+ * fillLoginTree
+ * Populates the login tree for the preferences window with the synchronized
+ * accounts and directories.
+ */
 function fillLoginTree() {
   var tree = document.getElementById("loginTree");
   var treechildren = document.getElementById("loginTreeChildren");
@@ -64,7 +71,8 @@ function fillLoginTree() {
   }
 }
 /**
- * Removes the auth token from the login manager.
+ * removeSelectedLogin
+ * Removes the selected account's username and auth token from the login manager.
  */
 function removeSelectedLogin() {
   var tree = document.getElementById("loginTree");
@@ -97,6 +105,7 @@ function removeSelectedLogin() {
 }
 
 /**
+ * addLogin
  * Adds an auth token to the login manager.
  */
 function addLogin() {
@@ -132,6 +141,13 @@ function addLogin() {
   httpReq.send();
 }
 
+/**
+ * addToken
+ * Adds a username and auth token to the login manager.
+ * @param aUsername  The username (e-mail address) whose contacts will be
+ *                   synchronized.
+ * @param aAuthToken The auth token obtained from Google for the account.
+ */
 function addToken(aUsername, aAuthToken) {
   var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                         .getService(Components.interfaces.nsIPromptService);
@@ -161,6 +177,14 @@ function addToken(aUsername, aAuthToken) {
 
 }
 
+/**
+ * addLoginToTree
+ * Adds login information (username and directory name) to the tree.
+ * @param aTreeChildren The <treechildren> XUL element.
+ * @param aUsername     The username (e-mail address).
+ * @param aDirName      The name of the directory with which this account's
+ *                      contacts will be synchronized.
+ */
 function addLoginToTree(aTreeChildren, aUsername, aDirName) {
   var treeitem = document.createElement("treeitem");
   var treerow = document.createElement("treerow");
@@ -175,7 +199,12 @@ function addLoginToTree(aTreeChildren, aUsername, aDirName) {
   treeitem.appendChild(treerow);
   aTreeChildren.appendChild(treeitem);
 }
-
+/**
+ * changeAbName
+ * Changes the name of the selected address book, if an address book with the
+ * new name does exist, otherwise it updates the preferences to synchronize the
+ * other address book instead.
+ */
 function changeAbName() {
   var tree = document.getElementById("loginTree");
   if (!tree)
@@ -260,5 +289,4 @@ function changeAbName() {
     }
     tree.view.setCellText(tree.currentIndex, tree.columns.getColumnAt(1), input.value);
   }
-  
 }
