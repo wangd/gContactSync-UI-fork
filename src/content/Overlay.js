@@ -288,7 +288,7 @@ var Overlay = {
       // collapse all the attributes added
       Overlay.hideNodes(ContactConverter.getExtraSyncAttributes());
       try {
-        // and then collapse the e-mail boxes
+        // then collapse the e-mail boxes
         cvData.cvThirdEmailBox.collapsed = true;
         cvData.cvFourthEmailBox.collapsed = true;
       } catch(e) {}
@@ -343,7 +343,7 @@ var Overlay = {
         var baseUrl = "http://maps.google.com/maps?q=";
         var address = cvData.cvOtherAddress.childNodes[0].nodeValue;
         // remove the label
-        var index = address.indexOf(":")
+        var index = address.indexOf(":");
         if (index != -1 && address.length > index + 2)
           address = address.substring(address.indexOf(":") + 2);
         cvData.cvOtherMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
@@ -387,7 +387,7 @@ var Overlay = {
         var baseUrl = "http://maps.google.com/maps?q=";
         var address = cvData.cvFullWorkAddress.childNodes[0].nodeValue;
         // remove the label
-        var index = address.indexOf(":")
+        var index = address.indexOf(":");
         if (index != -1 && address.length > index + 2)
           address = address.substring(address.indexOf(":") + 2);
         cvData.cvFullWorkMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
