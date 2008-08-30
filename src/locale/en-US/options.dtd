@@ -9,6 +9,7 @@
 <!ENTITY syncExtended.label "Sync Extended Properties (see the next tab)">
 <!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY syncGroups.label "Synchronize Groups with Mailing Lists">
+<!ENTITY verboseLog.label "Enable Verbose Logging">
 <!ENTITY accounts.tab "Accounts">
 <!ENTITY emailAddress.label "E-mail Address">
 <!ENTITY addressBook.label "Main Address Book">

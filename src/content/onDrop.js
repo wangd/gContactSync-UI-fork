@@ -193,11 +193,15 @@ function myOnDrop(row, orientation) {
 
     // set the status bar text
     if (actionIsMoving)
-      cardsTransferredText = (numrows == 1 ? gAddressBookBundle.getString("cardMoved")
-                                           : gAddressBookBundle.getFormattedString("cardsMoved", [numrows]));
+      cardsTransferredText = 
+        numrows == 1 ? gAddressBookBundle.getString("cardMoved")
+                     : gAddressBookBundle.getFormattedString("cardsMoved",
+                                                              [numrows]);
     else
-      cardsTransferredText = (numrows == 1 ? gAddressBookBundle.getString("cardCopied")
-                                           : gAddressBookBundle.getFormattedString("cardsCopied", [numrows]));
+      cardsTransferredText =
+        numrows == 1 ? gAddressBookBundle.getString("cardCopied")
+                     : gAddressBookBundle.getFormattedString("cardsCopied",
+                                                              [numrows]);
     // refresh the results tree if necessary to avoid showing the same card twice
     if (needToRefresh) {
       // update the address book view so it doesn't show the card twice
@@ -227,7 +231,8 @@ function deleteCard(aDirectory, aCard) {
     arr.appendElement(aCard, false);
   }
   else { // TB 2
-    arr =  Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
+    arr = Cc["@mozilla.org/supports-array;1"]
+           .createInstance(Ci.nsISupportsArray);
     arr.AppendElement(aCard, false);
   }
   aDirectory.deleteCards(arr);

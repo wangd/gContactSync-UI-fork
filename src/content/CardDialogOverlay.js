@@ -38,35 +38,35 @@ window.addEventListener("load", function(e) { CardDialogOverlay.init(); }, false
 // the original method CheckAndSetCardValues
 var originalCheckAndSetCardValues;
 var gAttributes = {
-  "ThirdEmail" : true, 
-  "FourthEmail" : true,
-  "TalkScreenName" : true,
-  "JabberScreenName" : true,
-  "YahooScreenName" : true,
-  "MSNScreenName" : true,
-  "ICQScreenName" : true,
-  "OtherAddress" : true,
-  "HomeFaxNumber" : true,
-  "OtherNumber" : true,
-  "FullHomeAddress" : true,
-  "FullWorkAddress" : true,
-  "PrimaryEmailType" : true,
-  "SecondEmailType" : true,
-  "ThirdEmailType" : true,
-  "FourthEmailType" : true,
-  "_AimScreenNameType" : true,
-  "TalkScreenNameType" : true,
-  "JabberScreenNameType" : true,
-  "YahooScreenNameType" : true,
-  "MSNScreenNameType" : true,
-  "ICQScreenNameType" : true,
-  "WorkPhoneType" : true,
-  "HomePhoneType" : true,
-  "FaxNumberType" : true,
-  "CellularNumberType" : true,
-  "PagerNumberType" : true,
-  "HomeFaxNumberType" : true,
-  "OtherNumberType" : true
+  "ThirdEmail" : {}, 
+  "FourthEmail" : {},
+  "TalkScreenName" : {},
+  "JabberScreenName" : {},
+  "YahooScreenName" : {},
+  "MSNScreenName" : {},
+  "ICQScreenName" : {},
+  "OtherAddress" : {},
+  "HomeFaxNumber" : {},
+  "OtherNumber" : {},
+  "FullHomeAddress" : {},
+  "FullWorkAddress" : {},
+  "PrimaryEmailType" : {},
+  "SecondEmailType" : {},
+  "ThirdEmailType" : {},
+  "FourthEmailType" : {},
+  "_AimScreenNameType" : {},
+  "TalkScreenNameType" : {},
+  "JabberScreenNameType" : {},
+  "YahooScreenNameType" : {},
+  "MSNScreenNameType" : {},
+  "ICQScreenNameType" : {},
+  "WorkPhoneType" : {},
+  "HomePhoneType" : {},
+  "FaxNumberType" : {},
+  "CellularNumberType" : {},
+  "PagerNumberType" : {},
+  "HomeFaxNumberType" : {},
+  "OtherNumberType" : {}
 };
 var Ci = Components.interfaces;
 /**
@@ -297,11 +297,11 @@ function myGetCardValues(aCard, aDoc) {
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   
   var existingTypes = {
-    "WorkPhoneType" : true,
-    "HomePhoneType" : true,
-    "FaxNumberType" : true,
-    "CellularNumberType" : true,
-    "PagerNumberType" : true,
+    "WorkPhoneType" : {},
+    "HomePhoneType" : {},
+    "FaxNumberType" : {},
+    "CellularNumberType" : {},
+    "PagerNumberType" : {},
   }
   // iterate through all the added attributes and types and set the card's value
   // for each one of them

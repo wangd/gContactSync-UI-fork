@@ -259,6 +259,7 @@ var Overlay = {
    * Overlay.writeTimeToStatusBar
    * Writes the current time to the status bar along with the sync finished
    * string.
+   * When the status text is clicked the log file is opened.
    */
   writeTimeToStatusBar: function() {
     var hours = new String(new Date().getHours());
@@ -270,7 +271,19 @@ var Overlay = {
     seconds = seconds.length == 1 ? "0" + seconds : seconds;
     var text = StringBundle.getStr("syncFinishedString");
     this.setStatusBarText(text + " " + hours + ":" + minutes + ":" + seconds);
-    var elem = document.getElementById("statusText2");
+    document.getElementById("statusText2").tooltip = "test";
+  },
+  /**
+   * Overlay.showLog
+   * Opens the "view source" window with the log file.
+   */
+  showLog: function() {
+    try {
+      window.open("view-source:chrome://gcontactsync/content/log/log.txt", "Log", "chrome=yes,resizable=yes");
+    }
+    catch(e) {
+      LOGGER.LOG_WARNING("Unable to open the log", e);
+    }
   },
   /**
    * Overlay.myDisplayCardViewPane
@@ -646,5 +659,13 @@ var Overlay = {
     elem.setAttribute("class", aClass);
     elem.setAttribute("id", "cv" + aName);
     return elem;
+  },
+  /**
+   * Overlay.openPreferences
+   * Opens the Preferences for gContactSync
+   */
+  openPreferences: function() {
+    window.open("chrome://gcontactsync/content/options.xul", "",
+                "chrome=yes,resizable=yes");
   }
 };

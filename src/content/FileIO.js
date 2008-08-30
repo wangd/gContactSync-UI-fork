@@ -42,7 +42,7 @@
 var FileIO = {
   mLogFile: null,
   fileNames: {
-    LOG_FILE: "log.txt" // stores the log from the last sync
+    LOG_FILE: "content/log/log.txt" // stores the log from the last sync
   },
   /**
    * FileIO.init
@@ -82,7 +82,7 @@ var FileIO = {
       var line = {}, lines = [], hasmore;
       do {
         hasmore = istream.readLine(line);
-        lines.push(line.value); 
+        lines.push(line.value);
       } while(hasmore);
 
       istream.close();
@@ -108,7 +108,7 @@ var FileIO = {
     try {
       var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
                       .createInstance(Ci.nsIFileOutputStream);
-      foStream.init(aFile, 0x02 | 0x08 | 0x20, 0666, 0); 
+      foStream.init(aFile, 0x02 | 0x08 | 0x20, 0666, 0);
       foStream.write(aData, aData.length);
       foStream.close();
       return true;
@@ -132,9 +132,9 @@ var FileIO = {
       var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
                       .createInstance(Ci.nsIFileOutputStream);
       if (aFile.exists())
-        foStream.init(aFile, 0x02 | 0x10, 0666, 0); 
+        foStream.init(aFile, 0x02 | 0x10, 0666, 0);
       else
-        foStream.init(aFile, 0x02 | 0x08 | 0x20, 0666, 0); 
+        foStream.init(aFile, 0x02 | 0x08 | 0x20, 0666, 0);
       foStream.write(aData, aData.length);
       foStream.close();
       return true;

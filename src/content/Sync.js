@@ -126,10 +126,11 @@ var Sync = {
     LOGGER.LOG("***Beginning Group - Mail List Synchronization***");
     var httpReq = new GHttpRequest("getGroups", this.mCurrentAuthToken, null,
                                    null, this.mCurrentUsername);
-    httpReq.mOnSuccess = ["Sync.syncGroups(httpReq.responseXML);"],
+    httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText))",
+                          "Sync.syncGroups(httpReq.responseXML);"],
     httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
                         "Sync.begin();"]; // if there is an error, try to sync w/o groups                   
-    httpReq.mOnOffline = this.mOfflineCommand
+    httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
   /**
@@ -142,7 +143,8 @@ var Sync = {
     LOGGER.LOG("***Beginning Contact Synchronization***");
     var httpReq = new GHttpRequest("getAll", this.mCurrentAuthToken, null, null,
                                    this.mCurrentUsername);
-    httpReq.mOnSuccess = ["Sync.sync(httpReq.responseXML);"];
+    httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText))",
+                          "Sync.sync(httpReq.responseXML);"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating group', " +
                         "httpReq.responseText);",
                         "Sync.syncNextUser(httpReq.responseText);"];
@@ -190,10 +192,6 @@ var Sync = {
    * @param aAtom The contacts from Google in an Atom.
    */
   sync: function(aAtom) {
-    if (Preferences.mSyncPrefs.verboseLog.value) {
-      var string = (new XMLSerializer()).serializeToString(aAtom);
-      LOGGER.LOG(string + "\n");
-    }
     // get the address book and QI the directory
     var ab = this.mCurrentAb;
     ab.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
@@ -456,7 +454,7 @@ var Sync = {
       // get the XML representation of the card
       var xml = ContactConverter.cardToAtomXML(cardToAdd).xml;
       if (Preferences.mSyncPrefs.verboseLog.value) {
-        var string = (new XMLSerializer()).serializeToString(xml);
+        var string = serialize(xml);
         LOGGER.LOG("  - XML of contact being added:\n" + string + "\n");
       }
       var httpReq = new GHttpRequest("add", this.mCurrentAuthToken, null,
@@ -503,7 +501,7 @@ var Sync = {
 
     LOGGER.LOG("\n" + gContact.getName());
     if (Preferences.mSyncPrefs.verboseLog.value) {
-        var string = (new XMLSerializer()).serializeToString(xml);
+        var string = serialize(xml);
         LOGGER.LOG("  - XML of contact being updated:\n" + string + "\n");
     }
     var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, editURL,
@@ -526,7 +524,7 @@ var Sync = {
     // if there wasn't an error, setup groups
     if (aAtom) {
       if (Preferences.mSyncPrefs.verboseLog.value) {
-        var string = (new XMLSerializer()).serializeToString(aAtom);
+        var string = serialize(aAtom);
         LOGGER.LOG("***Groups XML feed:\n" + string);
       }
       var ab = this.mCurrentAb;
@@ -649,7 +647,7 @@ var Sync = {
     var group = new Group(null, list.getName());
     LOGGER.LOG("-Adding group: " + group.getTitle());
     if (Preferences.mSyncPrefs.verboseLog.value) {
-      var body = (new XMLSerializer()).serializeToString(group.xml);
+      var body = serialize(group.xml);
       LOGGER.VERBOSE_LOG(" * XML feed of new group:\n" + body);
     }
     var httpReq = new GHttpRequest("addGroup", this.mCurrentAuthToken, null,
@@ -671,7 +669,8 @@ var Sync = {
     var group = new Group(aResponse.responseXML
                                    .getElementsByTagNameNS(gdata.namespaces.ATOM.url,
                                                            "entry")[0]);
-    LOGGER.VERBOSE_LOG(aResponse.responseText);
+    if (Preferences.mSyncPrefs.verboseLog.value)
+      LOGGER.LOG(serializeFromText(aResponse.responseText));
     var list = this.mGroupsToAdd.shift();
     var id = group.getID();
     list.setNickName(id);
@@ -693,7 +692,7 @@ var Sync = {
     var group = this.mGroupsToUpdate.shift();
     LOGGER.LOG("-Updating group: " + group.getTitle());
     if (Preferences.mSyncPrefs.verboseLog.value) {
-      var body = (new XMLSerializer()).serializeToString(group.xml);
+      var body = serialize(group.xml);
       LOGGER.VERBOSE_LOG(" * XML feed of group: " + body);
     }
     var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, group.getEditURL(),

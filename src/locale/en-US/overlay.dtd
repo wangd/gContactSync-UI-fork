@@ -19,3 +19,5 @@
 <!ENTITY workFax.label "Work Fax">
 <!ENTITY other.label "Other">
 <!ENTITY initialStatus.label "">
+<!ENTITY preferences.label "Preferences">
+<!ENTITY status.tooltip "Click here to view the log file">

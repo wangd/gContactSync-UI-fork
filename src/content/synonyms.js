@@ -42,3 +42,29 @@ const CC = Components.Constructor;
 const Ci = Components.interfaces;
 const Cr = Components.results;
 const nsIAbCard = Ci.nsIAbCard;
+
+function serialize(aXML, aRemoveVersion) {
+  if (!aXML)
+    return;
+  try {
+    var serializer = new XMLSerializer();
+    var str = serializer.serializeToString(aXML);
+    // source: http://developer.mozilla.org/en/E4X#Known_bugs_and_limitations
+    str = str.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, ""); // bug 336551
+    return XML(str).toXMLString();
+  }
+  catch(e) {
+    LOGGER.LOG_WARNING("Error while serializing the following XML: " + aXML,e );
+  }
+  return "";
+}
+function serializeFromText(aString) {
+  // if verbose logging is disabled, don't replace >< with >\n< because it only
+  // wastes time
+  if (Preferences.mSyncPrefs.verboseLog.value) {
+    // source: http://developer.mozilla.org/en/E4X#Known_bugs_and_limitations
+    while (aString.indexOf("><") != -1)
+      aString = aString.replace("><", ">\n<"); 
+  }
+  return aString;
+}

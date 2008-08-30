@@ -4,7 +4,7 @@ locale     gcontactsync  en-US        locale/en-US/
 #locale     gcontactsync  es-ES        locale/es-ES/
 
 # the style for the button
-style	chrome://gcontactsync/content/overlay.xul	 chrome://gContactSync/skin/overlay.css
+style	chrome://gcontactsync/content/overlay.xul	                       chrome://gContactSync/skin/overlay.css
 # the main overlay for the address book that handles syncing
 overlay  chrome://messenger/content/addressbook/addressbook.xul        chrome://gcontactsync/content/overlay.xul
 # add the extra attributes to the edit card dialog

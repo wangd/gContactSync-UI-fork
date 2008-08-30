@@ -82,6 +82,9 @@
       <preference id="syncGroups"
                   name="extensions.gContactSync.syncGroups"
                   type="bool"/>
+      <preference id="verboseLog"
+                  name="extensions.gContactSync.verboseLog"
+                  type="bool"/>
       <preference id="extended1"
                   name="extensions.gContactSync.extended1"
                   type="string"/>
@@ -157,6 +160,10 @@
             <checkbox preference="syncGroups"
                      id="syncGroups"
                      label="&syncGroups.label;"/>
+                   
+            <checkbox preference="verboseLog"
+                     id="verboseLog"
+                     label="&verboseLog.label;"/>
           </vbox>
           <vbox index="accounts">
             <tree flex="1" id="loginTree" seltype="single">

@@ -72,7 +72,13 @@
   <!-- Add some text to the status bar -->
   <statusbar id="status-bar" class="chromeclass-status">
          <statusbarpanel id="statusText2"
-                         href="chrome://gcontactsync/log.txt"
-                         label="&initialStatus.label;"/>
-  </statusbar>  
+                         onclick="Overlay.showLog();"
+                         label="&initialStatus.label;"
+                         tooltip="&status.tooltip;"/>
+  </statusbar>
+  <!-- Shortcut to the preferences window -->
+  <menupopup id="taskPopup">
+    <menuseparator/>
+    <menuitem label="gContactSync" oncommand="Overlay.openPreferences();"/>
+  </menupopup>
 </overlay>

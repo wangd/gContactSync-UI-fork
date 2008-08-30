@@ -75,7 +75,7 @@ var Preferences = {
    * Gets a preference given its branch, name, and type
    * @param aBranch   The branch where the preference is stored
    * @param aName     The name of the preference
-   * @param aType     The type of preference.  Must be included in preferences.mTypes.
+   * @param aType     The type of preference.  Must be in Preferences.mTypes.
    */
   getPref: function(aBranch, aName, aType) {
     if (!aBranch)
@@ -98,7 +98,7 @@ var Preferences = {
    * Sets a preference given its branch, name, type and value.
    * @param aBranch   The branch where the preference is (to be) stored.
    * @param aName     The name of the preference.
-   * @param aType     The type of preference.  Must be included in preference.mTypes.
+   * @param aType     The type of preference.  Must be in Preferences.mTypes.
    * @param aValue    The value to set the preference at.
    */
   setPref: function(aBranch, aName, aType, aValue) {

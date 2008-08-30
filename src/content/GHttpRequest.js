@@ -66,7 +66,8 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
     case "GETALL":
     case "getAll":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl = gdata.contacts.GET_ALL_URL + Preferences.mSyncPrefs.maxContacts.value;
+      this.mUrl = gdata.contacts.GET_ALL_URL + Preferences.mSyncPrefs
+                                                          .maxContacts.value;
       this.mType = gdata.contacts.requestTypes.GET_ALL;
       this.addHeaderItem("Authorization", aAuth);
       break;

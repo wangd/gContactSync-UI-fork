@@ -58,7 +58,7 @@ var AbListener = {
    * @param aOldValue The former value of the property.
    * @param aNewValue The new value of the property.
    */
-  onItemPropertyChanged: function(aItem, aProperty , aOldValue , aNewValue ) { },
+  onItemPropertyChanged: function(aItem, aProperty , aOldValue , aNewValue ) {},
   /**
    * AbListener.onItemRemoved
    * Used just to update the lastModifiedDate of cards removed from a mail list.
@@ -110,7 +110,8 @@ var AbListener = {
           return aDirectory.getDirUri();
      } 
     } catch(e) { error = e; }
-    LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory, error);
+    LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory,
+                       error);
   },
   /**
    * AbListener.add
