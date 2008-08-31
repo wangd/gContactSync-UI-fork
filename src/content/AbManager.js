@@ -1,3 +1,9 @@
+/**
+ * AbManager
+ * An object that can obtain address books by the name or URI, find the synced
+ * address books, and edit cards.
+ * @class
+ */
 var AbManager = {
   mVersion: Cc["@mozilla.org/abmanager;1"] ? 3 : 2,
   mBug413260: Cc["@mozilla.org/addressbook/cardproperty;1"]

@@ -472,21 +472,55 @@ AddressBook.prototype = {
       branch.setCharPref(aName, aValue);
     } catch(e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
   },
+  /**
+   * AddressBook.setUsername
+   * Sets the username for the account with which this address book is synced.
+   * @param aUsername The username for the Google account.
+   */
   setUsername: function(aUsername) {
     this.setStringPref("gContactSyncUsername", aUsername);
   },
+  /**
+   * AddressBook.getUsername
+   * Returns the username for the account with which this address book is synced.
+   * @return The username for the Google account.
+   */
   getUsername: function() {
     return this.getStringPref("gContactSyncUsername");
   },
+  /**
+   * AddressBook.setPrimary
+   * Sets whether or not this address book is the primary book to synchronize
+   * with the account.
+   * @param aPrimary True if this address book is the primary AB with which the
+   *                 account is synchronized.
+   */
   setPrimary: function(aPrimary) {
     this.setStringPref("gContactSyncPrimary", aPrimary);
   },
+  /**
+   * AddressBook.setPrimary
+   * Returns true if this address book is the primary AB with which the account
+   * is synchronized.
+   * @return True if this is the primary AB for the account.
+   */
   getPrimary: function() {
     return this.getStringPref("gContactSyncPrimary");
   },
+  /**
+   * AddressBook.getName
+   * Returns the name of this address book.
+   * @return The name of this address book.
+   */
   getName: function() {
     return this.mDirectory.dirName;
   },
+  /**
+   * AddressBook.setName
+   * Sets the name of this address book.  Throws an error if the name is set to
+   * either the PAB or CAB's name.
+   * @param aName The new name for this directory.
+   */
   setName: function(aName) {
     // make sure it isn't being set to the PAB or CAB name and make sure that
     // this isn't the PAB or CAB
@@ -540,9 +574,21 @@ AddressBook.prototype = {
    setGroupID: function(aGroupID) {
      this.setStringPref("GroupID", aGroupID);
    },
+   /**
+    * AddressBook.getLastSyncDate
+    * Returns the last time this address book was synchronized in milliseconds
+    * since the epoch.
+    * @return The last time this address book was synchronized.
+    */
    getLastSyncDate: function() {
      return this.getStringPref("lastSync");
    },
+   /**
+    * AddressBook.setLastSyncDate
+    * Sets the last time this address book was synchronized, in milliseconds
+    * since the epoch.
+    * @param aLastSync The last sync time.
+    */
    setLastSyncDate: function(aLastSync) {
      this.setStringPref("lastSync", aLastSync);
    }

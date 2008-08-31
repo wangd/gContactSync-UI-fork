@@ -104,15 +104,18 @@ GContact.prototype = {
   getName: function() {
     var contactName = "";
     try {
-    
-    var titleElem = this.xml.getElementsByTagName('title')[0];
-    if (titleElem && titleElem.childNodes[0])
-      contactName =titleElem.childNodes[0].nodeValue;
-    var emailElem = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
-                                                    "email")[0];
-    if (emailElem && emailElem.getAttribute)
-      contactName += this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
-                                                     "email")[0].getAttribute("address");
+      var titleElem = this.xml.getElementsByTagName('title')[0];
+      if (titleElem && titleElem.childNodes[0])
+        contactName =titleElem.childNodes[0].nodeValue;
+      var emailElem = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
+                                                      "email")[0];
+      if (emailElem && emailElem.getAttribute) {
+        if (contactName != "")
+          contactName += " - ";
+        contactName += this.xml
+                           .getElementsByTagNameNS(gdata.namespaces.GD.url,
+                                                   "email")[0].getAttribute("address");
+      }
     }
     catch(e) {
       LOGGER.LOG_WARNING("Unable to get the name or e-mail address of a contact", e);

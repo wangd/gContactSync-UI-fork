@@ -250,7 +250,7 @@ var Sync = {
           if (!tbCardDate)
             tbCardDate = 0;
           LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
-          LOGGER.VERBOSE_LOG(" * " + id + "\n * " + ab.getCardValue(abCard, "GoogleID"));
+          LOGGER.VERBOSE_LOG(" * Google ID: " + id);
           // If there is a conflict, looks at the updateGoogleInConflicts
           // preference and updates Google if it's true, or Thunderbird if false
           if (gCardDate > lastSync && tbCardDate > lastSync/1000) {
