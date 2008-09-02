@@ -69,7 +69,7 @@ Group.prototype = {
    * Sets the title of this Group.
    * @param aTitle The new title for this Group.
    */
-  setTitle: function(aTitle) {
+  setTitle: function Group_setTitle(aTitle) {
     if (!aTitle)
       throw "Error - invalid title passed to Group.setTitle";
     var atom = gdata.namespaces.ATOM;
@@ -95,7 +95,7 @@ Group.prototype = {
    * Returns the title of this Group.
    * @return the title of this Group.
    */
-  getTitle: function() {
+  getTitle: function Group_getTitle() {
     if (this.mTitle)
       return this.mTitle;
     var atom = gdata.namespaces.ATOM;
@@ -108,7 +108,7 @@ Group.prototype = {
    * Returns the URL used to edit this Group.
    * @return the URL used to edit this Group.
    */
-  getEditURL: function() {
+  getEditURL: function Group_getEditURL() {
     var atom = gdata.namespaces.ATOM;
     var arr = this.xml.getElementsByTagNameNS(atom.url, "link");
     for (var i = 0, length = arr.length; i < length; i++)
@@ -120,7 +120,7 @@ Group.prototype = {
    * Retrieves and returns the ID of this Group.
    * @return The ID of this Group.
    */
-  getID: function() {
+  getID: function Group_getID() {
     var atom = gdata.namespaces.ATOM;
     var id = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
     if (id && id.childNodes[0])
@@ -130,7 +130,7 @@ Group.prototype = {
    * Group.removeExtendedProperties
    * Removes all of the extended properties from this Group.
    */
-  removeExtendedProperties: function() {
+  removeExtendedProperties: function Group_removeExtendedProperties() {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = arr.length - 1; i > -1 ; i--)
       this.xml.removeChild(arr[i]);
@@ -142,7 +142,7 @@ Group.prototype = {
    * @param aName The value of the name attribute to find.
    * @return The value of an extended property whose name is the value of aName.
    */
-  getExtendedProperty: function(aName) {
+  getExtendedProperty: function Group_getExtendedProperty(aName) {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("name") == aName)
@@ -154,7 +154,7 @@ Group.prototype = {
    * 1970
    * @return The last modified date of the group in milliseconds since 1970
    */
-  getLastModifiedDate: function() {
+  getLastModifiedDate: function Group_getLastModifiedDate() {
     try {
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
       var year = sModified.substring(0,4);
@@ -178,7 +178,7 @@ Group.prototype = {
    * @param aName  The name of the property.
    * @param aValue The value of the property.
    */
-  setExtendedProperty: function(aName, aValue) {
+  setExtendedProperty: function Group_setExtendedProperty(aName, aValue) {
     if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
         "extendedProperty").length >= 10) {
       LOGGER.LOG_WARNING("Attempt to add too many properties aborted");

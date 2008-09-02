@@ -62,7 +62,7 @@ MailList.prototype = {
    * the change to become permanent.
    * @param aName The new name for the list.
    */
-  setName: function(aName) {
+  setName: function MailList_setName(aName) {
     this.mList.dirName = aName;
   },
   /**
@@ -70,7 +70,7 @@ MailList.prototype = {
    * Returns the name of this list.
    * @return The name of this list.
    */
-  getName: function() {
+  getName: function MailList_getName() {
     return this.mList.dirName;
   },
   /**
@@ -83,27 +83,26 @@ MailList.prototype = {
    *         for its GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
    */
-  hasCard: function(aCard) {
-    this.mParent.checkCard(aCard, "MailList.hasCard");
+  hasCard: function MailList_hasCard(aCard) {
+    AbManager.checkCard(aCard);
     // get all of the cards in this list again, if necessary
     if (this.mCardsUpdate || this.mCards.length == 0)
       this.getAllCards();
-    var ab = this.mParent;
     for (var i = 0, length = this.mCards.length; i < length; i++) {
       var card = this.mCards[i];
-      var aCardID = ab.getCardValue(aCard, "GoogleID");
+      var aCardID = AbManager.getCardValue(aCard, "GoogleID");
       // if it is an old card (has id) compare IDs
       if (aCardID) {
-        if (aCardID == ab.getCardValue(card, "GoogleID"))
+        if (aCardID == AbManager.getCardValue(card, "GoogleID"))
           return card;
       }
       // else check that display name, primary and second email are equal
-      else if (ab.getCardValue(aCard, "DisplayName") ==
-                                           ab.getCardValue(card,"DisplayName")
-              && ab.getCardValue(aCard, "PrimaryEmail") ==
-                                           ab.getCardValue(card, "PrimaryEmail")
-              && ab.getCardValue(aCard, "SecondEmail") ==
-                                           ab.getCardValue(card, "SecondEmail"))
+      else if (AbManager.getCardValue(aCard, "DisplayName") ==
+                                      AbManager.getCardValue(card,"DisplayName")
+              && AbManager.getCardValue(aCard, "PrimaryEmail") ==
+                                        AbManager.getCardValue(card, "PrimaryEmail")
+              && AbManager.getCardValue(aCard, "SecondEmail") ==
+                                        AbManager.getCardValue(card, "SecondEmail"))
         return card;
     }
   },
@@ -113,7 +112,7 @@ MailList.prototype = {
    * called in order for the change to become permanent.
    * @param aNickName The new nick name for this mailing list.
    */
-  setNickName: function(aNickName) {
+  setNickName: function MailList_setNickName(aNickName) {
     this.mList.listNickName = aNickName;
   },
   /**
@@ -121,7 +120,7 @@ MailList.prototype = {
    * Returns the nick name of this mailing list.
    * @return The nick name of this mailing list.
    */
-  getNickName: function() {
+  getNickName: function MailList_getNickName() {
     return this.mList.listNickName;
   },
   /**
@@ -130,7 +129,7 @@ MailList.prototype = {
    * called in order for the change to become permanent.
    * @param aDescription The new description for this mailing list.
    */
-  setDescription: function(aDescription) {
+  setDescription: function MailList_setDescription(aDescription) {
     this.mList.description = aDescription;
   },
   /**
@@ -138,7 +137,7 @@ MailList.prototype = {
    * Returns the description of this mailing list.
    * @return The description of this mailing list.
    */
-  getDescription: function() {
+  getDescription: function MailList_getDescription() {
     return this.mList.description;
   },
   /**
@@ -147,8 +146,8 @@ MailList.prototype = {
    * @param aCard The card to add to this mailing list.
    * @return A real card (MDB card prior to 413260).
    */
-  addCard: function(aCard) {
-    this.mParent.checkCard(aCard);
+  addCard: function MailList_addCard(aCard) {
+    AbManager.checkCard(aCard);
     var realCard = this.mList.addCard(aCard);
     this.mCards.push(realCard);
     return realCard;
@@ -158,7 +157,7 @@ MailList.prototype = {
    * Returns the uniform resource identifier (URI) for this mailing list.
    * @return The URI of this list.
    */
-  getURI: function() {
+  getURI: function MailList_getURI() {
     if (this.mList.URI)
       return this.mList.URI;
     return this.mList.getDirUri();
@@ -168,7 +167,7 @@ MailList.prototype = {
    * Returns an array of all of the cards in this mailing list.
    * @return An array containing all of the cards in this mailing list.
    */
-  getAllCards: function() {
+  getAllCards: function MailList_getAllCards() {
     // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
     // properly, but it shouldn't be caught or the sync won't function properly
     this.mCards = [];
@@ -199,14 +198,14 @@ MailList.prototype = {
    * Deletes all of the cards in the array of cards from this list.
    * @param aCards The array of cards to delete from this mailing list.
    */
-  deleteCards: function(aCards) {
+  deleteCards: function MailList_deleteCards(aCards) {
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
     var arr;
     if (this.mParent.mVersion == 3) { // TB 3
       arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
-        this.mParent.checkCard(aCards[i], "deleteAbCard");
+        AbManager.checkCard(aCards[i]);
         arr.appendElement(aCards[i], false);
       }
     }
@@ -214,7 +213,7 @@ MailList.prototype = {
       arr =  Cc["@mozilla.org/supports-array;1"]
               .createInstance(Ci.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
-        this.mParent.checkCard(aCards[i], "deleteAbCard");
+        AbManager.checkCard(aCards[i]);
         arr.AppendElement(aCards[i], false);
       }
     }
@@ -233,7 +232,7 @@ MailList.prototype = {
    * MailList.delete
    * Deletes this mailing list from its parent address book.
    */
-  delete: function() {
+  delete: function MailList_delete() {
     this.mParent.mDirectory.deleteDirectory(this.mList);
     this.mCards = [];
     // make sure the functions don't do anything
@@ -246,7 +245,7 @@ MailList.prototype = {
    * MailList.update
    * Updates this mail list.
    */
-  update: function() {
+  update: function MailList_update() {
     try {
       if (this.mParent.mVersion == 3)
         this.mList.editMailListToDatabase(null);
@@ -262,7 +261,7 @@ MailList.prototype = {
    * and the current time in microseconds since the epoch.
    * @return The ID of the group with which this directory is synchronized.
    */
-   getGroupID: function() {
+   getGroupID: function MailList_getGroupID() {
      // first see if the nickname is the group id
      var id = this.getNickName();
      if (id.indexOf("http://www.google.com/m8/feeds/groups") == -1)
@@ -278,7 +277,7 @@ MailList.prototype = {
    * synchronized.
    * @return The ID of the group with which this directory is synchronized.
    */
-   setGroupID: function(aGroupID) {
+   setGroupID: function MailList_setGroupID(aGroupID) {
      this.setNickName(aGroupID);
    }
 };

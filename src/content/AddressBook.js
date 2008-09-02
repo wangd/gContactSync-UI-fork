@@ -42,12 +42,6 @@
  * @class
  */
 function AddressBook(aDirectory) {
-  // get the version of Thunderbird
-  if (Cc["@mozilla.org/abmanager;1"]) // The AB Manager is in Thunderbird 3
-    this.mVersion = 3;
-  else
-    this.mVersion = 2;
-  
   this.mDirectory = aDirectory
   // make sure the directory is valid
   if (!this.isDirectoryValid(this.mDirectory))
@@ -60,14 +54,9 @@ function AddressBook(aDirectory) {
     this.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
     this.mURI = this.mDirectory.getDirUri();
   }
-  // figure out if this is post-bug 413260
-  var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
-              .createInstance(nsIAbCard);
-  this.mBug413260 = card.getProperty ? true : false;
 }
 
 AddressBook.prototype = {
-  mBug413260: false, // true if bug 413260 has landed
   mURI: {}, // the uniform resource identifier of the directory
   mCards: [], // the cards within this address book
   mCardsUpdate: false, // set to true when mCards should be updated
@@ -77,8 +66,8 @@ AddressBook.prototype = {
    * @param aCard The card to add.
    * @return An MDB
    */
-  addCard: function(aCard) {
-    this.checkCard(aCard, "addCardTo"); // check the card's validity first
+  addCard: function AddressBook_addCard(aCard) {
+    AbManager.checkCard(aCard); // check the card's validity first
     try {
       this.mCards.push(aCard);
       return this.mDirectory.addCard(aCard); // then add it and return the MDBCard
@@ -93,10 +82,10 @@ AddressBook.prototype = {
    * Returns an array of all of the cards in this Address Book.
    * @return  An array of the nsIAbCards in this Address Book.
    */
-  getAllCards: function() {
+  getAllCards: function AddressBook_getAllCards() {
     this.mCards = [];
     var iter = this.mDirectory.childCards;
-    if (this.mVersion == 3) { // TB 3
+    if (AbManager.mVersion == 3) { // TB 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof nsIAbCard && !data.isMailList)
@@ -124,7 +113,7 @@ AddressBook.prototype = {
    * @param skipGetCards True to skip getting the cards of each list.
    * @return An object containing MailList objects.
    */
-  getAllLists: function(skipGetCards) {
+  getAllLists: function AddressBook_getAllLists(skipGetCards) {
     // same in Thunderbird 2 and 3
     var iter = this.mDirectory.childNodes;
     var obj = {};
@@ -147,7 +136,7 @@ AddressBook.prototype = {
    * @return A new MailList object containing a list that matches the
    *         nickname or nothing if the list wasn't found.
    */
-  getListByNickName: function(aNickName) {
+  getListByNickName: function AddressBook_getListByNickName(aNickName) {
     if (!aNickName)
       return;
     // same in Thunderbird 2 and 3
@@ -170,7 +159,7 @@ AddressBook.prototype = {
    * @return A new MailList object containing the newly-made Mail List with the
    *         given name and nickname.
    */
-  addList: function(aName, aNickName) {
+  addList: function AddressBook_addList(aName, aNickName) {
     if (!aName)
       throw "Error - aName sent to addList is invalid";
     if (!aNickName)
@@ -191,14 +180,14 @@ AddressBook.prototype = {
    * isn't in the book nothing will happen
    * @param aCard   The card to delete from the directory
    */
-  deleteCards: function(aCards) {
+  deleteCards: function AddressBook_deleteCards(aCards) {
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
     var arr;
-    if (this.mVersion == 3) { // TB 3
+    if (AbManager.mVersion == 3) { // TB 3
       arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
-        this.checkCard(aCards[i], "deleteAbCard");
+        AbManager.checkCard(aCards[i]);
         arr.appendElement(aCards[i], false);
       }
     }
@@ -206,7 +195,7 @@ AddressBook.prototype = {
       arr =  Cc["@mozilla.org/supports-array;1"]
               .createInstance(Ci.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
-        this.checkCard(aCards[i], "deleteAbCard");
+        AbManager.checkCard(aCards[i]);
         arr.AppendElement(aCards[i], false);
       }
     }
@@ -220,23 +209,13 @@ AddressBook.prototype = {
    * Updates a card in this address book.
    * @param aCard The card to update.
    */
-  updateCard: function(aCard) {
-    this.checkCard(aCard, "updateCard");
+  updateCard: function AddressBook_updateCard(aCard) {
+    AbManager.checkCard(aCard);
     this.mCardsUpdate = true;
     if (this.mDirectory && this.mDirectory.modifyCard)
       this.mDirectory.modifyCard(aCard);
     else
       aCard.editCardToDatabase(this.URI);
-  },
-  /**
-   * AddressBook.checkCard
-   * Checks the validity of a card and throws an error if the card is invalid.
-   * @param aCard        An object that should be an instance of nsIAbCard
-   * @param aMethodName  The name of the method calling checkCard (used when
-   *                     throwing the error)
-   */
-  checkCard: function(aCard, aMethodName) {
-    AbManager.checkCard(aCard, aMethodName);
   },
   /**
    * AddressBook.checkList
@@ -245,7 +224,7 @@ AddressBook.prototype = {
    * @param aMethodName  The name of the method calling checkList (used when
    *                     throwing the error)
    */
-  checkList: function(aList, aMethodName) {
+  checkList: function AddressBook_checkList(aList, aMethodName) {
     // if it is a MailList object, get it's actual list
     var list = aList && aList.mList ? aList.mList : aList;
     if (!list || !(list instanceof Ci.nsIAbDirectory) || !list.isMailList) {
@@ -260,7 +239,7 @@ AddressBook.prototype = {
    * @param aMethodName  The name of the method calling checkDirectory (used when
    *                     throwing the error)
    */
-  checkDirectory: function(aDirectory, aMethodName) {
+  checkDirectory: function AddressBook_checkDirectory(aDirectory, aMethodName) {
     if (!this.isDirectoryValid(aDirectory))
       throw "Invalid Directory: " + aDirectory + " sent to the '" + aMethodName
             + "' method" +  StringBundle.getStr("pleaseReport");
@@ -270,7 +249,7 @@ AddressBook.prototype = {
    * Checks the validity of a directory and returns false if it is invalid.
    * @param aDirectory The directory to check.
    */
-  isDirectoryValid: function(aDirectory) {
+  isDirectoryValid: function AddressBook_isDirectoryValid(aDirectory) {
     return aDirectory && aDirectory instanceof Ci.nsIAbDirectory 
           && aDirectory.dirName != "";
   },
@@ -281,7 +260,7 @@ AddressBook.prototype = {
    * @param aCard     The card to get the value from.
    * @param aAttrName The name of the attribute to get.
    */
-   getCardValue: function(aCard, aAttrName) {
+   getCardValue: function AddressBook_getCardValue(aCard, aAttrName) {
      return AbManager.getCardValue(aCard, aAttrName);
    },
   /**
@@ -292,7 +271,7 @@ AddressBook.prototype = {
    * @param aAttrName The name of the attribute to set.
    * @param aValue    The value to set for the attribute.
    */
-   setCardValue: function(aCard, aAttrName, aValue) {
+   setCardValue: function AddressBook_setCardValue(aCard, aAttrName, aValue) {
      AbManager.setCardValue(aCard, aAttrName, aValue);
    },
   /**
@@ -304,8 +283,8 @@ AddressBook.prototype = {
    * @return True if aCard has at least one address-related property of the
    *         given type.
    */
-  hasAddress: function(aCard, aPrefix) {
-    this.checkCard(aCard, "hasAddress");
+  hasAddress: function AddressBook_hasAddress(aCard, aPrefix) {
+    AbManager.checkCard(aCard);
     return this.getCardValue(aCard, aPrefix + "Address") || 
           this.getCardValue(aCard, aPrefix + "Address2") ||
           this.getCardValue(aCard, aPrefix + "City") ||
@@ -318,7 +297,7 @@ AddressBook.prototype = {
    * Creates and returns a new address book card.
    * @return A new instantiation of nsIAbCard.
    */
-  makeCard: function() {
+  makeCard: function AddressBook_makeCard() {
     return Cc["@mozilla.org/addressbook/cardproperty;1"]
            .createInstance(Ci.nsIAbCard);
   },
@@ -332,7 +311,7 @@ AddressBook.prototype = {
    * @return True if the URI of the passed directory is the same as the URI of
    *         the directory stored by this object.
    */
-  equals: function(aOtherDir) {
+  equals: function AddressBook_equals(aOtherDir) {
     // return false if the directory isn't valid
     if (!this.isDirectoryValid(aOtherDir))
       return false;
@@ -351,26 +330,25 @@ AddressBook.prototype = {
    *         for its GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
    */
-  hasCard: function(aCard) {
-    this.checkCard(aCard, "AddressBook.hasCard");
+  hasCard: function AddressBook_hasCard(aCard) {
+    AbManager.checkCard(aCard);
     if (this.mCardsUpdate)
       this.getAllCards();
-    var ab = this.mDirectory;
     for (var i = 0, length = this.mCards.length; i < length; i++) {
       var card = this.mCards[i];
-      var aCardID = ab.getCardValue(aCard, "GoogleID");
+      var aCardID = AbManager.getCardValue(aCard, "GoogleID");
       // if it is an old card (has id) compare IDs
       if (aCardID) {
-        if (aCardID == ab.getCardValue(card, "GoogleID"))
+        if (aCardID == AbManager.getCardValue(card, "GoogleID"))
           return card;
       }
       // else check that display name, primary and second email are equal
-      else if (ab.getCardValue(aCard, "DisplayName") ==
-                                           ab.getCardValue(card,"DisplayName")
-              && ab.getCardValue(aCard, "PrimaryEmail") ==
-                                           ab.getCardValue(card, "PrimaryEmail")
-              && ab.getCardValue(aCard, "SecondEmail") ==
-                                           ab.getCardValue(card, "SecondEmail"))
+      else if (AbManager.getCardValue(aCard, "DisplayName") ==
+                                      AbManager.getCardValue(card,"DisplayName")
+              && AbManager.getCardValue(aCard, "PrimaryEmail") ==
+                                        AbManager.getCardValue(card, "PrimaryEmail")
+              && AbManager.getCardValue(aCard, "SecondEmail") ==
+                                        AbManager.getCardValue(card, "SecondEmail"))
         return card;
     }
   },
@@ -380,7 +358,7 @@ AddressBook.prototype = {
    * called in order for the change to become permanent.
    * @param aPrefId The new preference ID for this mailing list.
    */
-  setPrefId: function(aPrefId) {
+  setPrefId: function AddressBook_setPrefId(aPrefId) {
     this.mDirectory.dirPrefId = aPrefId;
   },
   /**
@@ -388,7 +366,7 @@ AddressBook.prototype = {
    * Returns the preference ID of this directory.
    * @return The preference ID of this directory.
    */
-  getPrefId: function() {
+  getPrefId: function AddressBook_getPrefId() {
     return this.mDirectory.dirPrefId;
   },
   /**
@@ -402,7 +380,7 @@ AddressBook.prototype = {
    * @return The value of the preference with the given name in the preference
    *         branch specified by the preference ID, if possible.  Otherwise null.
    */
-  getStringPref: function(aName, aDefaultValue) {
+  getStringPref: function AddressBook_getStringPref(aName, aDefaultValue) {
     var id = this.getPrefId();
     LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
     /* The code below is commented out for backward compatibility with TB 2,
@@ -443,7 +421,7 @@ AddressBook.prototype = {
    * @param aName  The name of the preference to get.
    * @param aValue The value to set the preference to.
    */
-  setStringPref: function(aName, aValue) {
+  setStringPref: function AddressBook_setStringPref(aName, aValue) {
     var id = this.getPrefId();
     LOGGER.VERBOSE_LOG("Setting pref named: " + aName + " to value: " + aValue +
                        " to the branch: " + id);
@@ -462,8 +440,14 @@ AddressBook.prototype = {
       } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
       return;
     }*/
-    if (!id)
+    if (!id) {
+      LOGGER.VERBOSE_LOG("Invalid ID");
       return;
+    }
+    if (!aName || aName == "") {
+      LOGGER.VERBOSE_LOG("Invalid name");
+      return;
+    }
     try {
       var branch = Cc["@mozilla.org/preferences-service;1"]
                     .getService(Ci.nsIPrefService)
@@ -477,7 +461,7 @@ AddressBook.prototype = {
    * Sets the username for the account with which this address book is synced.
    * @param aUsername The username for the Google account.
    */
-  setUsername: function(aUsername) {
+  setUsername: function AddressBook_setUsername(aUsername) {
     this.setStringPref("gContactSyncUsername", aUsername);
   },
   /**
@@ -485,7 +469,7 @@ AddressBook.prototype = {
    * Returns the username for the account with which this address book is synced.
    * @return The username for the Google account.
    */
-  getUsername: function() {
+  getUsername: function AddressBook_getUsername() {
     return this.getStringPref("gContactSyncUsername");
   },
   /**
@@ -495,7 +479,7 @@ AddressBook.prototype = {
    * @param aPrimary True if this address book is the primary AB with which the
    *                 account is synchronized.
    */
-  setPrimary: function(aPrimary) {
+  setPrimary: function AddressBook_setPrimary(aPrimary) {
     this.setStringPref("gContactSyncPrimary", aPrimary);
   },
   /**
@@ -504,7 +488,7 @@ AddressBook.prototype = {
    * is synchronized.
    * @return True if this is the primary AB for the account.
    */
-  getPrimary: function() {
+  getPrimary: function AddressBook_getPrimary() {
     return this.getStringPref("gContactSyncPrimary");
   },
   /**
@@ -512,7 +496,7 @@ AddressBook.prototype = {
    * Returns the name of this address book.
    * @return The name of this address book.
    */
-  getName: function() {
+  getName: function AddressBook_getName() {
     return this.mDirectory.dirName;
   },
   /**
@@ -521,7 +505,7 @@ AddressBook.prototype = {
    * either the PAB or CAB's name.
    * @param aName The new name for this directory.
    */
-  setName: function(aName) {
+  setName: function AddressBook_setName(aName) {
     // make sure it isn't being set to the PAB or CAB name and make sure that
     // this isn't the PAB or CAB
     var pab = AbManager.getAbByURI("moz-abmdbdirectory://abook.mab");
@@ -531,7 +515,7 @@ AddressBook.prototype = {
     if (this.getName() == pab.dirName || this.getName() == cab.dirName)
       throw "Error - cannot rename the PAB or CAB";
     // in TB 3, it is as simple as changing a property of the directory
-    if (this.mVersion == 3)
+    if (AbManager.mVersion == 3)
       this.mDirectory.dirName = aName;
     // in TB 2 a few extra steps are necessary...
     else {
@@ -562,7 +546,7 @@ AddressBook.prototype = {
    * Book is synchronized, if any.
    * @return The ID of the group with which this directory is synchronized.
    */
-   getGroupID: function() {
+   getGroupID: function AddressBook_getGroupID() {
      return this.getStringPref("GroupID");
    },
    /**
@@ -571,7 +555,7 @@ AddressBook.prototype = {
    * synchronized.
    * @return The ID of the group with which this directory is synchronized.
    */
-   setGroupID: function(aGroupID) {
+   setGroupID: function AddressBook_setGroupID(aGroupID) {
      this.setStringPref("GroupID", aGroupID);
    },
    /**
@@ -580,7 +564,7 @@ AddressBook.prototype = {
     * since the epoch.
     * @return The last time this address book was synchronized.
     */
-   getLastSyncDate: function() {
+   getLastSyncDate: function AddressBook_getLastSyncDate() {
      return this.getStringPref("lastSync");
    },
    /**
@@ -589,7 +573,7 @@ AddressBook.prototype = {
     * since the epoch.
     * @param aLastSync The last sync time.
     */
-   setLastSyncDate: function(aLastSync) {
+   setLastSyncDate: function AddressBook_setLastSyncDate(aLastSync) {
      this.setStringPref("lastSync", aLastSync);
    }
 };

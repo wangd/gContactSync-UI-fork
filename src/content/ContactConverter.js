@@ -65,7 +65,7 @@ var ContactConverter = {
    * Initializes this object by populating the array of ConverterElement
    * objects and the two namespaces most commonly used by this object.
    */
-  init: function() {
+  init: function ContactConverter_init() {
     this.GD = gdata.namespaces.GD;
     this.ATOM = gdata.namespaces.ATOM;
     // ConverterElement(aElement, aTbName, aIndex, aType)
@@ -114,7 +114,7 @@ var ContactConverter = {
    * @param aIncludeURLs Should be true if the URL-related attributes should be
    *                     returned.
    */
-  getExtraSyncAttributes: function(aIncludeURLs) {
+  getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs) {
     var arr = this.mAddedAttributes;
     if (aIncludeURLs)
       arr = arr.concat("PhotoURL", "SelfURL", "EditURL", "GoogleID");
@@ -130,11 +130,11 @@ var ContactConverter = {
    *                 supplied, a contact and feed will be created.
    * @return A GContact object with the Atom feed for the contact.
    */
-  cardToAtomXML: function(aCard, aContact) {
+  cardToAtomXML: function ContactConverter_cardToAtomXML(aCard, aContact) {
     if (!aContact)
       aContact = new GContact();
     var ab = Sync.mCurrentAb;
-    ab.checkCard(aCard, "cardToAtomXML");
+    AbManager.checkCard(aCard, "cardToAtomXML");
     this.mCurrentCard = aCard;
     // use the address with multiple lines instead of the 6 fields
     // if the full address doesn't exist, but the card has at least 1 of the
@@ -149,9 +149,9 @@ var ContactConverter = {
         continue;
       var obj = arr[i];
       LOGGER.VERBOSE_LOG(obj.tbName);
-      var value = ab.getCardValue(aCard, obj.tbName);
+      var value = AbManager.getCardValue(aCard, obj.tbName);
       // for the type, get the type from the card, or use its default
-      var type = ab.getCardValue(aCard, obj.tbName + "Type");
+      var type = AbManager.getCardValue(aCard, obj.tbName + "Type");
       if (!type || type == "")
         type = obj.type;
       LOGGER.VERBOSE_LOG(value + " type: " + type);
@@ -161,7 +161,7 @@ var ContactConverter = {
     aContact.removeExtendedProperties();
     arr = Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
-      var value = ab.getCardValue(aCard, arr[i]);
+      var value = AbManager.getCardValue(aCard, arr[i]);
       aContact.setExtendedProperty(arr[i], value);
     }
     if (Preferences.mSyncPrefs.syncGroups.value) {
@@ -186,7 +186,7 @@ var ContactConverter = {
    *              Components.interfaces.nsIAbMDBCard if this is before 413260
    * @return An nsIAbCard of the contact.
    */
-  makeCard: function(aContact, aCard) {
+  makeCard: function ContactConverter_makeCard(aContact, aCard) {
     if (!aContact)
       throw "Invalid aXml parameter supplied to the 'makeCard' method" +
             StringBundle.getStr("pleaseReport");
@@ -247,21 +247,21 @@ var ContactConverter = {
    * @param aCard   The card with the address to fix.
    * @param aPrefix The prefix (Home or Work)
    */
-  fixAddress: function(aCard, aPrefix) {
+  fixAddress: function ContactConverter_fixAddress(aCard, aPrefix) {
     if (!aCard || !aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
       return;
     var ab = Sync.mCurrentAb;
     // if there isn't a value in the Full (multi-lined address) then create one
     // from the existing address, if present
-    if (!ab.getCardValue(aCard, "Full" + aPrefix + "Address") &&
+    if (!AbManager.getCardValue(aCard, "Full" + aPrefix + "Address") &&
         ab.hasAddress(aCard, aPrefix)) {
       // get the current info
-      var address1 = ab.getCardValue(aCard, aPrefix + "Address");
-      var address2 = ab.getCardValue(aCard, aPrefix + "Address2");
-      var city = ab.getCardValue(aCard, aPrefix + "City");
-      var state = ab.getCardValue(aCard, aPrefix + "State");
-      var zip = ab.getCardValue(aCard, aPrefix + "ZipCode");
-      var country = ab.getCardValue(aCard, aPrefix + "Country");
+      var address1 = AbManager.getCardValue(aCard, aPrefix + "Address");
+      var address2 = AbManager.getCardValue(aCard, aPrefix + "Address2");
+      var city = AbManager.getCardValue(aCard, aPrefix + "City");
+      var state = AbManager.getCardValue(aCard, aPrefix + "State");
+      var zip = AbManager.getCardValue(aCard, aPrefix + "ZipCode");
+      var country = AbManager.getCardValue(aCard, aPrefix + "Country");
       // form the new address from the old
       var newAddress = "";
       if (address1)

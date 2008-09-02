@@ -49,7 +49,7 @@ var AbListener = {
    * @param aParentDir The parent directory to which an item was added.
    * @param aItem      The item added to the directory.
    */
-  onItemAdded: function(aParentDir, aItem) { /* do nothing */ },
+  onItemAdded: function AbListener_onItemAdded(aParentDir, aItem) { /* do nothing */ },
   /**
    * AbListener.onItemPropertyChanged
    * Unused.
@@ -58,7 +58,7 @@ var AbListener = {
    * @param aOldValue The former value of the property.
    * @param aNewValue The new value of the property.
    */
-  onItemPropertyChanged: function(aItem, aProperty , aOldValue , aNewValue ) {},
+  onItemPropertyChanged: function AbListener_onItemPropertyChanged(aItem, aProperty , aOldValue , aNewValue ) {},
   /**
    * AbListener.onItemRemoved
    * Used just to update the lastModifiedDate of cards removed from a mail list.
@@ -69,7 +69,7 @@ var AbListener = {
    * @param aItem      The item removed from a directory.  Ignored unless it is
    *                   an Address Book card removed from a mail list.
    */
-  onItemRemoved: function(aParentDir, aItem) {
+  onItemRemoved: function AbListener_onItemRemoved(aParentDir, aItem) {
     aParentDir.QueryInterface(Ci.nsIAbDirectory);
     // only update if a card was removed from a mail list
     // if so, then update the card's lastModifiedDate in the mail list's parent
@@ -99,7 +99,7 @@ var AbListener = {
    * @param aDirectory The directory whose URI is returned.
    * @return The URI of aDirectory.
    */
-  getURI: function(aDirectory) {
+  getURI: function AbListener_getURI(aDirectory) {
     var error;
     try {
       if (aDirectory && (aDirectory instanceof Ci.nsIAbDirectory)) {
@@ -119,7 +119,7 @@ var AbListener = {
    * It will be called whenever an item (card or mail list) is removed from a
    * directory (address book or mail list).
    */
-  add: function() {
+  add: function AbListener_add() {
     if (Cc["@mozilla.org/abmanager;1"]) { // Thunderbird 3
       var flags = Ci.nsIAbListener.directoryItemRemoved;
       Cc["@mozilla.org/abmanager;1"]
@@ -137,7 +137,7 @@ var AbListener = {
    * AbListener.remove
    * Removes this listener.
    */
-  remove: function() {
+  remove: function AbListener_remove() {
     if (Cc["@mozilla.org/abmanager;1"]) // Thunderbird 3
       Cc["@mozilla.org/abmanager;1"]
        .getService(Ci.nsIAbManager)

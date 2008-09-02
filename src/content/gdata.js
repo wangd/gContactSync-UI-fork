@@ -51,7 +51,7 @@ var gdata = {
    * @param aEmail     The user's e-mail address
    * @param aPassword  The user's password
    */
-  makeAuthBody: function(aEmail, aPassword) {
+  makeAuthBody: function gdata_makeAuthBody(aEmail, aPassword) {
     // NOTE: leave accountType as HOSTED_OR_GOOGLE or Google Apps for your
     // domain accounts won't work
     return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" + aPassword +
@@ -99,7 +99,7 @@ var gdata = {
      * information about how an Atom/XML representation of a contact from Google
      * is stored.
      */
-    init: function() {
+    init: function gdata_contacts_init() {
       var untyped = gdata.contacts.types.UNTYPED;
       var typedWithChild = gdata.contacts.types.TYPED_WITH_CHILD;
       var typedWithAttr = gdata.contacts.types.TYPED_WITH_ATTR;
@@ -151,7 +151,7 @@ var gdata = {
      * Returns the total number of contacts in an Atom document.
      * @param aXML The Atom feed from Google.
      */
-    getNumberOfContacts: function(aAtom) {
+    getNumberOfContacts: function gdata_contacts_getNumberOfContacts(aAtom) {
       return aAtom.getElementsByTagNameNS("totalResults",
                                          gdata.namespaces.OPEN_SEARCH.url);
     }
@@ -160,7 +160,7 @@ var gdata = {
    * gdata.isAuthValid
    * Returns true if there is at least one auth token.
    */ 
-  isAuthValid: function() {
+  isAuthValid: function gdata_isAuthValid() {
     if (LoginManager.mNumAuthTokens == 0)
       LoginManager.getAuthTokens();
     return LoginManager.mNumAuthTokens > 0;

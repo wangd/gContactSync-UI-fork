@@ -42,7 +42,7 @@
  * user to login.
  */
 // initialize everything after the Address Book window loads
-window.addEventListener("load", function(e) { Overlay.initialize(); }, false);
+window.addEventListener("load", function eventListener(e) { Overlay.initialize(); }, false);
 var originalOnLoadCardView;
 var originalDisplayCardViewPane;
 /**
@@ -57,7 +57,7 @@ var Overlay = {
    * Called when the overlay is loaded and initializes everything and begins
    * the authentication check and sync or login prompt.
    */
-  initialize: function() {
+  initialize: function Overlay_initialize() {
     // determine if this is before or after Bug 413260 landed
     var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
               .createInstance(nsIAbCard);
@@ -81,13 +81,13 @@ var Overlay = {
     DisplayCardViewPane = this.myDisplayCardViewPane;
     AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
-    window.addEventListener("unload", function(e) { Overlay.unload(); }, false);
+    window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
     this.checkAuthentication(); // check if the Auth token is valid
   },
   /**
    * Called when the overlay is unloaded and removes the address book listener.
    */
-  unload: function() {
+  unload: function Overlay_unload() {
     AbListener.remove();
   },
   /**
@@ -97,7 +97,7 @@ var Overlay = {
    * and sort by extra attributes that are added by this extension.  This will
    * only work after Bug 413260 landed, so in Thunderbird 3.0b1pre and after.
    */
-  addTreeCols: function() {
+  addTreeCols: function Overlay_addTreeCols() {
     // get the treecols XUL element
     var treeCols = document.getElementById("abResultsTreeCols");
     if (!treeCols || !treeCols.appendChild)
@@ -148,7 +148,7 @@ var Overlay = {
    * Sets up the Sync button to go between the Write and Delete buttons and adds
    * a separator between Sync and Delete.
    */
-  setupButton: function() {
+  setupButton: function Overlay_setupButton() {
     try {
       // get the toolbar with the buttons
       var toolbar = document.getElementById("ab-bar2");
@@ -177,7 +177,7 @@ var Overlay = {
    * manager.  If so, it begins a sync.  If not, it shows the login prompt.
    * @param firstLogin 
    */
-  checkAuthentication: function() {
+  checkAuthentication: function Overlay_checkAuthentication() {
     if (gdata.isAuthValid()) {
       if (this.mUsername) {
         var name = Preferences.mSyncPrefs.addressBookName.value;
@@ -199,7 +199,7 @@ var Overlay = {
    * Prompts the user to enter his or her Google™ username and password and then
    * gets an authentication token to store and use.
    */
-  promptLogin: function() {
+  promptLogin: function Overlay_promptLogin() {
     var prompt = Cc["@mozilla.org/embedcomp/prompt-service;1"]
                   .getService(Ci.nsIPromptService)
                   .promptUsernameAndPassword;
@@ -219,8 +219,8 @@ var Overlay = {
                           "', httpReq.responseText.split(\"\\n\")[2]);"];
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError = ["alert(StringBundle.getStr('authErr'));",
-                        "LOGGER.LOG_ERROR('Authentication Error - ' + " +
-                        "httpReq.responseText);",
+                        "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
+                        "httpReq.status, httpReq.responseText);",
                         "Overlay.promptLogin();"];
     // if the user is offline, alert them and quit
     httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
@@ -233,7 +233,7 @@ var Overlay = {
    * window that will begin the first synchronization when closed.
    * @param aAuthToken The authentication token to store.
    */
-  login: function(aUsername, aAuthToken) {
+  login: function Overlay_login(aUsername, aAuthToken) {
     LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
     this.setStatusBarText(StringBundle.getStr("initialSetup"));
     var setup = window.open("chrome://gcontactsync/content/FirstLogin.xul",
@@ -241,8 +241,8 @@ var Overlay = {
                             "chrome,resizable=yes,scrollbars=no,status=no");
     this.mUsername = aUsername;
     // when the setup window loads, set its onunload property to begin a sync
-    setup.onload = function() {
-      setup.onunload = function () {
+    setup.onload = function onloadListener() {
+      setup.onunload = function onunloadListener() {
         Overlay.checkAuthentication(); 
       };
     };
@@ -252,7 +252,7 @@ var Overlay = {
    * Sets the text of the status bar to the given value.
    * @param aText  The text to put on the status bar.
    */
-  setStatusBarText: function(aText) {
+  setStatusBarText: function Overlay_setStatusBarText(aText) {
     document.getElementById("statusText2").label = aText;
   },
   /**
@@ -261,7 +261,7 @@ var Overlay = {
    * string.
    * When the status text is clicked the log file is opened.
    */
-  writeTimeToStatusBar: function() {
+  writeTimeToStatusBar: function Overlay_writeTimeToStatusBar() {
     var hours = new String(new Date().getHours());
     hours = hours.length == 0 ? "00" + hours : hours;
     hours = hours.length == 1 ? "0" + hours : hours;
@@ -277,7 +277,7 @@ var Overlay = {
    * Overlay.showLog
    * Opens the "view source" window with the log file.
    */
-  showLog: function() {
+  showLog: function Overlay_showLog() {
     try {
       window.open("view-source:chrome://gcontactsync/content/log/log.txt", "Log", "chrome=yes,resizable=yes");
     }
@@ -295,7 +295,7 @@ var Overlay = {
    * the originalDisplayCardViewPane variable.
    * @param aCard The card being viewed.
    */
-  myDisplayCardViewPane: function(aCard) {
+  myDisplayCardViewPane: function Overlay_myDisplayCardViewPane(aCard) {
     originalDisplayCardViewPane(aCard); // call the original first
     if (aCard.isMailList) {
       // collapse all the attributes added
@@ -311,12 +311,11 @@ var Overlay = {
       Overlay.showNodes(ContactConverter.getExtraSyncAttributes());
       cvData.cvThirdEmailBox.collapsed = false;
       cvData.cvFourthEmailBox.collapsed = false;
-      var ab = AbManager;
       // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
       // JabberScreenName, YahooScreenName, ICQScreenName)
       var visible = !cvData.cvbContact.getAttribute("collapsed");
-      var thirdEmail = ab.getCardValue(aCard, "ThirdEmail");
-      var fourthEmail = ab.getCardValue(aCard, "FourthEmail");
+      var thirdEmail = AbManager.getCardValue(aCard, "ThirdEmail");
+      var fourthEmail = AbManager.getCardValue(aCard, "FourthEmail");
       visible = HandleLink(cvData.cvThirdEmail, StringBundle.getStr("ThirdEmail"),
                            thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
                            thirdEmail) || visible;
@@ -436,7 +435,7 @@ var Overlay = {
    * the City, State Zip line, and the Country of the given type (Home or Work).
    * @param aPrefix The type of address.  Must be 'Home' or 'Work'.
    */
-  collapseAddress: function(aPrefix) {
+  collapseAddress: function Overlay_collapseAddress(aPrefix) {
     if (!aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
       return;
     var arr = ["Address", "Address2", "CityStZip", "Country"];
@@ -458,7 +457,7 @@ var Overlay = {
    * 'HomeAddress'.
    * @param aArray An array of names as described above.
    */
-  hideNodes: function(aArray) {
+  hideNodes: function Overlay_hideNodes(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++) {
       if (aArray[i].indexOf("Type") != -1)
         continue;
@@ -478,7 +477,7 @@ var Overlay = {
    * 'HomeAddress'.
    * @param aArray An array of names as described above.
    */
-  showNodes: function(aArray) {
+  showNodes: function Overlay_showNodes(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++) {
       if (aArray[i].indexOf("Type") != -1)
         continue;
@@ -502,7 +501,7 @@ var Overlay = {
    *                      name.
    * @return True if at least one attribute in aArray is present in aCard.
    */
-  getVisible: function(aCard, aArray, aVisible, aUseTypeLabel) {
+  getVisible: function Overlay_getVisible(aCard, aArray, aVisible, aUseTypeLabel) {
     var visible = aVisible;
     // return true if the card has the current attribute
     for (var i = 0; i < aArray.length; i++) {
@@ -526,7 +525,7 @@ var Overlay = {
    * function does in abCardViewOverlay.js.  Should be run when the Overlay is
    * loaded.
    */
-  myOnLoadCardView: function() {
+  myOnLoadCardView: function Overlay_myOnLoadCardView() {
     if (!originalOnLoadCardView)
       return;
     originalOnLoadCardView();
@@ -654,7 +653,7 @@ var Overlay = {
    * @param aClass The class of the element.
    * @return A new <description> element.
    */
-  makeDescElement: function(aName, aClass) {
+  makeDescElement: function Overlay_makeDescElement(aName, aClass) {
     var elem = document.createElement("description");
     elem.setAttribute("class", aClass);
     elem.setAttribute("id", "cv" + aName);
@@ -664,7 +663,7 @@ var Overlay = {
    * Overlay.openPreferences
    * Opens the Preferences for gContactSync
    */
-  openPreferences: function() {
+  openPreferences: function Overlay_openPreferences() {
     window.open("chrome://gcontactsync/content/options.xul", "",
                 "chrome=yes,resizable=yes");
   }

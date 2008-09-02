@@ -68,7 +68,7 @@ var Sync = {
    * Performs the first steps of the sync process.
    * @param firstLog Should be true if the user just logged in.
    */
-  begin: function() {
+  begin: function Sync_begin() {
     if (!gdata.isAuthValid()) {
       alert(StringBundle.getStr("pleaseAuth"));
       return;
@@ -88,7 +88,7 @@ var Sync = {
     this.mAddressBooks = AbManager.getSyncedAddressBooks(true);
     this.syncNextUser()
   },
-  syncNextUser: function() {
+  syncNextUser: function Sync_syncNextUser() {
     // set the previous address book's last sync date (if it exists)
     if (this.mCurrentAb && this.mCurrentAb.setLastSyncDate)
       this.mCurrentAb.setLastSyncDate((new Date()).getTime());
@@ -122,7 +122,7 @@ var Sync = {
    * Calls Sync.begin() when there is a successful response on an error other
    * than offline.
    */
-  getGroups: function() {
+  getGroups: function Sync_getGroups() {
     LOGGER.LOG("***Beginning Group - Mail List Synchronization***");
     var httpReq = new GHttpRequest("getGroups", this.mCurrentAuthToken, null,
                                    null, this.mCurrentUsername);
@@ -139,7 +139,7 @@ var Sync = {
    * Calls Sync.sync with the response if successful or Sync.syncNextUser with the
    * error.
    */
-  getContacts: function() {
+  getContacts: function Sync_getContacts() {
     LOGGER.LOG("***Beginning Contact Synchronization***");
     var httpReq = new GHttpRequest("getAll", this.mCurrentAuthToken, null, null,
                                    this.mCurrentUsername);
@@ -160,7 +160,7 @@ var Sync = {
    * @param aError     Optional.  A string containing the error message.
    * @param aStartOver Also optional.  True if the sync should be restarted.
    */
-  finish: function(aError, aStartOver) {
+  finish: function Sync_finish(aError, aStartOver) {
     if (aError)
       LOGGER.LOG_ERROR("Error during sync", aError);
     if (LOGGER.mErrorCount > 0)
@@ -191,7 +191,7 @@ var Sync = {
    * Synchronizes the Address Book with the contacts obtained from Google.
    * @param aAtom The contacts from Google in an Atom.
    */
-  sync: function(aAtom) {
+  sync: function Sync_sync(aAtom) {
     // get the address book and QI the directory
     var ab = this.mCurrentAb;
     ab.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
@@ -244,9 +244,9 @@ var Sync = {
           }
         }
         // if the contacts have the same ID then check if one of them must be updated
-        if (ab.getCardValue(abCard, "GoogleID") == id) {
+        if (AbManager.getCardValue(abCard, "GoogleID") == id) {
           var gCardDate = gContact.getLastModifiedDate();
-          var tbCardDate = ab.getCardValue(abCard, "LastModifiedDate");
+          var tbCardDate = AbManager.getCardValue(abCard, "LastModifiedDate");
           if (!tbCardDate)
             tbCardDate = 0;
           LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
@@ -260,7 +260,7 @@ var Sync = {
               var toUpdate = {};
               toUpdate.gContact = gContact;
               toUpdate.abCard = abCard;
-              contactsToUpdate[ab.getCardValue(abCard, "GoogleID")] = toUpdate;
+              contactsToUpdate[AbManager.getCardValue(abCard, "GoogleID")] = toUpdate;
               abCards2.push(abCard); // continue checking the card for dups
             }
             else { // update thunderbird
@@ -281,7 +281,7 @@ var Sync = {
             var toUpdate = {};
             toUpdate.gContact = gContact;
             toUpdate.abCard = abCard;
-            contactsToUpdate[ab.getCardValue(abCard, "GoogleID")] = toUpdate;
+            contactsToUpdate[AbManager.getCardValue(abCard, "GoogleID")] = toUpdate;
             abCards2.push(abCard); // continue checking the card for dups
           }
           // otherwise nothing needs to be done
@@ -298,7 +298,7 @@ var Sync = {
           LOGGER.LOG(" * Duplicate detected");
           // default to deleting duplicates, but if the user wants to confirm
           // each duplicate ask for confirmation
-          var cardId = ab.getCardValue(abCard, "GoogleID");
+          var cardId = AbManager.getCardValue(abCard, "GoogleID");
           if (cardId)
             contactsToUpdate[cardId] = "duplicate";
           if (!Preferences.mSyncPrefs.confirmDuplicates.value || 
@@ -337,11 +337,11 @@ var Sync = {
       var card = abCards[i];
       // skip if the card isn't valid if it it is being updated
       if (card != null && card instanceof nsIAbCard) {
-        var cardId = ab.getCardValue(card, "GoogleID");
+        var cardId = AbManager.getCardValue(card, "GoogleID");
         // skip this contact if it is being updated
         if (cardId && cardId != "" && contactsToUpdate[cardId])
           continue;
-        var date = ab.getCardValue(card, "LastModifiedDate");
+        var date = AbManager.getCardValue(card, "LastModifiedDate");
         LOGGER.LOG("-" + card.displayName + " was not matched");
         // if it is a new card, add it to Google
         // will add the card if it doesn't have a GoogleID
@@ -374,7 +374,7 @@ var Sync = {
    * array one at a time to avoid timing conflicts. Calls Sync.processAddQueue()
    * when finished.
    */
-  processDeleteQueue: function() {
+  processDeleteQueue: function Sync_processDeleteQueue() {
     if (!this.mContactsToDelete || this.mContactsToDelete.length == 0) {
       LOGGER.LOG("***Adding contacts to Google***");
       this.processAddQueue();
@@ -401,7 +401,7 @@ var Sync = {
    * time to avoid timing conflicts and duplicates.  Calls
    * Sync.processUpdateQueue() when finished.
    */
-  processAddQueue: function() {
+  processAddQueue: function Sync_processAddQueue() {
     // if all contacts were added then update all necessary contacts
     if (!this.mContactsToAdd || this.mContactsToAdd.length == 0) {
       LOGGER.LOG("***Updating contacts from Google***");
@@ -484,7 +484,7 @@ var Sync = {
    * Updates all cards to Google included in the mContactsToUpdate array one at
    * a time to avoid timing conflicts.  Calls Sync.syncNextUser() when done
    */
-  processUpdateQueue: function() {
+  processUpdateQueue: function Sync_processUpdateQueue() {
     if (!this.mContactsToUpdate || this.mContactsToUpdate.length == 0) {
       this.syncNextUser();
       return;
@@ -517,7 +517,7 @@ var Sync = {
    * Sync.syncGroups
    * Syncs all contact groups with mailing lists.
    */
-  syncGroups: function(aAtom) {
+  syncGroups: function Sync_syncGroups(aAtom) {
     // reset the groups object
     this.mGroups = {};
     this.mLists = {};
@@ -613,7 +613,7 @@ var Sync = {
    * Deletes all of the groups in mGroupsToDelete one at a time to avoid timing
    * issues.  Calls Sync.addGroups() when finished.
    */
-  deleteGroups: function() {
+  deleteGroups: function Sync_deleteGroups() {
     if (this.mGroupsToDelete.length == 0) {
       LOGGER.LOG("***Adding new groups to Google***");
       this.addGroups();
@@ -637,7 +637,7 @@ var Sync = {
    * of the mail list and then calling Sync.addGroups2() upon successful
    * creation of a group.
    */
-  addGroups: function() {
+  addGroups: function Sync_addGroups() {
     if (this.mGroupsToAdd.length == 0) {
       LOGGER.LOG("***Updating groups from Google***");
       this.updateGroups();
@@ -665,7 +665,7 @@ var Sync = {
    * The second part of adding a group involves updating the list from which
    * this group was created so the two can be matched during the next sync.
    */
-  addGroups2: function(aResponse) {
+  addGroups2: function Sync_addGroups2(aResponse) {
     var group = new Group(aResponse.responseXML
                                    .getElementsByTagNameNS(gdata.namespaces.ATOM.url,
                                                            "entry")[0]);
@@ -684,7 +684,7 @@ var Sync = {
    * Updates all groups in mGroupsToUpdate one at a time to avoid timing issues
    * and calls Sync.getContacts() when finished.
    */
-  updateGroups: function() {
+  updateGroups: function Sync_updateGroups() {
     if (this.mGroupsToUpdate.length == 0) {
       this.getContacts();
       return;
@@ -710,7 +710,7 @@ var Sync = {
    * finally if the auto sync pref is set to true.
    * @param aDelay The duration of time to wait before synchronizing again
    */
-  schedule: function(aDelay) {
+  schedule: function Sync_schedule(aDelay) {
     // only schedule a sync if the delay is greater than 0, a sync is not
     // already schedule, and autosyncing is enabled
     if (aDelay && this.mSynced && !this.mSyncScheduled && aDelay > 0 &&

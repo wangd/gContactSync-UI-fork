@@ -48,7 +48,7 @@ var FileIO = {
    * FileIO.init
    * Initializes the files contained in this class.
    */
-  init: function() {
+  init: function FileIO_init() {
     this.mLogFile = this.getFileInExtDir(this.fileNames.LOG_FILE);
   },
   /**
@@ -57,7 +57,7 @@ var FileIO = {
    * @param aName  The name of the file to get.
    * @return An nsIFile with the given name in the extension's directory.
    */
-  getFileInExtDir: function(aName) {
+  getFileInExtDir: function FileIO_getFileInExtDir(aName) {
     var MY_ID = "gContactSync@pirules.net";
     var em = Cc["@mozilla.org/extensions/manager;1"]
               .getService(Ci.nsIExtensionManager);
@@ -69,8 +69,8 @@ var FileIO = {
    * @param aFile  The nsIFile to read.
    * @return An array of the lines in the file or [] if there is an error.
    */
-  readFile: function(aFile) {
-    this.checkFile(aFile, "FileIO.readFile");
+  readFile: function FileIO_readFile(aFile) {
+    this.checkFile(aFile);
     if (!aFile.exists())
       return [];
     try {
@@ -101,8 +101,8 @@ var FileIO = {
    * @param aData  The string of data to write to the file.
    * @return True if there is no error.
    */
-  writeToFile: function(aFile, aData) {
-    this.checkFile(aFile, "FileIO.writeToFile");
+  writeToFile: function FileIO_writeToFile(aFile, aData) {
+    this.checkFile(aFile);
     if (!aData)
       return;
     try {
@@ -124,10 +124,10 @@ var FileIO = {
    * @param aData  The string of data to append to the file.
    * @return True if there is no error.
    */
-  appendToFile: function(aFile, aData) {
+  appendToFile: function FileIO_appendToFile(aFile, aData) {
     if (!aData)
       return;
-    this.checkFile(aFile, "FileIO.appendToFile");
+    this.checkFile(aFile);
     try {
       var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
                       .createInstance(Ci.nsIFileOutputStream);
@@ -150,9 +150,9 @@ var FileIO = {
    * @param aFile    The file to check.
    * @param aCaller  The name of the calling method.
    */
-  checkFile: function(aFile, aCaller) {
+  checkFile: function FileIO_checkFile(aFile) {
     if (!aFile || !aFile instanceof Ci.nsIFile || (aFile.exists() && !aFile.isFile()))
-      throw "Invalid File: " + aFile + " sent to the '" + aCaller + "' method" +
-            StringBundle.getStr("pleaseReport");
+      throw "Invalid File: " + aFile + " sent to the '" + this.checkFile.caller
+            + "' method" + StringBundle.getStr("pleaseReport");
   }
 };

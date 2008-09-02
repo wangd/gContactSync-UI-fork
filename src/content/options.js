@@ -33,7 +33,9 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-window.addEventListener("load", function(e) { initialize(); }, false);
+window.addEventListener("load", function optionsLoadListener(e) {
+  initialize();
+ }, false);
 var usernames = {};
 /**
  * initialize
@@ -132,8 +134,8 @@ function addLogin() {
                         "', httpReq.responseText.split(\"\\n\")[2]);"];
   // if it fails, alert the user and prompt them to try again
   httpReq.mOnError = ["alert(StringBundle.getStr('authErr'));",
-                      "LOGGER.LOG_ERROR('Authentication Error - ' + " +
-                      "httpReq.responseText);",
+                      "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
+                      "httpReq.status, httpReq.responseText);",
                       "addLogin();"];
   // if the user is offline, alert them and quit
   httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
@@ -149,8 +151,9 @@ function addLogin() {
  * @param aAuthToken The auth token obtained from Google for the account.
  */
 function addToken(aUsername, aAuthToken) {
-  var prompts = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                        .getService(Components.interfaces.nsIPromptService);
+  LOGGER.VERBOSE_LOG("adding token");
+  var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+                 .getService(Ci.nsIPromptService);
   var input = {value: aUsername};
   var check = {};
   var result = prompts.prompt(null, StringBundle.getStr("abNameTitle") + " " +
@@ -174,7 +177,10 @@ function addToken(aUsername, aAuthToken) {
     var treechildren = document.getElementById("loginTreeChildren");
     addLoginToTree(treechildren, aUsername, input.value);
   }
-
+  else if (!result)
+    LOGGER.VERBOSE_LOG("prompt canceled");
+  else
+    LOGGER.VERBOSE_LOG("Invalid input: " + );
 }
 
 /**

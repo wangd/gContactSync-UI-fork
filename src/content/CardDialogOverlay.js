@@ -34,7 +34,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 // when the window is loaded wait 200 ms and try to add the tab
-window.addEventListener("load", function(e) { CardDialogOverlay.init(); }, false);
+window.addEventListener("load", function CardDialogOverlay_loadListener(e) {
+  CardDialogOverlay.init();
+}, false);
 // the original method CheckAndSetCardValues
 var originalCheckAndSetCardValues;
 var gAttributes = {
@@ -83,7 +85,7 @@ var CardDialogOverlay = {
    * Adds a tab to the tab box, if possible.  Waits until the abCardOverlay is
    * loaded.
    */
-  init: function() {
+  init: function CardDialogOverlay_init() {
     // if it isn't finished loading yet wait another 200 ms and try again
     if (!document.getElementById("abTabs")) {
       // if it has tried to load more than 50 times something is wrong, so quit

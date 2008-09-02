@@ -77,7 +77,7 @@ var Preferences = {
    * @param aName     The name of the preference
    * @param aType     The type of preference.  Must be in Preferences.mTypes.
    */
-  getPref: function(aBranch, aName, aType) {
+  getPref: function Preferences_getPref(aBranch, aName, aType) {
     if (!aBranch)
       throw "Invalid aBranch parameter supplied to the getPref method" +
             StringBundle.getStr("pleaseReport");
@@ -101,7 +101,7 @@ var Preferences = {
    * @param aType     The type of preference.  Must be in Preferences.mTypes.
    * @param aValue    The value to set the preference at.
    */
-  setPref: function(aBranch, aName, aType, aValue) {
+  setPref: function Preferences_setPref(aBranch, aName, aType, aValue) {
     if (!aBranch)
       throw "Invalid aBranch parameter supplied to the setPref method" +
             StringBundle.getStr("pleaseReport");
@@ -122,7 +122,7 @@ var Preferences = {
    * Tries to get each preference in mSyncPrefs and creates the preference and
    * sets its default value if it is not present.
    */
-  getSyncPrefs: function() {
+  getSyncPrefs: function Preferences_getSyncPrefs() {
     for (var i in this.mSyncPrefs) {
       try {
         this.mSyncPrefs[i].value = this.getPref(this.mSyncBranch,

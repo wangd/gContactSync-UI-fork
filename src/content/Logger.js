@@ -46,7 +46,7 @@ var LOGGER = {
    * message.
    * @param aMessage The message to append.
    */
-  LOG: function(aMessage) {
+  LOG: function LOGGER_LOG(aMessage) {
     if (!aMessage)
       return;
     FileIO.appendToFile(FileIO.mLogFile, aMessage + "\n");
@@ -56,7 +56,7 @@ var LOGGER = {
    * Logs the message if verbose logging is enabled.
    * @param aMessage The message to log.
    */
-  VERBOSE_LOG: function(aMessage) {
+  VERBOSE_LOG: function LOGGER_VERBOSE_LOG(aMessage) {
     if (Preferences.mSyncPrefs.verboseLog.value)
       this.LOG(aMessage);
   },
@@ -66,7 +66,7 @@ var LOGGER = {
    * @param aMessage The error message.
    * @param aError   Optional.  The exception caught.
    */
-  LOG_ERROR: function(aMessage, aError) {
+  LOG_ERROR: function LOGGER_LOG_ERROR(aMessage, aError) {
     var str = "***ERROR: " + aMessage;
     if (aError)
       str += "\nError Message:\n" + aError;
@@ -80,7 +80,7 @@ var LOGGER = {
    * @param aWarningMessage The warning message with info about the problem.
    * @param aError          Optional.  The exception caught.
    */
-  LOG_WARNING: function(aWarningMessage, aError) {
+  LOG_WARNING: function LOGGER_LOG_WARNING(aWarningMessage, aError) {
     var str = "***WARNING: " + aWarningMessage;
     if (aError)
       str += "\nError Message:\n" + aError;

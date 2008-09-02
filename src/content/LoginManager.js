@@ -52,13 +52,14 @@ var LoginManager = {
    * @param aUsername        The username (e-mail address).
    * @param aToken           The authentication token from Google.
    */
-  addAuthToken: function(aUsername, aToken) {
+  addAuthToken: function LoginManager_addAuthToken(aUsername, aToken) {
     if (this.mNumAuthTokens == 0)
       this.getAuthTokens();
     if ("@mozilla.org/passwordmanager;1" in Cc) {
      var passwordManager =  Cc["@mozilla.org/passwordmanager;1"]
                             .getService(Ci.nsIPasswordManager);
      passwordManager.addUser(this.mHostname, aUsername, aToken);
+     this.mAuthTokens[aUsername] = aToken;
      this.mNumAuthTokens++;
     }
     else if ("@mozilla.org/login-manager;1" in Cc) {
@@ -70,6 +71,7 @@ var LoginManager = {
                                          this.mHttpRealm, aUsername, aToken,
                                          this.mUsernameField, this.mPasswordField);
       loginManager.addLogin(extLoginInfo);
+      this.mAuthTokens[aUsername] = aToken;
       this.mNumAuthTokens++;
     }
   },
@@ -78,7 +80,7 @@ var LoginManager = {
    * Gets the token in the Login Manager.
    * @return The auth token, if present, null otherwise.
    */
-  getAuthTokens: function() {
+  getAuthTokens: function LoginManager_getAuthTokens() {
     this.mAuthTokens = {};
     this.mNumAuthTokens = 0;
     if ("@mozilla.org/passwordmanager;1" in Cc) {
@@ -114,7 +116,7 @@ var LoginManager = {
    * Gets the token in the Login Manager.
    * @return The auth token, if present, null otherwise.
    */
-  getAuthToken: function(aUsername) {
+  getAuthToken: function LoginManager_getAuthToken(aUsername) {
     if  (this.mNumAuthTokens == 0)
       this.getAuthTokens();
     return this.mAuthTokens ? this.mAuthTokens[aUsername] : null;
@@ -124,7 +126,7 @@ var LoginManager = {
    * Removes the auth token from the Login Manager.
    * @return True if the auth token was successfully removed.
    */
-  removeAuthToken: function(aUsername) {
+  removeAuthToken: function LoginManager_removeAuthToken(aUsername) {
     if ("@mozilla.org/passwordmanager;1" in Cc) {
       var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
                              .getService(Ci.nsIPasswordManager);

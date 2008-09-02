@@ -70,7 +70,7 @@ GContact.prototype = {
    * Checks for an invalid IM address as explained here:
    * http://pi3141.wordpress.com/2008/07/30/update-2/
    */
-  checkIMAddress: function() {
+  checkIMAddress: function GContact_checkIMAddress() {
     var i = 0;
     var element = {};
     var ns = gdata.namespaces.GD.url;
@@ -86,7 +86,7 @@ GContact.prototype = {
    * Removes all elements in the mElementsToRemoveArray, if possible, from this
    * contact.
    */
-  removeElements: function() {
+  removeElements: function GContact_removeElements() {
     for (var i = 0, length = this.mElementsToRemove.length; i < length; i++) {
       try { this.xml.removeChild(this.mElementsToRemove[i]); }
       catch (e) {
@@ -101,7 +101,7 @@ GContact.prototype = {
    * representation.
    * @param aAtomEntry  The contact.
    */
-  getName: function() {
+  getName: function GContact_getName() {
     var contactName = "";
     try {
       var titleElem = this.xml.getElementsByTagName('title')[0];
@@ -133,7 +133,7 @@ GContact.prototype = {
    * @return A new Property object with the value of the element, if found.  The
    *         type of the Property will be aType.
    */
-  getElementValue: function(aElement, aIndex, aType) {
+  getElementValue: function GContact_getElementValue(aElement, aIndex, aType) {
     if (!aIndex)
       aIndex = 0;
     this.mCurrentElement = null;
@@ -198,7 +198,7 @@ GContact.prototype = {
    * @param aValue   The value to set.  Null if the XML Element should be
    *                 removed.
    */
-  setOrg: function(aElement, aValue) {
+  setOrg: function GContact_setOrg(aElement, aValue) {
     var tagName = aElement ? aElement.tagName : null;
     if (!tagName && tagName != "orgName" && tagName != "orgTitle") {
       LOGGER.LOG_WARNING("Error - invalid element passed to the 'setOrg'" +
@@ -249,7 +249,7 @@ GContact.prototype = {
    * @param aType    The type, if the element can have types.
    * @param aValue   The value to set for the element.
    */
-  setElementValue: function(aElement, aIndex, aType, aValue) {
+  setElementValue: function GContact_setElementValue(aElement, aIndex, aType, aValue) {
     // get the current element (as this.mCurrentElement) and it's value (returned)
     var property = this.getElementValue(aElement, aIndex, aType);
     property = property ? property : new Property(null, null);
@@ -336,7 +336,7 @@ GContact.prototype = {
    * Gets the last modified date from an contacts's XML feed in milliseconds from 1970
    * @return The last modified date of the entry in milliseconds from 1970
    */
-  getLastModifiedDate: function() {
+  getLastModifiedDate: function GContact_getLastModifiedDate() {
     try {
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
       var year = sModified.substring(0,4);
@@ -356,7 +356,7 @@ GContact.prototype = {
    * GContact.removeExtendedProperties
    * Removes all extended properties from this contact.
    */
-  removeExtendedProperties: function() {
+  removeExtendedProperties: function GContact_removeExtendedProperties() {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = arr.length - 1; i > -1 ; i--)
       this.xml.removeChild(arr[i]);
@@ -368,7 +368,7 @@ GContact.prototype = {
    * @return A Property object with the value of the extended property with the
    *        name attribute aName
    */
-  getExtendedProperty: function(aName) {
+  getExtendedProperty: function GContact_getExtendedProperty(aName) {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("name") == aName)
@@ -381,7 +381,7 @@ GContact.prototype = {
    * @param aName  The name of the property.
    * @param aValue The value of the property.
    */
-  setExtendedProperty: function(aName, aValue) {
+  setExtendedProperty: function GContact_setExtendedProperty(aName, aValue) {
     if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
         "extendedProperty").length >= 10) {
       LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
@@ -407,7 +407,7 @@ GContact.prototype = {
    * @return A new Property object with the value and type, if applicable.
    *         If aName is groupMembership info, returns an array of the group IDs
    */
-  getValue: function(aName, aIndex, aType) {
+  getValue: function GContact_getValue(aName, aIndex, aType) {
     try {
       // if the value to obtain is a link, get the value for the link
       if (gdata.contacts.links[aName]) {
@@ -438,7 +438,7 @@ GContact.prototype = {
    * @param aType  The type of the element (home, work, other, etc.).
    * @param aValue The value to set.  null if the element should be removed.
    */
-  setValue: function(aName, aIndex, aType, aValue) {
+  setValue: function GContact_setValue(aName, aIndex, aType, aValue) {
     try {
       if (aValue == "")
         aValue = null;
@@ -458,7 +458,7 @@ GContact.prototype = {
    * GContact.getGroups
    * Returns an array of the names of the groups to which this contact belongs.
    */
-  getGroups: function() {
+  getGroups: function GContact_getGroups() {
     var groupInfo = gdata.contacts.groupMembershipInfo;
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
@@ -480,7 +480,7 @@ GContact.prototype = {
    * GContact.clearGroups
    * Removes all groups from this contact.
    */
-  clearGroups: function() {
+  clearGroups: function GContact_clearGroups() {
     var groupInfo = gdata.contacts.groupMembershipInfo;
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
@@ -501,7 +501,7 @@ GContact.prototype = {
    * @param aGroups An array of the IDs of the groups to which the contact
    *                should belong.
    */
-  setGroups: function(aGroups) {
+  setGroups: function GContact_setGroups(aGroups) {
     this.clearGroups(); // clear existing groups
     if (!aGroups)
       return;
@@ -521,7 +521,7 @@ GContact.prototype = {
    * Removes the contact from the given group element.
    * @param aGroup The group from which the contact should be removed.
    */
-  removeFromGroup: function(aGroup) {
+  removeFromGroup: function GContact_removeFromGroup(aGroup) {
     if (!aGroup) {
       LOGGER.LOG_WARNING("Attempt to remove a contact from a non-existant group");
       return;
@@ -539,7 +539,7 @@ GContact.prototype = {
    * @param aGroupURL The URL of an existing group to which the contact will be
    *                  added.
    */
-  addToGroup: function(aGroupURL) {
+  addToGroup: function GContact_addToGroup(aGroupURL) {
     if (!aGroupURL) {
       LOGGER.LOG_WARNING("Attempt to add a contact to a non-existant group");
       return;
@@ -564,7 +564,7 @@ GContact.prototype = {
    * @param aXmlElem The XML Element to check
    * @param aType    The type (home, work, other, etc.)
    */
-  isMatch: function(aElement, aXmlElem, aType, aDontSkip) {
+  isMatch: function GContact_isMatch(aElement, aXmlElem, aType, aDontSkip) {
     if (aElement.contactType == gdata.contacts.types.UNTYPED)
       return true;
     switch (aElement.tagName) {

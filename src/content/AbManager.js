@@ -9,7 +9,6 @@ var AbManager = {
   mBug413260: Cc["@mozilla.org/addressbook/cardproperty;1"]
               .createInstance(nsIAbCard)
               .getProperty ? true : false,
-  mEnumerator: { hasMoreElements: function() { return false; } },
   // attributes that can be set by getCardValue and setCardValue
   mBasicAttributes: [
     "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
@@ -27,10 +26,10 @@ var AbManager = {
    * @param aAttribute The attribute to check.
    * @return True if aAttribute is usable with set/getCardValue.
    */
-  isRegularAttribute: function(aAttribute) {
+  isRegularAttribute: function AbManager_isRegularAttribute(aAttribute) {
     return this.mBasicAttributes.indexOf(aAttribute) != -1;
   },
-  getSyncedAddressBooks: function(aMakeArray) {
+  getSyncedAddressBooks: function AbManager_getSyncedAddressBooks(aMakeArray) {
     this.mAddressBooks = {};
     var iter;
     if (this.mVersion == 3) { // TB 3
@@ -83,7 +82,7 @@ var AbManager = {
    * Checks the validity of a directory and returns false if it is invalid.
    * @param aDirectory The directory to check.
    */
-  isDirectoryValid: function(aDirectory) {
+  isDirectoryValid: function AbManager_isDirectoryValid(aDirectory) {
     return aDirectory && aDirectory instanceof Ci.nsIAbDirectory 
           && aDirectory.dirName != "";
   },
@@ -94,7 +93,7 @@ var AbManager = {
    * @param aMethodName  The name of the method calling checkCard (used when
    *                     throwing the error)
    */
-  checkCard: function(aCard, aMethodName) {
+  checkCard: function AbManager_checkCard(aCard, aMethodName) {
     var card = aCard && aCard.mCard ? aCard.mCard : aCard;
     if (!card || (!(card instanceof Ci.nsIAbCard) &&
                   !(Ci.nsIAbMDBCard && card instanceof Ci.nsIAbMDBCard))) {
@@ -109,7 +108,7 @@ var AbManager = {
    * @param aCard     The card to get the value from.
    * @param aAttrName The name of the attribute to get.
    */
-  getCardValue: function(aCard, aAttrName) {
+  getCardValue: function AbManager_getCardValue(aCard, aAttrName) {
     this.checkCard(aCard, "getCardValue");
     if (this.mBug413260) // if the patch for Bug 413260 is applied
       return aCard.getProperty(aAttrName, null);
@@ -135,7 +134,7 @@ var AbManager = {
    * @param aCard The card from which the e-mail addresses are obtained.
    * @return An object with the card's e-mail addresses.
    */
-  getCardEmailAddresses: function(aCard) {
+  getCardEmailAddresses: function AbManager_getCardEmailAddresses(aCard) {
     this.checkCard(aCard, "getCardEmailAddresses");
     var primaryEmail = this.getCardValue(aCard, "PrimaryEmail");
     var addresses = [];
@@ -163,7 +162,7 @@ var AbManager = {
    * @return True if the card has at least one e-mail address in common with
    *         aAddresses
    */
-  cardHasEmailAddress: function(aCard, aAddresses) {
+  cardHasEmailAddress: function AbManager_cardHasEmailAddress(aCard, aAddresses) {
     this.checkCard(aCard, "getCardEmailAddresses");
     if (!aAddresses)
       return;
@@ -182,7 +181,7 @@ var AbManager = {
    * @param aAttrName The name of the attribute to set.
    * @param aValue    The value to set for the attribute.
    */
-  setCardValue: function(aCard, aAttrName, aValue) {
+  setCardValue: function AbManager_setCardValue(aCard, aAttrName, aValue) {
     this.checkCard(aCard, "setCardValue");
     if (!aValue)
       aValue = "";
@@ -259,7 +258,7 @@ var AbManager = {
     * @param aAttrName The name of the attribute whose value is set.
     * @param aValue    The value to set for aAttrName.
     */
-  setMDBCardValue: function(aCard, aAttrName, aValue) {
+  setMDBCardValue: function AbManager_setMDBCardValue(aCard, aAttrName, aValue) {
     try {
       aCard.setStringAttribute(aAttrName, aValue);
     }
@@ -276,7 +275,7 @@ var AbManager = {
    * @param aAttrName The name of the attribute whose value is returned.
    * @return The value of aCard's attribute aAttrName.
    */
-  getMDBCardValue: function(aCard, aAttrName) {
+  getMDBCardValue: function AbManager_getMDBCardValue(aCard, aAttrName) {
     try {
       return aCard.getStringAttribute(aAttrName);
     }
@@ -290,7 +289,7 @@ var AbManager = {
    * to make a new address book if not found and returns null.
    * @return  The Address Book with the given URI
    */
-  getAbByURI: function(aURI) {
+  getAbByURI: function AbManager_getAbByURI(aURI) {
     if (!aURI) {
       LOGGER.LOG_WARNING("Invalid aURI supplied to the 'getAbByURI' method" +
                          StringBundle.getStr("pleaseReport"));
@@ -322,7 +321,7 @@ var AbManager = {
    *                    found. 
    * @return            The Address Book with the name given
    */
-  getAbByName: function(aDirName, aDontMakeAb) {
+  getAbByName: function AbManager_getAbByName(aDirName, aDontMakeAb) {
     if (!aDirName || aDirName.length == 0)
       throw "Invalid aDirName passed to the 'getAbByName' method." +
             StringBundle.getStr("pleaseReport");
