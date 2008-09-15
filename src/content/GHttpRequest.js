@@ -121,7 +121,9 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
       throw "Invalid aType parameter supplied to the GHttpRequest constructor" +
             StringBundle.getStr("pleaseReport");
   }
-  if (aUsername)
+  if (!this.mUrl)
+    throw "Error - no URL was found for the HTTP Request";
+  if (aUsername && this.mUrl)
     this.mUrl = this.mUrl.replace("default", encodeURIComponent(aUsername));
 }
 

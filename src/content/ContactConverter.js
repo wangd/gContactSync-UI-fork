@@ -115,6 +115,8 @@ var ContactConverter = {
    *                     returned.
    */
   getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs) {
+    if (!this.mInitialized)
+      this.init();
     var arr = this.mAddedAttributes;
     if (aIncludeURLs)
       arr = arr.concat("PhotoURL", "SelfURL", "EditURL", "GoogleID");
@@ -133,6 +135,8 @@ var ContactConverter = {
   cardToAtomXML: function ContactConverter_cardToAtomXML(aCard, aContact) {
     if (!aContact)
       aContact = new GContact();
+    if (!this.mInitialized)
+      this.init();
     var ab = Sync.mCurrentAb;
     AbManager.checkCard(aCard, "cardToAtomXML");
     this.mCurrentCard = aCard;
@@ -190,6 +194,8 @@ var ContactConverter = {
     if (!aContact)
       throw "Invalid aXml parameter supplied to the 'makeCard' method" +
             StringBundle.getStr("pleaseReport");
+    if (!this.mInitialized)
+      this.init();
     var ab = Sync.mCurrentAb;
     var card;
     if (aCard)
@@ -250,6 +256,8 @@ var ContactConverter = {
   fixAddress: function ContactConverter_fixAddress(aCard, aPrefix) {
     if (!aCard || !aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
       return;
+    if (!this.mInitialized)
+      this.init();
     var ab = Sync.mCurrentAb;
     // if there isn't a value in the Full (multi-lined address) then create one
     // from the existing address, if present

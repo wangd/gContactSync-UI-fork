@@ -453,10 +453,9 @@ var Sync = {
         this.mAddedEmails[fourth] = true;
       // get the XML representation of the card
       var xml = ContactConverter.cardToAtomXML(cardToAdd).xml;
-      if (Preferences.mSyncPrefs.verboseLog.value) {
-        var string = serialize(xml);
+      var string = serialize(xml);
+      if (Preferences.mSyncPrefs.verboseLog.value)
         LOGGER.LOG("  - XML of contact being added:\n" + string + "\n");
-      }
       var httpReq = new GHttpRequest("add", this.mCurrentAuthToken, null,
                                      string, this.mCurrentUsername);
       /* When the contact is successfully created:
@@ -500,10 +499,9 @@ var Sync = {
     var xml = ContactConverter.cardToAtomXML(abCard, gContact).xml;
 
     LOGGER.LOG("\n" + gContact.getName());
-    if (Preferences.mSyncPrefs.verboseLog.value) {
-        var string = serialize(xml);
-        LOGGER.LOG("  - XML of contact being updated:\n" + string + "\n");
-    }
+    var string = serialize(xml);
+    if (Preferences.mSyncPrefs.verboseLog.value)
+      LOGGER.LOG("  - XML of contact being updated:\n" + string + "\n");
     var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, editURL,
                                    string, this.mCurrentUsername)
     httpReq.mOnSuccess = ["Sync.processUpdateQueue();"];

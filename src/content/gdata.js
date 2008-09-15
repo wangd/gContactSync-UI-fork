@@ -54,8 +54,27 @@ var gdata = {
   makeAuthBody: function gdata_makeAuthBody(aEmail, aPassword) {
     // NOTE: leave accountType as HOSTED_OR_GOOGLE or Google Apps for your
     // domain accounts won't work
-    return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" + aPassword +
-             "&service=cp&source=Josh-gContactSync-0-1";
+    return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" +
+          aPassword + "&service=cp&source=Josh-gContactSync-0-1";
+  },
+  /**
+   * gdata.getEmailFromId
+   * Returns the email address of the given ID.
+   */
+  getEmailFromId: function gdata_getEmailFromId(aId) {
+    if (!aId || !aId.indexOf || aId == "")
+      return;
+    // typical ID:
+    // http://www.google.com/m8/feeds/contacts/address%40gmail.com/base/...
+    var startStr = "/feeds/contacts/";
+    var start = aId.indexOf(startStr) + startStr.length;
+    var endStr = "/base/";
+    var end = aId.indexOf(endStr);
+    if (start >= end)
+      return;
+    var address = decodeURIComponent(aId.substring(start, end));
+    LOGGER.VERBOSE_LOG("found address: " + address + " from ID: " + aId);
+    return address;
   },
   // The namespaces used
   namespaces: {

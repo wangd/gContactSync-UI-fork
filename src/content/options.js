@@ -180,7 +180,7 @@ function addToken(aUsername, aAuthToken) {
   else if (!result)
     LOGGER.VERBOSE_LOG("prompt canceled");
   else
-    LOGGER.VERBOSE_LOG("Invalid input: " + );
+    LOGGER.VERBOSE_LOG("Invalid input: " + input ? input.value : null);
 }
 
 /**

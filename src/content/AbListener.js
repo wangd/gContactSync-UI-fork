@@ -49,7 +49,7 @@ var AbListener = {
    * @param aParentDir The parent directory to which an item was added.
    * @param aItem      The item added to the directory.
    */
-  onItemAdded: function AbListener_onItemAdded(aParentDir, aItem) { /* do nothing */ },
+  onItemAdded: function AbListener_onItemAdded(aParentDir, aItem) {},
   /**
    * AbListener.onItemPropertyChanged
    * Unused.
@@ -58,7 +58,10 @@ var AbListener = {
    * @param aOldValue The former value of the property.
    * @param aNewValue The new value of the property.
    */
-  onItemPropertyChanged: function AbListener_onItemPropertyChanged(aItem, aProperty , aOldValue , aNewValue ) {},
+  onItemPropertyChanged: function AbListener_onItemPropertyChanged(aItem,
+                                                                   aProperty,
+                                                                   aOldValue,
+                                                                   aNewValue) {},
   /**
    * AbListener.onItemRemoved
    * Used just to update the lastModifiedDate of cards removed from a mail list.
@@ -73,7 +76,7 @@ var AbListener = {
     aParentDir.QueryInterface(Ci.nsIAbDirectory);
     // only update if a card was removed from a mail list
     // if so, then update the card's lastModifiedDate in the mail list's parent
-    if (aParentDir.isMailList && (aItem instanceof Ci.nsIAbCard)) {
+    if (aParentDir.isMailList && (aItem instanceof Ci.nsIAbCard) && Sync.mSynced) {
       try {
         aItem.QueryInterface(Ci.nsIAbCard);
         var now = (new Date).getTime()/1000;
@@ -146,5 +149,5 @@ var AbListener = {
       Cc["@mozilla.org/addressbook/services/session;1"]
        .getService(Ci.nsIAddrBookSession)
        .removeAddressBookListener(AbListener);
-  }
+  },
 };

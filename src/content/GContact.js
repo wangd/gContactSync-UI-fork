@@ -51,6 +51,7 @@ function GContact(aXml) {
   }
   // otherwise, make a new contact
   else {
+    this.mIsNew = true;
     var atom = gdata.namespaces.ATOM;
     var gd = gdata.namespaces.GD;
     var xml = document.createElementNS(atom.url, atom.prefix + "entry");
