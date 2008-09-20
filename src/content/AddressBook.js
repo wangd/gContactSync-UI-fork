@@ -42,14 +42,15 @@
  * @class
  */
 function AddressBook(aDirectory) {
-  this.mDirectory = aDirectory
+  this.mDirectory = aDirectory;
   // make sure the directory is valid
   if (!this.isDirectoryValid(this.mDirectory))
     throw "Invalid directory supplied to the AddressBook constructor" +
+          "\nCalled by: " + this.caller +
           StringBundle.getStr("pleaseReport");
   // get the directory's URI
   if (this.mDirectory.URI)
-    this.mURI = this.mDirectory.URI
+    this.mURI = this.mDirectory.URI;
   else {
     this.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
     this.mURI = this.mDirectory.getDirUri();
@@ -251,7 +252,8 @@ AddressBook.prototype = {
    */
   isDirectoryValid: function AddressBook_isDirectoryValid(aDirectory) {
     return aDirectory && aDirectory instanceof Ci.nsIAbDirectory 
-          && aDirectory.dirName != "";
+          && aDirectory.dirName != "" && (AbManager.mVersion == 3 || 
+          aDirectory instanceof Ci.nsIAbMDBDirectory);
   },
   /**
    * AddressBook.getCardValue

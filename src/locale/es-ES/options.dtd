@@ -1,0 +1,36 @@
+<!ENTITY title.label "gContactSync - Preferencias">
+<!ENTITY main.tab "Principal">
+<!ENTITY gettingStarted1.value "Verifique, por favor, estos datos de configuración.">
+<!ENTITY refreshInterval.value "El intervalo de sincronizaciones (minutos) [30 por defecto]">
+<!ENTITY initialDelay.value "El intervalo inicial (ms) [500 por defecto]">
+<!ENTITY abName.value "El nombre de la libreta de direcciones (nuevo o existente)">
+<!ENTITY updateGoogle.label "Siempre actualizar Google™ cuando un contacto de Google está en pugna con el de Thunderbird.">
+<!ENTITY confirmDuplicates.label "Solicitar su confirmación antes de borrar duplicados">
+<!ENTITY syncExtended.label "Sincronizar atributos adicionales (vea 'Adicional')">
+<!ENTITY autoSync.label "Sincronizar los contactos de manera automática">
+<!ENTITY syncGroups.label "Sincronizar grupos de Gmail™ con listas de Thunderbird">
+<!ENTITY verboseLog.label "Consignar más información">
+<!ENTITY accounts.tab "Cuentas">
+<!ENTITY emailAddress.label "Correo electrónico">
+<!ENTITY addressBook.label "Libreta de direcciones">
+<!ENTITY removeLogin.label "Borrar">
+<!ENTITY addLogin.label "Añadir Cuenta">
+<!ENTITY changeAbName.label "Cambiar el nombre">
+<!ENTITY extended.tab "Adicional">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "Atributo 1  ">
+<!ENTITY extended2.value "Atributo 2  ">
+<!ENTITY extended3.value "Atributo 3  ">
+<!ENTITY extended4.value "Atributo 4  ">
+<!ENTITY extended5.value "Atributo 5  ">
+<!ENTITY extended6.value "Atributo 6  ">
+<!ENTITY extended7.value "Atributo 7  ">
+<!ENTITY extended8.value "Atributo 8  ">
+<!ENTITY extended9.value "Atributo 9  ">
+<!ENTITY extended10.value "Atributo 10">
+<!ENTITY extendedPropertiesDesc1.value "10 atributos adicionales.  Por ejemplo:">
+<!-- LOCALIZATION NOTE: These 4 lines cannot change -->
+<!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName">
+<!ENTITY extendedPropertiesDesc3.value " * PreferMailFormat, Department, AllowRemoteContent">
+<!ENTITY extendedPropertiesDesc4.value " * Custom1, Custom2, Custom3, Custom4, BirthYear">
+<!ENTITY extendedPropertiesDesc5.value " * BirthMonth, BirthDay, AnniversaryYear">

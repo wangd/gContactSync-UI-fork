@@ -47,7 +47,8 @@ var AbManager = {
     var data;
     while(iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory) {
+      if (data instanceof Ci.nsIAbDirectory && (this.mVersion == 3 ||
+          data instanceof Ci.nsIAbMDBDirectory)) {
         var ab = new AddressBook(data);
         var username = ab.getUsername();
         if (username && username != "") {
