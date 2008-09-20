@@ -46,7 +46,8 @@ function initialize() {
   StringBundle.init();
   FileIO.init();
   Preferences.getSyncPrefs();
-  fillLoginTree();
+  if (document.getElementById("loginTree"))
+    fillLoginTree();
 }
 
 /**

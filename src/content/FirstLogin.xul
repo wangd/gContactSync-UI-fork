@@ -42,6 +42,9 @@
   <script src="synonyms.js"/>
   <script src="LoginManager.js"/>
   <script src="StringBundle.js"/>
+  <script src="FileIO.js"/>
+  <script src="Pref.js"/>
+  <script src="Preferences.js"/>
   <script src="options.js"/>
 
   <prefpane id="gContactSync-setup" label="&title.label;">
