@@ -279,7 +279,10 @@ var Overlay = {
    */
   showLog: function Overlay_showLog() {
     try {
-      window.open("view-source:chrome://gcontactsync/content/log/log.txt", "Log", "chrome=yes,resizable=yes");
+      var windowFeatures = "chrome=yes,resizable=yes,height=400,width=600";
+      window.open("view-source:chrome://gcontactsync/content/log/log.txt",
+                  "Log",
+                  windowFeatures);
     }
     catch(e) {
       LOGGER.LOG_WARNING("Unable to open the log", e);
