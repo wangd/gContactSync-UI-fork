@@ -68,7 +68,8 @@ var Preferences = {
     autoSync: new Pref("autoSync", "bool", true),
     syncGroups: new Pref("syncGroups", "bool", true),
     syncAddresses: new Pref("syncAddresses", "bool", true),
-    removeOldAddresses: new Pref("removeOldAddresses", "bool", true)
+    removeOldAddresses: new Pref("removeOldAddresses", "bool", true),
+    enableSyncBtn: new Pref("enableSyncBtn", "bool", true)
   },
   /**
    * Preferences.getPref

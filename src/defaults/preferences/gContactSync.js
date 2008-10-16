@@ -22,6 +22,8 @@ pref("extensions.gContactSync.autoSync", true);
 pref("extensions.gContactSync.syncGroups", true);
 // set to true to remove the old addresses when they are converted to the new format
 pref("extensions.gContactSync.removeOldAddresses", true);
+// enable/disable the sync toolbar button
+pref("extensions.gContactSync.enableSyncBtn", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

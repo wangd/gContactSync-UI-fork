@@ -1,22 +1,27 @@
 <!ENTITY title.label "gContactSync Preferences">
 <!ENTITY main.tab "Main">
 <!ENTITY gettingStarted1.value "Before you start synchronizing your contacts, please check these settings">
+<!ENTITY autoSync.value "Automatic Synchronization">
+<!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
 <!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
 <!ENTITY abName.value "Name of the Address Book to sync with (old or new)">
+<!ENTITY syncBehavior.label "Sync Behavior">
 <!ENTITY updateGoogle.label "Always update Gmail™ when a contact is updated in Gmail and Thunderbird">
-<!ENTITY confirmDuplicates.label "Request confirmation before deleting duplicates">
-<!ENTITY syncExtended.label "Sync Extended Properties (see the next tab)">
-<!ENTITY autoSync.label "Synchronize contacts automatically">
 <!ENTITY syncGroups.label "Synchronize Groups with Mailing Lists">
+<!ENTITY other.label "Other">
+<!ENTITY confirmDuplicates.label "Request confirmation before deleting duplicates">
 <!ENTITY verboseLog.label "Enable Verbose Logging">
+<!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
 <!ENTITY accounts.tab "Accounts">
 <!ENTITY emailAddress.label "E-mail Address">
 <!ENTITY addressBook.label "Main Address Book">
 <!ENTITY removeLogin.label "Remove Login">
 <!ENTITY addLogin.label "Add Login">
 <!ENTITY changeAbName.label "Change Address Book">
-<!ENTITY extended.tab "Extended">
+<!ENTITY refreshTree.label "Refresh">
+<!ENTITY extended.tab "Advanced">
+<!ENTITY syncExtended.label "Sync Extended Properties">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
 <!ENTITY extended1.value "Property 1  ">
 <!ENTITY extended2.value "Property 2  ">
@@ -29,8 +34,7 @@
 <!ENTITY extended9.value "Property 9  ">
 <!ENTITY extended10.value "Property 10">
 <!ENTITY extendedPropertiesDesc1.value "10 extra properties to sync.  Examples:">
-<!-- LOCALIZATION NOTE: These 4 lines cannot change -->
-<!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName">
-<!ENTITY extendedPropertiesDesc3.value " * PreferMailFormat, Department, AllowRemoteContent">
-<!ENTITY extendedPropertiesDesc4.value " * Custom1, Custom2, Custom3, Custom4, BirthYear">
-<!ENTITY extendedPropertiesDesc5.value " * BirthMonth, BirthDay, AnniversaryYear">
+<!-- LOCALIZATION NOTE: These 3 lines cannot change -->
+<!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
+<!ENTITY extendedPropertiesDesc3.value " * Department, AllowRemoteContent, Custom1, Custom2, Custom3">
+<!ENTITY extendedPropertiesDesc4.value " * Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">

@@ -54,8 +54,9 @@ var gdata = {
   makeAuthBody: function gdata_makeAuthBody(aEmail, aPassword) {
     // NOTE: leave accountType as HOSTED_OR_GOOGLE or Google Apps for your
     // domain accounts won't work
-    return "accountType=HOSTED_OR_GOOGLE&Email=" + aEmail + "&Passwd=" +
-          aPassword + "&service=cp&source=Josh-gContactSync-0-1";
+    return "accountType=HOSTED_OR_GOOGLE&Email=" + encodeURIComponent(aEmail) +
+           "&Passwd=" + encodeURIComponent(aPassword) +
+           "&service=cp&source=Josh-gContactSync-0-1";
   },
   /**
    * gdata.getEmailFromId

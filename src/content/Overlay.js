@@ -67,7 +67,8 @@ var Overlay = {
     FileIO.init(); // initialize the FileIO class
     originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
-    Overlay.setupButton(); // insert the Sync button
+    if (Preferences.mSyncPrefs.enableSyncBtn.value)
+      Overlay.setupButton(); // insert the Sync button
     gdata.contacts.init();
     ContactConverter.init();
     // add the extra attributes as tree columns to show and

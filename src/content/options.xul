@@ -20,6 +20,7 @@
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
+   - Leszek(teo)Życzkowski
    -
    - Alternatively, the contents of this file may be used under the terms of
    - either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,31 +36,15 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<!DOCTYPE window SYSTEM "chrome://gContactSync/locale/options.dtd">
+<?xml-stylesheet href="chrome://gcontactsync/skin/overlay.css" type="text/css"?>
+
+<!DOCTYPE prefwindow SYSTEM "chrome://gContactSync/locale/options.dtd">
+
 <prefwindow id="gContactSyncPrefs"
             title="&title.label;"
-            width="480"
-            height="540"
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="synonyms.js"/>
-  <script src="LoginManager.js"/>
-  <script src="StringBundle.js"/>
-  <script src="options.js"/>
-  <script src="AddressBook.js"/>
-  <script src="AbManager.js"/>
-  <script src="FileIO.js"/>
-  <script src="Logger.js"/>
-  <script src="gdata.js"/>
-  <script src="HttpRequest.js"/>
-  <script src="GHttpRequest.js"/>
-  <script src="Pref.js"/>
-  <script src="Preferences.js"/>
-  <stringbundleset id="stringbundleset">
-    <stringbundle id="otherStringBundle"
-                  src="chrome://gContactSync/locale/gcontactsync.properties"/>
-  </stringbundleset>
-  <prefpane id="gContactSync-prefpane" label="&title.label;">
-
+  
+  <prefpane id="pane_main" index="main" label="&main.tab;">
     <preferences>
       <preference id="refreshInterval"
                   name="extensions.gContactSync.refreshInterval"
@@ -85,6 +70,68 @@
       <preference id="verboseLog"
                   name="extensions.gContactSync.verboseLog"
                   type="bool"/>
+      <preference id="syncExtended"
+                  name="extensions.gContactSync.syncExtended"
+                  type="bool"/>
+      <preference id="enableSyncBtn"
+                  name="extensions.gContactSync.enableSyncBtn"
+                  type="bool"/>
+    </preferences>
+    <groupbox flex="1">
+      <groupbox>
+        <caption label="&autoSync.value;"/>
+        <checkbox preference="autoSync" id="autoSync" label="&autoSync.label;"/>
+        <grid>
+          <columns>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="refreshInterval" value="&refreshInterval.value;"/>
+              <textbox preference="refreshInterval" id="refreshInterval" maxlength="4" maxwidth="60"/>
+            </row>
+            <row align="center">
+              <label control="initialDelayBox" value="&initialDelay.value;"/>
+              <textbox preference="initialDelay" id="initialDelayBox" maxlength="4" maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+        
+      </groupbox>
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&syncBehavior.label;"/>
+        <checkbox preference="updateGoogleInConflicts" id="macContacts" label="&updateGoogle.label;"/>
+        <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
+      </groupbox>
+      <groupbox>
+        <caption label="Other"/>
+        <checkbox preference="confirmDuplicates"
+                  id="confirmDuplicates"
+                  label="&confirmDuplicates.label;"/>
+        <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
+        <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>
+      </groupbox>
+    </groupbox>
+  </prefpane>
+  <prefpane id="pane_accounts" index="accounts" label="&accounts.tab;">
+    <tree flex="1" id="loginTree" seltype="single">
+      <treecols>
+        <treecol id="email" label="E-mail Address" flex="1"/>
+        <splitter class="tree-splitter"/>
+        <treecol id="addressBook" label="Address Book" flex="1"/>
+      </treecols>
+      <treechildren id="loginTreeChildren"/>
+    </tree>
+    <hbox id="accountButtons">
+      <button id="addLogin" label="&addLogin.label;" oncommand="addLogin();"/>
+      <button id="removeLogin" label="&removeLogin.label;" oncommand="removeSelectedLogin();"/>
+      <button id="changeAbName" label="&changeAbName.label;" oncommand="changeAbName();"/>
+      <button id="refreshTree" label="&refreshTree.label;" oncommand="fillLoginTree();"/>
+    </hbox>
+  </prefpane>
+  <prefpane id="pane_extended" index="extended" label="&extended.tab;">
+    <preferences>
       <preference id="extended1"
                   name="extensions.gContactSync.extended1"
                   type="string"/>
@@ -115,132 +162,96 @@
       <preference id="extended10"
                   name="extensions.gContactSync.extended10"
                   type="string"/>
-      <preference id="syncExtended"
-                  name="extensions.gContactSync.syncExtended"
-                  type="bool"/>
     </preferences>
-
-    <vbox>
-      <tabbox>
-        <tabs id="optionsTabs">
-          <tab label="&main.tab;"/>
-          <tab label="&accounts.tab;"/>
-          <tab label="&extended.tab;"/>
-        </tabs>
-        <tabpanels id="optionsPanels" flex="1">
-          <vbox index="main">
-            <label control="refreshInterval"
-                   value="&refreshInterval.value;"/>
-            <textbox preference="refreshInterval"
-                     id="refreshIntervalBox"
-                     maxlength="8"/>
-
-            <label control="initialDelay"
-                   value="&initialDelay.value;"/>
-            <textbox preference="initialDelay"
-                     id="initialDelayBox"
-                     maxlength="8"/>
-                   
-            <checkbox preference="updateGoogleInConflicts"
-                      id="macContacts"
-                      label="&updateGoogle.label;"/>
-                   
-            <checkbox preference="confirmDuplicates"
-                     id="confirmDuplicates"
-                     label="&confirmDuplicates.label;"/>
-
-            <checkbox preference="syncExtended"
-                     id="syncExtended"
-                     label="&syncExtended.label;"/>
-                   
-            <checkbox preference="autoSync"
-                     id="autoSync"
-                     label="&autoSync.label;"/>
-                   
-            <checkbox preference="syncGroups"
-                     id="syncGroups"
-                     label="&syncGroups.label;"/>
-                   
-            <checkbox preference="verboseLog"
-                     id="verboseLog"
-                     label="&verboseLog.label;"/>
-          </vbox>
-          <vbox index="accounts">
-            <tree flex="1" id="loginTree" seltype="single">
-              <treecols>
-                <treecol id="email" label="E-mail Address" flex="1"/>
-                <splitter class="tree-splitter"/>
-                <treecol id="addressBook" label="Address Book" flex="1"/>
-              </treecols>
-              <treechildren id="loginTreeChildren"/>
-            </tree>
-            <hbox id="accountButtons">
-              <button id="addLogin"
-                        label="&addLogin.label;"
-                        oncommand="addLogin()"/>
-              <button id="removeLogin"
-                        label="&removeLogin.label;"
-                        oncommand="removeSelectedLogin()"/>
-              <button id="changeAbName"
-                        label="&changeAbName.label;"
-                        oncommand="changeAbName()"/>
-            </hbox>
-          </vbox>
-          <vbox index="extended">
-            <label control="extendedDesc1"
-                   value="&extendedPropertiesDesc1.value;"/>
-            <label control="extendedDesc2"
-                   value="&extendedPropertiesDesc2.value;"/>
-            <label control="extendedDesc3"
-                   value="&extendedPropertiesDesc3.value;"/>
-            <label control="extendedDesc4"
-                   value="&extendedPropertiesDesc4.value;"/>
-            <label control="extendedDesc5"
-                   value="&extendedPropertiesDesc5.value;"/>
-            <label control="blank" value=""/>
-            <hbox>
+    <groupbox>
+      <label value="&extendedPropertiesDesc1.value;"/>
+      <label value="&extendedPropertiesDesc2.value;"/>
+      <label value="&extendedPropertiesDesc3.value;"/>
+      <label value="&extendedPropertiesDesc4.value;"/>
+      <separator class="thin"/>
+      <checkbox preference="syncExtended" id="syncExtended" label="&syncExtended.label;"/>
+      <separator class="thin"/>
+      <vbox align="center">
+        <grid flex="1">
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
               <label control="extended1" value="&extended1.value;"/>
-              <textbox preference="extended1" id="extended1" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended1" id="extended1"/>
+            </row>
+            <row align="center">
               <label control="extended2" value="&extended2.value;"/>
-              <textbox preference="extended2" id="extended2" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended2" id="extended2"/>
+            </row>
+            <row align="center">
               <label control="extended3" value="&extended3.value;"/>
-              <textbox preference="extended3" id="extended3" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended3" id="extended3"/>
+            </row>
+            <row align="center">
               <label control="extended4" value="&extended4.value;"/>
-              <textbox preference="extended4" id="extended4" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended4" id="extended4"/>
+            </row>
+            <row align="center">
               <label control="extended5" value="&extended5.value;"/>
-              <textbox preference="extended5" id="extended5" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended5" id="extended5"/>
+            </row>
+            <row align="center">
               <label control="extended6" value="&extended6.value;"/>
-              <textbox preference="extended6" id="extended6" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended6" id="extended6"/>
+            </row>
+            <row align="center">
               <label control="extended7" value="&extended7.value;"/>
-              <textbox preference="extended7" id="extended7" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended7" id="extended7"/>
+            </row>
+            <row align="center">
               <label control="extended8" value="&extended8.value;"/>
-              <textbox preference="extended8" id="extended8" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended8" id="extended8"/>
+            </row>
+            <row align="center">
               <label control="extended9" value="&extended9.value;"/>
-              <textbox preference="extended9" id="extended9" maxlength="20"/>
-            </hbox>
-            <hbox>
+              <textbox preference="extended9" id="extended9"/>
+            </row>
+            <row align="center">
               <label control="extended10" value="&extended10.value;"/>
-              <textbox preference="extended10" id="extended10" maxlength="20"/>
-            </hbox>
-          </vbox>
-        </tabpanels>
-      </tabbox>
-    </vbox>
+              <textbox preference="extended10" id="extended10"/>
+            </row>
+          </rows>
+        </grid>
+      </vbox>
+    </groupbox>
   </prefpane>
+  
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/synonyms.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/LoginManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/StringBundle.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/options.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/AddressBook.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/AbManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/FileIO.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Logger.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/gdata.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/HttpRequest.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GHttpRequest.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Pref.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Preferences.js"/>
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="otherStringBundle"
+                  src="chrome://gContactSync/locale/gcontactsync.properties"/>
+  </stringbundleset>
 </prefwindow>

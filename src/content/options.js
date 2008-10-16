@@ -46,6 +46,10 @@ function initialize() {
   StringBundle.init();
   FileIO.init();
   Preferences.getSyncPrefs();
+  document.getElementById("syncExtended").addEventListener("change", enableExtended, false);
+  enableExtended();
+  document.getElementById("autoSync").addEventListener("change", enableDelays, false);
+  enableDelays();
   if (document.getElementById("loginTree"))
     fillLoginTree();
 }
@@ -296,4 +300,24 @@ function changeAbName() {
     }
     tree.view.setCellText(tree.currentIndex, tree.columns.getColumnAt(1), input.value);
   }
+}
+
+function enableExtended() {
+  var disable = !document.getElementById("syncExtended").value;
+  document.getElementById("extended1").disabled = disable;
+  document.getElementById("extended2").disabled = disable;
+  document.getElementById("extended3").disabled = disable;
+  document.getElementById("extended4").disabled = disable;
+  document.getElementById("extended5").disabled = disable;
+  document.getElementById("extended6").disabled = disable;
+  document.getElementById("extended7").disabled = disable;
+  document.getElementById("extended8").disabled = disable;
+  document.getElementById("extended9").disabled = disable;
+  document.getElementById("extended10").disabled = disable;
+}
+
+function enableDelays() {
+  var disable = !document.getElementById("autoSync").value;
+  document.getElementById("refreshInterval").disabled = disable;
+  document.getElementById("initialDelay").disabled = disable;
 }
