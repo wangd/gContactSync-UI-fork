@@ -56,8 +56,8 @@ function GContact(aXml) {
     var gd = gdata.namespaces.GD;
     var xml = document.createElementNS(atom.url, atom.prefix + "entry");
     var category = document.createElementNS(atom.url, atom.prefix + "category");
-    category.setAttribute("scheme", gd.url + "/#kind");
-    category.setAttribute("term", gd.url + "/#contact");
+    category.setAttribute("scheme", gd.url + "#kind");
+    category.setAttribute("term", gd.url + "#contact");
     xml.appendChild(category);
     this.xml = xml;
   }
@@ -91,7 +91,8 @@ GContact.prototype = {
     for (var i = 0, length = this.mElementsToRemove.length; i < length; i++) {
       try { this.xml.removeChild(this.mElementsToRemove[i]); }
       catch (e) {
-        LOGGER.LOG_WARNING("Error while removing element: " + e);
+        LOGGER.LOG_WARNING("Error while removing element: " + e + "\n" +
+                           this.mElementsToRemove[i]);
       }
     }
     this.mElementsToRemove = [];

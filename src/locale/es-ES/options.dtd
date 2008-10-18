@@ -1,14 +1,16 @@
 <!ENTITY title.label "gContactSync - Preferencias">
 <!ENTITY main.tab "Principal">
 <!ENTITY gettingStarted1.value "Verifique, por favor, estos datos de configuración.">
+<!ENTITY autoSync.value "Sincronización de manera automática">
+<!ENTITY autoSync.label "Sincronizar los contactos de manera automática">
 <!ENTITY refreshInterval.value "El intervalo de sincronizaciones (minutos) [30 por defecto]">
 <!ENTITY initialDelay.value "El intervalo inicial (ms) [500 por defecto]">
 <!ENTITY abName.value "El nombre de la libreta de direcciones (nuevo o existente)">
+<!ENTITY syncBehavior.label "Funcionamiento">
 <!ENTITY updateGoogle.label "Siempre actualizar Google™ cuando un contacto de Google está en pugna con el de Thunderbird.">
-<!ENTITY confirmDuplicates.label "Solicitar su confirmación antes de borrar duplicados">
-<!ENTITY syncExtended.label "Sincronizar atributos adicionales">
-<!ENTITY autoSync.label "Sincronizar los contactos de manera automática">
 <!ENTITY syncGroups.label "Sincronizar grupos de Gmail™ con listas de Thunderbird">
+<!ENTITY other.label "Otras preferencias">
+<!ENTITY confirmDuplicates.label "Solicitar su confirmación antes de borrar duplicados">
 <!ENTITY verboseLog.label "Consignar más información">
 <!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
 <!ENTITY accounts.tab "Cuentas">
@@ -17,7 +19,9 @@
 <!ENTITY removeLogin.label "Borrar">
 <!ENTITY addLogin.label "Añadir Cuenta">
 <!ENTITY changeAbName.label "Cambiar el nombre">
+<!ENTITY refreshTree.label "Refrescar">
 <!ENTITY extended.tab "Avanzado">
+<!ENTITY syncExtended.label "Sincronizar atributos adicionales">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
 <!ENTITY extended1.value "Atributo 1  ">
 <!ENTITY extended2.value "Atributo 2  ">

@@ -15,7 +15,7 @@ pref("extensions.gContactSync.overrideCopy", true);
 // how long gContactSync should wait to sync after the address book is opened
 pref("extensions.gContactSync.initialDelay", 500);
 // set to true to enable verbose logging (recommended)
-pref("extensions.gContactSync.verboseLog", true);
+pref("extensions.gContactSync.verboseLog", false);
 // set to true to enable automatic synchronizing when Thunderbird opens and after the sync delay
 pref("extensions.gContactSync.autoSync", true);
 // set to true to synchronize groups with mailing lists
