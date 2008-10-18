@@ -12,17 +12,14 @@
 <h3>Main Preferences</h3>
 <p><img src="img/preferences_01.png"/></p>
 <ol>
-  <li><strong>Name of the Address Book</strong> <strong>(Google Contacts)</strong>- Choose a name for the Address Book to sync with.</li>
-
+  <li><strong>Synchronize contacts automatically (checked)</strong> - Check this to enable automatic synchronization. If it is disabled, Synchronize interval and Initial sync delay are ignored and the extension will only synchronize your contacts when you click the <strong>Sync</strong> button in the toolbar of the Address Book window.</li>
   <li><strong>Synchronize Interval</strong> <strong>(30)</strong>- Choose the length of time you would like to pass between the end of one synchronization and the start of the next. Set to 0 to disable all scheduled synchronization except for the first sync when the Address Book window is open (see #3).</li>
   <li><strong>Initial Sync Delay (500)</strong> - The length of time, in milliseconds, after the Address Book opens before your contacts are synchronized. Set to 0 to disable synchronizing when the Address Book window opens. If this is set to 0, there will be no automatic syncing until you press the button manually.</li>
   <li><strong>Always update Gmail during conflicts (checked)</strong> - Check this if Gmail should be updated if a contact is updated in both Gmail and Thunderbird. In other works, give Thunderbird priority over Gmail.</li>
-  <li><strong>Request confirmation before deleting duplicates (checked) </strong> - Check this is you would like to be asked before duplicates are deleted. Google only allows one contact per e-mail address, so you cannot have two contacts with the same e-mail address. You will be asked about it until you change the offending e-mail address(es).</li>
-
-  <li><strong>Sync extended properties (checked) </strong> - Check this to synchronize attributes that Thunderbird has, but Google doesn't. You won't be able to see them from Gmail (possibly in the future?), but it is possible to add up to 10 extra attributes.</li>
-  <li><strong>Synchronize contacts automatically (checked)</strong> - Check this to enable automatic synchronization. If it is disabled, Synchronize interval and Initial sync delay are ignored and the extension will only synchronize your contacts when you click the <strong>Sync</strong> button in the toolbar of the Address Book window. This is not present in the first test release.</li>
   <li><strong>Synchronize Groups with Mailing Lists (checked)</strong> - Check this to enable synchronizing Groups in Google Contacts with Mailing Lists in Thunderbird.  Please note that mailing lists are somewhat buggy.  <strong>If you delete an address book that contains a mailing list you <em>must restart Thunderbird</em> (not just the Address Book window) before doing anything else, especially synchronizing.</strong></li>
+  <li><strong>Request confirmation before deleting duplicates (checked) </strong> - Check this is you would like to be asked before duplicates are deleted. Google only allows one contact per e-mail address, so you cannot have two contacts with the same e-mail address. You will be asked about it until you change the offending e-mail address(es).</li>
   <li><strong>Enable Verbose Logging (checked)</strong> - Verbose logging will make synchronization take slightly longer, but it is very difficult to find the cause of errors/bugs without it enabled.</li>
+  <li><strong>Enable the Sync toolbar button</strong> - gContactSync adds a toolbar button that cannot be removed like normal buttons.  Uncheck this to remove the button.</li>
 </ol>
 <h3>Accounts</h3>
 <p><img src="img/preferences_02.png"/></p>
@@ -31,6 +28,7 @@
 <p><img src="img/preferences_03.png"/></p>
 <p>Google allows storing 10 custom attributes, although you cannot see them from Gmail. I suggest you leave them alone unless you are familiar with the address book source code unless you want to replace something with <strong>Custom3</strong> or <strong>Custom4 </strong>or ask me. The values must be the name of the attribute in Thunderbird. Here are the defaults:</p>
 <ol>
+  <li><strong>Sync extended properties (checked) </strong> - Check this to synchronize attributes that Thunderbird has, but Google doesn't. You won't be able to see them from Gmail (possibly in the future?), but it is possible to add up to 10 extra attributes.</li>
   <li><strong>WebPage1</strong> - The work website</li>
   <li><strong>WebPage2 </strong>- The home website</li>
   <li><strong>Department</strong> - The department  the contact is in at work</li>
