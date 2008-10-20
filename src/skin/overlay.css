@@ -34,3 +34,8 @@ radio[pane=pane_extended] {
   list-style-image:
   	url("chrome://gcontactsync/skin/abcard-large.png");
 }
+
+toolbar[iconsize="small"] .gContactSync-Button {
+  list-style-image:
+  	url("chrome://gcontactsync/skin/abcard.png");
+}
