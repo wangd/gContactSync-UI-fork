@@ -160,13 +160,15 @@ var Overlay = {
       var button = document.createElement("toolbarbutton");
       button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
                           " chromeclass-toolbar-additional");
-      button.setAttribute("id", "gContactSyncButton");
+      button.setAttribute("id", "syncButton");
       button.setAttribute("label", StringBundle.getStr("syncButton"));
       button.setAttribute("oncommand", "Sync.begin();");
       button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
+      var deleteButton = document.getElementById("button-abdelete");
+      //button.style.MozImageRegion = deleteButton.MozImageRegion;
       // insert the separator before the Delete button
-      toolbar.insertBefore(separator, document.getElementById("button-abdelete"));
+      toolbar.insertBefore(separator, deleteButton);
       // insert the button before the separator
       toolbar.insertBefore(button, separator);
     }
@@ -431,7 +433,7 @@ var Overlay = {
                                    visible, true);
       cvSetVisible(cvData.cvhPhone, visible);
       cvSetVisible(cvData.cvbPhone, visible);
-    } catch(e) {alert(e);}
+    } catch(e) { LOGGER.LOG_WARNING("Error while modifying the view pane.", e); }
   },
   /**
    * Overlay.collapseAddress

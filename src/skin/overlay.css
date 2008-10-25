@@ -29,13 +29,23 @@ radio[pane=pane_accounts] {
 radio[pane=pane_extended] {
   list-style-image: url("chrome://gcontactsync/skin/advanced.png");
 }
-
-.gContactSync-Button {
-  list-style-image:
-  	url("chrome://gcontactsync/skin/abcard-large.png");
+/* syncButton */
+#syncButton {
+  list-style-image: url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
 }
 
-toolbar[iconsize="small"] .gContactSync-Button {
-  list-style-image:
-  	url("chrome://gcontactsync/skin/abcard.png");
+#syncButton[disabled="true"] {
+  list-style-image: url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
+}
+
+toolbar[iconsize="small"] #syncButton {
+  list-style-image: url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(0px 16px 16px 0px);
+}
+
+toolbar[iconsize="small"] #syncButton[disabled] {
+  list-style-image: url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(32px 16px 48px 0px) !important;
 }

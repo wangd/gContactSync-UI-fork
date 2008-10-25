@@ -42,7 +42,9 @@
 
 <prefwindow id="gContactSyncPrefs"
             title="&title.label;"
-            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            height="600"
+            width="650">
   
   <prefpane id="pane_main" index="main" label="&main.tab;">
     <preferences>
