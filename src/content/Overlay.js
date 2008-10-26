@@ -166,7 +166,7 @@ var Overlay = {
       button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
       var deleteButton = document.getElementById("button-abdelete");
-      //button.style.MozImageRegion = deleteButton.MozImageRegion;
+      button.style.MozImageRegion = deleteButton.MozImageRegion;
       // insert the separator before the Delete button
       toolbar.insertBefore(separator, deleteButton);
       // insert the button before the separator

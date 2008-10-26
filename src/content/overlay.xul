@@ -100,9 +100,4 @@
                          label="&initialStatus.label;"
                          tooltip="&status.tooltip;"/>
   </statusbar>
-  <!-- Shortcut to the preferences window -->
-  <menupopup id="taskPopup">
-    <menuseparator/>
-    <menuitem label="gContactSync" oncommand="Overlay.openPreferences();"/>
-  </menupopup>
 </overlay>
