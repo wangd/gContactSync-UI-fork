@@ -172,7 +172,7 @@ MailList.prototype = {
     // properly, but it shouldn't be caught or the sync won't function properly
     this.mCards = [];
     var iter = this.mList.childCards;
-    if (this.mParent.mVersion == 3) { // TB 3
+    if (AbManager.mVersion == 3) { // TB 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof nsIAbCard)
@@ -202,7 +202,7 @@ MailList.prototype = {
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
     var arr;
-    if (this.mParent.mVersion == 3) { // TB 3
+    if (AbManager.mVersion == 3) { // TB 3
       arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
         AbManager.checkCard(aCards[i]);
@@ -247,7 +247,7 @@ MailList.prototype = {
    */
   update: function MailList_update() {
     try {
-      if (this.mParent.mVersion == 3)
+      if (AbManager.mVersion == 3)
         this.mList.editMailListToDatabase(null);
       else
         this.mList.editMailListToDatabase(this.getURI(), null);
