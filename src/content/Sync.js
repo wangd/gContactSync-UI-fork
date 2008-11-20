@@ -569,8 +569,8 @@ var Sync = {
                 LOGGER.LOG(" * The group's name changed, updating the list");
                 list.setName(title);
                 list.update();
-                list.matched = true;
               }
+              list.matched = true;
             }
             else { // the group is new
               // make a new mailing list with the same name

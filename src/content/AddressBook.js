@@ -123,7 +123,9 @@ AddressBook.prototype = {
       if (data instanceof Ci.nsIAbDirectory && data.isMailList) {
         var list = new MailList(data, this, skipGetCards);
         var id = list.getGroupID();
-        obj[id] = list; 
+        obj[id] = list;
+        LOGGER.VERBOSE_LOG("Found a list named - " + list.getName() + " with" +
+                           " an ID - " + id);
       }
     }
     return obj;
