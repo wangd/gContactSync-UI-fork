@@ -149,8 +149,9 @@ var CardDialogOverlay = {
     catch (e) {
       alert("Unable to swap pager and mobile number values\n" + e);
     }
+    var newDialog = false; // post-Mailnews Core Bug 63941
+    var pager;
     try {
-      var newDialog = false; // post-Mailnews Core Bug 63941
       // then replace all phone labels and remove the access keys
       var work = document.getElementById("WorkPhone");
       var workLabel = work.parentNode.previousSibling;
@@ -175,7 +176,7 @@ var CardDialogOverlay = {
                                   : mobile.parentNode.previousSibling;
       mobileLabel.value = StringBundle.getStr("fourth");
       mobileLabel.setAttribute("accesskey", "");
-      var pager = document.getElementById("PagerNumber");
+      pager = document.getElementById("PagerNumber");
       var pagerLabel = newDialog ? pager.previousSibling
                                  : pager.parentNode.previousSibling;
       pagerLabel.value = StringBundle.getStr("fifth");
@@ -184,42 +185,67 @@ var CardDialogOverlay = {
     catch(e) {
       alert("Unable to replace phone labels and remove access keys\n" + e);
     }
+    var phoneTypes = ["work", "home", "work_fax", "mobile", "pager", "home_fax",
+                      "other"];
     try {
       // setup the types for the phone numbers
-      var arr = ["work", "home", "work_fax", "mobile", "pager", "home_fax", "other"];
       var workBox = work.parentNode;
-      addMenuItems(workBox, arr, "WorkPhoneType", "work");
+      addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work");
       var homeBox = home.parentNode;
-      addMenuItems(homeBox, arr, "HomePhoneType", "home");
+      addMenuItems(homeBox, phoneTypes, "HomePhoneType", "home");
       var faxBox = fax.parentNode;
-      addMenuItems(faxBox, arr, "FaxNumberType", "work_fax");
+      addMenuItems(faxBox, phoneTypes, "FaxNumberType", "work_fax");
       var mobileBox = mobile.parentNode;
-      addMenuItems(mobileBox, arr, "CellularNumberType", "mobile");
+      addMenuItems(mobileBox, phoneTypes, "CellularNumberType", "mobile");
       var pagerBox = pager.parentNode;
-      addMenuItems(pagerBox, arr, "PagerNumberType", "pager");
+      addMenuItems(pagerBox, phoneTypes, "PagerNumberType", "pager");
       var homeFaxBox = document.getElementById("HomeFaxNumber").parentNode;
-      addMenuItems(homeFaxBox, arr, "HomeFaxNumberType", "home_fax");
+      addMenuItems(homeFaxBox, phoneTypes, "HomeFaxNumberType", "home_fax");
       var otherNumberBox = document.getElementById("OtherNumber").parentNode;
-      addMenuItems(otherNumberBox, arr, "OtherNumberType", "other");
+      addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other");
     }
     catch(e) {
       alert("Unable to setup phone number types\n" + e);
     }
-    try {
-      // setup the new screenname/e-mail address/phone numbers tab
-      var myTab = document.createElementNS(this.mNamespace, "tab");
-      myTab.setAttribute("label", "gContactSync");
-      myTab.setAttribute("id", "gContactSyncTab");
-      // setup the new address tab
-      var myAddressTab = document.createElementNS(this.mNamespace, "tab");
-      myAddressTab.setAttribute("label", "gContactSync 2");
-      myAddressTab.setAttribute("id", "gContactSyncTab2");
-      // add the new tabs to the dialog
-      document.getElementById("abTabs").appendChild(myTab);
-      document.getElementById("abTabs").appendChild(myAddressTab);
+    if (newDialog) {
+      try {
+        // add the sixth and seventh numbers below 1 - 5
+        var sixthNum = setupNumBox("SixthNumber", StringBundle.getStr("sixth"));
+        pager.parentNode.parentNode.appendChild(sixthNum);
+        addMenuItems(sixthNum, phoneTypes, "SixthNumberType", "other");
+        var seventhNum = setupNumBox("SeventhNumber",
+                                     StringBundle.getStr("seventh"));
+        pager.parentNode.parentNode.appendChild(seventhNum);
+        addMenuItems(seventhNum, phoneTypes, "SeventhNumberType", "other");
+        // make a tab for extra e-mail addresses and screennames
+        
+        // make another address tab
+      }
+      catch(e) {
+        alert("Unable to setup the extra tabs\n" + e);
+      }
     }
-    catch(e) {
-      alert("Unable to setup the extra tabs\n" + e);
+    else {
+      try {
+        // setup the new screenname/e-mail address/phone numbers tab
+        var myTab = document.createElementNS(this.mNamespace, "tab");
+        myTab.setAttribute("label", "gContactSync");
+        myTab.setAttribute("id", "gContactSyncTab");
+        // setup the new address tab
+        var myAddressTab = document.createElementNS(this.mNamespace, "tab");
+        myAddressTab.setAttribute("label", "gContactSync 2");
+        myAddressTab.setAttribute("id", "gContactSyncTab2");
+        // add the new tabs to the dialog
+        var tabs = document.getElementById("abTabs")
+        tabs.appendChild(myTab);
+        tabs.appendChild(myAddressTab);
+        // make them not hidden
+        document.getElementById("gcontactSyncFields").removeAttribute("hidden");
+        document.getElementById("gcontactSyncFields2").removeAttribute("hidden");
+      }
+      catch(e) {
+        alert("Unable to setup the extra tabs\n" + e);
+      }
     }
     // override the check and set card values function
     originalCheckAndSetCardValues = CheckAndSetCardValues;
@@ -228,6 +254,25 @@ var CardDialogOverlay = {
     myGetCardValues(gEditCard.card, document);
   }
 }
+
+function setupNumBox(aID, aLabel) {
+  var box = document.createElement("hbox");
+  box.setAttribute("align", "center");
+  var spacer = document.createElement("spacer");
+  spacer.setAttribute("flex", 1);
+  box.appendChild(spacer);
+  var label = document.createElement("label");
+  label.setAttribute("control", aID);
+  label.setAttribute("value", aLabel);
+  box.appendChild(label);
+  var textbox = document.createElement("textbox");
+  textbox.setAttribute("id", aID);
+  textbox.setAttribute("flex", "1");
+  textbox.setAttribute("class", "PhoneEditWidth");
+  box.appendChild(textbox);
+  return box;
+}
+
 /**
  * addMenuItems
  * Sets up a type menu list element with a menuitem for each string in the

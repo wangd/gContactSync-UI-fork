@@ -50,7 +50,7 @@
   </stringbundleset>
   <tabpanels id="abTabPanels" flex="1">
    <vbox index="gcontactsync" flex="1">
-     <vbox id="gcontactSyncFields" class="alignBoxWithFieldset">
+     <vbox id="gcontactSyncFields" class="alignBoxWithFieldset" hidden="true">
        <groupbox flex="1">
          <caption label="&email.box;"/>
          <hbox>
@@ -126,7 +126,7 @@
      </vbox>
    </vbox>
    <vbox index="gcontactsync" flex="1">
-     <vbox id="gcontactSyncFields" class="alignBoxWithFieldset">
+     <vbox id="gcontactSyncFields2" class="alignBoxWithFieldset" hidden="true">
        <groupbox flex="1">
          <caption label="&address.box;"/>
          <hbox>
@@ -153,5 +153,5 @@
        </groupbox>
      </vbox>
    </vbox>
- </tabpanels> 
+ </tabpanels>
 </overlay>
