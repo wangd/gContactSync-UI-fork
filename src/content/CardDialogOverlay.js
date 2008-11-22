@@ -150,25 +150,34 @@ var CardDialogOverlay = {
       alert("Unable to swap pager and mobile number values\n" + e);
     }
     try {
+      var newDialog = false; // post-Mailnews Core Bug 63941
       // then replace all phone labels and remove the access keys
       var work = document.getElementById("WorkPhone");
       var workLabel = work.parentNode.previousSibling;
+      if (!workLabel) {
+        newDialog = true;
+        workLabel = work.previousSibling;
+      }
       workLabel.value = StringBundle.getStr("first");
       workLabel.setAttribute("accesskey", "");
       var home = document.getElementById("HomePhone");
-      var homeLabel = home.parentNode.previousSibling;
+      var homeLabel = newDialog ? home.previousSibling
+                                : home.parentNode.previousSibling;
       homeLabel.value = StringBundle.getStr("second");
       homeLabel.setAttribute("accesskey", "");
       var fax = document.getElementById("FaxNumber");
-      var faxLabel = fax.parentNode.previousSibling;
+      var faxLabel = newDialog ? fax.previousSibling
+                               : fax.parentNode.previousSibling;
       faxLabel.value = StringBundle.getStr("third");
       faxLabel.setAttribute("accesskey", "");
       var mobile = document.getElementById("CellularNumber");
-      var mobileLabel = mobile.parentNode.previousSibling;
+      var mobileLabel = newDialog ? mobile.previousSibling
+                                  : mobile.parentNode.previousSibling;
       mobileLabel.value = StringBundle.getStr("fourth");
       mobileLabel.setAttribute("accesskey", "");
       var pager = document.getElementById("PagerNumber");
-      var pagerLabel = pager.parentNode.previousSibling;
+      var pagerLabel = newDialog ? pager.previousSibling
+                                 : pager.parentNode.previousSibling;
       pagerLabel.value = StringBundle.getStr("fifth");
       pagerLabel.setAttribute("accesskey", "");
     }
