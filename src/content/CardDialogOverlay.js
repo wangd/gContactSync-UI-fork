@@ -217,9 +217,11 @@ var CardDialogOverlay = {
                                      StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
         addMenuItems(seventhNum, phoneTypes, "SeventhNumberType", "other");
-        // make a tab for extra e-mail addresses and screennames
+        var typeWidth = document.getElementById("PagerNumberType").getAttribute("width");
+        //alert(typeWidth);
         
-        // make another address tab
+        //window.resizeBy(typeWidth, 0);
+        window.sizeToContent();
       }
       catch(e) {
         alert("Unable to setup the extra tabs\n" + e);
