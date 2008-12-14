@@ -207,8 +207,24 @@ var CardDialogOverlay = {
     catch(e) {
       alert("Unable to setup phone number types\n" + e);
     }
+    
+    var tabs = document.getElementById("abTabs")
+    try {
+      // setup the new screenname/e-mail address/phone numbers tab
+      var myTab = document.createElementNS(this.mNamespace, "tab");
+      myTab.setAttribute("label", "gContactSync");
+      myTab.setAttribute("id", "gContactSyncTab");
+      // add the new tab to the dialog
+      tabs.appendChild(myTab);
+      
+    }
+    catch(e) {
+      alert("Unable to setup the extra tabs\n" + e);
+    }
     if (newDialog) {
       try {
+        // show the addresses on the one and only tab in the second column
+        document.getElementById("addresses").removeAttribute("hidden");
         // add the sixth and seventh numbers below 1 - 5
         var sixthNum = setupNumBox("SixthNumber", StringBundle.getStr("sixth"));
         pager.parentNode.parentNode.appendChild(sixthNum);
@@ -217,38 +233,33 @@ var CardDialogOverlay = {
                                      StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
         addMenuItems(seventhNum, phoneTypes, "SeventhNumberType", "other");
-        var typeWidth = document.getElementById("PagerNumberType").getAttribute("width");
-        //alert(typeWidth);
-        
-        //window.resizeBy(typeWidth, 0);
+
+        // make a tab for extra e-mail addresses and screennames
+        var extraTab = document.createElement("tab");
+        extraTab.setAttribute("label", "gContactSync");
+        extraTab.setAttribute("id", "extraTab");
+        // make another address tab
+        var addressTab = document.createElement("tab");
+        addressTab.setAttribute("label", "gContactSync 2");
+        addressTab.setAttribute("id", "gContactSyncTab");
+        // fix the width of the dialog
         window.sizeToContent();
       }
       catch(e) {
         alert("Unable to setup the extra tabs\n" + e);
       }
     }
+    // if this is the old dialog, show the extra phone numbers on the 1st tab
+    // and display a second tab for addresses
     else {
-      try {
-        // setup the new screenname/e-mail address/phone numbers tab
-        var myTab = document.createElementNS(this.mNamespace, "tab");
-        myTab.setAttribute("label", "gContactSync");
-        myTab.setAttribute("id", "gContactSyncTab");
-        // setup the new address tab
-        var myAddressTab = document.createElementNS(this.mNamespace, "tab");
-        myAddressTab.setAttribute("label", "gContactSync 2");
-        myAddressTab.setAttribute("id", "gContactSyncTab2");
-        // add the new tabs to the dialog
-        var tabs = document.getElementById("abTabs")
-        tabs.appendChild(myTab);
-        tabs.appendChild(myAddressTab);
-        // make them not hidden
-        document.getElementById("gcontactSyncFields").removeAttribute("hidden");
-        document.getElementById("gcontactSyncFields2").removeAttribute("hidden");
-      }
-      catch(e) {
-        alert("Unable to setup the extra tabs\n" + e);
-      }
+      document.getElementById("numbersGroupBox").removeAttribute("hidden");
+      // setup the new address tab
+      var myAddressTab = document.createElementNS(this.mNamespace, "tab");
+      myAddressTab.setAttribute("label", "gContactSync 2");
+      myAddressTab.setAttribute("id", "gContactSyncTab2");
+      tabs.appendChild(myAddressTab);
     }
+
     // override the check and set card values function
     originalCheckAndSetCardValues = CheckAndSetCardValues;
     CheckAndSetCardValues = myCheckAndSetCardValues;
@@ -269,7 +280,6 @@ function setupNumBox(aID, aLabel) {
   box.appendChild(label);
   var textbox = document.createElement("textbox");
   textbox.setAttribute("id", aID);
-  textbox.setAttribute("flex", "1");
   textbox.setAttribute("class", "PhoneEditWidth");
   box.appendChild(textbox);
   return box;
