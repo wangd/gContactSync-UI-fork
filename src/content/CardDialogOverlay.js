@@ -80,6 +80,7 @@ var Ci = Components.interfaces;
 var CardDialogOverlay = {
   mNamespace: "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
   mLoadNumber: 0,
+  mDisabled: false,
   /**
    * editCardDialog.init
    * Adds a tab to the tab box, if possible.  Waits until the abCardOverlay is
@@ -103,7 +104,13 @@ var CardDialogOverlay = {
       if (!gEditCard.card.getProperty)
         gEditCard.card.QueryInterface(Ci.nsIAbMDBCard);
     } catch(e) { return; }
-    
+    // some contacts are read-only so extra attributes should be disabled for
+    // those cards (see Mozdev Bug 20169)
+    try {
+      this.mDisabled = document.getElementById("PreferMailFormatPopup").disabled;
+    } catch (e) {
+      alert("Error while determining if contact is read-only: " + e)
+    }
     // add the email type drop down menus
     try {
       var arr = ["other", "home", "work"];
@@ -259,6 +266,23 @@ var CardDialogOverlay = {
       myAddressTab.setAttribute("id", "gContactSyncTab2");
       tabs.appendChild(myAddressTab);
     }
+    
+    // if this is a read-only card, make added elements disabled
+    // the menulists are already taken care of
+    if (this.mDisabled) {
+      document.getElementById("ThirdEmail").readOnly = true;
+      document.getElementById("FourthEmail").readOnly = true;
+      document.getElementById("TalkScreenName").readOnly = true;
+      document.getElementById("ICQScreenName").readOnly = true;
+      document.getElementById("YahooScreenName").readOnly = true;
+      document.getElementById("MSNScreenName").readOnly = true;
+      document.getElementById("JabberScreenName").readOnly = true;
+      document.getElementById("HomeFaxNumber").readOnly = true;
+      document.getElementById("OtherNumber").readOnly = true;
+      document.getElementById("FullHomeAddress").readOnly = true;
+      document.getElementById("FullWorkAddress").readOnly = true;
+      document.getElementById("OtherAddress").readOnly = true;
+    }
 
     // override the check and set card values function
     originalCheckAndSetCardValues = CheckAndSetCardValues;
@@ -281,6 +305,7 @@ function setupNumBox(aID, aLabel) {
   var textbox = document.createElement("textbox");
   textbox.setAttribute("id", aID);
   textbox.setAttribute("class", "PhoneEditWidth");
+  textbox.setAttribute("readonly", CardDialogOverlay.mDisabled);
   box.appendChild(textbox);
   return box;
 }
@@ -322,6 +347,8 @@ function addMenuItems(aBox, aArray, aID, aValue) {
   }
   // add the popup to the menu list
   menuList.appendChild(menuPopup);
+  // disable the menu list if this card is read-only
+  menuList.setAttribute("disabled", CardDialogOverlay.mDisabled);
   // add the menu list to the box
   aBox.appendChild(menuList);
 }
