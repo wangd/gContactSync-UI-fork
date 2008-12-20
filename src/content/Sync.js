@@ -58,11 +58,12 @@ var Sync = {
   mOfflineCommand: ["Overlay.setStatusBarText(StringBundle.getStr('offlineStatusText'));", 
                     "Sync.finish();"],
 
-  // booleans used for timing to make sure things don't happen out order
+  // booleans used for timing to make sure only one synchronization occurs at a
+  // time and that only one sync is scheduled at once
   mSynced: true,
   mSyncScheduled: false,
-  mGroups: {}, // used to store groups
-  mLists: {}, // stores the mail lists
+  mGroups: {}, // used to store groups for the account being synchronized
+  mLists: {}, // stores the mail lists in the directory being synchronized
   /**
    * Sync.begin
    * Performs the first steps of the sync process.
