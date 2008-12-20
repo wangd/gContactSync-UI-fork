@@ -46,10 +46,15 @@ function initialize() {
   StringBundle.init();
   FileIO.init();
   Preferences.getSyncPrefs();
-  document.getElementById("syncExtended").addEventListener("change", enableExtended, false);
-  enableExtended();
-  document.getElementById("autoSync").addEventListener("change", enableDelays, false);
-  enableDelays();
+  // if this is the full preferences dialog add a few event listeners
+  if (document.getElementById("syncExtended")) {
+    document.getElementById("syncExtended")
+            .addEventListener("change", enableExtended, false);
+    enableExtended();
+    document.getElementById("autoSync")
+            .addEventListener("change", enableDelays, false);
+    enableDelays();
+  }
   if (document.getElementById("loginTree"))
     fillLoginTree();
 }
