@@ -259,6 +259,14 @@ var Overlay = {
     document.getElementById("statusText2").label = aText;
   },
   /**
+   * Overlay.getStatusBarText
+   * Gets the text of the status bar.
+   * @return The text of the status bar
+   */
+  getStatusBarText: function Overlay_getStatusBarText(aText) {
+    return document.getElementById("statusText2").label;
+  },
+  /**
    * Overlay.writeTimeToStatusBar
    * Writes the current time to the status bar along with the sync finished
    * string.

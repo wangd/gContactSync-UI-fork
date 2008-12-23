@@ -88,7 +88,7 @@ function fillLoginTree() {
  */
 function removeSelectedLogin() {
   var tree = document.getElementById("loginTree");
-  if (!tree)
+  if (!tree || tree.currentIndex == -1)
     return;
   var cellText = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
   if (cellText && confirm(StringBundle.getStr("removeLogin"))) {
@@ -223,7 +223,7 @@ function addLoginToTree(aTreeChildren, aUsername, aDirName) {
  */
 function changeAbName() {
   var tree = document.getElementById("loginTree");
-  if (!tree)
+  if (!tree || tree.currentIndex == -1)
     return;
   var username = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
   var oldAb = AbManager.getSyncedAddressBooks()[username];

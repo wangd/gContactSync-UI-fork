@@ -56,7 +56,7 @@ var Sync = {
   mIndex: 0,
   // an array of commands to execute when offline during an HTTP Request
   mOfflineCommand: ["Overlay.setStatusBarText(StringBundle.getStr('offlineStatusText'));", 
-                    "Sync.finish();"],
+                    "Sync.finish(StringBundle.getStr('offlineStatusText'));"],
 
   // booleans used for timing to make sure only one synchronization occurs at a
   // time and that only one sync is scheduled at once
@@ -164,8 +164,12 @@ var Sync = {
   finish: function Sync_finish(aError, aStartOver) {
     if (aError)
       LOGGER.LOG_ERROR("Error during sync", aError);
-    if (LOGGER.mErrorCount > 0)
-      Overlay.setStatusBarText(StringBundle.getStr("errDuringSync"));
+    if (LOGGER.mErrorCount > 0) {
+      // if there was an error, display the error message unless the user is
+      // offline
+      if (Overlay.getStatusBarText() != aError)
+        Overlay.setStatusBarText(StringBundle.getStr("errDuringSync"));
+    }
     else {
       Overlay.writeTimeToStatusBar();
       LOGGER.LOG("Finished Synchronization at: " + Date());
