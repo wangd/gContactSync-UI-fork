@@ -153,7 +153,7 @@ var ContactConverter = {
         continue;
       var obj = arr[i];
       LOGGER.VERBOSE_LOG(obj.tbName);
-      var value = AbManager.getCardValue(aCard, obj.tbName);
+      var value = this.checkValue(AbManager.getCardValue(aCard, obj.tbName));
       // for the type, get the type from the card, or use its default
       var type = AbManager.getCardValue(aCard, obj.tbName + "Type");
       if (!type || type == "")
@@ -165,7 +165,7 @@ var ContactConverter = {
     aContact.removeExtendedProperties();
     arr = Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
-      var value = AbManager.getCardValue(aCard, arr[i]);
+      var value = this.checkValue(AbManager.getCardValue(aCard, arr[i]));
       aContact.setExtendedProperty(arr[i], value);
     }
     if (Preferences.mSyncPrefs.syncGroups.value) {
@@ -312,5 +312,22 @@ var ContactConverter = {
       }
       ab.updateCard(aCard);
     }
+  },
+  /**
+   * ContactConverter.checkValue
+   * Check if the given string is null, of length 0, or consists only of spaces
+   * and return null if any of the listed conditions is true.
+   * This function was added to fix Bug 20389: Values with only spaces should be
+   * treated as empty
+   * @param aValue The string to check.
+   * @return null   - The string is null, of length 0, or consists only of
+                      spaces
+   *         aValue - The string has at least one character that is not a space
+   */
+  checkValue: function ContactConverter_checkValue(aValue) {
+    if (!aValue || !aValue.length) return null;
+    for (var i = 0; i < aValue.length; i++)
+      if (aValue[i] != " ") return aValue;
+    return null;
   }
 };
