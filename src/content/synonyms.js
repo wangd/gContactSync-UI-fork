@@ -62,9 +62,8 @@ function serializeFromText(aString) {
   // if verbose logging is disabled, don't replace >< with >\n< because it only
   // wastes time
   if (Preferences.mSyncPrefs.verboseLog.value) {
-    // source: http://developer.mozilla.org/en/E4X#Known_bugs_and_limitations
-    while (aString.indexOf("><") != -1)
-      aString = aString.replace("><", ">\n<"); 
+    var arr = aString.split("><");
+    aString = arr.join(">\n<");
   }
   return aString;
 }
