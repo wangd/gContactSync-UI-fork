@@ -191,10 +191,9 @@ var Sync = {
       this.schedule(Preferences.mSyncPrefs.refreshInterval.value * 60000);
   },
   // could be faster by fetching new and deleted contacts?
-  // could definitely save time by deleting Google contacts as TB contacts are deleted if online
   // should modify the listener:
-  //  when a contact is deleted, try to delete it from Google, wouldn't need to check response
-  //  when a contact is added to TB, try to add to google (would need something to bypass the default sync behavior tho
+  //  when a contact is deleted, try to delete it from Google, wouldn't need to check response - done
+  //  when a contact is added to TB, try to add to google (would need something to bypass the default sync behavior - check the response and set a flag in the contact to override)
   //  when a contact is modified, try to modify the Google contact
   sync2: function Sync_sync2(aAtom) {
     // get the address book
@@ -324,158 +323,7 @@ var Sync = {
     // delete contacts from Google
     this.processDeleteQueue();
   },
-  /**
-   * Sync.sync
-   * Synchronizes the Address Book with the contacts obtained from Google.
-   * @param aAtom The contacts from Google in an Atom.
-   */
-  /*sync: function Sync_sync(aAtom) {
-    // get the address book and QI the directory
-    var ab = this.mCurrentAb;
-    ab.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
-    // have to update the lists or TB 2 won't work properly
-    this.mLists = ab.getAllLists();
-    // get all the contacts from the feed and the cards from the address book
-    var googleContacts = aAtom.getElementsByTagName('entry');
-    var abCards = ab.getAllCards();
-    // get and log the last sync time (milliseconds since 1970 UTC)
-    var lastSync = parseInt(ab.getLastSyncDate());
-    LOGGER.VERBOSE_LOG("Last sync was at: " + lastSync);
-    var cardsToDelete = [];
-    var maxContacts = Preferences.mSyncPrefs.maxContacts.value;
-    // if there are more contacts than returned, increase the pref
-    var newMax;
-    if ((newMax = gdata.contacts.getNumberOfContacts(aAtom)) >= maxContacts.value) {
-      Preferences.setPref(Preferences.mSyncBranch, maxContacts.label,
-                          maxContacts.type, newMax + 50);
-      this.finish("Max Contacts too low...resynchronizing", true);
-      return;
-    }
-    this.mContactsToAdd = [];
-    this.mContactsToDelete = [];
-    this.mContactsToUpdate = [];
-    var gContact;
-     // get the strings outside of the loop so they are only found once
-    var found = " * Found a match Last Modified Dates:";
-    var bothChanged = " * Conflict detected: the contact has been updated in " +
-                      "both Google and Thunderbird";
-    var bothGoogle = " * The contact from Google will be updated";
-    var bothTB = " * The card from Thunderbird will be updated";
-    LOGGER.LOG("***Finding and matching contacts from Google and Thunderbird***");
-    for (var i = 0, length = googleContacts.length; i < length; i++) {
-      gContact = new GContact(googleContacts[i]);
-      var id = gContact.getValue("id").value;
-      LOGGER.LOG("-" + gContact.getName());
-      // a new array with only the unmatched cards                 
-      var abCards2 = [];
-      var matchedAddresses = {}; // the e-mail addresses of the contact
-      for (var j = 0, length2 = abCards.length; j < length2; j++) {
-        var abCard = abCards[j];
-        // make sure there is an ID
-        if (!id) {
-          LOGGER.LOG_ERROR("Could not get an ID from the contact " + gContact.getName());
-          break;
-        }
-        // if the contacts have the same ID then check if one of them must be updated
-        if (AbManager.getCardValue(abCard, "GoogleID") == id) {
-          var gCardDate = gContact.getLastModifiedDate();
-          var tbCardDate = AbManager.getCardValue(abCard, "LastModifiedDate");
-          if (!tbCardDate)
-            tbCardDate = 0;
-          LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
-          LOGGER.VERBOSE_LOG(" * Google ID: " + id);
-          // If there is a conflict, looks at the updateGoogleInConflicts
-          // preference and updates Google if it's true, or Thunderbird if false
-          if (gCardDate > lastSync && tbCardDate > lastSync/1000) {
-            LOGGER.LOG(bothChanged);
-            if (Preferences.mSyncPrefs.updateGoogleInConflicts.value) {
-              LOGGER.LOG(bothGoogle);
-              var toUpdate = {};
-              toUpdate.gContact = gContact;
-              toUpdate.abCard = abCard;
-              this.mContactsToUpdate[AbManager.getCardValue(abCard, "GoogleID")] = toUpdate;
-              //abCards2.push(abCard); // continue checking the card for dups
-            }
-            else { // update thunderbird
-              LOGGER.LOG(bothTB);
-              ContactConverter.makeCard(gContact, abCard);
-            }
-          }
-          // if the contact from google is newer update the TB card
-          else if (gCardDate > lastSync) {
-            LOGGER.LOG(" * The contact from Google is newer...Updating the" +
-                       " card from Thunderbird");
-            ContactConverter.makeCard(gContact, abCard);
-          }
-          // if the TB card is newer update Google
-          else if (tbCardDate > lastSync/1000) {
-            LOGGER.LOG(" * The card from Thunderbird is newer...Updating the" +
-                       " contact from Google");
-            var toUpdate = {};
-            toUpdate.gContact = gContact;
-            toUpdate.abCard = abCard;
-            this.mContactsToUpdate[AbManager.getCardValue(abCard, "GoogleID")] = toUpdate;
-            //abCards2.push(abCard); // continue checking the card for dups
-          }
-          // otherwise nothing needs to be done
-          else
-            LOGGER.LOG(" * Neither card has changed");
-          gContact.matched = true;
-          // now store the e-mail addresses of this contact to detect duplicates
-          // the card now stores the most updated info, so use its addresses
-          matchedAddresses = AbManager.getCardEmailAddresses(abCard);
-        }
-        // if it wasn't matched, continue searching for it's match
-        else
-          abCards2.push(abCard);
-      }// end of inner for loop
-
-      //copy over the new array
-      abCards = abCards2;
-      abCards2 = [];
-
-      if (!gContact.matched) {
-        LOGGER.LOG(" * No match was found");
-        if (gContact.getLastModifiedDate() > lastSync) {
-          LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
-          ContactConverter.makeCard(gContact);
-        }
-        else {
-          LOGGER.LOG(" * The contact is old will be deleted");
-          this.mContactsToDelete.push(gContact);
-        }
-      }
-    }// end of outer for loop
-
-    LOGGER.LOG("***Looking for unmatched Thunderbird cards***");
-    for (var i = 0; i < abCards.length; i++) {
-      var card = abCards[i];
-      // skip if the card isn't valid if it it is being updated
-      if (card != null && card instanceof nsIAbCard) {
-        var cardId = AbManager.getCardValue(card, "GoogleID");
-        var date = AbManager.getCardValue(card, "LastModifiedDate");
-        LOGGER.LOG("-" + card.displayName + " was not matched");
-        // if it is a new card, add it to Google
-        // will add the card if it doesn't have a GoogleID
-        if (!cardId || cardId == "") {
-          this.mContactsToAdd.push(card);
-          LOGGER.LOG(" * It is new and will be added to Google - " + date);
-        }
-        // otherwise, if it is old, it should be removed
-        else {
-          cardsToDelete.push(card);
-          LOGGER.LOG(" * It is old and will be deleted from Thunderbird - " +
-                     date);
-        }
-      }
-    } // end of for loop
-
-    ab.deleteCards(cardsToDelete);
-    LOGGER.LOG("***Deleting contacts from Google***");
-    
-    // delete contacts from Google
-    this.processDeleteQueue();
-  },*/
+  
   /**
    * Deletes all contacts from Google included in the mContactsToDelete
    * array one at a time to avoid timing conflicts. Calls Sync.processAddQueue()
@@ -496,7 +344,6 @@ var Sync = {
 
     var httpReq = new GHttpRequest("delete", this.mCurrentAuthToken, editURL,
                                    null, this.mCurrentUsername);
-    // TODO check for collisions (use if-match with the etag)
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.mOnSuccess = ["Sync.processDeleteQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting contact', " +
@@ -574,7 +421,6 @@ var Sync = {
       LOGGER.LOG("  - XML of contact being updated:\n" + string + "\n");
     var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, editURL,
                                    string, this.mCurrentUsername);
-    // TODO check for collisions (use if-match with the etag)
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.mOnSuccess = ["Sync.processUpdateQueue();"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating contact', " +

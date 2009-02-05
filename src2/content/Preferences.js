@@ -71,7 +71,10 @@ var Preferences = {
     removeOldAddresses: new Pref("removeOldAddresses", "bool", true),
     enableSyncBtn: new Pref("enableSyncBtn", "bool", true),
     enableLogging: new Pref("enableLogging", "bool", true),
-    listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", true)
+    listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", true),
+    homeAddress: new Pref("homeAddress", "char", "[HomeAddress]\n[HomeAddress2]\n[HomeCity], [HomeState]  [HomeZipCode]\n[HomeCountry]"),
+    workAddress: new Pref("workAddress", "char", "[WorkAddress]\n[WorkAddress2]\n[WorkCity], [WorkState]  [WorkZipCode]\n[WorkCountry]"),
+    otherAddress: new Pref("otherAddress", "char", "[OtherAddress]\n[OtherAddress2]\n[OtherCity], [OtherState]  [OtherZipCode]\n[OtherCountry]")
   },
   /**
    * Preferences.getPref

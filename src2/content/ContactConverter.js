@@ -273,47 +273,87 @@ var ContactConverter = {
       this.init();
     var ab = Sync.mCurrentAb;
     // if there isn't a value in the Full (multi-lined address) then create one
-    // from the existing address, if present
-    if (!AbManager.getCardValue(aCard, "Full" + aPrefix + "Address") &&
-        ab.hasAddress(aCard, aPrefix)) {
-      // get the current info
-      var address1 = AbManager.getCardValue(aCard, aPrefix + "Address");
-      var address2 = AbManager.getCardValue(aCard, aPrefix + "Address2");
-      var city = AbManager.getCardValue(aCard, aPrefix + "City");
-      var state = AbManager.getCardValue(aCard, aPrefix + "State");
-      var zip = AbManager.getCardValue(aCard, aPrefix + "ZipCode");
-      var country = AbManager.getCardValue(aCard, aPrefix + "Country");
+    // from the existing address
+    if (!AbManager.getCardValue(aCard, "Full" + aPrefix + "Address")) {   
       // form the new address from the old
       var newAddress = "";
-      if (address1)
-        newAddress = address1;
-      if (address2)
-        newAddress += "\n" + address2;
-      if (city) {
-        if (newAddress != "")
-          newAddress += "\n";
-        newAddress += city;
-        if (state)
-          newAddress += " " + state;
-        if (zip)
-          newAddress += "  " + zip;
+      var pref = Preferences.mSyncPrefs[aPrefix.toLowerCase() + "Address"];
+      // use the preference that describes how to format the address
+      if (pref && pref.value) {
+        var curToken = "";
+        var isToken = false;
+        for (var i = 0; i < pref.value.length; i++) {
+          var character = pref.value[i];
+          if (isToken) {
+            if (character == ']') {
+              var cardValue = AbManager.getCardValue(aCard, curToken);
+              newAddress += cardValue ? cardValue : "";
+              curToken = "";
+              isToken = false;
+            }
+            else if (character != ']') {
+              curToken += character;
+            }
+          }
+          else {
+            if (character == '[') {
+              isToken = true;
+            }
+            else {
+              newAddress += character;
+            }
+          }
+        }
+        // remove any blank lines
+        var newAddressArr = newAddress.split('\n');
+        var arr = [];
+        newAddress = "";
+        for (var i = 0; i < newAddressArr.length; i++) {
+          // if the current line is valid, add it to the address
+          if (this.validAddrLine(newAddressArr[i]))
+            arr.push(newAddressArr[i]);
+        }
+        newAddress = arr.join('\n');
       }
-      else if (state) {
-        if (newAddress != "")
-          newAddress += "\n";
-        newAddress += state;
-        if (zip)
-          newAddress += "  " + zip;
-      }
-      else if (zip) {
-        if (newAddress != "")
-          newAddress += "\n";
-        newAddress += zip;
-      }
-      if (country) {
-        if (newAddress != "")
-          newAddress += "\n"
-        newAddress += country;
+      // if the preference wasn't found default to the old hard-coded way
+      else {
+        // get the current info
+        var address1 = AbManager.getCardValue(aCard, aPrefix + "Address");
+        var address2 = AbManager.getCardValue(aCard, aPrefix + "Address2");
+        var city = AbManager.getCardValue(aCard, aPrefix + "City");
+        var state = AbManager.getCardValue(aCard, aPrefix + "State");
+        var zip = AbManager.getCardValue(aCard, aPrefix + "ZipCode");
+        var country = AbManager.getCardValue(aCard, aPrefix + "Country");
+        if (address1)
+          newAddress = address1;
+        if (address2)
+          newAddress += "\n" + address2;
+        if (city) {
+          if (newAddress != "")
+            newAddress += "\n";
+          newAddress += city;
+          if (state)
+            newAddress += " " + state;
+          if (zip)
+            newAddress += "  " + zip;
+        }
+        else if (state) {
+          if (newAddress != "")
+            newAddress += "\n";
+          newAddress += state;
+          if (zip)
+            newAddress += "  " + zip;
+        }
+        else if (zip) {
+          if (newAddress != "")
+            newAddress += "\n";
+          newAddress += zip;
+        }
+        if (country) {
+          if (newAddress != "")
+            newAddress += "\n"
+          newAddress += country;
+        }
       }
       // set the attribute and update the card
       ab.setCardValue(aCard, "Full" + aPrefix + "Address", newAddress);
@@ -325,6 +365,20 @@ var ContactConverter = {
       }
       ab.updateCard(aCard);
     }
+  },
+  /**
+   * ContactConverter.validAddrLine
+   * Check if the given string is a valid address line.
+   * A 'valid' address line current consists of at least one letter or number
+   */
+  validAddrLine: function ContactConverter_validAddrLine(aLine) {
+    if (!aLine || !aLine.length) return false;
+    // if something changes between the string and it's lowercase representation
+    if (aLine != aLine.toLowerCase()) {
+      return true;
+    }
+    // if not, check it for at least one number
+    return (new RegExp("[0-9]")).test(aLine);
   },
   /**
    * ContactConverter.checkValue

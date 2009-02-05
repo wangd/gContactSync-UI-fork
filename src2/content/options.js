@@ -80,7 +80,7 @@ function fillLoginTree() {
     if (abs[i] && abs[i].primary && abs[i].primary.mDirectory)
       abName = abs[i].primary.getName();
     usernames[i] = true;
-    addLoginToTree(newTreeChildren, i, abName)
+    addLoginToTree(newTreeChildren, i, abName);
   }
 }
 /**

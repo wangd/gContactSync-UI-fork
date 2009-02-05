@@ -43,7 +43,10 @@
 var gdata = {
   AUTH_URL: "https://www.google.com/accounts/ClientLogin",
   AUTH_REQUEST_TYPE: "POST",
-
+  AUTH_SUB_SESSION_URL: "https://www.google.com/accounts/AuthSubSessionToken",
+  AUTH_SUB_SESSION_TYPE: "GET",
+  O_AUTH_URL: "https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.google.com%2Fm8%2Ffeeds%2F&session=1&secure=0&next=http://pirules.net/gcontactsync/online/index.html",
+  O_AUTH_TYPE: "GET",
   /**
    * gdata.makeAuthBody
    * Sets up the body for an authentication request given the e-mail address

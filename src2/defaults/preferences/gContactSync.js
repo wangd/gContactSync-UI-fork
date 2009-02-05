@@ -22,6 +22,10 @@ pref("extensions.gContactSync.autoSync", true);
 pref("extensions.gContactSync.syncGroups", true);
 // set to true to remove the old addresses when they are converted to the new format
 pref("extensions.gContactSync.removeOldAddresses", true);
+// how to convert addresses
+pref("extensions.gContactSync.homeAddress", "[HomeAddress]\n[HomeAddress2]\n[HomeCity], [HomeState]  [HomeZipCode]\n[HomeCountry]");
+pref("extensions.gContactSync.workAddress", "[WorkAddress]\n[WorkAddress2]\n[WorkCity], [WorkState]  [WorkZipCode]\n[WorkCountry]");
+pref("extensions.gContactSync.otherAddress", "[OtherAddress]\n[OtherAddress2]\n[OtherCity], [OtherState]  [OtherZipCode]\n[OtherCountry]");
 // enable/disable the sync toolbar button
 pref("extensions.gContactSync.enableSyncBtn", true);
 // remove contacts from Google immediately after contacts are removed from Thunderbird

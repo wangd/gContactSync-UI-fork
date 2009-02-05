@@ -57,6 +57,12 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
   if (aUrl && aUrl.indexOf("https://") < 0)
     aUrl = aUrl.replace("http://", "https://");
   switch (aType) {
+    case "AUTH_SUB_SESSION":
+    case "authsubsession":
+      this.mContentType = this.CONTENT_TYPES.URL_ENC;
+      this.mUrl = gdata.AUTH_SUB_SESSION_URL;
+      this.mType = gdata.AUTH_SUB_SESSION_TYPE;
+      break;
     case "AUTHENTICATE":
     case "authenticate":
       this.mContentType = this.CONTENT_TYPES.URL_ENC;

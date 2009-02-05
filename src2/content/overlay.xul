@@ -97,9 +97,23 @@
 
   <!-- Add some text to the status bar -->
   <statusbar id="status-bar" class="chromeclass-status">
-         <statusbarpanel id="statusText2"
-                         onclick="Overlay.showLog();"
-                         label="&initialStatus.label;"
-                         tooltip="&status.tooltip;"/>
+    <statusbarpanel id="statusText2"
+                    onclick="Overlay.showLog();"
+                    label="&initialStatus.label;"
+                    tooltip="&status.tooltip;"/>
   </statusbar>
+  
+  <toolbox id="ab-toolbox">
+  <toolbar id="addrbook-toolbar">
+    <toolbaritem id="menubar-items">
+      <menubar id="mail-menubar">
+        <menu id="gContactSyncMenu" label="gContactSync">
+          <menupopup id="gContactSyncMenuPopup">
+            <menuitem id="syncMenuItem" onclick="Sync.begin();" label="Sync"/>
+          </menupopup>
+        </menu>
+      </menubar>
+    </toolbaritem>
+  </toolbar>
+  </toolbox>
 </overlay>

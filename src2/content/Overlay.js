@@ -70,6 +70,7 @@ var Overlay = {
     OnLoadCardView = this.myOnLoadCardView;
     if (Preferences.mSyncPrefs.enableSyncBtn.value)
       Overlay.setupButton(); // insert the Sync button
+    Overlay.setupMenu();
     gdata.contacts.init();
     ContactConverter.init();
     // add the extra attributes as tree columns to show and
@@ -149,6 +150,32 @@ var Overlay = {
     }
   },
   /**
+   * Overlay.setupMenu
+   * Sets up the gContactSync menu in the address book menubar
+   */
+  setupMenu: function Overlay_setupMenu() {
+    try {
+    var menubar = document.getElementById("mail-menubar");
+    var toolsMenu = document.getElementById("tasksMenu");
+    var menu = document.createElement("menu");
+    menu.setAttribute("id", "gContactSyncMenu");
+    menu.setAttribute("label", "gContactSync");
+    menu.setAttribute("accesskey", "G");
+    var menupopup = document.createElement("menupopup");
+    menupopup.setAttribute("id", "gContactSyncMenuPopup");
+    var syncMenuItem = document.createElement("menuitem");
+    syncMenuItem.setAttribute("id", "syncMenuItem");
+    syncMenuItem.setAttribute("label", "Sync");
+    syncMenuItem.setAttribute("accesskey", "S");
+    syncMenuItem.setAttribute("oncommand", "Sync.begin();");
+    syncMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+    menupopup.appendChild(syncMenuItem);
+    menu.appendChild(menupopup);
+    menubar.insertBefore(menu, toolsMenu);
+    }
+    catch(e) { LOGGER.LOG_WARNING("Unable to setup the menu", e); alert(e);}
+  },
+  /**
    * Overlay.setupButton
    * Sets up the Sync button to go between the Write and Delete buttons and adds
    * a separator between Sync and Delete.
@@ -170,11 +197,24 @@ var Overlay = {
       button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
       var deleteButton = document.getElementById("button-abdelete");
-      button.style.MozImageRegion = deleteButton.MozImageRegion;
-      // insert the separator before the Delete button
-      toolbar.insertBefore(separator, deleteButton);
-      // insert the button before the separator
-      toolbar.insertBefore(button, separator);
+
+      if (deleteButton) {
+        try {
+          button.style.MozImageRegion = deleteButton.MozImageRegion;
+          // insert the separator before the Delete button
+          toolbar.insertBefore(separator, deleteButton);
+          // insert the button before the separator
+          toolbar.insertBefore(button, separator);
+          return;
+        }
+        catch (e) {
+          LOGGER.LOG_WARNING("Couldn't setup the sync button before the delete button", e);
+        }
+      }
+
+      // if all else fails try to append the button at the end
+      toolbar.appendChild(separator);
+      toolbar.appendChild(button);
     }
     catch(e) { LOGGER.LOG_WARNING("Couldn't setup the sync button", e); }
   },

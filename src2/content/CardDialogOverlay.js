@@ -380,14 +380,8 @@ function myGetCardValues(aCard, aDoc) {
       }
     } catch(e) { alert("Error in myGetCardValues: " + attr + "\n" + e); }
   }
-  // hide the dummy e-mail address from the user
-  var dummyEmail;
-  if (aCard.getProperty) // post Bug 413260
-    dummyEmail = aCard.getProperty(dummyEmailName, null);
-  else // pre Bug 413260
-    dummyEmail = aCard.getCardValue(dummyEmailName);
-  if (dummyEmail == StringBundle.getStr("dummyEmail")) {
-    aDoc.getElementById(dummyEmailName).value = null;
+  if (aDoc.getElementById("PrimaryEmail").value == StringBundle.getStr("dummyEmail")) {
+    aDoc.getElementById("PrimaryEmail").value = null;
   }
 }
 /**
