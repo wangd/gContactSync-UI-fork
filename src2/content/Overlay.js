@@ -90,6 +90,8 @@ var Overlay = {
     AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
+    // load the card view (required by seamonkey)
+    this.myOnLoadCardView();
     this.checkAuthentication(); // check if the Auth token is valid
   },
   /**
@@ -158,6 +160,10 @@ var Overlay = {
   setupMenu: function Overlay_setupMenu() {
     try {
       var menubar = document.getElementById("mail-menubar");
+      var isSeamonkey = menubar ? true : false;
+      if (!menubar) // seamonkey
+          menubar = document.getElementById("ab-menubar");
+
       var toolsMenu = document.getElementById("tasksMenu");
       var menu = document.createElement("menu");
       menu.setAttribute("id", "gContactSyncMenu");
@@ -184,8 +190,6 @@ var Overlay = {
     }
     catch(e) {
       LOGGER.LOG_WARNING("Unable to setup the menu", e);
-      // TODO remove this alert
-      alert(e);
     }
   },
   /**
@@ -196,7 +200,10 @@ var Overlay = {
   setupButton: function Overlay_setupButton() {
     try {
       // get the toolbar with the buttons
-      var toolbar = document.getElementById("ab-bar2");
+      var toolbar = document.getElementById("ab-bar2"); // thunderbird
+      var isSeamonkey = toolbar ? true : false;
+      if (!toolbar)
+          toolbar = document.getElementById("abToolbar"); // seamonkey
       // setup the separators
       var separator = document.createElement("toolbarseparator");
       var separator2 = document.createElement("toolbarseparator");
@@ -210,7 +217,7 @@ var Overlay = {
       button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
 
-      var deleteButton = document.getElementById("button-abdelete");
+      var deleteButton = document.getElementById(isSeamonkey ? "button-delete" : "button-abdelete");
       var writeButton  = document.getElementById("button-newmessage");
       var addedButton = false;
       // first, try to insert it after the delete button
@@ -249,7 +256,6 @@ var Overlay = {
         }
         catch (e) {
           LOGGER.LOG_WARNING("Couldn't setup the sync button before the write button", e);
-          alert("Error while placing the sync button\n" + e);
         }
       }
       // if all else fails try to append the button at the end of the toolbar
@@ -258,7 +264,9 @@ var Overlay = {
         toolbar.appendChild(button);
       }
     }
-    catch(e) { LOGGER.LOG_WARNING("Couldn't setup the sync button", e); }
+    catch(e) {
+       LOGGER.LOG_WARNING("Couldn't setup the sync button", e);
+    }
   },
   /**
    * Overlay.checkAuthentication
@@ -285,7 +293,7 @@ var Overlay = {
   },
   /**
    * Overlay.promptLogin
-   * Prompts the user to enter his or her Google™ username and password and then
+   * Prompts the user to enter his or her Google username and password and then
    * gets an authentication token to store and use.
    */
   promptLogin: function Overlay_promptLogin() {
@@ -433,7 +441,7 @@ var Overlay = {
       var primaryEmail = AbManager.getCardValue(aCard, dummyEmailName);
       // if the primary e-mail address is the dummy address, hide it
       if (primaryEmail == StringBundle.getStr("dummyEmail")) {
-        // XXX recalculate if the contact info box must be collapsed too
+        // TODO recalculate if the contact info box must be collapsed too
         switch (dummyEmailName) {
           case "PrimaryEmail" :
             cvData.cvEmail1Box.collapsed = true;
@@ -563,7 +571,10 @@ var Overlay = {
                                    visible, true);
       cvSetVisible(cvData.cvhPhone, visible);
       cvSetVisible(cvData.cvbPhone, visible);
-    } catch(e) { alert(e); LOGGER.LOG_WARNING("Error while modifying the view pane.", e); }
+    } catch(e) { 
+        alert("Error while modifying view pane: " + e);
+        LOGGER.LOG_WARNING("Error while modifying the view pane.", e);
+    }
   },
   /**
    * Overlay.collapseAddress
@@ -662,8 +673,9 @@ var Overlay = {
    * loaded.
    */
   myOnLoadCardView: function Overlay_myOnLoadCardView() {
-    if (!originalOnLoadCardView)
+    if (!originalOnLoadCardView){
       return;
+    }
     originalOnLoadCardView();
 
     // add the <description> elements
@@ -800,7 +812,7 @@ var Overlay = {
    * Opens the Preferences for gContactSync
    */
   openPreferences: function Overlay_openPreferences() {
-    var win = window.open("chrome://gcontactsync/content/options.xul", "",
+    var win = window.open("chrome://gcontactsync/content/options.xul", "prefs",
                           "chrome=yes,resizable=yes");
     // when the pref window loads, set its onunload property to get the prefs again
    win.onload = function onloadListener() {
