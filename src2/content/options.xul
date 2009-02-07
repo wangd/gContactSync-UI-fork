@@ -52,9 +52,6 @@
       <preference id="initialDelay"
                   name="extensions.gContactSync.initialDelay"
                   type="int"/>
-      <preference id="removeOldAddresses"
-                  name="extensions.gContactSync.removeOldAddresses"
-                  type="bool"/>
       <preference id="updateGoogleInConflicts"
                   name="extensions.gContactSync.updateGoogleInConflicts"
                   type="bool"/>
@@ -79,6 +76,9 @@
       <preference id="enableSyncBtn"
                   name="extensions.gContactSync.enableSyncBtn"
                   type="bool"/>
+      <preference id="enableMenu"
+                  name="extensions.gContactSync.enableMenu"
+                  type="bool"/>
       <preference id="listenerDeleteFromGoogle"
                   name="extensions.gContactSync.listenerDeleteFromGoogle"
                   type="bool"/>
@@ -102,12 +102,10 @@
             </row>
           </rows>
         </grid>
-        
       </groupbox>
       <separator class="thin"/>
       <groupbox>
         <caption label="&syncBehavior.label;"/>
-        <checkbox preference="removeOldAddresses" id="removeOldAddresses" label="&removeOldAddresses.label;"/>
         <checkbox preference="updateGoogleInConflicts" id="macContacts" label="&updateGoogle.label;"/>
         <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
       </groupbox>
@@ -117,6 +115,7 @@
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
         <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>
+        <checkbox preference="enableMenu" id="enableMenu" label="&enableMenu.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>
@@ -269,7 +268,6 @@
       </vbox>
     </groupbox>
   </prefpane>
-  
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/synonyms.js"/>
   <script type="application/x-javascript"

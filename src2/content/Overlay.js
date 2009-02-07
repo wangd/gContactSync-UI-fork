@@ -70,7 +70,9 @@ var Overlay = {
     OnLoadCardView = this.myOnLoadCardView;
     if (Preferences.mSyncPrefs.enableSyncBtn.value)
       Overlay.setupButton(); // insert the Sync button
-    Overlay.setupMenu();
+    if (Preferences.mSyncPrefs.enableMenu.value) {
+      Overlay.setupMenu();
+    }
     gdata.contacts.init();
     ContactConverter.init();
     // add the extra attributes as tree columns to show and
@@ -130,7 +132,7 @@ var Overlay = {
     // it is a postal address
     for (var i = 0, length = ids.length; i < length; i++) {
       var id = ids[i];
-      if (id.indexOf("Address") != -1 || id.indexOf("Type") != -1) 
+      if (id.indexOf("Address") != -1 || id.indexOf("Type") != -1)
         continue; // skip addresses and Types
       // make and add the splitter first
       var splitter = document.createElement("splitter");
@@ -155,25 +157,36 @@ var Overlay = {
    */
   setupMenu: function Overlay_setupMenu() {
     try {
-    var menubar = document.getElementById("mail-menubar");
-    var toolsMenu = document.getElementById("tasksMenu");
-    var menu = document.createElement("menu");
-    menu.setAttribute("id", "gContactSyncMenu");
-    menu.setAttribute("label", "gContactSync");
-    menu.setAttribute("accesskey", "G");
-    var menupopup = document.createElement("menupopup");
-    menupopup.setAttribute("id", "gContactSyncMenuPopup");
-    var syncMenuItem = document.createElement("menuitem");
-    syncMenuItem.setAttribute("id", "syncMenuItem");
-    syncMenuItem.setAttribute("label", "Sync");
-    syncMenuItem.setAttribute("accesskey", "S");
-    syncMenuItem.setAttribute("oncommand", "Sync.begin();");
-    syncMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-    menupopup.appendChild(syncMenuItem);
-    menu.appendChild(menupopup);
-    menubar.insertBefore(menu, toolsMenu);
+      var menubar = document.getElementById("mail-menubar");
+      var toolsMenu = document.getElementById("tasksMenu");
+      var menu = document.createElement("menu");
+      menu.setAttribute("id", "gContactSyncMenu");
+      menu.setAttribute("label", "gContactSync");
+      menu.setAttribute("accesskey", "G");
+      var menupopup = document.createElement("menupopup");
+      menupopup.setAttribute("id", "gContactSyncMenuPopup");
+      var syncMenuItem = document.createElement("menuitem");
+      syncMenuItem.setAttribute("id", "syncMenuItem");
+      syncMenuItem.setAttribute("label", StringBundle.getStr("syncMenu"));
+      syncMenuItem.setAttribute("accesskey", StringBundle.getStr("syncMenuKey"));
+      syncMenuItem.setAttribute("oncommand", "Sync.begin();");
+      syncMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+      var prefMenuItem = document.createElement("menuitem");
+      prefMenuItem.setAttribute("id", "prefMenuItem");
+      prefMenuItem.setAttribute("label", StringBundle.getStr("prefMenu"));
+      prefMenuItem.setAttribute("accesskey", StringBundle.getStr("prefMenuKey"));
+      prefMenuItem.setAttribute("oncommand", "Overlay.openPreferences();");
+      prefMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+      menupopup.appendChild(syncMenuItem);
+      menupopup.appendChild(prefMenuItem);
+      menu.appendChild(menupopup);
+      menubar.insertBefore(menu, toolsMenu);
     }
-    catch(e) { LOGGER.LOG_WARNING("Unable to setup the menu", e); alert(e);}
+    catch(e) {
+      LOGGER.LOG_WARNING("Unable to setup the menu", e);
+      // TODO remove this alert
+      alert(e);
+    }
   },
   /**
    * Overlay.setupButton
@@ -184,9 +197,9 @@ var Overlay = {
     try {
       // get the toolbar with the buttons
       var toolbar = document.getElementById("ab-bar2");
-      // setup the separator
+      // setup the separators
       var separator = document.createElement("toolbarseparator");
-      separator.setAttribute("id", "new-separator");
+      var separator2 = document.createElement("toolbarseparator");
       // setup the button
       var button = document.createElement("toolbarbutton");
       button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
@@ -196,8 +209,11 @@ var Overlay = {
       button.setAttribute("oncommand", "Sync.begin();");
       button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
-      var deleteButton = document.getElementById("button-abdelete");
 
+      var deleteButton = document.getElementById("button-abdelete");
+      var writeButton  = document.getElementById("button-newmessage");
+      var addedButton = false;
+      // first, try to insert it after the delete button
       if (deleteButton) {
         try {
           button.style.MozImageRegion = deleteButton.MozImageRegion;
@@ -205,16 +221,42 @@ var Overlay = {
           toolbar.insertBefore(separator, deleteButton);
           // insert the button before the separator
           toolbar.insertBefore(button, separator);
+          addedButton = true;
+          // insert the second separator before the button if necessary
+          if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
+              toolbar.insertBefore(separator2, button);
+          }
           return;
         }
         catch (e) {
           LOGGER.LOG_WARNING("Couldn't setup the sync button before the delete button", e);
         }
       }
-
-      // if all else fails try to append the button at the end
-      toolbar.appendChild(separator);
-      toolbar.appendChild(button);
+      // if that doesn't work, try after the write button
+      if (writeButton && !addedButton) {
+        try {
+          button.style.MozImageRegion = writeButton.MozImageRegion;
+          // insert the separator before the Write button
+          toolbar.insertBefore(separator, writeButton);
+          // insert the button before the separator
+          toolbar.insertBefore(button, separator);
+          addedButton = true;
+          // insert the second separator before the button if necessary
+          if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
+              toolbar.insertBefore(separator2, button);
+          }
+          return;
+        }
+        catch (e) {
+          LOGGER.LOG_WARNING("Couldn't setup the sync button before the write button", e);
+          alert("Error while placing the sync button\n" + e);
+        }
+      }
+      // if all else fails try to append the button at the end of the toolbar
+      if (!addedButton) {
+        toolbar.appendChild(separator);
+        toolbar.appendChild(button);
+      }
     }
     catch(e) { LOGGER.LOG_WARNING("Couldn't setup the sync button", e); }
   },
@@ -290,7 +332,7 @@ var Overlay = {
     // when the setup window loads, set its onunload property to begin a sync
     setup.onload = function onloadListener() {
       setup.onunload = function onunloadListener() {
-        Overlay.checkAuthentication(); 
+        Overlay.checkAuthentication();
       };
     };
   },
@@ -758,7 +800,13 @@ var Overlay = {
    * Opens the Preferences for gContactSync
    */
   openPreferences: function Overlay_openPreferences() {
-    window.open("chrome://gcontactsync/content/options.xul", "",
-                "chrome=yes,resizable=yes");
+    var win = window.open("chrome://gcontactsync/content/options.xul", "",
+                          "chrome=yes,resizable=yes");
+    // when the pref window loads, set its onunload property to get the prefs again
+   win.onload = function onloadListener() {
+      win.onunload = function onunloadListener() {
+        Preferences.getSyncPrefs();
+      };
+    };
   }
 };

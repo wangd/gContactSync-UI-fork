@@ -70,6 +70,7 @@ var Preferences = {
     syncAddresses: new Pref("syncAddresses", "bool", true),
     removeOldAddresses: new Pref("removeOldAddresses", "bool", true),
     enableSyncBtn: new Pref("enableSyncBtn", "bool", true),
+    enableMenu: new Pref("enableMenu", "bool", true),
     enableLogging: new Pref("enableLogging", "bool", true),
     listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", true),
     homeAddress: new Pref("homeAddress", "char", "[HomeAddress]\n[HomeAddress2]\n[HomeCity], [HomeState]  [HomeZipCode]\n[HomeCountry]"),
