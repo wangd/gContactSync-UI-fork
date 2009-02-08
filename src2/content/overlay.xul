@@ -102,4 +102,4 @@
                     label="&initialStatus.label;"
                     tooltip="&status.tooltip;"/>
   </statusbar>
-  </overlay>
+</overlay>

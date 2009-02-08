@@ -218,7 +218,7 @@ var Overlay = {
       button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
 
-      var deleteButton = document.getElementById(isSeamonkey ? "button-delete" : "button-abdelete");
+      var deleteButton = document.getElementById(isSeamonkey ? "button-abdelete" : "button-delete");
       var writeButton  = document.getElementById("button-newmessage");
       var addedButton  = false;
       // first, try to insert it after the delete button
