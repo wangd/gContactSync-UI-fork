@@ -94,15 +94,19 @@ HttpRequest.prototype = {
    *       including mOnSuccess, mOnError, mOnFail, and mOnCreated first.
    */
   send: function HttpRequest_send() {
+    // log the basic info for debugging purposes
     LOGGER.VERBOSE_LOG("HTTP Request being formed");
     LOGGER.VERBOSE_LOG(" * Caller is: " + this.send.caller.name);
     LOGGER.VERBOSE_LOG(" * URL: " + this.mUrl);
     LOGGER.VERBOSE_LOG(" * Type: " + this.mType);
     LOGGER.VERBOSE_LOG(" * Content-Type: " + this.mContentType);
+    
     this.mHttpRequest.open(this.mType, this.mUrl, true); // open the request
+
     // set the header
     this.addHeaderItem("Content-Type", this.mContentType);
     LOGGER.VERBOSE_LOG(" * Setting up the header: ");
+
     for (var i = 0; i < this.mHeaderLabels.length; i++) {
        LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] + " " + this.mHeaderValues[i]);
        this.mHttpRequest.setRequestHeader(this.mHeaderLabels[i],
@@ -118,29 +122,39 @@ HttpRequest.prototype = {
 
     httpReq.onreadystatechange = function httpReq_readyState() {
       var commands = [];
-      //if the request is done then check the status
+      // if the request is done then check the status
       if (httpReq.readyState == 4) {
-        LOGGER.VERBOSE_LOG(" * The request has finished with status: " + httpReq.status);
-        switch (httpReq.status) { 
-          case 0: // the user is offline
-            commands = onOffline;
-            break;
-          case 201: // if it is 201 CREATED
-            commands = onCreated;
-            break;
-          case 200:
-           // if the status is 200 OK
-            commands = onSuccess;
-            break;
-          default: // other error
-            commands = onFail;
+        // this may be called after the address book window is closed
+        // if the window is closed there will be an exception thrown as
+        // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
+        try {
+          LOGGER.VERBOSE_LOG(" * The request has finished with status: " + httpReq.status);
+          switch (httpReq.status) { 
+            case 0: // the user is offline
+              commands = onOffline;
+              break;
+            case 201: // 201 CREATED
+              commands = onCreated;
+              break;
+            case 200: // 200 OK
+              commands = onSuccess;
+              break;
+            default: // other status
+              commands = onFail;
+          }
+          LOGGER.VERBOSE_LOG(" * Evaluating commands");
+          for (var i in commands) {
+            LOGGER.VERBOSE_LOG("   o " + commands[i]);
+            try {
+              eval(commands[i]);
+            }
+            catch (e) {
+              LOGGER.LOG_WARNING("Couldn't evaluate command", e);
+            }
+          }
         }
-        LOGGER.VERBOSE_LOG(" * Evaluating commands");
-        for (var i in commands) {
-          LOGGER.VERBOSE_LOG("   o " + commands[i]);
-          eval(commands[i]);
-        }
-      }//end of readyState
+        catch (e) {}
+      } // end of readyState
     }
   }
 };
