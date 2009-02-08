@@ -42,7 +42,9 @@
  * user to login.
  */
 // initialize everything after the Address Book window loads
-window.addEventListener("load", function eventListener(e) { Overlay.initialize(); }, false);
+window.addEventListener("load", function eventListener(e) {
+        Overlay.initialize();
+}, false);
 var originalOnLoadCardView;
 var originalDisplayCardViewPane;
 var originalSetAbView;
@@ -63,16 +65,15 @@ var Overlay = {
     var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
               .createInstance(nsIAbCard);
     this.mBug413260 = card.getProperty ? true : false;
-    StringBundle.init(); // initialize the string bundle
+    StringBundle.init();        // initialize the string bundle
     Preferences.getSyncPrefs(); // get the preferences
-    FileIO.init(); // initialize the FileIO class
+    FileIO.init();              // initialize the FileIO class
     originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
     if (Preferences.mSyncPrefs.enableSyncBtn.value)
-      Overlay.setupButton(); // insert the Sync button
-    if (Preferences.mSyncPrefs.enableMenu.value) {
-      Overlay.setupMenu();
-    }
+      Overlay.setupButton();    // insert the Sync button
+    if (Preferences.mSyncPrefs.enableMenu.value)
+      Overlay.setupMenu();      // add a shortcut menu
     gdata.contacts.init();
     ContactConverter.init();
     // add the extra attributes as tree columns to show and
@@ -159,19 +160,19 @@ var Overlay = {
    */
   setupMenu: function Overlay_setupMenu() {
     try {
-      var menubar = document.getElementById("mail-menubar");
-      var isSeamonkey = menubar ? true : false;
+      var menubar      = document.getElementById("mail-menubar");
+      var isSeamonkey  = menubar ? true : false;
       if (!menubar) // seamonkey
-          menubar = document.getElementById("ab-menubar");
+          menubar      = document.getElementById("ab-menubar");
 
-      var toolsMenu = document.getElementById("tasksMenu");
-      var menu = document.createElement("menu");
+      var toolsMenu    = document.getElementById("tasksMenu");
+      var menu         = document.createElement("menu");
       menu.setAttribute("id", "gContactSyncMenu");
       menu.setAttribute("label", "gContactSync");
       menu.setAttribute("accesskey", "G");
-      var menupopup = document.createElement("menupopup");
-      menupopup.setAttribute("id", "gContactSyncMenuPopup");
+      var menupopup    = document.createElement("menupopup");
       var syncMenuItem = document.createElement("menuitem");
+      menupopup.setAttribute("id", "gContactSyncMenuPopup");
       syncMenuItem.setAttribute("id", "syncMenuItem");
       syncMenuItem.setAttribute("label", StringBundle.getStr("syncMenu"));
       syncMenuItem.setAttribute("accesskey", StringBundle.getStr("syncMenuKey"));
@@ -200,15 +201,15 @@ var Overlay = {
   setupButton: function Overlay_setupButton() {
     try {
       // get the toolbar with the buttons
-      var toolbar = document.getElementById("ab-bar2"); // thunderbird
+      var toolbar     = document.getElementById("ab-bar2"); // thunderbird
       var isSeamonkey = toolbar ? true : false;
       if (!toolbar)
-          toolbar = document.getElementById("abToolbar"); // seamonkey
+          toolbar     = document.getElementById("abToolbar"); // seamonkey
       // setup the separators
-      var separator = document.createElement("toolbarseparator");
-      var separator2 = document.createElement("toolbarseparator");
+      var separator   = document.createElement("toolbarseparator");
+      var separator2  = document.createElement("toolbarseparator");
       // setup the button
-      var button = document.createElement("toolbarbutton");
+      var button      = document.createElement("toolbarbutton");
       button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
                           " chromeclass-toolbar-additional");
       button.setAttribute("id", "syncButton");
@@ -219,7 +220,7 @@ var Overlay = {
 
       var deleteButton = document.getElementById(isSeamonkey ? "button-delete" : "button-abdelete");
       var writeButton  = document.getElementById("button-newmessage");
-      var addedButton = false;
+      var addedButton  = false;
       // first, try to insert it after the delete button
       if (deleteButton) {
         try {
@@ -297,9 +298,9 @@ var Overlay = {
    * gets an authentication token to store and use.
    */
   promptLogin: function Overlay_promptLogin() {
-    var prompt = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-                  .getService(Ci.nsIPromptService)
-                  .promptUsernameAndPassword;
+    var prompt   = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Ci.nsIPromptService)
+                    .promptUsernameAndPassword;
     var username = {};
     var password = {};
     // opens a username/password prompt
@@ -308,8 +309,8 @@ var Overlay = {
                     {value: false});
     if (!ok)
       return;
-    var body = gdata.makeAuthBody(username.value, password.value);
-    var httpReq = new GHttpRequest("authenticate", null, null, body);
+    var body     = gdata.makeAuthBody(username.value, password.value);
+    var httpReq  = new GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
     httpReq.mOnSuccess = ["Overlay.login('" + username.value +
@@ -369,7 +370,7 @@ var Overlay = {
   writeTimeToStatusBar: function Overlay_writeTimeToStatusBar() {
     var hours = new String(new Date().getHours());
     hours = hours.length == 0 ? "00" + hours : hours;
-    hours = hours.length == 1 ? "0" + hours : hours;
+    hours = hours.length == 1 ?  "0" + hours : hours;
     var minutes = new String(new Date().getMinutes());
     minutes = minutes.length == 1 ? "0" + minutes : minutes;
     var seconds = new String(new Date().getSeconds());
@@ -809,11 +810,11 @@ var Overlay = {
   },
   /**
    * Overlay.openPreferences
-   * Opens the Preferences for gContactSync
+   * Opens the Preferences dialog for gContactSync
    */
   openPreferences: function Overlay_openPreferences() {
     var win = window.open("chrome://gcontactsync/content/options.xul", "prefs",
-                          "chrome=yes,resizable=yes");
+                          "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
     // when the pref window loads, set its onunload property to get the prefs again
    win.onload = function onloadListener() {
       win.onunload = function onunloadListener() {
