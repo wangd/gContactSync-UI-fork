@@ -160,7 +160,7 @@ var ContactConverter = {
         type = obj.type;
       // see the dummy e-mail note below
       if (obj.tbName == dummyEmailName &&
-          value == StringBundle.getStr("dummyEmail")) {
+          isDummyEmail(value)) {
         value = null;
         type = null;
       }
@@ -220,7 +220,7 @@ var ContactConverter = {
       // and are in Mailing Lists.  To avoid problems, use a dummy e-mail addr
       // that is hidden from the user
       if (obj.tbName == dummyEmailName && !property.value) {
-        property.value = StringBundle.getStr("dummyEmail");
+        property.value = makeDummyEmail(aContact);
         property.type = "Home";
       }
       ab.setCardValue(card, obj.tbName, property.value);

@@ -68,3 +68,46 @@ function serializeFromText(aString) {
   }
   return aString;
 }
+function makeDummyEmail(aContact) {
+  if (!aContact) throw "Invalid contact sent to makeDummyEmail";
+  var prefix = StringBundle.getStr("dummy1");
+  var suffix = StringBundle.getStr("dummy2");
+  var id = null;
+  // GContact and TBContact may not be defined
+  try {
+    if (aContact instanceof GContact) {
+      id = aContact.getID();
+    }
+    // otherwise it is from Thunderbird, so try to get the Google ID, if any
+    else if (aContact instanceof TBContact) {
+      id = aContact.getValue("GoogleID");
+    }
+    else {
+      id = AbManager.getCardValue(aContact, "GoogleID");
+    }
+  } catch(e) {
+    try {
+      // try getting the card's value
+      if (aCard.getProperty) // post Bug 413260
+        id = aCard.getProperty("GoogleID", null);
+      else // pre Bug 413260
+        id = aCard.getStringAttribute("GoogleID");
+    }
+    catch (e) {}
+  }
+
+  if (id) {
+    return prefix + id + suffix;
+  }
+  // if there is no ID make a random number
+  else {
+    var num = new String(Math.random());
+    num = num.replace("0.", "");
+    return prefix + num + suffix;
+  }
+}
+
+function isDummyEmail(aEmail) {
+  return aEmail && aEmail.indexOf && 
+        aEmail.indexOf(StringBundle.getStr("dummy2")) != -1;
+}

@@ -70,7 +70,6 @@ var gAttributes = {
   "HomeFaxNumberType" : {},
   "OtherNumberType" : {}
 };
-var Ci = Components.interfaces;
 /**
  * CardDialogOverlay
  * Adds a tab to the tab box in the New and Edit Card Dialogs.  Using JavaScript
@@ -380,7 +379,8 @@ function myGetCardValues(aCard, aDoc) {
       }
     } catch(e) { alert("Error in myGetCardValues: " + attr + "\n" + e); }
   }
-  if (aDoc.getElementById("PrimaryEmail").value == StringBundle.getStr("dummyEmail")) {
+
+  if (isDummyEmail(aDoc.getElementById("PrimaryEmail").value)) {
     aDoc.getElementById("PrimaryEmail").value = null;
   }
 }
@@ -426,8 +426,10 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   // ensure that every contact edited through this dialog has at least a dummy
   // e-mail address
   var primEmailElem = aDoc.getElementById("PrimaryEmail");
+  try {
   if (!primEmailElem.value || primEmailElem.value == "")
-    primEmailElem.value = StringBundle.getStr("dummyEmail");
+    primEmailElem.value = makeDummyEmail(aCard);
+    }catch (e) {alert(e);}
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }

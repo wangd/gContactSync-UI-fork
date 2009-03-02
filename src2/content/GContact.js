@@ -587,5 +587,10 @@ GContact.prototype = {
     // get only the very end
     var str = str.substring(str.length - aType.length);
     return str == aType; // return true if the end is equal to aType
+  },
+  getID: function GContact_getID() {
+    var val   = this.getValue("id").value;
+    var index = val.lastIndexOf("/");
+    return val.substr(index + 1);
   }
 };

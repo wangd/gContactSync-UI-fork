@@ -441,7 +441,7 @@ var Overlay = {
       Overlay.showNodes(ContactConverter.getExtraSyncAttributes());
       var primaryEmail = AbManager.getCardValue(aCard, dummyEmailName);
       // if the primary e-mail address is the dummy address, hide it
-      if (primaryEmail == StringBundle.getStr("dummyEmail")) {
+      if (isDummyEmail(primaryEmail)) {
         // TODO recalculate if the contact info box must be collapsed too
         switch (dummyEmailName) {
           case "PrimaryEmail" :
