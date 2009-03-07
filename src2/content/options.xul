@@ -110,7 +110,7 @@
         <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
       </groupbox>
       <groupbox>
-        <caption label="Other"/>
+        <caption label="&other.label;"/>
         <checkbox preference="listenerDeleteFromGoogle" id="listenerDeleteFromGoogle" label="&listenerDeleteFromGoogle.label;"/>
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
@@ -122,9 +122,9 @@
   <prefpane id="pane_accounts" index="accounts" label="&accounts.tab;">
     <tree flex="1" id="loginTree" seltype="single">
       <treecols>
-        <treecol id="email" label="E-mail Address" flex="1"/>
+        <treecol id="email" label="&emailAddress.label;" flex="1"/>
         <splitter class="tree-splitter"/>
-        <treecol id="addressBook" label="Address Book" flex="1"/>
+        <treecol id="addressBook" label="&addressBook.label;" flex="1"/>
       </treecols>
       <treechildren id="loginTreeChildren"/>
     </tree>

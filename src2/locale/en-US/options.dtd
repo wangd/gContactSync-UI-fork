@@ -18,7 +18,7 @@
 <!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">
 <!ENTITY accounts.tab "Accounts">
 <!ENTITY emailAddress.label "E-mail Address">
-<!ENTITY addressBook.label "Main Address Book">
+<!ENTITY addressBook.label "Address Book">
 <!ENTITY removeLogin.label "Remove Login">
 <!ENTITY addLogin.label "Add Login">
 <!ENTITY changeAbName.label "Change Address Book">
