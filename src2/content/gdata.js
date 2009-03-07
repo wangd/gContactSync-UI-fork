@@ -45,7 +45,9 @@ var gdata = {
   AUTH_REQUEST_TYPE: "POST",
   AUTH_SUB_SESSION_URL: "https://www.google.com/accounts/AuthSubSessionToken",
   AUTH_SUB_SESSION_TYPE: "GET",
-  O_AUTH_URL: "https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.google.com%2Fm8%2Ffeeds%2F&session=1&secure=0&next=http://pirules.net/gcontactsync/online/index.html",
+  AUTH_SUB_REVOKE_URL: "https://www.google.com/accounts/AuthSubRevokeToken",
+  AUTH_SUB_REVOKE_TYPE: "GET",
+  O_AUTH_URL: "https://www.google.com/accounts/AuthSubRequest?scope=https%3A%2F%2Fwww.google.com%2Fm8%2Ffeeds%2F&session=1&secure=0&next=http://pirules.net/gcontactsync/online/index.php",
   O_AUTH_TYPE: "GET",
   /**
    * gdata.makeAuthBody
@@ -96,10 +98,27 @@ var gdata = {
   contacts: {
     GET_ALL_URL: "https://www.google.com/m8/feeds/contacts/default/full?" +
                  "max-results=",
+    GET_ALL_THIN_URL: "https://www.google.com/m8/feeds/contacts/default/thin?" +
+                      "max-results=",
     GROUPS_URL: "https://www.google.com/m8/feeds/groups/default/full?" +
                 "max-results=1000",
     ADD_GROUP_URL: "https://www.google.com/m8/feeds/groups/default/full",
     ADD_URL: "https://www.google.com/m8/feeds/contacts/default/full",
+    TYPES: {
+      AIM: "AIM",
+      GOOGLE_TALK: "Google Talk",
+      ICQ: "ICQ",
+      YAHOO: "Yahoo",
+      MSN: "MSN",
+      JABBER: "Jabber",
+      home: "Home",
+      work: "Work",
+      other: "Other",
+      mobile: "Mobile",
+      pager: "Pager",
+      work_fax: "Work Fax",
+      home_fax: "Home Fax"
+    },
     requestTypes: {
       GET_ALL: "GET",
       GET: "GET",
