@@ -416,7 +416,7 @@ AddressBook.prototype = {
       return value;
     }
     catch(e) {
-      LOGGER.VERBOSE_LOG("getStringPref: (this error is usually expected)\n" + e);
+      //LOGGER.VERBOSE_LOG("getStringPref: (this error is usually expected)\n" + e);
     } // an error is expected if the value isn't present
   },
   /**
