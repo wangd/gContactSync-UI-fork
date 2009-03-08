@@ -92,7 +92,9 @@ var Overlay = {
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
     // load the card view (required by seamonkey)
-    this.myOnLoadCardView();
+    if (gAddressBookBundle) {
+      this.myOnLoadCardView();
+    }
     this.checkAuthentication(); // check if the Auth token is valid
   },
   /**
