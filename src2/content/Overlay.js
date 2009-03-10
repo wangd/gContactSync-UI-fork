@@ -86,8 +86,8 @@ var Overlay = {
     originalDisplayCardViewPane = DisplayCardViewPane;
     DisplayCardViewPane = this.myDisplayCardViewPane;
     // override the ab results tree function
-    originalSetAbView = SetAbView;
-    SetAbView = this.mySetAbView;
+    //originalSetAbView = SetAbView;
+    //SetAbView = this.mySetAbView;
     AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
@@ -396,9 +396,10 @@ var Overlay = {
       LOGGER.LOG_WARNING("Unable to open the log", e);
     }
   },
-  mySetAbView: function Overlay_mySetAbView(aURI) {
+  // NOTE - this function can break search and more if not overridden properly
+  mySetAbView: function Overlay_mySetAbView(aURI, aSearchView, aSortCol, aSortDir) {
     // call the original
-    originalSetAbView(aURI);
+    originalSetAbView(aURI, aSearchView, aSortCol, aSortDir);
     // TODO fix this
     /*
     var children =  gAbResultsTree.getElementsByAttribute("ondraggesture", "nsDragAndDrop.startDrag(event, abResultsPaneObserver);");
