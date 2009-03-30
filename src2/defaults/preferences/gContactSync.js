@@ -48,4 +48,6 @@ pref("extensions.gContactSync.extended8", "AllowRemoteContent");
 pref("extensions.gContactSync.extended9", "Custom1");
 pref("extensions.gContactSync.extended10", "Custom2");
 pref("extensions.gContactSync.syncExtended", true);
+pref("extensions.gContactSync.wikiURL", "http://www.pirules.org/tikiwiki/");
+pref("extensions.gContactSync.forumURL", "http://www.pirules.org/forum/");
 pref("extensions.gContactSync@pirules.net.description", "chrome://gContactSync/locale/gcontactsync.properties");

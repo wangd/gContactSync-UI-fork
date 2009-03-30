@@ -173,8 +173,8 @@ var Overlay = {
       menu.setAttribute("label", "gContactSync");
       menu.setAttribute("accesskey", "G");
       var menupopup    = document.createElement("menupopup");
-      var syncMenuItem = document.createElement("menuitem");
       menupopup.setAttribute("id", "gContactSyncMenuPopup");
+      var syncMenuItem = document.createElement("menuitem");
       syncMenuItem.setAttribute("id", "syncMenuItem");
       syncMenuItem.setAttribute("label", StringBundle.getStr("syncMenu"));
       syncMenuItem.setAttribute("accesskey", StringBundle.getStr("syncMenuKey"));
@@ -186,8 +186,24 @@ var Overlay = {
       prefMenuItem.setAttribute("accesskey", StringBundle.getStr("prefMenuKey"));
       prefMenuItem.setAttribute("oncommand", "Overlay.openPreferences();");
       prefMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+      var forumMenuItem = document.createElement("menuitem");
+      forumMenuItem.setAttribute("id", "forumMenuItem");
+      forumMenuItem.setAttribute("label", StringBundle.getStr("forumMenu"));
+      forumMenuItem.setAttribute("accesskey", StringBundle.getStr("forumMenuKey"));
+      forumMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.forumURL');");
+      forumMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
+      var wikiMenuItem = document.createElement("menuitem");
+      wikiMenuItem.setAttribute("id", "wikiMenuItem");
+      wikiMenuItem.setAttribute("label", StringBundle.getStr("wikiMenu"));
+      wikiMenuItem.setAttribute("accesskey", StringBundle.getStr("wikiMenuKey"));
+      wikiMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.wikiURL');");
+      wikiMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       menupopup.appendChild(syncMenuItem);
       menupopup.appendChild(prefMenuItem);
+      menupopup.appendChild(forumMenuItem);
+      menupopup.appendChild(wikiMenuItem);
       menu.appendChild(menupopup);
       menubar.insertBefore(menu, toolsMenu);
     }
@@ -824,5 +840,28 @@ var Overlay = {
         Preferences.getSyncPrefs();
       };
     };
+  },
+  openURL: function Overlay_openURL(aURL) {
+    LOGGER.VERBOSE_LOG("Opening the following URL: " + aURL);
+    if (!aURL) {
+      LOGGER.LOG_WARNING("Caught an attempt to load a blank URL");
+      return;
+    }
+    try {
+      if (openFormattedURL) {
+        openFormattedURL(aURL);
+      return;
+      }
+    }
+    catch (e) {}
+    try {
+      if (openFormattedRegionURL) {
+        openFormattedRegionURL(aURL);
+        return;
+      }
+    }
+    catch (e) {}
+    LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
+    return;
   }
 };
