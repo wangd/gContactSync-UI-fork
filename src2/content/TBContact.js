@@ -43,23 +43,26 @@
    this.mContact = aContact;
  }
  
- TBContact.prototype = {
-   getValue: function TBContact_getValue(aAttribute) {
-     if (!aAttribute)
-       throw "Error - invalid attribute sent to TBContact_getValue";
-
-     return AbManager.getCardValue(this.mContact, aAttribute);
-   },
-   setValue: function TBContact_setValue(aAttribute, aValue, aUpdate) {
-     AbManager.setCardValue(this.mContact, aAttribute, aValue);
-     if (aUpdate) {
-       return this.update();
-     }
-   },
-   update: function TBContact_update() {
-     return this.mAddressBook.updateCard(this.mContact);
-   },
-   remove: function TBContact_remove() {
-     this.mAddressBook.deleteCards([this.mContact]);
-   }
+TBContact.prototype = {
+  getValue: function TBContact_getValue(aAttribute) {
+    if (!aAttribute)
+      throw "Error - invalid attribute sent to TBContact_getValue";
+    if (aAttribute == "LastModifiedDate" && Preferences.mSyncPrefs.readOnly.value) {
+      LOGGER.VERBOSE_LOG("Read only mode, setting LMD to 0");
+      return 0;
+    }
+    return AbManager.getCardValue(this.mContact, aAttribute);
+  },
+  setValue: function TBContact_setValue(aAttribute, aValue, aUpdate) {
+    AbManager.setCardValue(this.mContact, aAttribute, aValue);
+    if (aUpdate) {
+      return this.update();
+    }
+  },
+  update: function TBContact_update() {
+    return this.mAddressBook.updateCard(this.mContact);
+  },
+  remove: function TBContact_remove() {
+    this.mAddressBook.deleteCards([this.mContact]);
+  }
  };

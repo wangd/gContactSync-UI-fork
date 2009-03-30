@@ -39,7 +39,6 @@
  * AbListener is a listener for the Address Book that is currently only used to
  * update the last modified date of mailing lists and cards contained within
  * them.
- * TODO remove the prefs when a directory is deleted
  * @class
  */
 var AbListener = {
