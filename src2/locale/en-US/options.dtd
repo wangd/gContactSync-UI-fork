@@ -1,4 +1,5 @@
 <!ENTITY title.label "gContactSync Preferences">
+
 <!ENTITY main.tab "Main">
 <!ENTITY gettingStarted1.value "Before you start synchronizing your contacts, please check these settings">
 <!ENTITY autoSync.value "Automatic Synchronization">
@@ -8,8 +9,11 @@
 <!ENTITY abName.value "Name of the Address Book to sync with (old or new)">
 <!ENTITY syncBehavior.label "Sync Behavior">
 <!ENTITY removeOldAddresses.label "Remove the old Thunderbird addresses after converting to the new format">
-<!ENTITY updateGoogle.label "Always update Gmail™ when a contact is updated in Gmail and Thunderbird">
+<!ENTITY updateGoogle.label "Always update Gmail when a contact is updated in Gmail and Thunderbird">
 <!ENTITY syncGroups.label "Synchronize Groups with Mailing Lists">
+<!ENTITY readOnly.label "Enable read-only mode (Thunderbird receives, but doesn't send, updates)">
+<!ENTITY writeOnly.label "Enable write-only mode (Thunderbird sends, but doesn't receive, updates)">
+
 <!ENTITY other.label "Other">
 <!ENTITY listenerDeleteFromGoogle.label "Remove contacts from Google immediately after they are removed in Thunderbird">
 <!ENTITY enableLogging.label "Enable Logging">
@@ -43,6 +47,7 @@
 <!ENTITY homeAddress.label "Home">
 <!ENTITY workAddress.label "Work">
 <!ENTITY otherAddress.label "Other">
+
 <!ENTITY extended.tab "Advanced">
 <!ENTITY syncExtended.label "Sync Extended Properties">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->

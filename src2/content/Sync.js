@@ -198,7 +198,6 @@ var Sync = {
   sync2: function Sync_sync2(aAtom) {
     // get the address book
     var ab = this.mCurrentAb;
-    //ab.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory); TODO decide if this is needed
     // have to update the lists or TB 2 won't work properly
     this.mLists = ab.getAllLists();
     // get all the contacts from the feed and the cards from the address book
