@@ -11,8 +11,8 @@
 <!ENTITY removeOldAddresses.label "Remove the old Thunderbird addresses after converting to the new format">
 <!ENTITY updateGoogle.label "Always update Gmail when a contact is updated in Gmail and Thunderbird">
 <!ENTITY syncGroups.label "Synchronize Groups with Mailing Lists">
-<!ENTITY readOnly.label "Enable read-only mode (Thunderbird receives, but doesn't send, updates)">
-<!ENTITY writeOnly.label "Enable write-only mode (Thunderbird sends, but doesn't receive, updates)">
+<!ENTITY readOnly.label "Enable fetch-only mode (Thunderbird only receives updates; it never sends them)">
+<!ENTITY writeOnly.label "Enable push-only mode (Thunderbird sends, but doesn't receive, updates)">
 
 <!ENTITY other.label "Other">
 <!ENTITY listenerDeleteFromGoogle.label "Remove contacts from Google immediately after they are removed in Thunderbird">

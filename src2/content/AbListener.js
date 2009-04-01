@@ -105,8 +105,8 @@ var AbListener = {
           var editURL = contact.getValue("EditURL");
           var username = ab.getUsername();
           // if it has a URL and the address book is synchronized, remove it
-          // TODO add pref to confirm
-          if (editURL && username) {
+          // TODO add pref to confirm?
+          if (editURL && username && !Preferences.mSyncPrefs.readOnly.value) {
             var token = LoginManager.getAuthTokens()[username];
             LOGGER.VERBOSE_LOG(contact.getValue("DisplayName") + " was deleted from TB, " +
                                "trying to remove from Google " + editURL);
