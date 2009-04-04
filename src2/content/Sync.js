@@ -82,8 +82,6 @@ var Sync = {
     this.mSynced = false;
     LOGGER.mErrorCount = 0; // reset the error count
     Overlay.setStatusBarText(StringBundle.getStr("syncing"));
-    if (FileIO.mLogFile && FileIO.mLogFile.exists())
-      FileIO.mLogFile.remove(false); // delete the old log file
     this.mIndex = 0;
     this.mAddressBooks = AbManager.getSyncedAddressBooks(true);
     this.syncNextUser()
@@ -240,14 +238,15 @@ var Sync = {
     for (var i = 0, length = abCards.length; i < length; i++) {
       var tbContact = new TBContact(abCards[i], ab);
       var id = tbContact.getValue("GoogleID");
+      LOGGER.LOG(tbContact.getName());
       tbContact.id = id;
-      var gContact;
       // no ID = new contact
       if (!id) {
         this.mContactsToAdd.push(tbContact.mContact); // TODO convert the array to use TBContacts
       }
       // if there is a matching Google Contact
-      else if (gContact = gContacts[id]) {
+      else if (gContacts[id]) {
+        var gContact = gContacts[id];
         // remove it from gContacts
         gContacts[id] = null;
         var tbCardDate = tbContact.getValue("LastModifiedDate");

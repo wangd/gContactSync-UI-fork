@@ -68,6 +68,9 @@ var Overlay = {
     StringBundle.init();        // initialize the string bundle
     Preferences.getSyncPrefs(); // get the preferences
     FileIO.init();              // initialize the FileIO class
+    if (FileIO.mLogFile && FileIO.mLogFile.exists())
+      FileIO.mLogFile.remove(false); // delete the old log file
+    LOGGER.LOG("Loading gContactSync at " + new Date() + " Version is: " + version)
     originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
     if (Preferences.mSyncPrefs.enableSyncBtn.value)
