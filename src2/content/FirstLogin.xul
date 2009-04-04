@@ -76,28 +76,30 @@
     <groupbox>
       <label value="&gettingStarted1.value;"/>
       <separator class="thin"/>
-			<grid flex="1">
-				<columns>
-					<column/>
-				</columns>
-				<rows>
-					<row align="center">
-					  <label control="abName" value="&abName.value;"/>
+      <grid flex="1">
+        <columns>
+            <column/>
+        </columns>
+        <rows>
+          <row align="center">
+            <label control="abName"
+                   value="&abName.value;"/>
             <textbox preference="addressBookName"
                      id="abName"
                      maxlength="40"
                      minwidth="275"
                      maxwidth="275"/>
-					</row>
-					<row align="center">
-						<label control="refInterval" value="&refreshInterval.value;"/>
-						<textbox preference="refreshInterval"
-						         id="refInterval"
-						         maxlength="4"
-						         maxwidth="60"/>
-					</row>
-				</rows>
-			</grid>
+          </row>
+          <row align="center">
+            <label control="refInterval"
+                   value="&refreshInterval.value;"/>
+            <textbox preference="refreshInterval"
+                     id="refInterval"
+                     maxlength="4"
+                     maxwidth="60"/>
+          </row>
+        </rows>
+      </grid>
       <checkbox preference="autoSync"
                 id="autoSync"
                 label="&autoSync.label;"/>
