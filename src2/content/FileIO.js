@@ -104,7 +104,7 @@ var FileIO = {
   writeToFile: function FileIO_writeToFile(aFile, aData) {
     this.checkFile(aFile);
     if (!aData)
-      return;
+      return false;
     try {
       var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
                       .createInstance(Ci.nsIFileOutputStream);
@@ -116,6 +116,7 @@ var FileIO = {
     catch(e) {
       LOGGER.LOG_WARNING("Unable to write '" + aData + "' to file: " + aFile, e);
     }
+    return false;
   },
   /**
    * FileIO.appendToFile
@@ -126,7 +127,7 @@ var FileIO = {
    */
   appendToFile: function FileIO_appendToFile(aFile, aData) {
     if (!aData)
-      return;
+      return false;
     this.checkFile(aFile);
     try {
       var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
@@ -142,6 +143,7 @@ var FileIO = {
     catch(e) {
       LOGGER.LOG_WARNING("Unable to append '" + aData + "' to file: " + aFile, e);
     }
+    return false;
   },
   /**
    * FileIO.checkFile
