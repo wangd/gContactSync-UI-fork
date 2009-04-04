@@ -256,7 +256,6 @@ var Overlay = {
       // first, try to insert it after the delete button
       if (deleteButton) {
         try {
-          button.style.MozImageRegion = deleteButton.MozImageRegion;
           // insert the separator before the Delete button
           toolbar.insertBefore(separator, deleteButton);
           // insert the button before the separator
@@ -275,7 +274,6 @@ var Overlay = {
       // if that doesn't work, try after the write button
       if (writeButton && !addedButton) {
         try {
-          button.style.MozImageRegion = writeButton.MozImageRegion;
           // insert the separator before the Write button
           toolbar.insertBefore(separator, writeButton);
           // insert the button before the separator
