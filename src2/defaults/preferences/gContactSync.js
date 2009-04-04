@@ -36,6 +36,8 @@ pref("extensions.gContactSync.listenerDeleteFromGoogle", true);
 pref("extensions.gContactSync.readOnly", false);
 // enable/disable write-only mode (TB writes updates Google only)
 pref("extensions.gContactSync.writeOnly", false);
+// force setting the button's image through JavaScript
+pref("extensions.gContactSync.forceBtnImage", false);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

@@ -227,10 +227,12 @@ var Overlay = {
    */
   setupButton: function Overlay_setupButton() {
     try {
+      LOGGER.VERBOSE_LOG("Trying to add button");
       // get the toolbar with the buttons
       var toolbar     = document.getElementById("ab-bar2");   // thunderbird
       var isSeamonkey = toolbar ? true : false;
       if (!toolbar) {
+        LOGGER.VERBOSE_LOG("Didn't find ab-bar2...looking for abToolbar")
         toolbar       = document.getElementById("abToolbar"); // seamonkey
         if (!toolbar) {
           LOGGER.LOG_ERROR("Could not find the toolbar");
@@ -244,7 +246,7 @@ var Overlay = {
       var button      = document.createElement("toolbarbutton");
       button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
                           " chromeclass-toolbar-additional");
-      button.setAttribute("id", "syncButton");
+      button.setAttribute("id", "button-sync");
       button.setAttribute("label", StringBundle.getStr("syncButton"));
       button.setAttribute("oncommand", "Sync.begin();");
       button.setAttribute("tooltiptext", StringBundle.getStr("syncTooltip"));
@@ -260,12 +262,14 @@ var Overlay = {
           toolbar.insertBefore(separator, deleteButton);
           // insert the button before the separator
           toolbar.insertBefore(button, separator);
+          //alert(button.style.)
+          LOGGER.VERBOSE_LOG("Added the button before the delete button");
           addedButton = true;
           // insert the second separator before the button if necessary
           if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
               toolbar.insertBefore(separator2, button);
+              LOGGER.VERBOSE_LOG("Also added a separator before the button");
           }
-          return true;
         }
         catch (e) {
           LOGGER.LOG_WARNING("Couldn't setup the sync button before the delete button", e);
@@ -278,12 +282,14 @@ var Overlay = {
           toolbar.insertBefore(separator, writeButton);
           // insert the button before the separator
           toolbar.insertBefore(button, separator);
+          LOGGER.VERBOSE_LOG("Added the button before the compose button");
+          LOGGER.VERBOSE_LOG("Added a separator after the button");
           addedButton = true;
           // insert the second separator before the button if necessary
           if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
               toolbar.insertBefore(separator2, button);
+              LOGGER.VERBOSE_LOG("Added a separator before the button");
           }
-          return true;
         }
         catch (e) {
           LOGGER.LOG_WARNING("Couldn't setup the sync button before the write button", e);
@@ -291,10 +297,17 @@ var Overlay = {
       }
       // if all else fails try to append the button at the end of the toolbar
       if (!addedButton) {
+        LOGGER.VERBOSE_LOG("Attempting to append the toolbar button");
         toolbar.appendChild(separator);
         toolbar.appendChild(button);
-        return true;
       }
+      if (Preferences.mSyncPrefs.forceBtnImage.value) {
+        LOGGER.VERBOSE_LOG("Forcing the listStyleImage for the button");
+        document.getElementById("button-sync").style.listStyleImage =
+          "url('chrome://gcontactsync/skin/abcard-large.png')";
+      }
+      LOGGER.VERBOSE_LOG("Finished adding button\n");
+      return true;
     }
     catch(e) {
        LOGGER.LOG_WARNING("Couldn't setup the sync button", e);

@@ -19,7 +19,9 @@
 <!ENTITY enableLogging.label "Enable Logging">
 <!ENTITY verboseLog.label "Enable Verbose Logging">
 <!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
+<!ENTITY forceBtnImage.label "Force the Sync toolbar button image (fixes a large, ugly Sync button)">
 <!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">
+
 <!ENTITY accounts.tab "Accounts">
 <!ENTITY emailAddress.label "E-mail Address">
 <!ENTITY addressBook.label "Address Book">

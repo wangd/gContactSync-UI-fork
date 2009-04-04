@@ -82,6 +82,9 @@
       <preference id="enableSyncBtn"
                   name="extensions.gContactSync.enableSyncBtn"
                   type="bool"/>
+      <preference id="forceBtnImage"
+                  name="extensions.gContactSync.forceBtnImage"
+                  type="bool"/>
       <preference id="enableMenu"
                   name="extensions.gContactSync.enableMenu"
                   type="bool"/>
@@ -90,6 +93,9 @@
                   type="bool"/>
     </preferences>
     <groupbox flex="1">
+      <label href="http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences"
+             class="text-link"
+             value="Help"/>
       <groupbox>
         <caption label="&autoSync.value;"/>
         <checkbox preference="autoSync" id="autoSync" label="&autoSync.label;"/>
@@ -125,6 +131,7 @@
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
         <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>
+        <checkbox preference="forceBtnImage" id="forceBtnImage" label="&forceBtnImage.label;"/>
         <checkbox preference="enableMenu" id="enableMenu" label="&enableMenu.label;"/>
       </groupbox>
     </groupbox>
