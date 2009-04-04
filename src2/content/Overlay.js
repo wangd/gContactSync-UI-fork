@@ -228,10 +228,15 @@ var Overlay = {
   setupButton: function Overlay_setupButton() {
     try {
       // get the toolbar with the buttons
-      var toolbar     = document.getElementById("ab-bar2"); // thunderbird
+      var toolbar     = document.getElementById("ab-bar2");   // thunderbird
       var isSeamonkey = toolbar ? true : false;
-      if (!toolbar)
-          toolbar     = document.getElementById("abToolbar"); // seamonkey
+      if (!toolbar) {
+        toolbar       = document.getElementById("abToolbar"); // seamonkey
+        if (!toolbar) {
+          LOGGER.LOG_ERROR("Could not find the toolbar");
+          return false;
+        }
+      }
       // setup the separators
       var separator   = document.createElement("toolbarseparator");
       var separator2  = document.createElement("toolbarseparator");
@@ -261,7 +266,7 @@ var Overlay = {
           if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
               toolbar.insertBefore(separator2, button);
           }
-          return;
+          return true;
         }
         catch (e) {
           LOGGER.LOG_WARNING("Couldn't setup the sync button before the delete button", e);
@@ -280,7 +285,7 @@ var Overlay = {
           if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
               toolbar.insertBefore(separator2, button);
           }
-          return;
+          return true;
         }
         catch (e) {
           LOGGER.LOG_WARNING("Couldn't setup the sync button before the write button", e);
@@ -290,11 +295,13 @@ var Overlay = {
       if (!addedButton) {
         toolbar.appendChild(separator);
         toolbar.appendChild(button);
+        return true;
       }
     }
     catch(e) {
        LOGGER.LOG_WARNING("Couldn't setup the sync button", e);
     }
+    return false;
   },
   /**
    * Overlay.checkAuthentication
@@ -306,7 +313,7 @@ var Overlay = {
     if (gdata.isAuthValid()) {
       if (this.mUsername) {
         var name = Preferences.mSyncPrefs.addressBookName.value;
-        var ab = new AddressBook(AbManager.getAbByName(name));
+        var ab   = new AddressBook(AbManager.getAbByName(name));
         ab.setUsername(this.mUsername);
         ab.setPrimary(true);
         ab.setLastSyncDate(0);
