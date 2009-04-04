@@ -145,6 +145,7 @@ var AbListener = {
     } catch(e) { error = e; }
     LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory,
                        error);
+    return "";
   },
   /**
    * AbListener.add
