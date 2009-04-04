@@ -48,7 +48,7 @@ TBContact.prototype = {
     if (!aAttribute)
       throw "Error - invalid attribute sent to TBContact_getValue";
     if (aAttribute == "LastModifiedDate" && Preferences.mSyncPrefs.readOnly.value) {
-      LOGGER.VERBOSE_LOG("Read only mode, setting LMD to 0");
+      LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
       return 0;
     }
     return AbManager.getCardValue(this.mContact, aAttribute);
@@ -58,11 +58,19 @@ TBContact.prototype = {
     if (aUpdate) {
       return this.update();
     }
+    return false;
   },
   update: function TBContact_update() {
     return this.mAddressBook.updateCard(this.mContact);
   },
   remove: function TBContact_remove() {
     this.mAddressBook.deleteCards([this.mContact]);
+  },
+  getName: function TBContact_getName() {
+    var displayName = this.getValue("DisplayName");
+    if (displayName) return displayName;
+    var primaryEmail = this.getValue("PrimaryEmail");
+    if (primaryEmail) return primaryEmail;
+    return this.getValue("GoogleID");
   }
  };
