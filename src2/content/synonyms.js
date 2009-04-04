@@ -43,10 +43,11 @@ var Ci = Components.interfaces;
 var Cr = Components.results;
 var nsIAbCard = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
+var version = "0.2.0b2";
 
 function serialize(aXML, aRemoveVersion) {
   if (!aXML)
-    return;
+    return "";
   try {
     var serializer = new XMLSerializer();
     var str = serializer.serializeToString(aXML);
