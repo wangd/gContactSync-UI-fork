@@ -1,16 +1,32 @@
-<?php downloads('/gContactSync-0.1a2.xpi', '0.1a2');?>
-<?php downloads('/gContactSync-0.1b1.xpi', '0.1b1');?>
-<?php downloads('/gContactSync-0.1b2.xpi', '0.1b2');?>
-<?php downloads('/gContactSync-0.1b3.xpi', '0.1b3');?>
-<?php downloads('/gContactSync-0.1.0.xpi', '0.1.0');?>
-<?php downloads('/gContactSync-0.1.2.xpi', '0.1.2');?>
-<?php downloads('/gContactSync-0.1.2b1.xpi', '0.1.2b1');?>
-<?php downloads('/gContactSync-0.1.2b2pre.xpi', '0.1.2b2pre');?>
-<?php downloads('/gContactSync-0.1.3.xpi', '0.1.3');?>
-<?php downloads('/gContactSync-0.2.0a1.xpi', '0.2.0a1');?>
-<?php downloads('/gContactSync-0.2.0a2.xpi', '0.2.0a2');?>
-<?php downloads('/gContactSync-0.2.0a1r1.xpi', '0.2.0a1r1');?>
-<?php downloads('/gContactSync-0.2.0b1pre.xpi', '0.2.0b1pre');?>
-<?php downloads('/gContactSync-0.2.0b1.xpi', '0.2.0b1');?>
-<?php downloads('/gContactSync-0.2.0b2.xpi', '0.2.0b2');?>
-
+<div id=counters>
+  <?php
+    downloads('/gContactSync-0.1a2.xpi', '0.1a2');
+    downloads('/gContactSync-0.1b1.xpi', '0.1b1');
+    downloads('/gContactSync-0.1b2.xpi', '0.1b2');
+    downloads('/gContactSync-0.1b3.xpi', '0.1b3');
+    downloads('/gContactSync-0.1.0.xpi', '0.1.0');
+    downloads('/gContactSync-0.1.2.xpi', '0.1.2');
+    downloads('/gContactSync-0.1.2b1.xpi', '0.1.2b1');
+    downloads('/gContactSync-0.1.2b2pre.xpi', '0.1.2b2pre');
+    downloads('/gContactSync-0.1.3.xpi', '0.1.3');
+    downloads('/gContactSync-0.2.0a1.xpi', '0.2.0a1');
+    downloads('/gContactSync-0.2.0a2.xpi', '0.2.0a2');
+    downloads('/gContactSync-0.2.0a1r1.xpi', '0.2.0a1r1');
+    downloads('/gContactSync-0.2.0b1pre.xpi', '0.2.0b1pre');
+    downloads('/gContactSync-0.2.0b1.xpi', '0.2.0b1');
+    downloads('/gContactSync-0.2.0b2.xpi', '0.2.0b2');
+  ?>
+</div>
+<script>
+  try {
+    var dv       = document.getElementById("counters");
+    var children = dv.children;
+    var count    = 0;
+    for (var i in children) {
+      if (children[i].tagName == "DIV") {
+        count += parseInt(children[i].childNodes[2].innerText, 10);
+      }
+    }
+    alert("Total Downloads: " + count);
+  } catch (e) { alert(e); }
+</script>
