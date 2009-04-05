@@ -24,7 +24,8 @@
     var count    = 0;
     for (var i in children) {
       if (children[i].tagName == "DIV") {
-        count += parseInt(children[i].children[2].innerText, 10);
+        var countElem = children[i].children[2];
+        count += parseInt(countElem.innerHTML, 10);
       }
     }
     alert("Total Downloads: " + count);
