@@ -17,6 +17,7 @@
     downloads('/gContactSync-0.2.0b2.xpi', '0.2.0b2');
   ?>
 </div>
+<span id=total_downloads></span>
 <script>
   try {
     var dv       = document.getElementById("counters");
@@ -28,6 +29,6 @@
         count += parseInt(countElem.innerHTML, 10);
       }
     }
-    alert("Total Downloads: " + count);
+    document.getElementById("total_downloads").innerHTML = "Total Downloads: " + count;
   } catch (e) { alert(e); }
 </script>
