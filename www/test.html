@@ -1,3 +1,5 @@
+<br>
+<b>Downloads:</b>
 <div id=counters>
   <?php
     downloads('/gContactSync-0.1a2.xpi', '0.1a2');
@@ -17,6 +19,7 @@
     downloads('/gContactSync-0.2.0b2.xpi', '0.2.0b2');
   ?>
 </div>
+<br>
 <span id=total_downloads></span>
 <script>
   try {
@@ -29,6 +32,6 @@
         count += parseInt(countElem.innerHTML, 10);
       }
     }
-    document.getElementById("total_downloads").innerHTML = "Total Downloads: " + count;
+    document.getElementById("total_downloads").innerHTML = "<b>Total Downloads: " + count + "</b><br>";
   } catch (e) { alert(e); }
 </script>
