@@ -38,6 +38,8 @@ pref("extensions.gContactSync.readOnly", false);
 pref("extensions.gContactSync.writeOnly", false);
 // force setting the button's image through JavaScript
 pref("extensions.gContactSync.forceBtnImage", false);
+// automatically delete contacts from Google when deleted in Thunderbird
+pref("extensions.gContactSync.autoDelete", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");
