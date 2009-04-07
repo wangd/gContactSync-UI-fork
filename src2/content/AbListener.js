@@ -98,7 +98,7 @@ var AbListener = {
         }
       }
       // if it was removed from a directory
-      else {
+      else if (Preferences.mSyncPrefs.autoDelete.value) {
         try {
           var ab = new AddressBook(aParentDir);
           var contact = new TBContact(aItem, ab);
@@ -114,8 +114,8 @@ var AbListener = {
             var httpReq = new GHttpRequest("delete", token, editURL, null, username);
             httpReq.addHeaderItem("If-Match", "*");
             httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(' * Successful');"];
-            httpReq.mOnError = ["LOGGER.LOG_WARNING('Error while deleting contact', " +
-                                "httpReq.responseText);"];
+            httpReq.mOnError =   ["LOGGER.LOG_WARNING('Error while deleting contact', " +
+                                  "httpReq.responseText);"];
             httpReq.mOnOffline = ["LOGGER.VERBOSE_LOG(' * User is offline');"];
             httpReq.send();
           }

@@ -78,7 +78,8 @@ var Preferences = {
     homeAddress: new Pref("homeAddress", "char", "[HomeAddress]\n[HomeAddress2]\n[HomeCity], [HomeState]  [HomeZipCode]\n[HomeCountry]"),
     workAddress: new Pref("workAddress", "char", "[WorkAddress]\n[WorkAddress2]\n[WorkCity], [WorkState]  [WorkZipCode]\n[WorkCountry]"),
     otherAddress: new Pref("otherAddress", "char", "[OtherAddress]\n[OtherAddress2]\n[OtherCity], [OtherState]  [OtherZipCode]\n[OtherCountry]"),
-    forceBtnImage: new Pref("forceBtnImage", "bool", false)
+    forceBtnImage: new Pref("forceBtnImage", "bool", false),
+    autoDelete: new Pref("autoDelete", "bool", false)
   },
   /**
    * Preferences.getPref
