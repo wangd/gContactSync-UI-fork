@@ -152,7 +152,7 @@ var ContactConverter = {
       if (arr[i].tbName.indexOf("URL") != -1 || arr[i].tbName == "GoogleID")
         continue;
       var obj = arr[i];
-      LOGGER.VERBOSE_LOG(obj.tbName);
+      LOGGER.VERBOSE_LOG(" * " + obj.tbName);
       var value = this.checkValue(AbManager.getCardValue(aCard, obj.tbName));
       // for the type, get the type from the card, or use its default
       var type = AbManager.getCardValue(aCard, obj.tbName + "Type");
@@ -164,7 +164,7 @@ var ContactConverter = {
         value = null;
         type = null;
       }
-      LOGGER.VERBOSE_LOG(value + " type: " + type);
+      LOGGER.VERBOSE_LOG("   - " + value + " type: " + type);
       aContact.setValue(obj.elementName, obj.index, type, value);
     }
     // set the extended properties

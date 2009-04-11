@@ -259,14 +259,14 @@ GContact.prototype = {
     // if the current value is already good, check the type and return
     if (value == aValue) {
       if (value && property.type != aType) {
-        LOGGER.VERBOSE_LOG("value is already good, changing type to: " + aType);
+        LOGGER.VERBOSE_LOG("Value is already good, changing type to: " + aType);
         if (aElement.tagName == "im")
           this.mCurrentElement.setAttribute("protocol", gdata.contacts.rel + "#" + aType);
         else
           this.mCurrentElement.setAttribute("rel", gdata.contacts.rel + "#" + aType);
       }
-      else
-        LOGGER.VERBOSE_LOG("value " + value + " and type " + property.type + " are good");
+      else if (value)
+        LOGGER.VERBOSE_LOG("   - value " + value + " and type " + property.type + " are good");
       return;
     }
     // orgName and orgTitle are special cases
@@ -447,7 +447,7 @@ GContact.prototype = {
     try {
       if (aValue == "")
         aValue = null;
-      LOGGER.VERBOSE_LOG(aName + " - " + aIndex + " - " + aType + " - " + aValue);
+      LOGGER.VERBOSE_LOG("   - " + aName + " - " + aIndex + " - " + aType + " - " + aValue);
       if (gdata.contacts[aName] && aName != "groupMembershipInfo")
         return this.setElementValue(gdata.contacts[aName],
                                     aIndex, aType, aValue);

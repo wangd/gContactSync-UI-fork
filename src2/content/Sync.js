@@ -371,7 +371,7 @@ var Sync = {
     var xml = ContactConverter.cardToAtomXML(cardToAdd).xml;
     var string = serialize(xml);
     if (Preferences.mSyncPrefs.verboseLog.value)
-      LOGGER.LOG("  - XML of contact being added:\n" + string + "\n");
+      LOGGER.LOG(" * XML of contact being added:\n" + string + "\n");
     var httpReq = new GHttpRequest("add", this.mCurrentAuthToken, null,
                                    string, this.mCurrentUsername);
     /* When the contact is successfully created:
@@ -388,9 +388,9 @@ var Sync = {
       "ab.updateCard(card);",
       "Sync.processAddQueue();"];
     httpReq.mOnCreated = onCreated;
-    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while adding contact', " +
-                        "httpReq.responseText);",
-                        "Sync.processAddQueue();"];
+    httpReq.mOnError   = ["LOGGER.LOG_ERROR('Error while adding contact', " +
+                          "httpReq.responseText);",
+                          "Sync.processAddQueue();"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
@@ -411,19 +411,19 @@ var Sync = {
     var abCard = obj.abCard;
 
     var editURL = gContact.getValue("EditURL").value;
+    LOGGER.LOG("\nUpdating " + gContact.getName());
     var xml = ContactConverter.cardToAtomXML(abCard, gContact).xml;
 
-    LOGGER.LOG("\n" + gContact.getName());
     var string = serialize(xml);
     if (Preferences.mSyncPrefs.verboseLog.value)
-      LOGGER.LOG("  - XML of contact being updated:\n" + string + "\n");
+      LOGGER.LOG(" * XML of contact being updated:\n" + string + "\n");
     var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, editURL,
                                    string, this.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.mOnSuccess = ["Sync.processUpdateQueue();"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating contact', " +
+    httpReq.mOnError   = ["LOGGER.LOG_ERROR('Error while updating contact', " +
                           "httpReq.responseText);",
-                        "Sync.processUpdateQueue();"],
+                          "Sync.processUpdateQueue();"],
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
