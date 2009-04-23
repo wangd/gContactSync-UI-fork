@@ -116,6 +116,7 @@ AddressBook.prototype = {
    */
   getAllLists: function AddressBook_getAllLists(skipGetCards) {
     // same in Thunderbird 2 and 3
+    LOGGER.VERBOSE_LOG("Searching for mailing lists:");
     var iter = this.mDirectory.childNodes;
     var obj = {};
     while (iter.hasMoreElements()) {
@@ -124,8 +125,7 @@ AddressBook.prototype = {
         var list = new MailList(data, this, skipGetCards);
         var id = list.getGroupID();
         obj[id] = list;
-        LOGGER.VERBOSE_LOG("Found a list named - " + list.getName() + " with" +
-                           " an ID - " + id);
+        LOGGER.VERBOSE_LOG(" * " + list.getName() + " - " + id);
       }
     }
     return obj;

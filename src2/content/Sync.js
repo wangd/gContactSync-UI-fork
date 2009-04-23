@@ -438,16 +438,15 @@ var Sync = {
     // if there wasn't an error, setup groups
     if (aAtom) {
       if (Preferences.mSyncPrefs.verboseLog.value) {
-        var string = serialize(aAtom);
-        LOGGER.LOG("***Groups XML feed:\n" + string);
+        LOGGER.LOG("***Groups XML feed:\n" + serialize(aAtom));
       }
       var ab = this.mCurrentAb;
       var ns = gdata.namespaces.ATOM;
-      LOGGER.VERBOSE_LOG("***Getting all groups***");
-      var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
-      LOGGER.VERBOSE_LOG("***Getting all lists***");
-      this.mLists = ab.getAllLists(true);
       var lastSync = parseInt(ab.getLastSyncDate());
+      LOGGER.VERBOSE_LOG("***Getting all mailing lists***");
+      this.mLists = ab.getAllLists(true);
+      LOGGER.VERBOSE_LOG("***Getting all contact groups***");
+      var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
       for (var i = 0; i < arr.length; i++) {
         try {
           var group = new Group(arr[i]);
@@ -456,7 +455,7 @@ var Sync = {
           var id = group.getID();
           var title = group.getTitle();
           var modifiedDate = group.getLastModifiedDate();
-          LOGGER.LOG("-Found group with ID: " + id + " name: " + title +
+          LOGGER.LOG(" * " + title + " - " + id +
                      " last modified: " + modifiedDate);
           var list = this.mLists[id];
           this.mGroups[id] = group;
@@ -465,24 +464,24 @@ var Sync = {
               list.matched = true;
               // if the name is different, update the group's title
               var listName = list.getName();
-              LOGGER.LOG(" * Matched with mailing list " + listName);
+              LOGGER.LOG("  - Matched with mailing list " + listName);
               if (listName != title) {
-                LOGGER.LOG(" * Going to rename the group to " + listName);
+                LOGGER.LOG("  - Going to rename the group to " + listName);
                 group.setTitle(listName);
                 this.mGroupsToUpdate.push(group);
               }
             }
             else {
               this.mGroupsToDelete.push(group);
-              LOGGER.LOG(" * Didn't find a matching mail list.  It will be deleted");
+              LOGGER.LOG("  - Didn't find a matching mail list.  It will be deleted");
             }
           }
           else { // it is new or updated
             if (list) { // the group has been updated
-              LOGGER.LOG(" * Matched with mailing list " + listName);
+              LOGGER.LOG("  - Matched with mailing list " + listName);
               // if the name changed, update the mail list's name
               if (list.getName() != title) {
-                LOGGER.LOG(" * The group's name changed, updating the list");
+                LOGGER.LOG("  - The group's name changed, updating the list");
                 list.setName(title);
                 list.update();
               }
@@ -490,9 +489,9 @@ var Sync = {
             }
             else { // the group is new
               // make a new mailing list with the same name
-              LOGGER.LOG(" * The group is new");
+              LOGGER.LOG("  - The group is new");
               var list = ab.addList(title, id);
-              LOGGER.VERBOSE_LOG(" * List added to address book");
+              LOGGER.VERBOSE_LOG("  - List added to address book");
             }
           }
         }
