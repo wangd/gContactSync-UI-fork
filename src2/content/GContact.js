@@ -447,6 +447,10 @@ GContact.prototype = {
     try {
       if (aValue == "")
         aValue = null;
+      if (aType == "Home" || aType == "Work" || aType == "Other") {
+        LOGGER.LOG_WARNING("Found and fixed an invalid type: " + aType);
+        aType = aType.toLowerCase();
+      }
       LOGGER.VERBOSE_LOG("   - " + aName + " - " + aIndex + " - " + aType + " - " + aValue);
       if (gdata.contacts[aName] && aName != "groupMembershipInfo")
         return this.setElementValue(gdata.contacts[aName],

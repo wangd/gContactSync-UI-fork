@@ -221,7 +221,7 @@ var ContactConverter = {
       // that is hidden from the user
       if (obj.tbName == dummyEmailName && !property.value) {
         property.value = makeDummyEmail(aContact);
-        property.type = "Home";
+        property.type = "home";
       }
       ab.setCardValue(card, obj.tbName, property.value);
       // set the type, if it is an attribute with a type
