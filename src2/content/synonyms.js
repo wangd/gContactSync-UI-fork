@@ -43,7 +43,7 @@ var Ci = Components.interfaces;
 var Cr = Components.results;
 var nsIAbCard = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
-var version = "0.2.0b2r1";
+var version = "0.2.0b2r2";
 
 function serialize(aXML, aRemoveVersion) {
   if (!aXML)
