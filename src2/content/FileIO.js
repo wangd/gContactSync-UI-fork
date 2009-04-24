@@ -47,8 +47,29 @@ var FileIO = {
   /**
    * FileIO.init
    * Initializes the files contained in this class.
+   * Also creates the log directory, if necessary.
    */
   init: function FileIO_init() {
+    var directory =
+        this.getFileInExtDir(this.fileNames.LOG_FILE.replace("log.txt", ""));
+    // if the directory doesn't exist yet
+    if (!directory.exists()) {
+      // create the directory (type = 1) - rw for the user and r for others
+      try { directory.create("1", parseInt("755", 8)); } catch(e) {alert(e);}
+      // if it still doesn't exist let the user know, then quit
+      if (!directory.exists()) {
+        alert(StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
+        throw "Error - could not create the following directory: " + directory.path;
+      }
+    }
+    if (!directory.isDirectory()) {
+      alert(StringBundle.getStr("isNotDir") + "\n" + directory.path);
+      throw "Error - " + directory.path + " is not a directory.";
+    }
+    if (!directory.isWritable()) {
+      alert(StringBundle.getStr("notWritable") + "\n" + directory.path);
+      throw "Error - Cannot write to the following directory: " + directory.path;
+    }
     this.mLogFile = this.getFileInExtDir(this.fileNames.LOG_FILE);
   },
   /**
