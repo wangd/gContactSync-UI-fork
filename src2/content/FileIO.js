@@ -71,6 +71,10 @@ var FileIO = {
       throw "Error - Cannot write to the following directory: " + directory.path;
     }
     this.mLogFile = this.getFileInExtDir(this.fileNames.LOG_FILE);
+    if (this.mLogFile.exists && !this.mLogFile.isWritable) {
+      alert(StringBundle.getStr("logNotWritable") + "\n" + this.mLogFile.path);
+      throw "Error - cannot write to the log file: " + this.mLogFile.path;
+    }
   },
   /**
    * FileIO.getFileInExtDir
