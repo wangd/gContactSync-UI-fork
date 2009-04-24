@@ -183,18 +183,21 @@ var Overlay = {
       menu.setAttribute("accesskey", "G");
       var menupopup    = document.createElement("menupopup");
       menupopup.setAttribute("id", "gContactSyncMenuPopup");
+
       var syncMenuItem = document.createElement("menuitem");
       syncMenuItem.setAttribute("id", "syncMenuItem");
       syncMenuItem.setAttribute("label", StringBundle.getStr("syncMenu"));
       syncMenuItem.setAttribute("accesskey", StringBundle.getStr("syncMenuKey"));
       syncMenuItem.setAttribute("oncommand", "Sync.begin();");
       syncMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       var prefMenuItem = document.createElement("menuitem");
       prefMenuItem.setAttribute("id", "prefMenuItem");
       prefMenuItem.setAttribute("label", StringBundle.getStr("prefMenu"));
       prefMenuItem.setAttribute("accesskey", StringBundle.getStr("prefMenuKey"));
       prefMenuItem.setAttribute("oncommand", "Overlay.openPreferences();");
       prefMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       var forumMenuItem = document.createElement("menuitem");
       forumMenuItem.setAttribute("id", "forumMenuItem");
       forumMenuItem.setAttribute("label", StringBundle.getStr("forumMenu"));
@@ -209,9 +212,17 @@ var Overlay = {
       wikiMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.wikiURL');");
       wikiMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
+      var errorMenuItem = document.createElement("menuitem");
+      errorMenuItem.setAttribute("id", "errorMenuItem");
+      errorMenuItem.setAttribute("label", StringBundle.getStr("errorMenu"));
+      errorMenuItem.setAttribute("accesskey", StringBundle.getStr("errorMenuKey"));
+      errorMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.errorURL');");
+      errorMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       menupopup.appendChild(syncMenuItem);
       menupopup.appendChild(prefMenuItem);
       menupopup.appendChild(forumMenuItem);
+      menupopup.appendChild(errorMenuItem);
       menupopup.appendChild(wikiMenuItem);
       menu.appendChild(menupopup);
       menubar.insertBefore(menu, toolsMenu);
