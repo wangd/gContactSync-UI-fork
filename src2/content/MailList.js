@@ -189,7 +189,11 @@ MailList.prototype = {
             this.mCards.push(data);
           iter.next();
         } while (Components.lastResult == 0);
-      } catch(e) {LOGGER.VERBOSE_LOG(e);} // error is expected when finished   
+      }
+      catch(e) {
+        // error is expected when finished   
+        //LOGGER.VERBOSE_LOG("This error is expected:\n" + e);
+      }
     }
     return this.mCards;
   },
