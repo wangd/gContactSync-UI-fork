@@ -61,6 +61,9 @@
       <preference id="autoSync"
                   name="extensions.gContactSync.autoSync"
                   type="bool"/>
+      <preference id="myContacts"
+                  name="extensions.gContactSync.myContacts"
+                  type="bool"/>
       <preference id="syncGroups"
                   name="extensions.gContactSync.syncGroups"
                   type="bool"/>
@@ -120,6 +123,7 @@
         <caption label="&syncBehavior.label;"/>
         <checkbox preference="updateGoogleInConflicts" id="macContacts" label="&updateGoogle.label;"/>
         <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
+        <checkbox preference="myContacts" id="myContacts" label="&myContacts.label;"/>
         <checkbox preference="readOnly" id="readOnly" label="&readOnly.label;"/>
         <!-- NOTE: to add a write-only checkbox remove the <! - - and - - > from the next line -->
         <!--<checkbox preference="writeOnly" id="writeOnly" label="&writeOnly.label;"/>-->

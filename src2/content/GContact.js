@@ -479,8 +479,12 @@ GContact.prototype = {
       var group = Sync.mGroups[id];
       if (group)
         groups[id] = group;
-      else
-        LOGGER.LOG_WARNING("Unable to find group: " + id);
+      else {
+        if (Preferences.mSyncPrefs.myContacts)
+          groups[id] = true;
+        else
+          LOGGER.LOG_WARNING("Unable to find group: " + id);
+      }
     }
     // return the object with the groups this contact belongs to
     return groups;

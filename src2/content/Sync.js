@@ -61,8 +61,10 @@ var Sync = {
   // time and that only one sync is scheduled at once
   mSynced: true,
   mSyncScheduled: false,
-  mGroups: {}, // used to store groups for the account being synchronized
-  mLists: {}, // stores the mail lists in the directory being synchronized
+  mGroups: {},        // used to store groups for the account being synchronized
+  mLists: {},         // stores the mail lists in the directory being synchronized
+  mContactsUrl: null, // override for the contact feed URL.  Intended for syncing
+                      // one group only
   /**
    * Sync.begin
    * Performs the first steps of the sync process.
@@ -100,6 +102,7 @@ var Sync = {
                " at: " + Date() + "\n");
     this.mCurrentAb = obj.primary;
     this.mCurrentAuthToken = LoginManager.getAuthTokens()[this.mCurrentUsername];
+    this.mContactsUrl = null;
     if (!this.mCurrentAuthToken) {
       LOGGER.LOG_WARNING("Unable to find the auth token for: " + this.mCurrentUsername);
       this.syncNextUser();
@@ -109,7 +112,9 @@ var Sync = {
                        this.mCurrentAb.mDirectory.dirName +
                        "\n - URI: " + this.mCurrentAb.mURI +
                        "\n - Pref ID: " + this.mCurrentAb.getPrefId());
-    if (Preferences.mSyncPrefs.syncGroups.value)
+    // getGroups must be called if the myContacts pref is set so it can find the
+    // proper group URL
+    if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts)
       this.getGroups();
     else
       this.getContacts();
@@ -143,7 +148,7 @@ var Sync = {
                                    this.mCurrentUsername);
     httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText))",
                           "Sync.sync2(httpReq.responseXML);"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while updating group', " +
+    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while getting all contacts', " +
                         "httpReq.responseText);",
                         "Sync.syncNextUser(httpReq.responseText);"];
     httpReq.mOnOffline = this.mOfflineCommand;
@@ -226,14 +231,25 @@ var Sync = {
     var bothGoogle = " * The contact from Google will be updated";
     var bothTB = " * The card from Thunderbird will be updated";
     var gContacts = {};
-    // Step 1: get all contacts from Google into GContact objects in an object keyed by ID
+    // Step 1: get all contacts from Google into GContact objects in an object
+    // keyed by ID.  If the myContacts pref is set, only put the contacts who
+    // are in that group into the gContacts object.
     for (var i = 0, length = googleContacts.length; i < length; i++) {
       var gContact = new GContact(googleContacts[i]);
-      var id = gContact.getValue("id").value;
-      var lastModified = gContact.getLastModifiedDate();
-      gContact.lastModified = lastModified;
-      gContact.id = id;
-      gContacts[id] = gContact;
+      // put this contact in the object if all groups are synced or the contact
+      // is in the group that is being synchronized
+      if (!this.mContactsUrl || gContact.getGroups()[this.mContactsUrl]) {
+        var id = gContact.getValue("id").value;
+        var lastModified = gContact.getLastModifiedDate();
+        gContact.lastModified = lastModified;
+        gContact.id = id;
+        gContacts[id] = gContact;
+      }
+      else {
+        alert(gContact.getName());
+        LOGGER.VERBOSE_LOG(gContact.getName() + " will not be synchronized " +
+                           "because it is not in the synced group");
+      }
     }
     // Step 2: iterate through TB Contacts and check for matches
     for (var i = 0, length = abCards.length; i < length; i++) {
@@ -334,6 +350,8 @@ var Sync = {
       this.processAddQueue();
       return;
     }
+    // TODO if this.mContactsUrl is set should the contact just be removed from
+    // that group or completely removed?
     Overlay.setStatusBarText(StringBundle.getStr("deleting") + " " +
                              this.mContactsToDelete.length + " " +
                              StringBundle.getStr("remaining"));
@@ -434,85 +452,123 @@ var Sync = {
    */
   syncGroups: function Sync_syncGroups(aAtom) {
     // reset the groups object
-    this.mGroups = {};
-    this.mLists = {};
+    this.mGroups         = {};
+    this.mLists          = {};
+    this.mGroupsToAdd    = [];
+    this.mGroupsToDelete = [];
+    this.mGroupsToUpdate = [];
     // if there wasn't an error, setup groups
     if (aAtom) {
       var ab = this.mCurrentAb;
       var ns = gdata.namespaces.ATOM;
       var lastSync = parseInt(ab.getLastSyncDate());
-      LOGGER.VERBOSE_LOG("***Getting all mailing lists***");
-      this.mLists = ab.getAllLists(true);
-      LOGGER.VERBOSE_LOG("***Getting all contact groups***");
+      var myContacts = Preferences.mSyncPrefs.myContacts.value;
       var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
-      for (var i = 0; i < arr.length; i++) {
-        try {
-          var group = new Group(arr[i]);
-          // add the ID to mGroups by making a new property with the ID as the
-          // name and the title as the value for easy lookup for contacts
-          var id = group.getID();
-          var title = group.getTitle();
-          var modifiedDate = group.getLastModifiedDate();
-          LOGGER.LOG(" * " + title + " - " + id +
-                     " last modified: " + modifiedDate);
-          var list = this.mLists[id];
-          this.mGroups[id] = group;
-          if (modifiedDate < lastSync) { // it's an old group
-            if (list) {
-              list.matched = true;
-              // if the name is different, update the group's title
-              var listName = list.getName();
-              LOGGER.LOG("  - Matched with mailing list " + listName);
-              if (listName != title) {
-                LOGGER.LOG("  - Going to rename the group to " + listName);
-                group.setTitle(listName);
-                this.mGroupsToUpdate.push(group);
+      // get the mailing lists if not only synchronizing my contacts
+      if (!myContacts) {
+        LOGGER.VERBOSE_LOG("***Getting all mailing lists***");
+        this.mLists = ab.getAllLists(true);
+        LOGGER.VERBOSE_LOG("***Getting all contact groups***");
+        for (var i = 0; i < arr.length; i++) {
+          try {
+            var group = new Group(arr[i]);
+            // add the ID to mGroups by making a new property with the ID as the
+            // name and the title as the value for easy lookup for contacts
+            var id = group.getID();
+            var title = group.getTitle();
+            var modifiedDate = group.getLastModifiedDate();
+            LOGGER.LOG(" * " + title + " - " + id +
+                       " last modified: " + modifiedDate);
+            var list = this.mLists[id];
+            this.mGroups[id] = group;
+            if (modifiedDate < lastSync) { // it's an old group
+              if (list) {
+                list.matched = true;
+                // if the name is different, update the group's title
+                var listName = list.getName();
+                LOGGER.LOG("  - Matched with mailing list " + listName);
+                if (listName != title) {
+                  LOGGER.LOG("  - Going to rename the group to " + listName);
+                  group.setTitle(listName);
+                  this.mGroupsToUpdate.push(group);
+                }
+              }
+              else {
+                this.mGroupsToDelete.push(group);
+                LOGGER.LOG("  - Didn't find a matching mail list.  It will be deleted");
               }
             }
-            else {
-              this.mGroupsToDelete.push(group);
-              LOGGER.LOG("  - Didn't find a matching mail list.  It will be deleted");
+            else { // it is new or updated
+              if (list) { // the group has been updated
+                LOGGER.LOG("  - Matched with mailing list " + listName);
+                // if the name changed, update the mail list's name
+                if (list.getName() != title) {
+                  LOGGER.LOG("  - The group's name changed, updating the list");
+                  list.setName(title);
+                  list.update();
+                }
+                list.matched = true;
+              }
+              else { // the group is new
+                // make a new mailing list with the same name
+                LOGGER.LOG("  - The group is new");
+                var list = ab.addList(title, id);
+                LOGGER.VERBOSE_LOG("  - List added to address book");
+              }
             }
           }
-          else { // it is new or updated
-            if (list) { // the group has been updated
-              LOGGER.LOG("  - Matched with mailing list " + listName);
-              // if the name changed, update the mail list's name
-              if (list.getName() != title) {
-                LOGGER.LOG("  - The group's name changed, updating the list");
-                list.setName(title);
-                list.update();
-              }
-              list.matched = true;
+          catch(e) { LOGGER.LOG_ERROR("Error while syncing groups: " + e); }
+        }
+        LOGGER.LOG("***Looking for unmatched mailing lists***");
+        for (var i in this.mLists) {
+          var list = this.mLists[i];
+          if (list && !list.matched) {
+            // if it is new, make a new group in Google
+            if (i.indexOf("http://www.google.com/m8/feeds/groups/") == -1) {
+              LOGGER.LOG("-Found new list named " + list.getName());
+              LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
+              LOGGER.LOG(" * It will be added to Google");
+              this.mGroupsToAdd.push(list);
             }
-            else { // the group is new
-              // make a new mailing list with the same name
-              LOGGER.LOG("  - The group is new");
-              var list = ab.addList(title, id);
-              LOGGER.VERBOSE_LOG("  - List added to address book");
+            // if it is old, delete it
+            else {
+              LOGGER.LOG("-Found an old list named " + list.getName());
+              LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
+              LOGGER.LOG(" * It will be deleted from Thunderbird");
+              list.delete();
             }
           }
         }
-        catch(e) { LOGGER.LOG_ERROR("Error while syncing groups: " + e); }
       }
-      LOGGER.LOG("***Looking for unmatched mailing lists***");
-      for (var i in this.mLists) {
-        var list = this.mLists[i];
-        if (list && !list.matched) {
-          // if it is new, make a new group in Google
-          if (i.indexOf("http://www.google.com/m8/feeds/groups/") == -1) {
-            LOGGER.LOG("-Found new list named " + list.getName());
-            LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
-            LOGGER.LOG(" * It will be added to Google");
-            this.mGroupsToAdd.push(list);
+      else {
+        LOGGER.LOG("Only synchronizing the " + myContacts + " group.");
+        var group, id, title;
+        var foundGroup = false;
+        for (var i = 0; i < arr.length; i++) {
+          try {
+            group = new Group(arr[i]);
+            // add the ID to mGroups by making a new property with the ID as the
+            // name and the title as the value for easy lookup for contacts
+            id = group.getID();
+            title = group.getTitle();
+            if (title == myContacts) {
+              foundGroup = true;
+              break;
+            }
           }
-          // if it is old, delete it
-          else {
-            LOGGER.LOG("-Found an old list named " + list.getName());
-            LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
-            LOGGER.LOG(" * It will be deleted from Thunderbird");
-            list.delete();
+          catch (e) {
+            
           }
+        }
+        if (foundGroup) {
+          LOGGER.LOG("Found the group to synchronize: " + id);
+          this.mContactsUrl = id;
+          return Sync.getContacts();
+        }
+        else {
+          var msg = "Could not find the group " + myContacts + " to synchronize."
+          LOGGER.LOG_ERROR(msg);
+          this.syncNextUser();
         }
       }
     }

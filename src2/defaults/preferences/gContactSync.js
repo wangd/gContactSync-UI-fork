@@ -40,6 +40,10 @@ pref("extensions.gContactSync.writeOnly", false);
 pref("extensions.gContactSync.forceBtnImage", false);
 // automatically delete contacts from Google when deleted in Thunderbird
 pref("extensions.gContactSync.autoDelete", true);
+// only sync the My Contacts group
+pref("extensions.gContactSync.myContacts", false);
+// the name of the group to sync if myContacts is true
+pref("extensions.gContactSync.myContactsName", "My Contacts");
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

@@ -133,6 +133,7 @@ var ContactConverter = {
    * @return A GContact object with the Atom feed for the contact.
    */
   cardToAtomXML: function ContactConverter_cardToAtomXML(aCard, aContact) {
+    var isNew = !aContact;
     if (!aContact)
       aContact = new GContact();
     if (!this.mInitialized)
@@ -174,7 +175,14 @@ var ContactConverter = {
       var value = this.checkValue(AbManager.getCardValue(aCard, arr[i]));
       aContact.setExtendedProperty(arr[i], value);
     }
-    if (Preferences.mSyncPrefs.syncGroups.value) {
+    // If the myContacts pref is set and this contact is new then add the
+    // myContactsName group
+    if (Preferences.mSyncPrefs.myContacts.value) {
+      if (isNew && Sync.mContactsUrl) {
+        aContact.setGroups([Sync.mContactsUrl]);
+      }
+    }
+    else if (Preferences.mSyncPrefs.syncGroups.value) {
       // set the groups
       var groups = [];
       for (var i in Sync.mLists) {
@@ -236,7 +244,7 @@ var ContactConverter = {
       ab.setCardValue(card, arr[i], value);
     }
     ab.updateCard(card);
-    if (Preferences.mSyncPrefs.syncGroups.value) {
+    if (Preferences.mSyncPrefs.syncGroups.value && !Preferences.mSyncPrefs.myContacts.value) {
       // get the groups after updating the card
       var groups = aContact.getValue("groupMembershipInfo");
       var lists = Sync.mLists;
