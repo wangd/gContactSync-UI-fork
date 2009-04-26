@@ -190,8 +190,9 @@ var Sync = {
   },
   // could be faster by fetching new and deleted contacts?
   // should modify the listener:
-  //  when a contact is deleted, try to delete it from Google, wouldn't need to check response - done
-  //  when a contact is added to TB, try to add to google (would need something to bypass the default sync behavior - check the response and set a flag in the contact to override)
+  //  when a contact is added to TB, try to add to google (would need something
+  // to bypass the default sync behavior - check the response and set a flag in
+  // the contact to override)
   //  when a contact is modified, try to modify the Google contact
   sync2: function Sync_sync2(aAtom) {
     // get the address book
@@ -203,7 +204,7 @@ var Sync = {
     var abCards = ab.getAllCards();
     // get and log the last sync time (milliseconds since 1970 UTC)
     var lastSync = parseInt(ab.getLastSyncDate());
-    LOGGER.VERBOSE_LOG("Last sync was at: " + lastSync);
+    LOGGER.LOG("Last sync was at: " + lastSync);
     var cardsToDelete = [];
     var maxContacts = Preferences.mSyncPrefs.maxContacts.value;
     // if there are more contacts than returned, increase the pref
@@ -437,9 +438,6 @@ var Sync = {
     this.mLists = {};
     // if there wasn't an error, setup groups
     if (aAtom) {
-      if (Preferences.mSyncPrefs.verboseLog.value) {
-        LOGGER.LOG("***Groups XML feed:\n" + serialize(aAtom));
-      }
       var ab = this.mCurrentAb;
       var ns = gdata.namespaces.ATOM;
       var lastSync = parseInt(ab.getLastSyncDate());
