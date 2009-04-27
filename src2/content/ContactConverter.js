@@ -231,6 +231,9 @@ var ContactConverter = {
         property.value = makeDummyEmail(aContact);
         property.type = "home";
       }
+      else if (obj.tbName == "DisplayName") {
+        
+      }
       ab.setCardValue(card, obj.tbName, property.value);
       // set the type, if it is an attribute with a type
       if (property.type)
@@ -243,6 +246,31 @@ var ContactConverter = {
       value = value ? value.value : null;
       ab.setCardValue(card, arr[i], value);
     }
+    
+    // parse the DisplayName into FirstName and LastName
+    if (Preferences.mSyncPrefs.parseNames) {
+      var name  = ab.getCardValue(card, "DisplayName");
+      var first = ab.getCardValue(card, "FirstName");
+      var last  = ab.getCardValue(card, "LastName");
+      LOGGER.VERBOSE_LOG(name + " - " + first + " - " + last + " - " + !first + " - " + !last);
+      // only parse if the contact has a name and there isn't already a first
+      // or last name set
+      if (name && !first && !last) {
+        var nameArr;
+        if (name.split)
+          nameArr = name.split(" ");
+        else
+          nameArr = [name];
+        // take the first part of the name and set it as the first name
+        // then take the last and set it as the last name
+        first = nameArr.shift();
+        last  = nameArr.join(" ");
+        LOGGER.VERBOSE_LOG("FirstName\n" + first + "\nLastName\n" + last);
+        ab.setCardValue(card, "FirstName", first);
+        ab.setCardValue(card, "LastName", last);
+      }
+    }
+
     ab.updateCard(card);
     if (Preferences.mSyncPrefs.syncGroups.value && !Preferences.mSyncPrefs.myContacts.value) {
       // get the groups after updating the card

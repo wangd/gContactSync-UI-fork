@@ -246,7 +246,6 @@ var Sync = {
         gContacts[id] = gContact;
       }
       else {
-        alert(gContact.getName());
         LOGGER.VERBOSE_LOG(gContact.getName() + " will not be synchronized " +
                            "because it is not in the synced group");
       }
@@ -541,7 +540,8 @@ var Sync = {
         }
       }
       else {
-        LOGGER.LOG("Only synchronizing the " + myContacts + " group.");
+        var groupName = Preferences.mSyncPrefs.myContactsName.value;
+        LOGGER.LOG("Only synchronizing the " + groupName + " group.");
         var group, id, title;
         var foundGroup = false;
         for (var i = 0; i < arr.length; i++) {
@@ -551,7 +551,7 @@ var Sync = {
             // name and the title as the value for easy lookup for contacts
             id = group.getID();
             title = group.getTitle();
-            if (title == myContacts) {
+            if (title == groupName) {
               foundGroup = true;
               break;
             }
@@ -561,12 +561,12 @@ var Sync = {
           }
         }
         if (foundGroup) {
-          LOGGER.LOG("Found the group to synchronize: " + id);
+          LOGGER.LOG("  - Found the group to synchronize: " + id);
           this.mContactsUrl = id;
           return Sync.getContacts();
         }
         else {
-          var msg = "Could not find the group " + myContacts + " to synchronize."
+          var msg = "  - Could not find the group " + groupName + " to synchronize."
           LOGGER.LOG_ERROR(msg);
           this.syncNextUser();
         }

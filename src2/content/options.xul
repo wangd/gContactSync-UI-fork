@@ -120,7 +120,7 @@
         <!-- NOTE: to add a write-only checkbox remove the <! - - and - - > from the next line -->
         <!--<checkbox preference="writeOnly" id="writeOnly" label="&writeOnly.label;"/>-->
         <checkbox preference="listenerDeleteFromGoogle" id="listenerDeleteFromGoogle" label="&listenerDeleteFromGoogle.label;"/>
-        <!--<checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>-->
+        <checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>
