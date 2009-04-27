@@ -252,7 +252,6 @@ var ContactConverter = {
       var name  = ab.getCardValue(card, "DisplayName");
       var first = ab.getCardValue(card, "FirstName");
       var last  = ab.getCardValue(card, "LastName");
-      LOGGER.VERBOSE_LOG(name + " - " + first + " - " + last + " - " + !first + " - " + !last);
       // only parse if the contact has a name and there isn't already a first
       // or last name set
       if (name && !first && !last) {
