@@ -37,7 +37,7 @@ pref("extensions.gContactSync.readOnly", false);
 // enable/disable write-only mode (TB writes updates Google only)
 pref("extensions.gContactSync.writeOnly", false);
 // force setting the button's image through JavaScript
-pref("extensions.gContactSync.forceBtnImage", false);
+pref("extensions.gContactSync.forceBtnImage", true);
 // automatically delete contacts from Google when deleted in Thunderbird
 pref("extensions.gContactSync.autoDelete", true);
 // only sync the My Contacts group
