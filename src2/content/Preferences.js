@@ -81,7 +81,8 @@ var Preferences = {
     forceBtnImage: new Pref("forceBtnImage", "bool", false),
     autoDelete: new Pref("autoDelete", "bool", false),
     myContacts: new Pref("myContacts", "char", false),
-    myContacts: new Pref("myContactsName", "char", "My Contacts")
+    myContactsName: new Pref("myContactsName", "char", "My Contacts"),
+    parseNames: new Pref("parseNames", "bool", true)
   },
   /**
    * Preferences.getPref

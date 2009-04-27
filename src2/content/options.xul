@@ -73,26 +73,14 @@
       <preference id="writeOnly"
                   name="extensions.gContactSync.writeOnly"
                   type="bool"/>
-      <preference id="enableLogging"
-                  name="extensions.gContactSync.enableLogging"
-                  type="bool"/>
-      <preference id="verboseLog"
-                  name="extensions.gContactSync.verboseLog"
-                  type="bool"/>
       <preference id="syncExtended"
                   name="extensions.gContactSync.syncExtended"
                   type="bool"/>
-      <preference id="enableSyncBtn"
-                  name="extensions.gContactSync.enableSyncBtn"
-                  type="bool"/>
-      <preference id="forceBtnImage"
-                  name="extensions.gContactSync.forceBtnImage"
-                  type="bool"/>
-      <preference id="enableMenu"
-                  name="extensions.gContactSync.enableMenu"
-                  type="bool"/>
       <preference id="listenerDeleteFromGoogle"
                   name="extensions.gContactSync.listenerDeleteFromGoogle"
+                  type="bool"/>
+      <preference id="parseNames"
+                  name="extensions.gContactSync.parseNames"
                   type="bool"/>
     </preferences>
     <groupbox flex="1">
@@ -120,20 +108,49 @@
       </groupbox>
       <separator class="thin"/>
       <groupbox>
-        <caption label="&syncBehavior.label;"/>
-        <checkbox preference="updateGoogleInConflicts" id="macContacts" label="&updateGoogle.label;"/>
-        <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
+        <caption label="&groups.label;"/>
         <checkbox preference="myContacts" id="myContacts" label="&myContacts.label;"/>
-        <checkbox preference="readOnly" id="readOnly" label="&readOnly.label;"/>
-        <!-- NOTE: to add a write-only checkbox remove the <! - - and - - > from the next line -->
-        <!--<checkbox preference="writeOnly" id="writeOnly" label="&writeOnly.label;"/>-->
+        <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
       </groupbox>
       <separator class="thin"/>
       <groupbox>
-        <caption label="&other.label;"/>
+        <caption label="&syncBehavior.label;"/>
+        <checkbox preference="updateGoogleInConflicts" id="macContacts" label="&updateGoogle.label;"/>
+        <checkbox preference="readOnly" id="readOnly" label="&readOnly.label;"/>
+        <!-- NOTE: to add a write-only checkbox remove the <! - - and - - > from the next line -->
+        <!--<checkbox preference="writeOnly" id="writeOnly" label="&writeOnly.label;"/>-->
         <checkbox preference="listenerDeleteFromGoogle" id="listenerDeleteFromGoogle" label="&listenerDeleteFromGoogle.label;"/>
+        <!--<checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>-->
+      </groupbox>
+    </groupbox>
+  </prefpane>
+  <prefpane id="pane_interface" index="interface" label="&interface.tab;">
+    <preferences>
+      <preference id="enableLogging"
+                  name="extensions.gContactSync.enableLogging"
+                  type="bool"/>
+      <preference id="verboseLog"
+                  name="extensions.gContactSync.verboseLog"
+                  type="bool"/>
+      <preference id="enableSyncBtn"
+                  name="extensions.gContactSync.enableSyncBtn"
+                  type="bool"/>
+      <preference id="forceBtnImage"
+                  name="extensions.gContactSync.forceBtnImage"
+                  type="bool"/>
+      <preference id="enableMenu"
+                  name="extensions.gContactSync.enableMenu"
+                  type="bool"/>
+    </preferences>
+    <groupbox flex="1">
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&logging.label;"/>
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
+      </groupbox>
+      <groupbox>
+        <caption label="&buttons.label;"/>
         <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>
         <checkbox preference="forceBtnImage" id="forceBtnImage" label="&forceBtnImage.label;"/>
         <checkbox preference="enableMenu" id="enableMenu" label="&enableMenu.label;"/>

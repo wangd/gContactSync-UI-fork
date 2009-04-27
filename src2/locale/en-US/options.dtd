@@ -7,18 +7,22 @@
 <!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
 <!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
 <!ENTITY abName.value "Name of the Address Book to sync with (old or new)">
+<!ENTITY groups.label "Groups and Mailing Lists">
+<!ENTITY myContacts.label "Synchronize only the 'My Contacts' group">
+<!ENTITY syncGroups.label "Synchronize Groups with Mailing Lists">
 <!ENTITY syncBehavior.label "Sync Behavior">
 <!ENTITY removeOldAddresses.label "Remove the old Thunderbird addresses after converting to the new format">
 <!ENTITY updateGoogle.label "Always update Gmail when a contact is updated in Gmail and Thunderbird">
-<!ENTITY syncGroups.label "Synchronize Groups with Mailing Lists">
-<!ENTITY myContacts.label "Synchronize only the 'My Contacts' group">
 <!ENTITY readOnly.label "Enable fetch-only mode (Thunderbird only receives updates; it never sends them)">
 <!ENTITY writeOnly.label "Enable push-only mode (Thunderbird sends, but doesn't receive, updates)">
-
-<!ENTITY other.label "Other">
 <!ENTITY listenerDeleteFromGoogle.label "Remove contacts from Google immediately after they are removed in Thunderbird">
+<!ENTITY parseNames.label "Parse names from Google contacts into First and Last names.">
+
+<!ENTITY interface.tab "Interface">
+<!ENTITY logging.label "Logging">
 <!ENTITY enableLogging.label "Enable Logging">
 <!ENTITY verboseLog.label "Enable Verbose Logging">
+<!ENTITY buttons.label "Buttons and Menus">
 <!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
 <!ENTITY forceBtnImage.label "Force the Sync toolbar button image (fixes a large, ugly Sync button)">
 <!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">

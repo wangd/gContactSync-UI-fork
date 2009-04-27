@@ -44,6 +44,8 @@ pref("extensions.gContactSync.autoDelete", true);
 pref("extensions.gContactSync.myContacts", false);
 // the name of the group to sync if myContacts is true
 pref("extensions.gContactSync.myContactsName", "My Contacts");
+// try to parse display names from Google into First and Last names
+pref("extensions.gContactSync.parseNames", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");
