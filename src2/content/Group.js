@@ -110,6 +110,7 @@ Group.prototype = {
                       : null;
       return this.mTitle;
     }
+    return null;
   },
   /**
    * Group.getEditURL
@@ -122,6 +123,7 @@ Group.prototype = {
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("rel") == gdata.contacts.links.EditURL)
         return arr[i].getAttribute("href");
+    return null;
   },
   /**
    * Group.getID
@@ -133,6 +135,7 @@ Group.prototype = {
     var id = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
     if (id && id.childNodes[0])
       return id.childNodes[0].nodeValue;
+    return null;
   },
   /**
    * Group.removeExtendedProperties
@@ -155,6 +158,7 @@ Group.prototype = {
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("name") == aName)
         return arr[i].getAttribute("value");
+    return null;
   },
   /**
    * Group.getLastModifiedDate
@@ -177,6 +181,7 @@ Group.prototype = {
     catch(e) {
       LOGGER.LOG_WARNING("Unable to get last modified date from a group:\n" + e);
     }
+    return 0;
   },
   /**
    * Group.setExtendedProperty
@@ -199,5 +204,29 @@ Group.prototype = {
       property.setAttribute("value", aValue);
       this.xml.appendChild(property);
     }
-  }
+  },
+  /**
+   * Group.isSystemGroup
+   * Returns true if this group is one of Google's system groups.
+   * These currently are:
+   *  - My Contacts
+   *  - Coworkers
+   *  - Family
+   *  - Friends
+   */
+  isSystemGroup: function Group_isSystemGroup() {
+    var nodes = this.xml.getElementsByTagNameNS(gdata.namespaces.GCONTACT.url,
+                                                "systemGroup");
+    return nodes && nodes.length > 0;
+  },
+  /**
+   * Group.getSystemId
+   * Returns the id of the gContact:systemGroup tag, if any.
+   */
+  getSystemId: function Group_getSystemId() {
+    var nodes = this.xml.getElementsByTagNameNS(gdata.namespaces.GCONTACT.url,
+                                                "systemGroup");
+    if (!nodes || !nodes.length || !nodes[0]) return null;
+    return nodes[0].getAttribute("id");
+  }  
 };

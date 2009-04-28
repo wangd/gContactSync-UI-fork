@@ -146,6 +146,8 @@ var Sync = {
     LOGGER.LOG("***Beginning Contact Synchronization***");
     var httpReq = new GHttpRequest("getAll", this.mCurrentAuthToken, null, null,
                                    this.mCurrentUsername);
+    // serializeFromText does not do anything if verbose logging is disabled
+    // so this next line won't waste time
     httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText))",
                           "Sync.sync2(httpReq.responseXML);"];
     httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while getting all contacts', " +
@@ -542,16 +544,21 @@ var Sync = {
       else {
         var groupName = Preferences.mSyncPrefs.myContactsName.value;
         LOGGER.LOG("Only synchronizing the " + groupName + " group.");
-        var group, id, title;
+        var group, id, sysId, title;
         var foundGroup = false;
         for (var i = 0; i < arr.length; i++) {
           try {
             group = new Group(arr[i]);
             // add the ID to mGroups by making a new property with the ID as the
             // name and the title as the value for easy lookup for contacts
-            id = group.getID();
+            // Note: If someone wants to sync a group with the same name as a
+            // system group then this method won't work because system gruoups
+            // are first.
+            id    = group.getID();
+            sysId = group.getSystemId();
             title = group.getTitle();
-            if (title == groupName) {
+            LOGGER.VERBOSE_LOG("  - Found a group named " + title + " - ID: " + id);
+            if (sysId == groupName || title == groupName) {
               foundGroup = true;
               break;
             }
@@ -561,19 +568,19 @@ var Sync = {
           }
         }
         if (foundGroup) {
-          LOGGER.LOG("  - Found the group to synchronize: " + id);
+          LOGGER.LOG(" * Found the group to synchronize: " + id);
           this.mContactsUrl = id;
           return Sync.getContacts();
         }
         else {
-          var msg = "  - Could not find the group " + groupName + " to synchronize."
+          var msg = " * Could not find the group " + groupName + " to synchronize."
           LOGGER.LOG_ERROR(msg);
-          this.syncNextUser();
+          return this.syncNextUser();
         }
       }
     }
     LOGGER.LOG("***Deleting old groups from Google***");
-    this.deleteGroups();
+    return this.deleteGroups();
   },
   /**
    * Sync.deleteGroups

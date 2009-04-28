@@ -43,7 +43,8 @@ pref("extensions.gContactSync.autoDelete", true);
 // only sync the My Contacts group
 pref("extensions.gContactSync.myContacts", false);
 // the name of the group to sync if myContacts is true
-pref("extensions.gContactSync.myContactsName", "My Contacts");
+// this must be the system group or title of the group
+pref("extensions.gContactSync.myContactsName", "Contacts");
 // try to parse display names from Google into First and Last names
 pref("extensions.gContactSync.parseNames", true);
 // extended properties to sync
