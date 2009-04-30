@@ -599,6 +599,10 @@ GContact.prototype = {
     var str = str.substring(str.length - aType.length);
     return str == aType; // return true if the end is equal to aType
   },
+  /**
+   * GContact.getID
+   * Returns the last portion of this contact's ID
+   */
   getID: function GContact_getID() {
     var val   = this.getValue("id").value;
     var index = val.lastIndexOf("/");
