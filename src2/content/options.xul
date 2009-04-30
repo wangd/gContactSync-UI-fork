@@ -141,6 +141,12 @@
       <preference id="enableMenu"
                   name="extensions.gContactSync.enableMenu"
                   type="bool"/>
+      <preference id="phoneColLabels"
+                  name="extensions.gContactSync.phoneColLabels"
+                  type="bool"/>
+      <preference id="newColLabels"
+                  name="extensions.gContactSync.newColLabels"
+                  type="bool"/>
     </preferences>
     <groupbox flex="1">
       <separator class="thin"/>
@@ -154,6 +160,11 @@
         <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>
         <checkbox preference="forceBtnImage" id="forceBtnImage" label="&forceBtnImage.label;"/>
         <checkbox preference="enableMenu" id="enableMenu" label="&enableMenu.label;"/>
+      </groupbox>
+      <groupbox>
+        <caption label="&abResults.label;"/>
+        <checkbox preference="phoneColLabels" id="phoneColLabels" label="&phoneColLabels.label;"/>
+        <checkbox preference="newColLabels" id="newColLabels" label="&newColLabels.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>

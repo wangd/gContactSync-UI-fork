@@ -47,6 +47,11 @@ pref("extensions.gContactSync.myContacts", false);
 pref("extensions.gContactSync.myContactsName", "Contacts");
 // try to parse display names from Google into First and Last names
 pref("extensions.gContactSync.parseNames", true);
+// true = new phone labels in the abResultsTreeCols (column labels in the AB)
+pref("extensions.gContactSync.phoneColLabels", true);
+// whether or not gContactSync should add new tree column labels
+// in Thunderbird 3 (it can't work in 2)
+pref("extensions.gContactSync.newColLabels", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

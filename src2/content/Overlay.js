@@ -124,21 +124,24 @@ var Overlay = {
     var treeCols = document.getElementById("abResultsTreeCols");
     if (!treeCols || !treeCols.appendChild)
       return;
-    // fix the existing phone numbers
-    var arr = ["WorkPhone", "HomePhone", "FaxNumber","CellularNumber",
-               "PagerNumber"];
-    for (var i = 0; i < arr.length; i++) {
-      var elem = document.getElementById(arr[i]);
-      if (!elem)
-        continue;
-      // remove it
-      treeCols.removeChild(elem);
-      elem.setAttribute("label", StringBundle.getStr(arr[i]));
-      // and then add it to the end of the treecols element
-      treeCols.appendChild(elem);
+    if (Preferences.mSyncPrefs.phoneColLabels.value) {
+        // fix the existing phone numbers
+        var arr = ["WorkPhone", "HomePhone", "FaxNumber","CellularNumber",
+                   "PagerNumber"];
+        for (var i = 0; i < arr.length; i++) {
+          var elem = document.getElementById(arr[i]);
+          if (!elem)
+            continue;
+          // remove it
+          treeCols.removeChild(elem);
+          elem.setAttribute("label", StringBundle.getStr(arr[i]));
+          // and then add it to the end of the treecols element
+          treeCols.appendChild(elem);
+        }
     }
-    // if Bug 413260 isn't applied in this version of TB, stop here
-    if (!this.mBug413260)
+    // if Bug 413260 isn't applied in this version of TB, or if the pref was
+    // changed to false, then stop here
+    if (!this.mBug413260 || !Preferences.mSyncPrefs.newColLabels.value)
       return;
     // get the added attributes
     var ids = ContactConverter.getExtraSyncAttributes(false);
