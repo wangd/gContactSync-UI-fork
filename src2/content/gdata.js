@@ -47,7 +47,9 @@ var gdata = {
   AUTH_SUB_SESSION_TYPE: "GET",
   AUTH_SUB_REVOKE_URL: "https://www.google.com/accounts/AuthSubRevokeToken",
   AUTH_SUB_REVOKE_TYPE: "GET",
-  O_AUTH_URL: "https://www.google.com/accounts/AuthSubRequest?scope=https%3A%2F%2Fwww.google.com%2Fm8%2Ffeeds%2F&session=1&secure=0&next=http://pirules.net/gcontactsync/online/index.php",
+  O_AUTH_URL: "https://www.google.com/accounts/AuthSubRequest?scope=https%3A%" +
+              "2F%2Fwww.google.com%2Fm8%2Ffeeds%2F&session=1&secure=0&next=" +
+              "http%3A%2F%2Fpirules.org%2Ftools%2Fgcs%2Findex.php",
   O_AUTH_TYPE: "GET",
   /**
    * gdata.makeAuthBody
@@ -69,7 +71,7 @@ var gdata = {
    */
   getEmailFromId: function gdata_getEmailFromId(aId) {
     if (!aId || !aId.indexOf || aId == "")
-      return;
+      return "";
     // typical ID:
     // http://www.google.com/m8/feeds/contacts/address%40gmail.com/base/...
     var startStr = "/feeds/contacts/";
@@ -77,7 +79,7 @@ var gdata = {
     var endStr = "/base/";
     var end = aId.indexOf(endStr);
     if (start >= end)
-      return;
+      return "";
     var address = decodeURIComponent(aId.substring(start, end));
     LOGGER.VERBOSE_LOG("found address: " + address + " from ID: " + aId);
     return address;
@@ -96,35 +98,35 @@ var gdata = {
   // some things related to contacts, such as related URLs and HTTP Request
   // types
   contacts: {
-    GET_ALL_URL: "https://www.google.com/m8/feeds/contacts/default/full?" +
-                 "max-results=",
+    GET_ALL_URL:      "https://www.google.com/m8/feeds/contacts/default/full?" +
+                      "max-results=",
     GET_ALL_THIN_URL: "https://www.google.com/m8/feeds/contacts/default/thin?" +
                       "max-results=",
-    GROUPS_URL: "https://www.google.com/m8/feeds/groups/default/full?" +
-                "max-results=1000",
-    ADD_GROUP_URL: "https://www.google.com/m8/feeds/groups/default/full",
-    ADD_URL: "https://www.google.com/m8/feeds/contacts/default/full",
+    GROUPS_URL:       "https://www.google.com/m8/feeds/groups/default/full?" +
+                      "max-results=1000",
+    ADD_GROUP_URL:    "https://www.google.com/m8/feeds/groups/default/full",
+    ADD_URL:          "https://www.google.com/m8/feeds/contacts/default/full",
     TYPES: {
-      AIM: "AIM",
+      AIM:         "AIM",
       GOOGLE_TALK: "Google Talk",
-      ICQ: "ICQ",
-      YAHOO: "Yahoo",
-      MSN: "MSN",
-      JABBER: "Jabber",
-      home: "Home",
-      work: "Work",
-      other: "Other",
-      mobile: "Mobile",
-      pager: "Pager",
-      work_fax: "Work Fax",
-      home_fax: "Home Fax"
+      ICQ:         "ICQ",
+      YAHOO:       "Yahoo",
+      MSN:         "MSN",
+      JABBER:      "Jabber",
+      home:        "Home",
+      work:        "Work",
+      other:       "Other",
+      mobile:      "Mobile",
+      pager:       "Pager",
+      work_fax:    "Work Fax",
+      home_fax:    "Home Fax"
     },
     requestTypes: {
       GET_ALL: "GET",
-      GET: "GET",
-      UPDATE: "PUT", // NOTE: should be set to POST and overridden
-      ADD: "POST",
-      DELETE: "DELETE"  // NOTE: should be set to POST and overridden
+      GET:     "GET",
+      UPDATE:  "PUT", // NOTE: should be set to POST and overridden
+      ADD:     "POST",
+      DELETE:  "DELETE"  // NOTE: should be set to POST and overridden
     },
     // different "types" of contact elements
     types: {
@@ -186,8 +188,8 @@ var gdata = {
     // and the value is the value of the "rel" attribute
     links: {
       PhotoURL: "http://schemas.google.com/contacts/2008/rel#edit-photo",
-      SelfURL: "self",
-      EditURL: "edit"
+      SelfURL:  "self",
+      EditURL:  "edit"
     },
     /**
      * gdata.contacts.getNumberOfContacts
