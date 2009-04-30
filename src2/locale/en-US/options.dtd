@@ -28,7 +28,7 @@
 <!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">
 <!ENTITY abResults.label "Address Book Results Pane">
 <!ENTITY phoneColLabels.label "Rename the phone column labels">
-<!ENTITY newColLabels.label "Add the new fields (screennames, numbers, etc.) to the column labels">
+<!ENTITY newColLabels.label "Add the new fields to the column labels (Thunderbird 3 Only)">
 
 <!ENTITY accounts.tab "Accounts">
 <!ENTITY emailAddress.label "E-mail Address">
