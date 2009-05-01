@@ -107,6 +107,8 @@
       <checkbox preference="updateGoogleInConflicts"
                 id="updateGoogle"
                 label="&updateGoogle.label;"/>
+	  
+	  <checkbox preference="myContacts" id="myContacts" label="&myContacts.label;"/>
                    
       <checkbox preference="syncGroups"
                 id="syncGroups"

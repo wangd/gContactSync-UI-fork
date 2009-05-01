@@ -579,5 +579,37 @@ AddressBook.prototype = {
     */
    setLastSyncDate: function AddressBook_setLastSyncDate(aLastSync) {
      this.setStringPref("lastSync", aLastSync);
-   }
-};
+   },
+   /**
+    * AddressBook.reset
+    * 'Resets' this address book making it appear to be brand new and never
+    * synchronized.
+    * The username is NOT erased.
+    * 
+    * This includes:
+    *   - Deleting all mailing lists
+    *   - Deleting all contacts
+    *   - Setting the GroupID to ""
+    *   - Setting primary to true
+    *   - Setting the last sync date to 0
+    */
+  reset: function AddressBook_reset() {
+    LOGGER.LOG("Resetting the " + this.getName() + " directory.");
+    var lists = this.getAllLists();
+    LOGGER.VERBOSE_LOG(" * Deleting all lists");
+    for (var i in lists) {
+      LOGGER.VERBOSE_LOG("  - Deleting list " + lists[i].getName());
+      lists[i].delete();
+    }
+    LOGGER.VERBOSE_LOG(" * Finished deleting lists");
+    LOGGER.VERBOSE_LOG(" * Deleting all contacts");
+    this.deleteCards(this.getAllCards());
+    LOGGER.VERBOSE_LOG(" * Setting GroupID to ''");
+    this.setGroupID("");
+    LOGGER.VERBOSE_LOG(" * Setting primary to true");
+    this.setPrimary(true);
+    LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
+    this.setLastSyncDate(0);
+    LOGGER.LOG("Finished resetting the directory.");
+  }
+}

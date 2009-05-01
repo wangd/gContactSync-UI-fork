@@ -109,7 +109,7 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&groups.label;"/>
-        <checkbox preference="myContacts" id="myContacts" label="&myContacts.label;"/>
+        <checkbox preference="myContacts" id="cMyContacts" label="&myContacts.label;" onclick="myContactsChange(this);"/>
         <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
       </groupbox>
       <separator class="thin"/>
@@ -327,6 +327,8 @@
           src="chrome://gcontactsync/content/options.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/AddressBook.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/MailList.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/AbManager.js"/>
   <script type="application/x-javascript"

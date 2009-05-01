@@ -98,7 +98,12 @@ var AbListener = {
         }
       }
       // if it was removed from a directory
-      else if (Preferences.mSyncPrefs.autoDelete.value) {
+      // This has to check every time because the preference may be toggled
+      // from the preferences dialog temporarily while switching from one group
+      // to all groups or vice versa.
+      else if (Preferences.getPref(Preferences.mSyncBranch,
+                                   Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                                   Preferences.mSyncPrefs.listenerDeleteFromGoogle.type)) {
         try {
           var ab = new AddressBook(aParentDir);
           var contact = new TBContact(aItem, ab);

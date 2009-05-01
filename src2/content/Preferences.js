@@ -88,7 +88,6 @@ var Preferences = {
                                        "[OtherState]  [OtherZipCode]\n" +
                                        "[OtherCountry]"),
     forceBtnImage:            new Pref("forceBtnImage",  "bool", false),
-    autoDelete:               new Pref("autoDelete",     "bool", false),
     myContacts:               new Pref("myContacts",     "bool", false),
     myContactsName:           new Pref("myContactsName", "char", "My Contacts"),
     parseNames:               new Pref("parseNames",     "bool", true),

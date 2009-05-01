@@ -47,6 +47,7 @@ function initialize() {
   StringBundle.init();
   FileIO.init();
   Preferences.getSyncPrefs();
+  //document.getElementById("cMyContacts").addEventListener("change", myContactsChange, false);
   // if this is the full preferences dialog add a few event listeners
   if (document.getElementById("syncExtended")) {
     document.getElementById("syncExtended")
@@ -326,4 +327,42 @@ function enableDelays() {
   var disable = !document.getElementById("autoSync").value;
   document.getElementById("refreshInterval").disabled = disable;
   document.getElementById("initialDelay").disabled = disable;
+}
+
+// for the myContacts pref to change:
+function myContactsChange(checkbox) {
+  if (confirm(StringBundle.getStr("confirmMyContacts"))) {
+    // disable the address book listener
+    var original = Preferences.getPref(Preferences.mSyncBranch,
+                                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.type);
+    if (original) {
+      LOGGER.LOG("Disabled the listener");
+      Preferences.setPref(Preferences.mSyncBranch,
+                          Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                          Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
+                          false);
+    }
+    resetAllSyncedABs();
+    // re-enable the address book listener, if necessary
+    if (original) {
+      LOGGER.LOG("Re-enabled the listener");
+      Preferences.setPref(Preferences.mSyncBranch,
+                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
+                         true);
+    }
+  }
+  else {
+    checkbox.checked = !checkbox.checked;
+  }
+}
+
+function resetAllSyncedABs() {
+  LOGGER.LOG("Resetting all synchronized directories.");
+  var abs = AbManager.getSyncedAddressBooks();
+  for (var i in abs) {
+    abs[i].primary.reset();
+  }
+  LOGGER.LOG("Finished resetting all synchronized directories.");
 }
