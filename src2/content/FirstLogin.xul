@@ -72,6 +72,9 @@
       <preference id="syncGroups"
                   name="extensions.gContactSync.syncGroups"
                   type="bool"/>
+      <preference id="myContacts"
+                  name="extensions.gContactSync.myContacts"
+                  type="bool"/>
     </preferences>
     <groupbox>
       <label value="&gettingStarted1.value;"/>
