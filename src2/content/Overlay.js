@@ -337,6 +337,7 @@ var Overlay = {
   checkAuthentication: function Overlay_checkAuthentication() {
     if (gdata.isAuthValid()) {
       if (this.mUsername) {
+        Preferences.getSyncPrefs();
         var name = Preferences.mSyncPrefs.addressBookName.value;
         var ab   = new AddressBook(AbManager.getAbByName(name));
         ab.setUsername(this.mUsername);
