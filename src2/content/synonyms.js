@@ -35,15 +35,17 @@
  * ***** END LICENSE BLOCK ***** */
 /*
  * synonyms.js
- * Some synonyms to shorten commonly-used items
+ * Some synonyms to shorten commonly-used items and some functions that don't
+ * fit anywhere else.
  */
 var Cc = Components.classes;
 var CC = Components.Constructor;
 var Ci = Components.interfaces;
 var Cr = Components.results;
-var nsIAbCard = Ci.nsIAbCard;
+
+var nsIAbCard      = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
-var version = "0.2.0b3";
+var version        = "0.2.0";
 
 function serialize(aXML, aRemoveVersion) {
   if (!aXML)
