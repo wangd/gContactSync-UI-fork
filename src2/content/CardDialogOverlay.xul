@@ -44,6 +44,10 @@
        add a tab -->
   <script src="StringBundle.js"/>
   <script src="synonyms.js"/>
+  <script src="Pref.js"/>
+  <script src="Preferences.js"/>
+  <script src="FileIO.js"/>
+  <script src="Logger.js"/>
   <script src="CardDialogOverlay.js"/>
 
   <stringbundleset id="stringbundleset">

@@ -73,6 +73,10 @@ function serializeFromText(aString) {
 }
 function makeDummyEmail(aContact) {
   if (!aContact) throw "Invalid contact sent to makeDummyEmail";
+  if (!Preferences.mSyncPrefs.dummyEmail.value) {
+    LOGGER.VERBOSE_LOG(" * Not setting dummy e-mail");
+    return "";
+  }
   var prefix = StringBundle.getStr("dummy1");
   var suffix = StringBundle.getStr("dummy2");
   var id = null;

@@ -56,26 +56,32 @@ var Preferences = {
   },
   // preferences related to gContactSync
   mSyncPrefs: {
-    refreshInterval:          new Pref("refreshInterval", "int", 30),
-    maxContacts:              new Pref("maxContacts", "int", 5000),
-    addressBookName:          new Pref("addressBookName", "char",
-                                       "Google Contacts"),
-    updateGoogleInConflicts:  new Pref("updateGoogleInConflicts", "bool", true),
-    confirmDuplicates:        new Pref("confirmDuplicates", "bool", true),
-    initialDelay:             new Pref("initialDelay", "int", 500),
-    verboseLog:               new Pref("verboseLog", "bool", true),
-    syncExtended:             new Pref("syncExtended", "bool", true),
-    overrideCopy:             new Pref("overrideCopy", "bool", true),
-    autoSync:                 new Pref("autoSync", "bool", true),
-    syncGroups:               new Pref("syncGroups", "bool", true),
-    syncAddresses:            new Pref("syncAddresses", "bool", true),
+    initialDelay:             new Pref("initialDelay",       "int",  500),
+    refreshInterval:          new Pref("refreshInterval",    "int",  30),
+    maxContacts:              new Pref("maxContacts",        "int",  5000),
+    confirmDuplicates:        new Pref("confirmDuplicates",  "bool", true),
+    verboseLog:               new Pref("verboseLog",         "bool", true),
+    syncExtended:             new Pref("syncExtended",       "bool", true),
+    overrideCopy:             new Pref("overrideCopy",       "bool", true),
+    autoSync:                 new Pref("autoSync",           "bool", true),
+    syncGroups:               new Pref("syncGroups",         "bool", true),
+    syncAddresses:            new Pref("syncAddresses",      "bool", true),
     removeOldAddresses:       new Pref("removeOldAddresses", "bool", true),
-    enableSyncBtn:            new Pref("enableSyncBtn", "bool", true),
-    enableMenu:               new Pref("enableMenu", "bool", true),
-    enableLogging:            new Pref("enableLogging", "bool", true),
-    listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", true),
-    readOnly:                 new Pref("readOnly", "bool", false),
-    writeOnly:                new Pref("writeOnly", "bool", false),
+    enableSyncBtn:            new Pref("enableSyncBtn",      "bool", true),
+    enableMenu:               new Pref("enableMenu",         "bool", true),
+    enableLogging:            new Pref("enableLogging",      "bool", true),
+    readOnly:                 new Pref("readOnly",           "bool", false),
+    writeOnly:                new Pref("writeOnly",          "bool", false),
+    forceBtnImage:            new Pref("forceBtnImage",      "bool", false),
+    myContacts:               new Pref("myContacts",         "bool", false),
+    parseNames:               new Pref("parseNames",         "bool", true),
+    phoneColLabels:           new Pref("phoneColLabels",     "bool", true),
+    newColLabels:             new Pref("newColLabels",       "bool", true),
+    dummyEmail:               new Pref("dummyEmail",         "bool", true),
+    myContactsName:           new Pref("myContactsName",     "char", "My Contacts"),
+    addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
+    updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true),
+    listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", false),
     homeAddress:              new Pref("homeAddress", "char",
                                        "[HomeAddress]\n[HomeAddress2]\n" +
                                        "[HomeCity], [HomeState]  [HomeZipCode]" +
@@ -86,13 +92,7 @@ var Preferences = {
     otherAddress:             new Pref("otherAddress", "char", "[OtherAddress]" +
                                        "\n[OtherAddress2]\n[OtherCity], " +
                                        "[OtherState]  [OtherZipCode]\n" +
-                                       "[OtherCountry]"),
-    forceBtnImage:            new Pref("forceBtnImage",  "bool", false),
-    myContacts:               new Pref("myContacts",     "bool", false),
-    myContactsName:           new Pref("myContactsName", "char", "My Contacts"),
-    parseNames:               new Pref("parseNames",     "bool", true),
-    phoneColLabels:           new Pref("phoneColLabels", "bool", true),
-    newColLabels:             new Pref("newColLabels",   "bool", true)
+                                       "[OtherCountry]")
   },
   /**
    * Preferences.getPref

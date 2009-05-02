@@ -229,10 +229,7 @@ var ContactConverter = {
       // that is hidden from the user
       if (obj.tbName == dummyEmailName && !property.value) {
         property.value = makeDummyEmail(aContact);
-        property.type = "home";
-      }
-      else if (obj.tbName == "DisplayName") {
-        
+        property.type  = "home";
       }
       ab.setCardValue(card, obj.tbName, property.value);
       // set the type, if it is an attribute with a type
@@ -355,10 +352,10 @@ var ContactConverter = {
         // get the current info
         var address1 = AbManager.getCardValue(aCard, aPrefix + "Address");
         var address2 = AbManager.getCardValue(aCard, aPrefix + "Address2");
-        var city = AbManager.getCardValue(aCard, aPrefix + "City");
-        var state = AbManager.getCardValue(aCard, aPrefix + "State");
-        var zip = AbManager.getCardValue(aCard, aPrefix + "ZipCode");
-        var country = AbManager.getCardValue(aCard, aPrefix + "Country");
+        var city     = AbManager.getCardValue(aCard, aPrefix + "City");
+        var state    = AbManager.getCardValue(aCard, aPrefix + "State");
+        var zip      = AbManager.getCardValue(aCard, aPrefix + "ZipCode");
+        var country  = AbManager.getCardValue(aCard, aPrefix + "Country");
         if (address1)
           newAddress = address1;
         if (address2)
