@@ -3,7 +3,7 @@ pref("extensions.gContactSync.refreshInterval", 30);
 // the name of the address book to sync with
 pref("extensions.gContactSync.addressBookName", "Google Contacts");
 // the number of contacts supported.  Automatically raised, if necessary.
-pref("extensions.gContactSync.maxContacts", 5000);
+pref("extensions.gContactSync.maxContacts", 10000);
 // set to true if Google should be updated when a contact changes in Thunderbird
 // and Google.  False to update TB instead.
 pref("extensions.gContactSync.updateGoogleInConflicts", true);
@@ -31,7 +31,7 @@ pref("extensions.gContactSync.enableSyncBtn", true);
 // enable/disable the menu
 pref("extensions.gContactSync.enableMenu", true);
 // remove contacts from Google immediately after contacts are removed from Thunderbird
-pref("extensions.gContactSync.listenerDeleteFromGoogle", true);
+pref("extensions.gContactSync.listenerDeleteFromGoogle", false);
 // enable/disable read-only mode (TB gets updates from Google only)
 pref("extensions.gContactSync.readOnly", false);
 // enable/disable write-only mode (TB writes updates Google only)
@@ -50,6 +50,9 @@ pref("extensions.gContactSync.phoneColLabels", true);
 // whether or not gContactSync should add new tree column labels
 // in Thunderbird 3 (it can't work in 2)
 pref("extensions.gContactSync.newColLabels", true);
+// enable the dummy e-mail address (used when contacts don't have an address)
+// if disabled this can cause problems w/ mailing lists...
+pref("extensions.gContactSync.dummyEmail", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");
