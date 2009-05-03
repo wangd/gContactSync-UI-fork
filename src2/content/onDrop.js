@@ -167,6 +167,16 @@ function myOnDrop(row, orientation) {
         // delete the card if the user chose to move it (rather than copy it)
         if (actionIsMoving)
           deleteCard(srcDirectory, card);
+        if (toDirectory.isMailList) {
+          needToRefresh = true;
+          var contact = new TBContact(card);
+          if (!contact.getValue("PrimaryEmail")) {
+            LOGGER.VERBOSE_LOG("Forcing dummy email");
+            // force a dummy e-mail address
+            var dummyEmail = makeDummyEmail(contact, true);
+            contact.setValue("PrimaryEmail", dummyEmail, false);
+          }
+        }
         var newCard = toDirectory.addCard(card);
         if (isMDBCard) { // copy the attributes if this is an MDB card
           try {
@@ -221,7 +231,7 @@ function myOnDrop(row, orientation) {
  * @param aCard      The card that is deleted from the directory.
  */
 function deleteCard(aDirectory, aCard) {
-  if (!aCard)
+  if (!aCard || !aDirectory)
     return;
   var arr;
   // Thunderbird 2 and 3 differ in the type of array that must be passed to

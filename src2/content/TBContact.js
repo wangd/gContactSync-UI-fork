@@ -36,9 +36,9 @@
  
  function TBContact(aContact, aDirectory) {
    AbManager.checkCard(aContact, "TBContact constructor");
-   if (!aDirectory instanceof AddressBook) {
-     throw "Error - invalid directory sent to the TBContact constructor";
-   }
+   //if (!aDirectory instanceof AddressBook) {
+   //  throw "Error - invalid directory sent to the TBContact constructor";
+   //}
    this.mAddressBook = aDirectory;
    this.mContact = aContact;
  }
@@ -61,10 +61,18 @@ TBContact.prototype = {
     return false;
   },
   update: function TBContact_update() {
+    if (!this.mAddressBook) {
+      LOGGER.LOG_WARNING("Warning - TBContact.update called w/o a directory");
+      return false;
+    }
     return this.mAddressBook.updateCard(this.mContact);
   },
   remove: function TBContact_remove() {
-    this.mAddressBook.deleteCards([this.mContact]);
+    if (!this.mAddressBook) {
+      LOGGER.LOG_WARNING("Warning - TBContact.remove called w/o a directory");
+      return false;
+    }
+    return this.mAddressBook.deleteCards([this.mContact]);
   },
   getName: function TBContact_getName() {
     var displayName = this.getValue("DisplayName");

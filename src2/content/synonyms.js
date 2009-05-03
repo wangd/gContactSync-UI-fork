@@ -71,9 +71,9 @@ function serializeFromText(aString) {
   }
   return aString;
 }
-function makeDummyEmail(aContact) {
+function makeDummyEmail(aContact, ignorePref) {
   if (!aContact) throw "Invalid contact sent to makeDummyEmail";
-  if (!Preferences.mSyncPrefs.dummyEmail.value) {
+  if (!ignorePref && !Preferences.mSyncPrefs.dummyEmail.value) {
     LOGGER.VERBOSE_LOG(" * Not setting dummy e-mail");
     return "";
   }
