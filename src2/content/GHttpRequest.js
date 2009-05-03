@@ -129,6 +129,8 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
   }
   // use version 2 of the contacts api
   this.addHeaderItem("GData-Version", "2");
+  // handle Token Expired errors
+  this.mOn401 = ["handle401(httpReq);"];
   if (!this.mUrl)
     throw "Error - no URL was found for the HTTP Request";
   if (aUsername && this.mUrl)
@@ -136,3 +138,18 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
 }
 
 GHttpRequest.prototype = new HttpRequest(); // get the superclass' prototype
+
+/**
+ * handle401
+ * Handles 'Token Expired' errors.
+ */
+function handle401(httpRequest) {
+  LOGGER.LOG("***Found an expired token***");
+  /* TODO:
+   * If a sync is in progress:
+   *  - Get the username
+   *  - Prompt for the password
+   *  - Get a new auth token to replace the old one
+   *  - Restart the sync
+   */
+}

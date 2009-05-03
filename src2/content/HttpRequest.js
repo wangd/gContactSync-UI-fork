@@ -115,10 +115,11 @@ HttpRequest.prototype = {
     this.mHttpRequest.send(this.mBody); // send the request
     LOGGER.VERBOSE_LOG(" * Request Sent");
     var httpReq   = this.mHttpRequest;
-    var onSuccess = this.mOnSuccess ? this.mOnSuccess : [];
-    var onOffline = this.mOnOffline ? this.mOnOffline : [];
-    var onFail    = this.mOnError ? this.mOnError : [];
-    var onCreated = this.mOnCreated ? this.mOnCreated : [];
+    var onSuccess = this.mOnSuccess ? this.mOnSuccess: [];
+    var onOffline = this.mOnOffline ? this.mOnOffline: [];
+    var onFail    = this.mOnError   ? this.mOnError:   [];
+    var onCreated = this.mOnCreated ? this.mOnCreated: [];
+    var on401     = this.mOn401     ? this.mOn401:     [];
 
     httpReq.onreadystatechange = function httpReq_readyState() {
       var commands = [];
@@ -138,6 +139,9 @@ HttpRequest.prototype = {
               break;
             case 200: // 200 OK
               commands = onSuccess;
+              break;
+            case 401: // 401 Unauthorized (Token Expired in Gmail)
+              commands = on401;
               break;
             default: // other status
               commands = onFail;
