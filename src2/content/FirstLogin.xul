@@ -103,11 +103,12 @@
                 label="&updateGoogle.label;"/>
 
 	  <checkbox preference="myContacts"
-	            id="myContacts"
-				label="&myContacts.label;"/>
+	            id="cMyContacts"
+				label="&myContacts.label;"
+				onclick="setTimeout('enableSyncGroups();', 500);"/>
 
       <checkbox preference="syncGroups"
-                id="syncGroups"
+                id="cSyncGroups"
                 label="&syncGroups.label;"/>
     </groupbox>
   </prefpane>
