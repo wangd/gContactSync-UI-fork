@@ -182,6 +182,7 @@
       <button id="removeLogin" label="&removeLogin.label;" oncommand="removeSelectedLogin();"/>
       <button id="changeAbName" label="&changeAbName.label;" oncommand="changeAbName();"/>
       <button id="refreshTree" label="&refreshTree.label;" oncommand="fillLoginTree();"/>
+      <button id="resetAll" label="&resetAll.label;" oncommand="resetAllSyncedABs(true);"/>
     </hbox>
   </prefpane>
   <prefpane id="pane_addresses" index="addresses" label="&addresses.tab;">

@@ -37,6 +37,7 @@
 <!ENTITY addLogin.label "Add Login">
 <!ENTITY changeAbName.label "Change Address Book">
 <!ENTITY refreshTree.label "Refresh">
+<!ENTITY resetAll.label "Reset All Synced ABs">
 
 <!ENTITY addresses.tab "Addresses">
 <!-- LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating -->

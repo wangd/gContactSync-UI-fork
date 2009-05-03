@@ -358,11 +358,17 @@ function myContactsChange(checkbox) {
   }
 }
 
-function resetAllSyncedABs() {
+function resetAllSyncedABs(showConfirm) {
+  if (showConfirm) {
+    if (!confirm(StringBundle.getStr("confirmReset"))) {
+      return false;
+    }
+  }
   LOGGER.LOG("Resetting all synchronized directories.");
   var abs = AbManager.getSyncedAddressBooks();
   for (var i in abs) {
     abs[i].primary.reset();
   }
   LOGGER.LOG("Finished resetting all synchronized directories.");
+  alert(StringBundle.getStr("pleaseRestart"));
 }
