@@ -63,17 +63,17 @@ function myOnDrop(row, orientation) {
 
   var targetResource = dirTree.builderView.getResourceAtIndex(row);
   // get the source and target directory information
-  var targetURI = targetResource.Value;
-  var srcURI = GetSelectedDirectory();
-  var toDirectory = GetDirectoryFromURI(targetURI);
-  var srcDirectory = GetDirectoryFromURI(srcURI);
-  var ab = new AddressBook(toDirectory);
+  var targetURI      = targetResource.Value;
+  var srcURI         = GetSelectedDirectory();
+  var toDirectory    = GetDirectoryFromURI(targetURI);
+  var srcDirectory   = GetDirectoryFromURI(srcURI);
+  var ab             = new AddressBook(toDirectory);
   // iterate through each dropped item from the session
   for (var i = 0, dropItems = dragSession.numDropItems; i < dropItems; i++) {
     dragSession.getData(trans, i);
     var dataObj = {};
-    var flavor = {};
-    var len = {};
+    var flavor  = {};
+    var len     = {};
     var needToRefresh = false;
     try {
       trans.getAnyTransferData(flavor, dataObj, len);
@@ -81,8 +81,8 @@ function myOnDrop(row, orientation) {
     }
     catch (ex) { continue; }
     var transData = dataObj.data.split("\n");
-    var rows = transData[0].split(",");
-    var numrows = rows.length;
+    var rows      = transData[0].split(",");
+    var numrows   = rows.length;
     var result;
     // needToCopyCard is used for whether or not we should be creating
     // copies of the cards in a mailing list in a different address book
@@ -140,7 +140,7 @@ function myOnDrop(row, orientation) {
       }
       else {
         var values = [];
-        var types = [];
+        var types  = [];
         // put in a try/catch block in case the card can't be QI'd to nsIAbMDBCard
         var isMDBCard = false;
         // only copy over the extra attributes if this is before Bug 413260 and
@@ -155,7 +155,7 @@ function myOnDrop(row, orientation) {
             isMDBCard = true;
             for (var k = 0; k < attributesLen; k++) {
               values[k] = card.getStringAttribute(attributes[k]);
-              types[k] = card.getStringAttribute(attributes[k] + "Type");
+              types[k]  = card.getStringAttribute(attributes[k] + "Type");
             }
           }
         }
@@ -169,7 +169,7 @@ function myOnDrop(row, orientation) {
           deleteCard(srcDirectory, card);
         if (toDirectory.isMailList) {
           needToRefresh = true;
-          var contact = new TBContact(card);
+          var contact   = new TBContact(card);
           if (!contact.getValue("PrimaryEmail")) {
             LOGGER.VERBOSE_LOG("Forcing dummy email");
             // force a dummy e-mail address
@@ -184,7 +184,7 @@ function myOnDrop(row, orientation) {
             if (isMDBCard) {
               for (var k = 0; k < attributesLen; k++) {
                 var value = values[k] ? values[k] : "";
-                var type = types[k] ? types[k] : "";
+                var type  = types[k]  ? types[k]  : "";
                 newCard.setStringAttribute(attributes[k], value);
                 newCard.getStringAttribute(attributes[k] + "Type", type);
               }
@@ -212,15 +212,12 @@ function myOnDrop(row, orientation) {
         numrows == 1 ? gAddressBookBundle.getString("cardCopied")
                      : gAddressBookBundle.getFormattedString("cardsCopied",
                                                               [numrows]);
-    // refresh the results tree if necessary to avoid showing the same card twice
-    if (needToRefresh) {
-      // update the address book view so it doesn't show the card twice
-      SetAbView(GetSelectedDirectory(), false);
-      // select the first card, if any
-      if (gAbView && gAbView.getCardFromRow(0))
-        SelectFirstCard();
-    }
-    // set the status text after refreshing the results list
+    // update the address book view so it doesn't show the card twice
+    SetAbView(GetSelectedDirectory(), false);
+    // select the first card, if any
+    if (gAbView && gAbView.getCardFromRow(0))
+      SelectFirstCard();
+    // set the status text
     document.getElementById("statusText").label = cardsTransferredText;
   }
 }

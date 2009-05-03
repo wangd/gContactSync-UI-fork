@@ -63,7 +63,7 @@ var Overlay = {
   initialize: function Overlay_initialize() {
     // determine if this is before or after Bug 413260 landed
     var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
-              .createInstance(nsIAbCard);
+               .createInstance(nsIAbCard);
     this.mBug413260 = card.getProperty ? true : false;
     StringBundle.init();        // initialize the string bundle
     Preferences.getSyncPrefs(); // get the preferences
@@ -128,8 +128,9 @@ var Overlay = {
         // fix the existing phone numbers
         var arr = ["WorkPhone", "HomePhone", "FaxNumber","CellularNumber",
                    "PagerNumber"];
+        var elem;
         for (var i = 0; i < arr.length; i++) {
-          var elem = document.getElementById(arr[i]);
+          elem = document.getElementById(arr[i]);
           if (!elem)
             continue;
           // remove it
@@ -145,18 +146,19 @@ var Overlay = {
       return;
     // get the added attributes
     var ids = ContactConverter.getExtraSyncAttributes(false);
+    var id, splitter, treeCol;
     // iterate through every added attribute and add a treecol for it unless
     // it is a postal address
     for (var i = 0, length = ids.length; i < length; i++) {
-      var id = ids[i];
+      id = ids[i];
       if (id.indexOf("Address") != -1 || id.indexOf("Type") != -1)
         continue; // skip addresses and Types
       // make and add the splitter first
-      var splitter = document.createElement("splitter");
+      splitter = document.createElement("splitter");
       splitter.setAttribute("class", "tree-splitter");
       treeCols.appendChild(splitter);
       // make the new treecol
-      var treeCol = document.createElement("treecol");
+      treeCol = document.createElement("treecol");
       // then set it up with the ID and other attributes
       treeCol.setAttribute("id", id);
       treeCol.setAttribute("class", "sortDirectionIndicator");
@@ -428,16 +430,15 @@ var Overlay = {
    * When the status text is clicked the log file is opened.
    */
   writeTimeToStatusBar: function Overlay_writeTimeToStatusBar() {
-    var hours = new String(new Date().getHours());
-    hours = hours.length == 0 ? "00" + hours : hours;
-    hours = hours.length == 1 ?  "0" + hours : hours;
+    var hours   = new String(new Date().getHours());
+    hours       = hours.length == 0 ? "00" + hours : hours;
+    hours       = hours.length == 1 ?  "0" + hours : hours;
     var minutes = new String(new Date().getMinutes());
-    minutes = minutes.length == 1 ? "0" + minutes : minutes;
+    minutes     = minutes.length == 1 ? "0" + minutes : minutes;
     var seconds = new String(new Date().getSeconds());
-    seconds = seconds.length == 1 ? "0" + seconds : seconds;
-    var text = StringBundle.getStr("syncFinishedString");
+    seconds     = seconds.length == 1 ? "0" + seconds : seconds;
+    var text    = StringBundle.getStr("syncFinishedString");
     this.setStatusBarText(text + " " + hours + ":" + minutes + ":" + seconds);
-    document.getElementById("statusText2").tooltip = "test";
   },
   /**
    * Overlay.showLog
@@ -519,8 +520,8 @@ var Overlay = {
       cvData.cvFourthEmailBox.collapsed = false;
       // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
       // JabberScreenName, YahooScreenName, ICQScreenName)
-      var visible = !cvData.cvbContact.getAttribute("collapsed");
-      var thirdEmail = AbManager.getCardValue(aCard, "ThirdEmail");
+      var visible     = !cvData.cvbContact.getAttribute("collapsed");
+      var thirdEmail  = AbManager.getCardValue(aCard, "ThirdEmail");
       var fourthEmail = AbManager.getCardValue(aCard, "FourthEmail");
       visible = HandleLink(cvData.cvThirdEmail, StringBundle.getStr("ThirdEmail"),
                            thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
@@ -879,10 +880,17 @@ var Overlay = {
     // when the pref window loads, set its onunload property to get the prefs again
    win.onload = function onloadListener() {
       win.onunload = function onunloadListener() {
-        Preferences.getSyncPrefs();
+        try { Preferences.getSyncPrefs(); } catch (e) {}
       };
     };
   },
+  /**
+   * openURL
+   * Opens the given URL using the openFormattedURL and
+   * openFormattedRegionURL functions.
+   *
+   * @param aURL {string} THe URL to open.
+   */
   openURL: function Overlay_openURL(aURL) {
     LOGGER.VERBOSE_LOG("Opening the following URL: " + aURL);
     if (!aURL) {
@@ -892,7 +900,7 @@ var Overlay = {
     try {
       if (openFormattedURL) {
         openFormattedURL(aURL);
-      return;
+        return;
       }
     }
     catch (e) {}

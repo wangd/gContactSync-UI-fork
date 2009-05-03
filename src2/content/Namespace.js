@@ -42,6 +42,6 @@
  * @class
  */
 function Namespace(aUrl, aPrefix) {
-  this.url = aUrl;
+  this.url    = aUrl;
   this.prefix = aPrefix;
 }

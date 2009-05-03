@@ -43,6 +43,11 @@
  */
 var StringBundle = {
   mBundles: {},
+  /**
+   * StringBundle.init
+   * Initializes the string bundle.
+   * This must be called before getStr.
+   */
   init: function StringBundle_init() {
     this.mBundles.mStrings = document.getElementById("otherStringBundle");
   },
@@ -52,6 +57,9 @@ var StringBundle = {
    * @param aName The name of the string to search for.
    */
   getStr: function StringBundle_getStr(aName) {
+    // initialize this object, if necessary
+    if (!this.mBundles.mStrings)
+      this.init();
     for (var i in this.mBundles) {
       try {
         return this.mBundles[i].getString(aName);

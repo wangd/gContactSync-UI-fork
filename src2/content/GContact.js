@@ -51,10 +51,10 @@ function GContact(aXml) {
   }
   // otherwise, make a new contact
   else {
-    this.mIsNew = true;
-    var atom = gdata.namespaces.ATOM;
-    var gd = gdata.namespaces.GD;
-    var xml = document.createElementNS(atom.url, atom.prefix + "entry");
+    this.mIsNew  = true;
+    var atom     = gdata.namespaces.ATOM;
+    var gd       = gdata.namespaces.GD;
+    var xml      = document.createElementNS(atom.url, atom.prefix + "entry");
     var category = document.createElementNS(atom.url, atom.prefix + "category");
     category.setAttribute("scheme", gd.url + "#kind");
     category.setAttribute("term", gd.url + "#contact");
@@ -64,18 +64,17 @@ function GContact(aXml) {
 }
 GContact.prototype = {
   mElementsToRemove: [],
-  mCurrentElement: null,
-  mGroups: {},
+  mCurrentElement:   null,
+  mGroups:           {},
   /**
    * GContact.checkIMAddress
    * Checks for an invalid IM address as explained here:
    * http://pi3141.wordpress.com/2008/07/30/update-2/
    */
   checkIMAddress: function GContact_checkIMAddress() {
-    var i = 0;
     var element = {};
-    var ns = gdata.namespaces.GD.url;
-    var arr = this.xml.getElementsByTagNameNS(ns, "im");
+    var ns      = gdata.namespaces.GD.url;
+    var arr     = this.xml.getElementsByTagNameNS(ns, "im");
     for (var i = 0, length = arr.length; i < length; i++) {
       var address = arr[i].getAttribute("address")
       if (address && address.indexOf(": ") != -1)
@@ -101,14 +100,13 @@ GContact.prototype = {
    * GContact.getContactName
    * Gets the name and e-mail address of a contact from it's Atom
    * representation.
-   * @param aAtomEntry  The contact.
    */
   getName: function GContact_getName() {
     var contactName = "";
     try {
       var titleElem = this.xml.getElementsByTagName('title')[0];
       if (titleElem && titleElem.childNodes[0])
-        contactName =titleElem.childNodes[0].nodeValue;
+        contactName = titleElem.childNodes[0].nodeValue;
       var emailElem = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
                                                       "email")[0];
       if (emailElem && emailElem.getAttribute) {
@@ -190,6 +188,7 @@ GContact.prototype = {
         }
       }
     }
+    return null;
   },
   /**
    * GContact.setOrg
@@ -205,7 +204,7 @@ GContact.prototype = {
     if (!tagName && tagName != "orgName" && tagName != "orgTitle") {
       LOGGER.LOG_WARNING("Error - invalid element passed to the 'setOrg'" +
                          "method." + StringBundle.getStr("pleaseReport"))
-      return;
+      return null;
     }
     var organization = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
                                                        "organization")[0];
@@ -225,7 +224,7 @@ GContact.prototype = {
         else if (organization)
           organization.removeChild(thisElem);
       }
-      return;
+      return null;
     }
     // if it gets here, the node must be added, so add <organization> if necessary
     if (!organization) {
@@ -240,6 +239,7 @@ GContact.prototype = {
     elem.appendChild(text);
 
     organization.appendChild(elem);
+    return true;
   },
   /**
    * GContact.setElementValue
@@ -267,7 +267,7 @@ GContact.prototype = {
       }
       else if (value)
         LOGGER.VERBOSE_LOG("   - value " + value + " and type " + property.type + " are good");
-      return;
+      return null;
     }
     // orgName and orgTitle are special cases
     if (aElement.tagName == "orgTitle" || aElement.tagName == "orgName")
@@ -286,7 +286,7 @@ GContact.prototype = {
             if (!aType) {
               LOGGER.LOG_WARNING("Invalid aType supplied to the 'setElementValue' "
                                  + "method." + StringBundle.getStr("pleaseReport"));
-              return;
+              return null;
             }
             var elem = this.mCurrentElement ? this.mCurrentElement :
                                               document.createElementNS
@@ -330,8 +330,10 @@ GContact.prototype = {
         default:
           LOGGER.LOG_WARNING("Invalid aType parameter sent to the setElementValue"
                              + "method" + StringBundle.getStr("pleaseReport"));
+          return null;
       }
     }
+    return true;
   },
   /**
    * GContact.getLastModifiedDate
@@ -356,6 +358,7 @@ GContact.prototype = {
     catch(e) {
       LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
     }
+    return 0;
   },
   /**
    * GContact.removeExtendedProperties
@@ -378,6 +381,7 @@ GContact.prototype = {
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("name") == aName)
         return new Property(arr[i].getAttribute("value"));
+    return null;
   },
   /**
    * GContact.setExtendedProperty
@@ -390,7 +394,7 @@ GContact.prototype = {
     if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
         "extendedProperty").length >= 10) {
       LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
-      return;
+      return null;
     }
     if (aValue && aValue != "") {
       var property = document.createElementNS(gdata.namespaces.GD.url,
@@ -398,7 +402,9 @@ GContact.prototype = {
       property.setAttribute("name", aName);
       property.setAttribute("value", aValue);
       this.xml.appendChild(property);
+      return true;
     }
+    return null;
   },
   /**
    * GContact.getValue
@@ -433,6 +439,7 @@ GContact.prototype = {
     catch(e) {
       LOGGER.LOG_WARNING("Error in GContact.getValue:\n" + e);
     }
+    return null;
   },
   /**
    * GContact.setValue
@@ -462,6 +469,7 @@ GContact.prototype = {
     catch(e) {
       LOGGER.LOG_WARNING("Error in GContact.setValue:\n" + e);
     }
+    return null;
   },
   /**
    * GContact.getGroups
@@ -517,7 +525,7 @@ GContact.prototype = {
   setGroups: function GContact_setGroups(aGroups) {
     this.clearGroups(); // clear existing groups
     if (!aGroups)
-      return;
+      return null;
     // make sure the group 
     for (var i = 0, length = aGroups.length; i < length; i++) {
       var id = aGroups[i];
@@ -528,6 +536,7 @@ GContact.prototype = {
       }
       this.addToGroup(id);
     }
+    return true;
   },
   /**
    * GContact.removeFromGroup
@@ -537,14 +546,16 @@ GContact.prototype = {
   removeFromGroup: function GContact_removeFromGroup(aGroup) {
     if (!aGroup) {
       LOGGER.LOG_WARNING("Attempt to remove a contact from a non-existant group");
-      return;
+      return null;
     }
     try {
       this.xml.removeChild(aGroup);
+      return true;
     }
     catch (e) {
       LOGGER.LOG_WARNING("Error while trying to remove a contact from a group: " + e);
     }
+    return null;
   },
   /**
    * GContact.addToGroup
@@ -555,7 +566,7 @@ GContact.prototype = {
   addToGroup: function GContact_addToGroup(aGroupURL) {
     if (!aGroupURL) {
       LOGGER.LOG_WARNING("Attempt to add a contact to a non-existant group");
-      return;
+      return null;
     }
     try {
       var ns = gdata.namespaces.GCONTACT;
@@ -564,10 +575,12 @@ GContact.prototype = {
       group.setAttribute("deleted", false);
       group.setAttribute("href", aGroupURL);
       this.xml.appendChild(group);
+      return true;
     }
     catch(e) {
       LOGGER.LOG_WARNING("Error while trying to add a contact to a group: " + e);
     }
+    return null;
   },
   /**
    * GContact.isMatch

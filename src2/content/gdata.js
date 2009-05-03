@@ -41,16 +41,16 @@
  * @class
  */
 var gdata = {
-  AUTH_URL: "https://www.google.com/accounts/ClientLogin",
-  AUTH_REQUEST_TYPE: "POST",
-  AUTH_SUB_SESSION_URL: "https://www.google.com/accounts/AuthSubSessionToken",
+  AUTH_URL:              "https://www.google.com/accounts/ClientLogin",
+  AUTH_REQUEST_TYPE:     "POST",
+  AUTH_SUB_SESSION_URL:  "https://www.google.com/accounts/AuthSubSessionToken",
   AUTH_SUB_SESSION_TYPE: "GET",
-  AUTH_SUB_REVOKE_URL: "https://www.google.com/accounts/AuthSubRevokeToken",
-  AUTH_SUB_REVOKE_TYPE: "GET",
-  O_AUTH_URL: "https://www.google.com/accounts/AuthSubRequest?scope=https%3A%" +
-              "2F%2Fwww.google.com%2Fm8%2Ffeeds%2F&session=1&secure=0&next=" +
-              "http%3A%2F%2Fpirules.org%2Ftools%2Fgcs%2Findex.php",
-  O_AUTH_TYPE: "GET",
+  AUTH_SUB_REVOKE_URL:   "https://www.google.com/accounts/AuthSubRevokeToken",
+  AUTH_SUB_REVOKE_TYPE:  "GET",
+  O_AUTH_URL:            "https://www.google.com/accounts/AuthSubRequest?scope=https%3A%" +
+                         "2F%2Fwww.google.com%2Fm8%2Ffeeds%2F&session=1&secure=0&next=" +
+                         "http%3A%2F%2Fpirules.org%2Ftools%2Fgcs%2Findex.php",
+  O_AUTH_TYPE:           "GET",
   /**
    * gdata.makeAuthBody
    * Sets up the body for an authentication request given the e-mail address
@@ -75,9 +75,9 @@ var gdata = {
     // typical ID:
     // http://www.google.com/m8/feeds/contacts/address%40gmail.com/base/...
     var startStr = "/feeds/contacts/";
-    var start = aId.indexOf(startStr) + startStr.length;
-    var endStr = "/base/";
-    var end = aId.indexOf(endStr);
+    var start    = aId.indexOf(startStr) + startStr.length;
+    var endStr   = "/base/";
+    var end      = aId.indexOf(endStr);
     if (start >= end)
       return "";
     var address = decodeURIComponent(aId.substring(start, end));
@@ -86,14 +86,14 @@ var gdata = {
   },
   // The namespaces used
   namespaces: {
-    APP: new Namespace("http://www.w3.org/2007/app", "app:"),
-    ATOM: new Namespace("http://www.w3.org/2005/Atom", "atom:"),
-    GD: new Namespace("http://schemas.google.com/g/2005", "gd:"),
-    GCONTACT: new Namespace("http://schemas.google.com/contact/2008",
-                            "gContact:"),
+    APP:         new Namespace("http://www.w3.org/2007/app", "app:"),
+    ATOM:        new Namespace("http://www.w3.org/2005/Atom", "atom:"),
+    GD:          new Namespace("http://schemas.google.com/g/2005", "gd:"),
+    GCONTACT:    new Namespace("http://schemas.google.com/contact/2008",
+                               "gContact:"),
     OPEN_SEARCH: new Namespace("http://a9.com/-/spec/opensearch/1.1/",
                                "openSearch:"),
-    BATCH: new Namespace("http://schemas.google.com/gdata/batch","batch:")
+    BATCH:       new Namespace("http://schemas.google.com/gdata/batch","batch:")
   },
   // some things related to contacts, such as related URLs and HTTP Request
   // types
@@ -107,19 +107,19 @@ var gdata = {
     ADD_GROUP_URL:    "https://www.google.com/m8/feeds/groups/default/full",
     ADD_URL:          "https://www.google.com/m8/feeds/contacts/default/full",
     TYPES: {
-      AIM:         "AIM",
-      GOOGLE_TALK: "Google Talk",
-      ICQ:         "ICQ",
-      YAHOO:       "Yahoo",
-      MSN:         "MSN",
-      JABBER:      "Jabber",
-      home:        "Home",
-      work:        "Work",
-      other:       "Other",
-      mobile:      "Mobile",
-      pager:       "Pager",
-      work_fax:    "Work Fax",
-      home_fax:    "Home Fax"
+      AIM:            "AIM",
+      GOOGLE_TALK:    "Google Talk",
+      ICQ:            "ICQ",
+      YAHOO:          "Yahoo",
+      MSN:            "MSN",
+      JABBER:         "Jabber",
+      home:           "Home",
+      work:           "Work",
+      other:          "Other",
+      mobile:         "Mobile",
+      pager:          "Pager",
+      work_fax:       "Work Fax",
+      home_fax:       "Home Fax"
     },
     requestTypes: {
       GET_ALL: "GET",
@@ -145,44 +145,44 @@ var gdata = {
      * is stored.
      */
     init: function gdata_contacts_init() {
-      var untyped = gdata.contacts.types.UNTYPED;
+      var untyped        = gdata.contacts.types.UNTYPED;
       var typedWithChild = gdata.contacts.types.TYPED_WITH_CHILD;
-      var typedWithAttr = gdata.contacts.types.TYPED_WITH_ATTR;
+      var typedWithAttr  = gdata.contacts.types.TYPED_WITH_ATTR;
       this.postalAddress = new GElement(typedWithChild, "postalAddress",
                                        gdata.namespaces.GD, ["work", "home",
                                        "other"]);
-      this.phoneNumber = new GElement(typedWithChild, "phoneNumber",
-                                     gdata.namespaces.GD, ["work", "home",
-                                     "mobile", "pager", "other", "home_fax",
-                                     "work_fax"]);
-      this.email = new GElement(typedWithAttr, "email", gdata.namespaces.GD,
-                               ["home", "work", "other"], "address");
-      this.im = new GElement(typedWithAttr, "im", gdata.namespaces.GD, ["JABBER",
-                            "YAHOO", "AIM", "GOOGLE_TALK", "MSN", "ICQ"],
-                            "address");
-      this.id = new GElement(untyped, "id", gdata.namespaces.ATOM);
-      this.updated = new GElement(untyped, "updated", gdata.namespaces.ATOM);
-      this.title = new GElement(untyped, "title", gdata.namespaces.ATOM);
-      this.notes = new GElement(untyped, "content", gdata.namespaces.ATOM);
-      this.orgName = new GElement(untyped, "orgName", gdata.namespaces.GD);
-      this.orgTitle = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
-      this.organization = new GElement(typedWithAttr, "organization",
-                                      gdata.namespaces.GD, ["other"]);
+      this.phoneNumber   = new GElement(typedWithChild, "phoneNumber",
+                                       gdata.namespaces.GD, ["work", "home",
+                                       "mobile", "pager", "other", "home_fax",
+                                       "work_fax"]);
+      this.email         = new GElement(typedWithAttr, "email", gdata.namespaces.GD,
+                                        ["home", "work", "other"], "address");
+      this.im            = new GElement(typedWithAttr, "im", gdata.namespaces.GD,
+                                        ["JABBER", "YAHOO", "AIM", "GOOGLE_TALK", "MSN", "ICQ"],
+                                        "address");
+      this.id            = new GElement(untyped, "id", gdata.namespaces.ATOM);
+      this.updated       = new GElement(untyped, "updated", gdata.namespaces.ATOM);
+      this.title         = new GElement(untyped, "title", gdata.namespaces.ATOM);
+      this.notes         = new GElement(untyped, "content", gdata.namespaces.ATOM);
+      this.orgName       = new GElement(untyped, "orgName", gdata.namespaces.GD);
+      this.orgTitle      = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
+      this.organization  = new GElement(typedWithAttr, "organization",
+                                        gdata.namespaces.GD, ["other"]);
       this.groupMembershipInfo = new GElement(untyped, "groupMembershipInfo",
                                               gdata.namespaces.GCONTACT);
     },
     // different tagnames in the Atom feed, must be initialized
-    postalAddress: {},
-    phoneNumber: {},
-    email: {},
-    im: {},
-    id: {},
-    updated: {},
-    title: {},
-    notes: {},
-    orgName: {},
-    orgTitle: {},
-    organization: {},
+    postalAddress:       {},
+    phoneNumber:         {},
+    email:               {},
+    im:                  {},
+    id:                  {},
+    updated:             {},
+    title:               {},
+    notes:               {},
+    orgName:             {},
+    orgTitle:            {},
+    organization:        {},
     groupMembershipInfo: {},
     // links in the contacts feed.  The property name is the type of link
     // and the value is the value of the "rel" attribute

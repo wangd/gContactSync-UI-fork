@@ -34,16 +34,39 @@
  *
  * ***** END LICENSE BLOCK ***** */
  
- function TBContact(aContact, aDirectory) {
-   AbManager.checkCard(aContact, "TBContact constructor");
-   //if (!aDirectory instanceof AddressBook) {
-   //  throw "Error - invalid directory sent to the TBContact constructor";
-   //}
-   this.mAddressBook = aDirectory;
-   this.mContact = aContact;
- }
- 
+/**
+ * TBContact
+ * Makes a new TBContact object that has functions to get and set various values
+ * for a contact independently of the version of Thunderbird (using AbManager).
+ * Optionally takes the parent directory and is able to update the card in that
+ * directory.
+ * 
+ * @param aContact   {nsIAbCard}   A Thunderbird contact.
+ * @param aDirectory {AddressBook} The parent directory.  Optional.
+ * @class
+ * @constructor
+ */
+function TBContact(aContact, aDirectory) {
+  AbManager.checkCard(aContact, "TBContact constructor");
+  //if (!aDirectory instanceof AddressBook) {
+  //  throw "Error - invalid directory sent to the TBContact constructor";
+  //}
+  this.mAddressBook = aDirectory;
+  this.mContact     = aContact;
+}
+
 TBContact.prototype = {
+  /**
+   * TBContact.getValue
+   * Returns the value of the requested property of this contact.
+   *
+   * If the readOnly preference is enabled, then this will return 0 for the
+   * LastModifiedDate.
+   * 
+   * @param aAttribute {string} The attribute to get (PrimaryEmail, for example)
+   *
+   * @return The value of the attribute, or null if not set.
+   */
   getValue: function TBContact_getValue(aAttribute) {
     if (!aAttribute)
       throw "Error - invalid attribute sent to TBContact_getValue";
@@ -53,6 +76,17 @@ TBContact.prototype = {
     }
     return AbManager.getCardValue(this.mContact, aAttribute);
   },
+  /**
+   * TBContact.setValue
+   * Sets the value of the requested attribute of this contact and optionally
+   * updates the contact in its parent directory.
+   *
+   * @param aAttribute {string} The attribute to set (PrimaryEmail, for example)
+   * @param aValue     {string} The value for the given attribute.  If null the
+   *                   attribute is 'deleted' from the contact.
+   * @param aUpdate    {bool}   Set to true to update this card after setting
+   *                   the value of the attribute.
+   */
   setValue: function TBContact_setValue(aAttribute, aValue, aUpdate) {
     AbManager.setCardValue(this.mContact, aAttribute, aValue);
     if (aUpdate) {
@@ -60,6 +94,10 @@ TBContact.prototype = {
     }
     return false;
   },
+  /**
+   * TBContact.update
+   * Updates this card in its parent directory, if possible.
+   */
   update: function TBContact_update() {
     if (!this.mAddressBook) {
       LOGGER.LOG_WARNING("Warning - TBContact.update called w/o a directory");
@@ -67,6 +105,10 @@ TBContact.prototype = {
     }
     return this.mAddressBook.updateCard(this.mContact);
   },
+  /**
+   * TBContact.remove
+   * Removes this card from its parent directory, if possible.
+   */
   remove: function TBContact_remove() {
     if (!this.mAddressBook) {
       LOGGER.LOG_WARNING("Warning - TBContact.remove called w/o a directory");
@@ -74,11 +116,19 @@ TBContact.prototype = {
     }
     return this.mAddressBook.deleteCards([this.mContact]);
   },
+  /**
+   * TBContact.getName
+   * Returns a 'name' for this contact.  It is the first non-null and not blank
+   * value for the following attributes:
+   *  - DisplayName
+   *  - PrimaryEmail
+   *  - GoogleID
+   */
   getName: function TBContact_getName() {
-    var displayName = this.getValue("DisplayName");
-    if (displayName) return displayName;
+    var displayName  = this.getValue("DisplayName");
+    if (displayName)  return displayName;
     var primaryEmail = this.getValue("PrimaryEmail");
     if (primaryEmail) return primaryEmail;
     return this.getValue("GoogleID");
   }
- };
+};

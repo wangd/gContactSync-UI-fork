@@ -43,23 +43,23 @@ function Group(aXml, aTitle) {
   if (!aXml) {
     if (!aTitle)
       throw "Error - No title or XML passed to the Group constructor";
-    var atom = gdata.namespaces.ATOM;
-    var gd = gdata.namespaces.GD;
+    var atom     = gdata.namespaces.ATOM;
+    var gd       = gdata.namespaces.GD;
     var gcontact = gdata.namespaces.GCONTACT;
-    var xml = document.createElementNS(atom.url, atom.prefix + "entry");
+    var xml      = document.createElementNS(atom.url, atom.prefix + "entry");
     var category = document.createElementNS(atom.url, atom.prefix + "category");
     category.setAttribute("scheme", gd.url + "/#kind");
     category.setAttribute("term", gcontact.url + "/#group");
     xml.appendChild(category);
-    var title = document.createElementNS(atom.url, atom.prefix + "title");
-    var text = document.createTextNode(aTitle);
+    var title   = document.createElementNS(atom.url, atom.prefix + "title");
+    var text    = document.createTextNode(aTitle);
     title.appendChild(text);
     xml.appendChild(title);
-    this.xml = xml;
+    this.xml    = xml;
     this.mTitle = aTitle;
   }
   else {
-    this.xml = aXml;
+    this.xml    = aXml;
     this.mTitle = this.getTitle();
   }
 }
@@ -73,7 +73,7 @@ Group.prototype = {
     if (!aTitle)
       throw "Error - invalid title passed to Group.setTitle";
 
-    var atom = gdata.namespaces.ATOM;
+    var atom  = gdata.namespaces.ATOM;
     var title = this.xml.getElementsByTagNameNS(atom.url, "title")[0];
     if (title && title.value && title.value.indexOf("System Group") != -1)
       return; // cannot rename system groups
@@ -87,7 +87,7 @@ Group.prototype = {
       }
     }
     else {
-      title = document.createElementNS(atom.url, atom.prefix + "title");
+      title    = document.createElementNS(atom.url, atom.prefix + "title");
       var text = document.createTextNode(aTitle);
       title.appendChild(text);
       this.xml.appendChild(title);
@@ -101,7 +101,7 @@ Group.prototype = {
   getTitle: function Group_getTitle() {
     if (this.mTitle)
       return this.mTitle;
-    var atom = gdata.namespaces.ATOM;
+    var atom  = gdata.namespaces.ATOM;
     var title = this.xml.getElementsByTagNameNS(atom.url, "title")[0];
     if (title && title.childNodes[0]) {
       this.mTitle = title.childNodes[0].nodeValue
@@ -119,7 +119,7 @@ Group.prototype = {
    */
   getEditURL: function Group_getEditURL() {
     var atom = gdata.namespaces.ATOM;
-    var arr = this.xml.getElementsByTagNameNS(atom.url, "link");
+    var arr  = this.xml.getElementsByTagNameNS(atom.url, "link");
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("rel") == gdata.contacts.links.EditURL)
         return arr[i].getAttribute("href");
@@ -132,7 +132,7 @@ Group.prototype = {
    */
   getID: function Group_getID() {
     var atom = gdata.namespaces.ATOM;
-    var id = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
+    var id   = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
     if (id && id.childNodes[0])
       return id.childNodes[0].nodeValue;
     return null;
@@ -169,13 +169,13 @@ Group.prototype = {
   getLastModifiedDate: function Group_getLastModifiedDate() {
     try {
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
-      var year = sModified.substring(0,4);
-      var month = sModified.substring(5,7);
-      var day = sModified.substring(8,10);
-      var hrs = sModified.substring(11,13);
-      var mins = sModified.substring(14,16);
-      var sec = sModified.substring(17,19);
-      var ms = sModified.substring(20,23);
+      var year      = sModified.substring(0,4);
+      var month     = sModified.substring(5,7);
+      var day       = sModified.substring(8,10);
+      var hrs       = sModified.substring(11,13);
+      var mins      = sModified.substring(14,16);
+      var sec       = sModified.substring(17,19);
+      var ms        = sModified.substring(20,23);
       return  parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
     }
     catch(e) {

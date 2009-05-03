@@ -58,8 +58,8 @@ function AddressBook(aDirectory) {
 }
 
 AddressBook.prototype = {
-  mURI: {}, // the uniform resource identifier of the directory
-  mCards: [], // the cards within this address book
+  mURI:         {}, // the uniform resource identifier of the directory
+  mCards:       [], // the cards within this address book
   mCardsUpdate: false, // set to true when mCards should be updated
   /**
    * AddressBook.addCard
@@ -77,6 +77,7 @@ AddressBook.prototype = {
       LOGGER.LOG_ERROR("Unable to add card to the directory with URI: " +
                        this.URI, e);
     }
+    return null;
   },
   /**
    * AddressBook.getAllCards
@@ -86,6 +87,7 @@ AddressBook.prototype = {
   getAllCards: function AddressBook_getAllCards() {
     this.mCards = [];
     var iter = this.mDirectory.childCards;
+    var data;
     if (AbManager.mVersion == 3) { // TB 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
@@ -98,7 +100,7 @@ AddressBook.prototype = {
       try {
         iter.first();
         do {
-          var data = iter.currentItem();
+          data = iter.currentItem();
           if(data instanceof nsIAbCard && !data.isMailList)
             this.mCards.push(data);
           iter.next();
@@ -119,11 +121,12 @@ AddressBook.prototype = {
     LOGGER.VERBOSE_LOG("Searching for mailing lists:");
     var iter = this.mDirectory.childNodes;
     var obj = {};
+    var list, id, data;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Ci.nsIAbDirectory && data.isMailList) {
-        var list = new MailList(data, this, skipGetCards);
-        var id = list.getGroupID();
+        list    = new MailList(data, this, skipGetCards);
+        id      = list.getGroupID();
         obj[id] = list;
         LOGGER.VERBOSE_LOG(" * " + list.getName() + " - " + id);
       }
@@ -141,17 +144,18 @@ AddressBook.prototype = {
    */
   getListByNickName: function AddressBook_getListByNickName(aNickName) {
     if (!aNickName)
-      return;
+      return null;
     // same in Thunderbird 2 and 3
     var iter = this.mDirectory.childNodes;
+    var data;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Ci.nsIAbDirectory && data.isMailList &&
           data.listNickName == aNickName) {
-        var list = new MailList(data, this, true);
-        return list;
+        return new MailList(data, this, true);
       }
     }
+    return null;
   },
   /**
    * AddressBook.addList
@@ -167,14 +171,14 @@ AddressBook.prototype = {
       throw "Error - aName sent to addList is invalid";
     if (!aNickName)
       throw "Error - aNickName sent to addList is invalid";
-    var list = Cc["@mozilla.org/addressbook/directoryproperty;1"]
-                .createInstance(Ci.nsIAbDirectory);
-    list.dirName = aName;
+    var list          = Cc["@mozilla.org/addressbook/directoryproperty;1"]
+                         .createInstance(Ci.nsIAbDirectory);
+    list.dirName      = aName;
     list.listNickName = aNickName;
-    list.isMailList = true;
+    list.isMailList   = true;
     this.mDirectory.addMailList(list);
     // list can't be QI'd to an MDBDirectory, so the new list has to be found...
-    var realList = this.getListByNickName(aNickName);
+    var realList  = this.getListByNickName(aNickName);
     return realList;
   },
   /**
@@ -276,7 +280,7 @@ AddressBook.prototype = {
    * @param aValue    The value to set for the attribute.
    */
    setCardValue: function AddressBook_setCardValue(aCard, aAttrName, aValue) {
-     AbManager.setCardValue(aCard, aAttrName, aValue);
+     return AbManager.setCardValue(aCard, aAttrName, aValue);
    },
   /**
    * AddressBook.hasAddress
@@ -290,11 +294,11 @@ AddressBook.prototype = {
   hasAddress: function AddressBook_hasAddress(aCard, aPrefix) {
     AbManager.checkCard(aCard);
     return this.getCardValue(aCard, aPrefix + "Address") || 
-          this.getCardValue(aCard, aPrefix + "Address2") ||
-          this.getCardValue(aCard, aPrefix + "City") ||
-          this.getCardValue(aCard, aPrefix + "State") ||
-          this.getCardValue(aCard, aPrefix + "ZipCode") ||
-          this.getCardValue(aCard, aPrefix + "Country");
+           this.getCardValue(aCard, aPrefix + "Address2") ||
+           this.getCardValue(aCard, aPrefix + "City") ||
+           this.getCardValue(aCard, aPrefix + "State") ||
+           this.getCardValue(aCard, aPrefix + "ZipCode") ||
+           this.getCardValue(aCard, aPrefix + "Country");
   },
   /**
    * AddressBook.makeCard
@@ -338,9 +342,10 @@ AddressBook.prototype = {
     AbManager.checkCard(aCard);
     if (this.mCardsUpdate)
       this.getAllCards();
+    var card, aCardID;
     for (var i = 0, length = this.mCards.length; i < length; i++) {
-      var card = this.mCards[i];
-      var aCardID = AbManager.getCardValue(aCard, "GoogleID");
+      card = this.mCards[i];
+      aCardID = AbManager.getCardValue(aCard, "GoogleID");
       // if it is an old card (has id) compare IDs
       if (aCardID) {
         if (aCardID == AbManager.getCardValue(card, "GoogleID"))
@@ -355,6 +360,7 @@ AddressBook.prototype = {
                                         AbManager.getCardValue(card, "SecondEmail"))
         return card;
     }
+    return null;
   },
   /**
    * AddressBook.setPrefId
@@ -405,7 +411,7 @@ AddressBook.prototype = {
       return null;
     }*/
     if (!id)
-      return;
+      return null;
     try {
       var branch = Cc["@mozilla.org/preferences-service;1"]
                     .getService(Ci.nsIPrefService)
@@ -418,6 +424,7 @@ AddressBook.prototype = {
     catch(e) {
       //LOGGER.VERBOSE_LOG("getStringPref: (this error is usually expected)\n" + e);
     } // an error is expected if the value isn't present
+    return null;
   },
   /**
    * AddressBook.setStringPref

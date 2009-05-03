@@ -39,12 +39,12 @@
  * Does NOT store the password and username.
  */
 var LoginManager = {
-  mHostname: "chrome://gContactSync",
-  mSubmitURL: "User Auth Token",
-  mHttpRealm: null,
+  mHostname:      "chrome://gContactSync",
+  mSubmitURL:     "User Auth Token",
+  mHttpRealm:     null,
   mUsernameField: "",
   mPasswordField: "",
-  mAuthTokens: {},
+  mAuthTokens:    {},
   mNumAuthTokens: 0,
   /**
    * LoginManager.addAuthToken
@@ -65,8 +65,8 @@ var LoginManager = {
     else if ("@mozilla.org/login-manager;1" in Cc) {
       var loginManager =  Cc["@mozilla.org/login-manager;1"]
                            .getService(Ci.nsILoginManager);
-      var nsLoginInfo = new CC("@mozilla.org/login-manager/loginInfo;1",
-                              Ci.nsILoginInfo, "init");
+      var nsLoginInfo  = new CC("@mozilla.org/login-manager/loginInfo;1",
+                                Ci.nsILoginInfo, "init");
       var extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
                                          this.mHttpRealm, aUsername, aToken,
                                          this.mUsernameField, this.mPasswordField);

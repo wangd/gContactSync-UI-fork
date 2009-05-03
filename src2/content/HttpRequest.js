@@ -50,8 +50,8 @@ HttpRequest.prototype = {
   // content types
   CONTENT_TYPES: {
     URL_ENC: "application/x-www-form-urlencoded", 
-    ATOM: "application/atom+xml",
-    XML: "application/xml"
+    ATOM:    "application/atom+xml",
+    XML:     "application/xml"
   },
   /**
    * HttpRequest.addContentOverride
@@ -61,8 +61,8 @@ HttpRequest.prototype = {
    */
   addContentOverride: function HttpRequest_addContentOverride(aType) {
     switch (aType) {
-      case "delete" :
-      case "DELETE" :
+      case "delete":
+      case "DELETE":
         this.addHeaderItem("X-HTTP-Method-Override", "DELETE");
         break;
       case "put":
@@ -114,10 +114,10 @@ HttpRequest.prototype = {
     }
     this.mHttpRequest.send(this.mBody); // send the request
     LOGGER.VERBOSE_LOG(" * Request Sent");
-    var httpReq = this.mHttpRequest;
+    var httpReq   = this.mHttpRequest;
     var onSuccess = this.mOnSuccess ? this.mOnSuccess : [];
     var onOffline = this.mOnOffline ? this.mOnOffline : [];
-    var onFail = this.mOnError ? this.mOnError : [];
+    var onFail    = this.mOnError ? this.mOnError : [];
     var onCreated = this.mOnCreated ? this.mOnCreated : [];
 
     httpReq.onreadystatechange = function httpReq_readyState() {

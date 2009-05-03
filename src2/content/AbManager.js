@@ -166,7 +166,7 @@ var AbManager = {
   cardHasEmailAddress: function AbManager_cardHasEmailAddress(aCard, aAddresses) {
     this.checkCard(aCard, "getCardEmailAddresses");
     if (!aAddresses)
-      return;
+      return false;
     var cardAddresses = this.getCardEmailAddresses(aCard);
     for (var i in cardAddresses) {
       if (aAddresses[i])

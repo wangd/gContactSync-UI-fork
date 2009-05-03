@@ -60,64 +60,64 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
     case "AUTH_SUB_SESSION":
     case "authsubsession":
       this.mContentType = this.CONTENT_TYPES.URL_ENC;
-      this.mUrl = gdata.AUTH_SUB_SESSION_URL;
-      this.mType = gdata.AUTH_SUB_SESSION_TYPE;
+      this.mUrl         = gdata.AUTH_SUB_SESSION_URL;
+      this.mType        = gdata.AUTH_SUB_SESSION_TYPE;
       break;
     case "AUTHENTICATE":
     case "authenticate":
       this.mContentType = this.CONTENT_TYPES.URL_ENC;
-      this.mUrl = gdata.AUTH_URL;
-      this.mType = gdata.AUTH_REQUEST_TYPE;
+      this.mUrl         = gdata.AUTH_URL;
+      this.mType        = gdata.AUTH_REQUEST_TYPE;
       break;
     case "GETALL":
     case "getAll":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl = gdata.contacts.GET_ALL_URL + Preferences.mSyncPrefs
-                                                          .maxContacts.value;
-      this.mType = gdata.contacts.requestTypes.GET_ALL;
+      this.mUrl         = gdata.contacts.GET_ALL_URL + Preferences.mSyncPrefs
+                                                                  .maxContacts.value;
+      this.mType        = gdata.contacts.requestTypes.GET_ALL;
       this.addHeaderItem("Authorization", aAuth);
       break;
     case "GETGROUPS":
     case "getGroups":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl = gdata.contacts.GROUPS_URL;
-      this.mType = gdata.contacts.requestTypes.GET;
+      this.mUrl         = gdata.contacts.GROUPS_URL;
+      this.mType        = gdata.contacts.requestTypes.GET;
       this.addHeaderItem("Authorization", aAuth);
       break;
     case "GET":
     case "get":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl = aUrl; // the URL is unique and needs to be passed in
-      this.mType = gdata.contacts.requestTypes.GET;
+      this.mUrl         = aUrl; // the URL is unique and needs to be passed in
+      this.mType        = gdata.contacts.requestTypes.GET;
       this.addHeaderItem("Authorization", aAuth);
       break;
     case "UPDATE":
     case "update":
     case "updategroup":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl = aUrl;
-      this.mType = "POST";  // for firewalls that block PUT requests
+      this.mUrl         = aUrl;
+      this.mType        = "POST";  // for firewalls that block PUT requests
       this.addContentOverride(gdata.contacts.requestTypes.UPDATE);
       this.addHeaderItem("Authorization", aAuth);
       break;
     case "ADD":
     case "add":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl = gdata.contacts.ADD_URL;
-      this.mType = gdata.contacts.requestTypes.ADD;
+      this.mUrl         = gdata.contacts.ADD_URL;
+      this.mType        = gdata.contacts.requestTypes.ADD;
       this.addHeaderItem("Authorization", aAuth);
       break;
     case "addGroup":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl = gdata.contacts.ADD_GROUP_URL;
-      this.mType = gdata.contacts.requestTypes.ADD;
+      this.mUrl         = gdata.contacts.ADD_GROUP_URL;
+      this.mType        = gdata.contacts.requestTypes.ADD;
       this.addHeaderItem("Authorization", aAuth);
       break;
     case "DELETE":
     case "delete":
       this.mContentType = this.CONTENT_TYPES.URL_ENC;
-      this.mUrl = aUrl;
-      this.mType = "POST"; // for firewalls that block DELETE
+      this.mUrl         = aUrl;
+      this.mType        = "POST"; // for firewalls that block DELETE
       this.addContentOverride(gdata.contacts.requestTypes.DELETE);
       this.addHeaderItem("Content-length", 0); // required or there will be an error
       this.addHeaderItem("Authorization", aAuth);

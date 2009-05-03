@@ -40,35 +40,35 @@ window.addEventListener("load", function CardDialogOverlay_loadListener(e) {
 // the original method CheckAndSetCardValues
 var originalCheckAndSetCardValues;
 var gAttributes = {
-  "ThirdEmail" : {}, 
-  "FourthEmail" : {},
-  "TalkScreenName" : {},
-  "JabberScreenName" : {},
-  "YahooScreenName" : {},
-  "MSNScreenName" : {},
-  "ICQScreenName" : {},
-  "OtherAddress" : {},
-  "HomeFaxNumber" : {},
-  "OtherNumber" : {},
-  "FullHomeAddress" : {},
-  "FullWorkAddress" : {},
-  "PrimaryEmailType" : {},
-  "SecondEmailType" : {},
-  "ThirdEmailType" : {},
-  "FourthEmailType" : {},
-  "_AimScreenNameType" : {},
-  "TalkScreenNameType" : {},
-  "JabberScreenNameType" : {},
-  "YahooScreenNameType" : {},
-  "MSNScreenNameType" : {},
-  "ICQScreenNameType" : {},
-  "WorkPhoneType" : {},
-  "HomePhoneType" : {},
-  "FaxNumberType" : {},
-  "CellularNumberType" : {},
-  "PagerNumberType" : {},
-  "HomeFaxNumberType" : {},
-  "OtherNumberType" : {}
+  "ThirdEmail":           {}, 
+  "FourthEmail":          {},
+  "TalkScreenName":       {},
+  "JabberScreenName":     {},
+  "YahooScreenName":      {},
+  "MSNScreenName":        {},
+  "ICQScreenName":        {},
+  "OtherAddress":         {},
+  "HomeFaxNumber":        {},
+  "OtherNumber":          {},
+  "FullHomeAddress":      {},
+  "FullWorkAddress":      {},
+  "PrimaryEmailType":     {},
+  "SecondEmailType":      {},
+  "ThirdEmailType":       {},
+  "FourthEmailType":      {},
+  "_AimScreenNameType":   {},
+  "TalkScreenNameType":   {},
+  "JabberScreenNameType": {},
+  "YahooScreenNameType":  {},
+  "MSNScreenNameType":    {},
+  "ICQScreenNameType":    {},
+  "WorkPhoneType":        {},
+  "HomePhoneType":        {},
+  "FaxNumberType":        {},
+  "CellularNumberType":   {},
+  "PagerNumberType":      {},
+  "HomeFaxNumberType":    {},
+  "OtherNumberType":      {}
 };
 /**
  * CardDialogOverlay
@@ -77,9 +77,9 @@ var gAttributes = {
  * @class
  */
 var CardDialogOverlay = {
-  mNamespace: "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
+  mNamespace:  "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
   mLoadNumber: 0,
-  mDisabled: false,
+  mDisabled:   false,
   /**
    * editCardDialog.init
    * Adds a tab to the tab box, if possible.  Waits until the abCardOverlay is
@@ -271,18 +271,18 @@ var CardDialogOverlay = {
     // if this is a read-only card, make added elements disabled
     // the menulists are already taken care of
     if (this.mDisabled) {
-      document.getElementById("ThirdEmail").readOnly = true;
-      document.getElementById("FourthEmail").readOnly = true;
-      document.getElementById("TalkScreenName").readOnly = true;
-      document.getElementById("ICQScreenName").readOnly = true;
-      document.getElementById("YahooScreenName").readOnly = true;
-      document.getElementById("MSNScreenName").readOnly = true;
+      document.getElementById("ThirdEmail").readOnly       = true;
+      document.getElementById("FourthEmail").readOnly      = true;
+      document.getElementById("TalkScreenName").readOnly   = true;
+      document.getElementById("ICQScreenName").readOnly    = true;
+      document.getElementById("YahooScreenName").readOnly  = true;
+      document.getElementById("MSNScreenName").readOnly    = true;
       document.getElementById("JabberScreenName").readOnly = true;
-      document.getElementById("HomeFaxNumber").readOnly = true;
-      document.getElementById("OtherNumber").readOnly = true;
-      document.getElementById("FullHomeAddress").readOnly = true;
-      document.getElementById("FullWorkAddress").readOnly = true;
-      document.getElementById("OtherAddress").readOnly = true;
+      document.getElementById("HomeFaxNumber").readOnly    = true;
+      document.getElementById("OtherNumber").readOnly      = true;
+      document.getElementById("FullHomeAddress").readOnly  = true;
+      document.getElementById("FullWorkAddress").readOnly  = true;
+      document.getElementById("OtherAddress").readOnly     = true;
     }
 
     // override the check and set card values function
@@ -397,12 +397,12 @@ function myGetCardValues(aCard, aDoc) {
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   
   var existingTypes = {
-    "WorkPhoneType" : {},
-    "HomePhoneType" : {},
-    "FaxNumberType" : {},
-    "CellularNumberType" : {},
-    "PagerNumberType" : {},
-  }
+    "WorkPhoneType":      {},
+    "HomePhoneType":      {},
+    "FaxNumberType":      {},
+    "CellularNumberType": {},
+    "PagerNumberType":    {}
+  };
   // iterate through all the added attributes and types and set the card's value
   // for each one of them
   for (var attr in gAttributes) {
@@ -428,10 +428,8 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   // ensure that every contact edited through this dialog has at least a dummy
   // e-mail address
   var primEmailElem = aDoc.getElementById("PrimaryEmail");
-  try {
   if (!primEmailElem.value || primEmailElem.value == "")
     primEmailElem.value = makeDummyEmail(aCard);
-    }catch (e) {alert(e);}
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }

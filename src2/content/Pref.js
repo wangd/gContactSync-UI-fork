@@ -37,15 +37,15 @@
  * Pref
  * A simple class to store information about a preference (label, type, default
  * value and the actual value).  Set the value after creating the pref.
- * @param aName    The label (or name) of the preference.
- * @param aType    The type of preference (bool, int, or char).
- * @param aDefault The default value for the preference.
+ * @param aName    {string} The label (or name) of the preference.
+ * @param aType    {string} The type of preference (bool, int, or char).
+ * @param aDefault {object} The default value for the preference.
  * @constructor
  * @class
  */
 function Pref(aName, aType, aDefault) {
-  this.label = aName;
-  this.type = aType;
+  this.label        = aName;
+  this.type         = aType;
   this.defaultValue = aDefault;
-  this.value = null;
+  this.value        = null;
 }

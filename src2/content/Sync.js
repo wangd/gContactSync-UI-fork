@@ -42,29 +42,29 @@
 var Sync = {
   // a few arrays treated as queues to add/delete/update contacts and cards
   mContactsToDelete: [],
-  mContactsToAdd: [],
+  mContactsToAdd:    [],
   mContactsToUpdate: [],
-  mGroupsToDelete: [],
-  mGroupsToAdd: [],
-  mGroupsToUpdate: [],
-  mGroupsToAddURI: [],
+  mGroupsToDelete:   [],
+  mGroupsToAdd:      [],
+  mGroupsToUpdate:   [],
+  mGroupsToAddURI:   [],
   mCurrentAuthToken: {},
-  mCurrentUsername: {},
-  mCurrentAb: {},
-  mAddressBooks: [],
-  mIndex: 0,
+  mCurrentUsername:  {},
+  mCurrentAb:        {},
+  mAddressBooks:     [],
+  mIndex:            0,
   // an array of commands to execute when offline during an HTTP Request
   mOfflineCommand: ["Overlay.setStatusBarText(StringBundle.getStr('offlineStatusText'));", 
                     "Sync.finish(StringBundle.getStr('offlineStatusText'));"],
 
   // booleans used for timing to make sure only one synchronization occurs at a
   // time and that only one sync is scheduled at once
-  mSynced: true,
+  mSynced:        true,
   mSyncScheduled: false,
-  mGroups: {},        // used to store groups for the account being synchronized
-  mLists: {},         // stores the mail lists in the directory being synchronized
-  mContactsUrl: null, // override for the contact feed URL.  Intended for syncing
-                      // one group only
+  mGroups:        {},   // used to store groups for the account being synchronized
+  mLists:         {},   // stores the mail lists in the directory being synchronized
+  mContactsUrl:   null, // override for the contact feed URL.  Intended for syncing
+                        // one group only
   /**
    * Sync.begin
    * Performs the first steps of the sync process.
@@ -81,13 +81,18 @@ var Sync = {
     // get the next auth token
     Preferences.getSyncPrefs(); // get the preferences
     this.mSyncScheduled = false;
-    this.mSynced = false;
-    LOGGER.mErrorCount = 0; // reset the error count
+    this.mSynced        = false;
+    LOGGER.mErrorCount  = 0; // reset the error count
     Overlay.setStatusBarText(StringBundle.getStr("syncing"));
-    this.mIndex = 0;
-    this.mAddressBooks = AbManager.getSyncedAddressBooks(true);
+    this.mIndex         = 0;
+    this.mAddressBooks  = AbManager.getSyncedAddressBooks(true);
     this.syncNextUser()
   },
+  /**
+   * Sync.syncNextUser
+   * Synchronizes the next address book in Sync.mAddressBooks.
+   * If all ABs were synchronized, then this continues with Sync.finish();
+   */
   syncNextUser: function Sync_syncNextUser() {
     // set the previous address book's last sync date (if it exists)
     if (this.mCurrentAb && this.mCurrentAb.setLastSyncDate)
@@ -100,9 +105,9 @@ var Sync = {
     this.mCurrentUsername = obj.username;
     LOGGER.LOG("Starting Synchronization for " + this.mCurrentUsername +
                " at: " + Date() + "\n");
-    this.mCurrentAb = obj.primary;
+    this.mCurrentAb        = obj.primary;
     this.mCurrentAuthToken = LoginManager.getAuthTokens()[this.mCurrentUsername];
-    this.mContactsUrl = null;
+    this.mContactsUrl      = null;
     if (!this.mCurrentAuthToken) {
       LOGGER.LOG_WARNING("Unable to find the auth token for: " + this.mCurrentUsername);
       this.syncNextUser();
@@ -131,8 +136,8 @@ var Sync = {
                                    null, this.mCurrentUsername);
     httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText))",
                           "Sync.syncGroups(httpReq.responseXML);"],
-    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
-                        "Sync.begin();"]; // if there is an error, try to sync w/o groups                   
+    httpReq.mOnError   = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+                          "Sync.begin();"]; // if there is an error, try to sync w/o groups                   
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
@@ -150,9 +155,9 @@ var Sync = {
     // so this next line won't waste time
     httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText))",
                           "Sync.sync2(httpReq.responseXML);"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while getting all contacts', " +
-                        "httpReq.responseText);",
-                        "Sync.syncNextUser(httpReq.responseText);"];
+    httpReq.mOnError   = ["LOGGER.LOG_ERROR('Error while getting all contacts', " +
+                          "httpReq.responseText);",
+                          "Sync.syncNextUser(httpReq.responseText);"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
@@ -162,8 +167,8 @@ var Sync = {
    * writing the sync details to a different file, scheduling another sync, and
    * writes the completion status to the status bar.
    * 
-   * @param aError     Optional.  A string containing the error message.
-   * @param aStartOver Also optional.  True if the sync should be restarted.
+   * @param aError     {string} Optional.  A string containing the error message.
+   * @param aStartOver {bool}   Also optional.  True if the sync should be restarted.
    */
   finish: function Sync_finish(aError, aStartOver) {
     if (aError)
@@ -178,11 +183,12 @@ var Sync = {
       Overlay.writeTimeToStatusBar();
       LOGGER.LOG("Finished Synchronization at: " + Date());
     }
+    // reset some variables
     ContactConverter.mCurrentCard = {};
-    this.mSynced = true;
-    this.mCurrentAb = {};
-    this.mCurrentUsername = {};
-    this.mCurrentAuthToken = {};
+    this.mSynced                  = true;
+    this.mCurrentAb               = {};
+    this.mCurrentUsername         = {};
+    this.mCurrentAuthToken        = {};
     // refresh the ab results pane
     // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
     SetAbView(GetSelectedDirectory(), false);
@@ -222,17 +228,17 @@ var Sync = {
       this.finish("Max Contacts too low...resynchronizing", true);
       return;
     }
-    this.mContactsToAdd = [];
+    this.mContactsToAdd    = [];
     this.mContactsToDelete = [];
     this.mContactsToUpdate = [];
     var gContact;
      // get the strings outside of the loop so they are only found once
-    var found = " * Found a match Last Modified Dates:";
+    var found       = " * Found a match Last Modified Dates:";
     var bothChanged = " * Conflict detected: the contact has been updated in " +
                       "both Google and Thunderbird";
-    var bothGoogle = " * The contact from Google will be updated";
-    var bothTB = " * The card from Thunderbird will be updated";
-    var gContacts = {};
+    var bothGoogle  = " * The contact from Google will be updated";
+    var bothTB      = " * The card from Thunderbird will be updated";
+    var gContacts   = {};
     // Step 1: get all contacts from Google into GContact objects in an object
     // keyed by ID.  If the myContacts pref is set, only put the contacts who
     // are in that group into the gContacts object.
@@ -264,11 +270,11 @@ var Sync = {
       }
       // if there is a matching Google Contact
       else if (gContacts[id]) {
-        var gContact = gContacts[id];
+        var gContact   = gContacts[id];
         // remove it from gContacts
-        gContacts[id] = null;
+        gContacts[id]  = null;
         var tbCardDate = tbContact.getValue("LastModifiedDate");
-        var gCardDate = gContact.lastModified;
+        var gCardDate  = gContact.lastModified;
         // 4 options
         // if both were updated
         LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
@@ -281,7 +287,7 @@ var Sync = {
             LOGGER.LOG(bothGoogle);
             var toUpdate = {};
             toUpdate.gContact = gContact;
-            toUpdate.abCard = tbContact.mContact; // TODO update to use TBContact
+            toUpdate.abCard   = tbContact.mContact; // TODO update to use TBContact
             this.mContactsToUpdate.push(toUpdate);
           }
           else { // update thunderbird
@@ -301,7 +307,7 @@ var Sync = {
                      " contact from Google");
           var toUpdate = {};
           toUpdate.gContact = gContact;
-          toUpdate.abCard = tbContact.mContact; // TODO update to use TBContact
+          toUpdate.abCard   = tbContact.mContact; // TODO update to use TBContact
           this.mContactsToUpdate.push(toUpdate);
         }
         // otherwise nothing needs to be done
@@ -599,9 +605,9 @@ var Sync = {
                                    group.getEditURL(), null,
                                    this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.deleteGroups();"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while deleting group', " +
-                          "httpReq.responseText);",
-                        "Sync.deleteGroups();"];
+    httpReq.mOnError   = ["LOGGER.LOG_ERROR('Error while deleting group', " +
+                                            "httpReq.responseText);",
+                          "Sync.deleteGroups();"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.send();
@@ -628,10 +634,10 @@ var Sync = {
     var httpReq = new GHttpRequest("addGroup", this.mCurrentAuthToken, null,
                                    body, this.mCurrentUsername);
     httpReq.mOnCreated = ["Sync.addGroups2(httpReq);"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR('Error while adding group', " +
-                                          "httpReq.responseText);",
-                        "Sync.mGroupsToAddURI.shift()",
-                        "Sync.addGroups();"];
+    httpReq.mOnError =   ["LOGGER.LOG_ERROR('Error while adding group', " +
+                                            "httpReq.responseText);",
+                          "Sync.mGroupsToAddURI.shift()",
+                          "Sync.addGroups();"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.send();
   },
@@ -647,7 +653,7 @@ var Sync = {
     if (Preferences.mSyncPrefs.verboseLog.value)
       LOGGER.LOG(serializeFromText(aResponse.responseText));
     var list = this.mGroupsToAdd.shift();
-    var id = group.getID();
+    var id   = group.getID();
     list.setNickName(id);
     if (list.update)
       list.update();
@@ -673,8 +679,8 @@ var Sync = {
     var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, group.getEditURL(),
                                    body, this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.updateGroups();"];
-    httpReq.mOnError = ["LOGGER.LOG_ERROR(httpReq.responseText);",
-                        "Sync.updateGroups();"];
+    httpReq.mOnError   = ["LOGGER.LOG_ERROR(httpReq.responseText);",
+                          "Sync.updateGroups();"];
     httpReq.mOnOffline = this.mOfflineCommand;
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.send();

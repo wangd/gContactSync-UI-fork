@@ -38,7 +38,7 @@
  * @class
  */
 var LOGGER = {
-  mErrorCount: 0,
+  mErrorCount:   0,
   mWarningCount: 0,
   /**
    * Logger.LOG

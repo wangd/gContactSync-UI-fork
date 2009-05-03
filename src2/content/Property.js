@@ -36,6 +36,8 @@
 /**
  * Property
  * A simple object for storing the value and type of a property.
+ * @param aValue {string} The value of the property.
+ * @param aType  {string} The 'type' of the property (Home, Work, Other, etc.)
  * @class
  */
 function Property(aValue, aType) {

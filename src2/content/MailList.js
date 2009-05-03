@@ -46,15 +46,15 @@ function MailList(aList, aParentDirectory, aNew) {
     throw "Error - invalid address book supplied to the MailList Constructor";
   this.mParent = aParentDirectory;
   this.mParent.checkList(aList, "MailList constructor");
-  this.mList = aList;
+  this.mList   = aList;
   this.mList.QueryInterface(Ci.nsIAbMDBDirectory);
-  this.mNew = aNew;
+  this.mNew    = aNew;
   if (!aNew)
     this.getAllCards();
 }
 
 MailList.prototype = {
-  mCards: [],
+  mCards:       [],
   mCardsUpdate: false,
   /**
    * MailList.setName
@@ -105,6 +105,7 @@ MailList.prototype = {
                                         AbManager.getCardValue(card, "SecondEmail"))
         return card;
     }
+    return null;
   },
   /**
    * MailList.setNickName

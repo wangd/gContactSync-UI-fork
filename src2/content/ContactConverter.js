@@ -46,9 +46,9 @@
  */
 var ContactConverter = {
   // two namespaces
-  GD: {},
-  ATOM: {},
-  mCurrentCard: {},
+  GD:            {},
+  ATOM:          {},
+  mCurrentCard:  {},
   mConverterArr: [],
   // extra attributes added by this extension.  Doesn't include GoogleID or any
   // of the URLs.  Should be obtained w/ ContactConverter.getExtraSyncAttributes
