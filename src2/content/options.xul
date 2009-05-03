@@ -46,36 +46,32 @@
   
   <prefpane id="pane_main" index="main" label="&main.tab;">
     <preferences>
+      <preference id="autoSync"
+                  name="extensions.gContactSync.autoSync"
+                  type="bool"/>
       <preference id="refreshInterval"
                   name="extensions.gContactSync.refreshInterval"
                   type="int"/>
       <preference id="initialDelay"
                   name="extensions.gContactSync.initialDelay"
                   type="int"/>
-      <preference id="updateGoogleInConflicts"
-                  name="extensions.gContactSync.updateGoogleInConflicts"
-                  type="bool"/>
-      <preference id="overrideCopy"
-                  name="extensions.gContactSync.overrideCopy"
-                  type="bool"/> 
-      <preference id="autoSync"
-                  name="extensions.gContactSync.autoSync"
-                  type="bool"/>
       <preference id="myContacts"
                   name="extensions.gContactSync.myContacts"
                   type="bool"/>
       <preference id="syncGroups"
                   name="extensions.gContactSync.syncGroups"
                   type="bool"/>
+      <preference id="updateGoogleInConflicts"
+                  name="extensions.gContactSync.updateGoogleInConflicts"
+                  type="bool"/>
       <preference id="readOnly"
                   name="extensions.gContactSync.readOnly"
                   type="bool"/>
+      <!--
       <preference id="writeOnly"
                   name="extensions.gContactSync.writeOnly"
                   type="bool"/>
-      <preference id="syncExtended"
-                  name="extensions.gContactSync.syncExtended"
-                  type="bool"/>
+      -->
       <preference id="listenerDeleteFromGoogle"
                   name="extensions.gContactSync.listenerDeleteFromGoogle"
                   type="bool"/>
@@ -97,7 +93,7 @@
           <rows>
             <row align="center">
               <label control="refreshInterval" value="&refreshInterval.value;"/>
-              <textbox preference="refreshInterval" id="refreshInterval" maxlength="4" maxwidth="60"/>
+              <textbox preference="refreshInterval" id="refreshIntervalBox" maxlength="4" maxwidth="60"/>
             </row>
             <row align="center">
               <label control="initialDelayBox" value="&initialDelay.value;"/>
@@ -110,7 +106,7 @@
       <groupbox>
         <caption label="&groups.label;"/>
         <checkbox preference="myContacts" id="cMyContacts" label="&myContacts.label;" onclick="myContactsChange(this);"/>
-        <checkbox preference="syncGroups" id="syncGroups" label="&syncGroups.label;"/>
+        <checkbox preference="syncGroups" id="cSyncGroups" label="&syncGroups.label;" onclick="groupsChange(this);"/>
       </groupbox>
       <separator class="thin"/>
       <groupbox>

@@ -370,7 +370,17 @@ var Overlay = {
                     StringBundle.getStr("loginText"), username, password, null,
                     {value: false});
     if (!ok)
-      return;
+      return false;
+
+    // This is a primitive way of validating an e-mail address, but Google takes
+    // care of the rest.  It seems to allow getting an auth token w/ only the
+    // username, but returns an error when trying to do anything w/ that token
+    // so this makes sure it is a full e-mail address.
+    if (username.value.indexOf("@") < 1) {
+      alert(StringBundle.getStr("invalidEmail"));
+      return this.promptLogin();
+    }
+    
     var body     = gdata.makeAuthBody(username.value, password.value);
     var httpReq  = new GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
@@ -386,6 +396,7 @@ var Overlay = {
     httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
                           "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
     httpReq.send();
+    return true;
   },
   /**
    * Overlay.login

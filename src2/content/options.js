@@ -50,6 +50,7 @@ function initialize() {
   StringBundle.init();
   FileIO.init();
   Preferences.getSyncPrefs();
+  enableSyncGroups();
   //document.getElementById("cMyContacts").addEventListener("change", myContactsChange, false);
   // if this is the full preferences dialog add a few event listeners
   if (document.getElementById("syncExtended")) {
@@ -94,7 +95,7 @@ function fillLoginTree() {
 function removeSelectedLogin() {
   var tree = document.getElementById("loginTree");
   if (!tree || tree.currentIndex == -1)
-    return;
+    return false;
   var cellText = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
   if (cellText && confirm(StringBundle.getStr("removeLogin"))) {
     LoginManager.removeAuthToken(cellText);
@@ -137,10 +138,18 @@ function addLogin() {
                   StringBundle.getStr("loginText"), username, password, null,
                   {value: false});
   if (!ok)
-    return;
+    return false;
   if (usernames[username.value]) { // the username already exists
     alert(StringBundle.getStr("usernameExists"));
-    return;
+    return false;
+  }
+  // This is a primitive way of validating an e-mail address, but Google takes
+  // care of the rest.  It seems to allow getting an auth token w/ only the
+  // username, but returns an error when trying to do anything w/ that token
+  // so this makes sure it is a full e-mail address.
+  if (username.value.indexOf("@") < 1) {
+    alert(StringBundle.getStr("invalidEmail"));
+    return addLogin();
   }
   var body    = gdata.makeAuthBody(username.value, password.value);
   var httpReq = new GHttpRequest("authenticate", null, null, body);
@@ -157,6 +166,7 @@ function addLogin() {
   httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
                         "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
   httpReq.send();
+  return true;
 }
 
 /**
@@ -182,7 +192,7 @@ function addToken(aUsername, aAuthToken) {
       // him or her choose a new name
       if(!confirm(StringBundle.getStr("abExists"))) {
         addToken(aUsername, aAuthToken);
-        return;
+        return false;
       }
     }
     LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
@@ -193,11 +203,13 @@ function addToken(aUsername, aAuthToken) {
     ab.setLastSyncDate(0);
     var treechildren = document.getElementById("loginTreeChildren");
     addLoginToTree(treechildren, aUsername, input.value);
+    return true;
   }
   else if (!result)
     LOGGER.VERBOSE_LOG("prompt canceled");
   else
     LOGGER.VERBOSE_LOG("Invalid input: " + input ? input.value : null);
+  return false;
 }
 
 /**
@@ -222,6 +234,7 @@ function addLoginToTree(aTreeChildren, aUsername, aDirName) {
   treerow.appendChild(addressbook);
   treeitem.appendChild(treerow);
   aTreeChildren.appendChild(treeitem);
+  return true;
 }
 /**
  * changeAbName
@@ -232,7 +245,7 @@ function addLoginToTree(aTreeChildren, aUsername, aDirName) {
 function changeAbName() {
   var tree = document.getElementById("loginTree");
   if (!tree || tree.currentIndex == -1)
-    return;
+    return false;
   var username = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
   var oldAb    = AbManager.getSyncedAddressBooks()[username];
   if (oldAb)
@@ -258,7 +271,7 @@ function changeAbName() {
       // choose a new name
       if(!confirm(StringBundle.getStr("abExists"))) {
         changeAbName();
-        return;
+        return false;
       }
       // if they still want it, setup the new one and remove the prefs from the old
       existingAb.dirName = input.value;
@@ -313,6 +326,7 @@ function changeAbName() {
     }
     tree.view.setCellText(tree.currentIndex, tree.columns.getColumnAt(1), input.value);
   }
+  return true;
 }
 
 /**
@@ -321,7 +335,9 @@ function changeAbName() {
  * the syncExtended checkbox.
  */
 function enableExtended() {
-  var disable = !document.getElementById("syncExtended").value;
+  var disableElem = document.getElementById("syncExtended");
+  if (!disableElem) return false;
+  var disable = !disableElem.value;
   document.getElementById("extended1").disabled  = disable;
   document.getElementById("extended2").disabled  = disable;
   document.getElementById("extended3").disabled  = disable;
@@ -332,6 +348,7 @@ function enableExtended() {
   document.getElementById("extended8").disabled  = disable;
   document.getElementById("extended9").disabled  = disable;
   document.getElementById("extended10").disabled = disable;
+  return true;
 }
 
 /**
@@ -339,9 +356,15 @@ function enableExtended() {
  * Enables or disables the delay textboxes based on the auto sync checkbox.
  */
 function enableDelays() {
-  var disable = !document.getElementById("autoSync").value;
-  document.getElementById("refreshInterval").disabled = disable;
-  document.getElementById("initialDelay").disabled    = disable;
+  var disableElem  = document.getElementById("autoSync");
+  var intervalElem = document.getElementById("refreshIntervalBox");
+  var initialElem  = document.getElementById("initialDelayBox");
+  if (!disableElem) return false;
+  if (intervalElem)
+    intervalElem.disabled = !disableElem.value;
+  if (initialElem)
+    initialElem.disabled  = !disableElem.value;
+  return true;
 }
 
 /**
@@ -352,30 +375,46 @@ function enableDelays() {
  */
 function myContactsChange(checkbox) {
   if (confirm(StringBundle.getStr("confirmMyContacts"))) {
-    // disable the address book listener
-    var original = Preferences.getPref(Preferences.mSyncBranch,
-                                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.type);
-    if (original) {
-      LOGGER.LOG("Disabled the listener");
-      Preferences.setPref(Preferences.mSyncBranch,
-                          Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                          Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
-                          false);
-    }
-    resetAllSyncedABs();
-    // re-enable the address book listener, if necessary
-    if (original) {
-      LOGGER.LOG("Re-enabled the listener");
-      Preferences.setPref(Preferences.mSyncBranch,
-                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
-                         true);
-    }
+    var retVal = resetAllSyncedABs();
+    setTimeout("enableSyncGroups()", 500);
+    return retVal;
   }
   else if (checkbox) {
     checkbox.checked = !checkbox.checked;
+    setTimeout("enableSyncGroups()", 500);
+    return false;
   }
+  return false;
+}
+
+
+/**
+ * groupsChange
+ * Switches the synchronization type between all groups + contacts to all
+ * contacts and no groups.
+ *
+ * @param checkbox {object} The XUL checkbox element.
+ */
+function groupsChange(checkbox) {
+  // make sure the checkbox isn't disabled
+  if (checkbox && checkbox.disabled)
+    return false;
+  if (confirm(StringBundle.getStr("confirmMyContacts"))) {
+    return resetAllSyncedABs();
+  }
+  else if (checkbox) {
+    checkbox.checked = !checkbox.checked;
+    return false;
+  }
+  return false;
+}
+
+function enableSyncGroups() {
+  var groupsElem     = document.getElementById("cSyncGroups");
+  var myContactsElem = document.getElementById("cMyContacts");
+  if (!groupsElem || !myContactsElem) return false;
+  groupsElem.disabled = myContactsElem.checked;
+  return true;
 }
 
 /**
@@ -397,10 +436,31 @@ function resetAllSyncedABs(showConfirm) {
       return false;
     }
   }
+  
+  // disable the address book listener
+  var original = Preferences.getPref(Preferences.mSyncBranch,
+                                     Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                                     Preferences.mSyncPrefs.listenerDeleteFromGoogle.type);
+  if (original) {
+    LOGGER.LOG("Disabled the listener");
+    Preferences.setPref(Preferences.mSyncBranch,
+                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
+                        false);
+  }
   LOGGER.LOG("Resetting all synchronized directories.");
   var abs = AbManager.getSyncedAddressBooks();
   for (var i in abs) {
     abs[i].primary.reset();
+  }
+  
+  // re-enable the address book listener, if necessary
+  if (original) {
+    LOGGER.LOG("Re-enabled the listener");
+    Preferences.setPref(Preferences.mSyncBranch,
+                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
+                       true);
   }
   LOGGER.LOG("Finished resetting all synchronized directories.");
   alert(StringBundle.getStr("pleaseRestart"));

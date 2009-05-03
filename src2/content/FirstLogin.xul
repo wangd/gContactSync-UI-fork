@@ -55,25 +55,24 @@
           src="chrome://gcontactsync/content/options.js"/>
 
   <prefpane id="gContactSync-setup" label="&title.label;">
-
     <preferences>
-      <preference id="refreshInterval"
-                  name="extensions.gContactSync.refreshInterval"
-                  type="int"/>
       <preference id="addressBookName"
                   name="extensions.gContactSync.addressBookName"
                   type="string"/>
-      <preference id="updateGoogleInConflicts"
-                  name="extensions.gContactSync.updateGoogleInConflicts"
-                  type="bool"/>
+      <preference id="refreshInterval"
+                  name="extensions.gContactSync.refreshInterval"
+                  type="int"/>
       <preference id="autoSync"
                   name="extensions.gContactSync.autoSync"
                   type="bool"/>
-      <preference id="syncGroups"
-                  name="extensions.gContactSync.syncGroups"
+      <preference id="updateGoogleInConflicts"
+                  name="extensions.gContactSync.updateGoogleInConflicts"
                   type="bool"/>
       <preference id="myContacts"
                   name="extensions.gContactSync.myContacts"
+                  type="bool"/>
+      <preference id="syncGroups"
+                  name="extensions.gContactSync.syncGroups"
                   type="bool"/>
     </preferences>
     <groupbox>
@@ -93,14 +92,6 @@
                      minwidth="275"
                      maxwidth="275"/>
           </row>
-          <row align="center">
-            <label control="refInterval"
-                   value="&refreshInterval.value;"/>
-            <textbox preference="refreshInterval"
-                     id="refInterval"
-                     maxlength="4"
-                     maxwidth="60"/>
-          </row>
         </rows>
       </grid>
       <checkbox preference="autoSync"
@@ -110,11 +101,11 @@
       <checkbox preference="updateGoogleInConflicts"
                 id="updateGoogle"
                 label="&updateGoogle.label;"/>
-	  
+
 	  <checkbox preference="myContacts"
 	            id="myContacts"
 				label="&myContacts.label;"/>
-                   
+
       <checkbox preference="syncGroups"
                 id="syncGroups"
                 label="&syncGroups.label;"/>
