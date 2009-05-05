@@ -142,14 +142,78 @@ GHttpRequest.prototype = new HttpRequest(); // get the superclass' prototype
 /**
  * handle401
  * Handles 'Token Expired' errors.
+* If a sync is in progress:
+ *  - Get the username
+ *  - Remove the auth token
+ *  - Alert the user
+ *  - Prompt for the password
+ *  - Get a new auth token to replace the old one
+ *  - Restart the sync
  */
 function handle401(httpRequest) {
   LOGGER.LOG("***Found an expired token***");
-  /* TODO:
-   * If a sync is in progress:
-   *  - Get the username
-   *  - Prompt for the password
-   *  - Get a new auth token to replace the old one
-   *  - Restart the sync
-   */
+  // If there is a synchronization in process
+  if (!Sync.mSynced) {
+    // Get the current username
+    var username = Sync.mCurrentUsername;
+    // Remove the auth token if it wasn't already
+    if (LoginManager.mAuthTokens[username]) {
+      LOGGER.VERBOSE_LOG(" * Removing old auth token");
+      LoginManager.removeAuthToken(username);
+    }
+    alert(StringBundle.getStr("tokenExpiredMsg"));
+    // Prompt for the username and password
+    var prompt   = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Ci.nsIPromptService)
+                    .promptUsernameAndPassword;
+    // set the username
+    var username = { value: username };
+    var password = {};
+    
+    LOGGER.VERBOSE_LOG( " * Showing a username/password prompt");
+    // opens a username/password prompt
+    var ok = prompt(window, StringBundle.getStr("loginTitle"),
+                    StringBundle.getStr("loginText"), username, password, null,
+                    {value: false});
+    if (!ok) {
+      LOGGER.VERBOSE_LOG(" * User canceled the prompt");
+      Sync.finish(StringBundle.getStr("tokenExpired"), false);
+      return false;
+    }
+    // This is a primitive way of validating an e-mail address, but Google takes
+    // care of the rest.  It seems to allow getting an auth token w/ only the
+    // username, but returns an error when trying to do anything w/ that token
+    // so this makes sure it is a full e-mail address.
+    if (username.value.indexOf("@") < 1) {
+      alert(StringBundle.getStr("invalidEmail"));
+      return handle401();
+    }
+    var body    = gdata.makeAuthBody(username.value, password.value);
+    var httpReq = new GHttpRequest("authenticate", null, null, body);
+    // if it succeeds and Google returns the auth token, store it and then start
+    // a new sync
+    httpReq.mOnSuccess = ["finish401('" + username.value +
+                          "', httpReq.responseText.split(\"\\n\")[2]);"];
+    // if it fails, alert the user and prompt them to try again
+    httpReq.mOnError   = ["alert(StringBundle.getStr('authErr'));",
+                          "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
+                          "httpReq.status, httpReq.responseText);",
+                          "handle401();"];
+    // if the user is offline, alert them and quit
+    httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
+                          "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
+    httpReq.send();
+  }
+}
+
+function finish401(aUsername, aAuthToken) {
+  LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername + " - " + aAuthToken);
+  if (aUsername && aAuthToken) {
+    LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
+    Sync.mCurrentAuthToken = aAuthToken;
+    if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts)
+      Sync.getGroups();
+    else
+      Sync.getContacts();
+  }
 }
