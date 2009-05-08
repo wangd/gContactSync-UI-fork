@@ -66,8 +66,8 @@ var Overlay = {
                .createInstance(nsIAbCard);
     this.mBug413260 = card.getProperty ? true : false;
     StringBundle.init();        // initialize the string bundle
-    Preferences.getSyncPrefs(); // get the preferences
     FileIO.init();              // initialize the FileIO class
+    Preferences.getSyncPrefs(); // get the preferences
 
     if (FileIO.mLogFile && FileIO.mLogFile.exists())
       FileIO.mLogFile.remove(false); // delete the old log file

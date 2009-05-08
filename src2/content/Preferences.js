@@ -55,12 +55,13 @@ var Preferences = {
     CHAR: "char"
   },
   // preferences related to gContactSync
+  // verboseLog is first since it is used when logging preferences
   mSyncPrefs: {
+    verboseLog:               new Pref("verboseLog",         "bool", true),
     initialDelay:             new Pref("initialDelay",       "int",  500),
     refreshInterval:          new Pref("refreshInterval",    "int",  30),
     maxContacts:              new Pref("maxContacts",        "int",  5000),
     confirmDuplicates:        new Pref("confirmDuplicates",  "bool", true),
-    verboseLog:               new Pref("verboseLog",         "bool", true),
     syncExtended:             new Pref("syncExtended",       "bool", true),
     overrideCopy:             new Pref("overrideCopy",       "bool", true),
     autoSync:                 new Pref("autoSync",           "bool", true),
@@ -157,7 +158,12 @@ var Preferences = {
         this.setPref(this.mSyncBranch, this.mSyncPrefs[i].label,
                      this.mSyncPrefs[i].type, this.mSyncPrefs[i].defaultValue);
       }
+      if (i == "verboseLog") {
+        LOGGER.VERBOSE_LOG("\n***Loading Preferences***");
+      }
+      LOGGER.VERBOSE_LOG(" * " + i + ": " + this.mSyncPrefs[i].value);
     }
+    LOGGER.VERBOSE_LOG("***Finished Loading Preferences***\n");
     // only add these extended properties if the pref to sync them is true
     this.mExtendedProperties = [];
     if (this.mSyncPrefs.syncExtended.value)
