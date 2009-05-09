@@ -395,7 +395,10 @@ function myGetCardValues(aCard, aDoc) {
  * @param aCheck Unused, but passed to the original method.
  */
 function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
-  
+  // make sure the required data is present (abCardOverlay.js)
+  if (!CheckCardRequiredDataPresence(aDoc)) {
+    return false;
+  }
   var existingTypes = {
     "WorkPhoneType":      {},
     "HomePhoneType":      {},
@@ -428,7 +431,7 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   // ensure that every contact edited through this dialog has at least a dummy
   // e-mail address
   var primEmailElem = aDoc.getElementById("PrimaryEmail");
-  if (!primEmailElem.value || primEmailElem.value == "")
+  if (!primEmailElem.value)
     primEmailElem.value = makeDummyEmail(aCard);
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
