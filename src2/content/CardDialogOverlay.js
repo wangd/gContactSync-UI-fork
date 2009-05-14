@@ -126,7 +126,7 @@ var CardDialogOverlay = {
     } catch(e) { alert("Unable to setup email types: " + e); }
     try {
       // add drop down menus for screen name protocols
-      var arr = ["AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER"];
+      var arr = ["AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER", "SKYPE", "QQ"];
       var aimBox = document.getElementById("ScreenName").parentNode;
       addMenuItems(aimBox, arr, "_AimScreenNameType", "AIM");
       var talkBox = document.getElementById("TalkScreenName").parentNode;
