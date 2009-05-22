@@ -223,6 +223,9 @@
   </prefpane>
   <prefpane id="pane_extended" index="extended" label="&extended.tab;">
     <preferences>
+      <preference id="syncExtended"
+                  name="extensions.gContactSync.syncExtended"
+                  type="bool"/>
       <preference id="extended1"
                   name="extensions.gContactSync.extended1"
                   type="string"/>
