@@ -37,6 +37,7 @@
  * HttpRequest
  * Sets up an HTTP request.
  * @constructor
+ * @class
  */
 function HttpRequest() {
   if (window.XMLHttpRequest)
@@ -130,6 +131,11 @@ HttpRequest.prototype = {
         // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
         try {
           LOGGER.VERBOSE_LOG(" * The request has finished with status: " + httpReq.status);
+          LOGGER.VERBOSE_LOG(" * Headers:\n" + httpReq.getAllResponseHeaders() + "\n");
+          //if (confirm("Fake 401?")) {
+          //  alert('Faking a 401');
+          //  return handle401(httpReq);
+          //}
           switch (httpReq.status) { 
             case 0: // the user is offline
               commands = onOffline;

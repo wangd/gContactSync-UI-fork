@@ -37,6 +37,7 @@
  * LoginManager
  * Stores and retrieves the authentication token from the login manager.
  * Does NOT store the password and username.
+ * @class
  */
 var LoginManager = {
   mHostname:      "chrome://gContactSync",

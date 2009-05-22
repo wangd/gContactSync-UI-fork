@@ -142,7 +142,7 @@ GHttpRequest.prototype = new HttpRequest(); // get the superclass' prototype
 /**
  * handle401
  * Handles 'Token Expired' errors.
-* If a sync is in progress:
+ * If a sync is in progress:
  *  - Get the username
  *  - Remove the auth token
  *  - Alert the user
