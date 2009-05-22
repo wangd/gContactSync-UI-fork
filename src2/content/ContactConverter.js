@@ -245,16 +245,29 @@ var ContactConverter = {
     }
     
     // parse the DisplayName into FirstName and LastName
-    if (Preferences.mSyncPrefs.parseNames) {
+    if (Preferences.mSyncPrefs.parseNames.value) {
       var name  = ab.getCardValue(card, "DisplayName");
       var first = ab.getCardValue(card, "FirstName");
       var last  = ab.getCardValue(card, "LastName");
       // only parse if the contact has a name and there isn't already a first
       // or last name set
       if (name && !first && !last) {
-        var nameArr;
-        if (name.split)
-          nameArr = name.split(" ");
+        var nameArr = [];
+        if (name.split) {
+          // If the name has a comma, it is probably <last>, <first>
+          var commaIndex = name.indexOf(",");
+          if (commaIndex != -1) {
+            name = name.replace(", ", ",");
+            var tmpArr = name.split(",");
+            nameArr.push(tmpArr[1]);
+            nameArr.push(tmpArr[0]);
+            // now fix the DisplayName
+            ab.setCardValue(card, "DisplayName", tmpArr[1] + " " + tmpArr[0]);
+          }
+          // Otherwise assume it is <first> <last>
+          else
+            nameArr = name.split(" ");
+        }
         else
           nameArr = [name];
         // take the first part of the name and set it as the first name
