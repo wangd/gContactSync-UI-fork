@@ -26,6 +26,7 @@
 <!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
 <!ENTITY forceBtnImage.label "Force the Sync toolbar button image (fixes a large, ugly Sync button)">
 <!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">
+<!ENTITY enableMenuLinks.label "Enable links in the gContactSync Menu">
 <!ENTITY abResults.label "Address Book Results Pane">
 <!ENTITY phoneColLabels.label "Rename the phone column labels">
 <!ENTITY newColLabels.label "Add the new fields to the column labels (Thunderbird 3 Only)">
