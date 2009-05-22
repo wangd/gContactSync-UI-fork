@@ -217,6 +217,13 @@ var Overlay = {
       wikiMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.wikiURL');");
       wikiMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
+      var faqMenuItem = document.createElement("menuitem");
+      faqMenuItem.setAttribute("id", "faqMenuItem");
+      faqMenuItem.setAttribute("label", StringBundle.getStr("faqMenu"));
+      faqMenuItem.setAttribute("accesskey", StringBundle.getStr("faqMenuKey"));
+      faqMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.faqURL');");
+      faqMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       var errorMenuItem = document.createElement("menuitem");
       errorMenuItem.setAttribute("id", "errorMenuItem");
       errorMenuItem.setAttribute("label", StringBundle.getStr("errorMenu"));
@@ -227,8 +234,9 @@ var Overlay = {
       menupopup.appendChild(syncMenuItem);
       menupopup.appendChild(prefMenuItem);
       menupopup.appendChild(forumMenuItem);
-      menupopup.appendChild(errorMenuItem);
       menupopup.appendChild(wikiMenuItem);
+      menupopup.appendChild(faqMenuItem);
+      menupopup.appendChild(errorMenuItem);
       menu.appendChild(menupopup);
       menubar.insertBefore(menu, toolsMenu);
     }
