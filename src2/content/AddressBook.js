@@ -602,7 +602,9 @@ AddressBook.prototype = {
     */
   reset: function AddressBook_reset() {
     LOGGER.LOG("Resetting the " + this.getName() + " directory.");
-    var lists = this.getAllLists();
+    try {
+      var lists = this.getAllLists(true);
+    } catch (e) {}
     LOGGER.VERBOSE_LOG(" * Deleting all lists");
     for (var i in lists) {
       LOGGER.VERBOSE_LOG("  - Deleting list " + lists[i].getName());

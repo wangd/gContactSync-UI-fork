@@ -173,11 +173,23 @@ MailList.prototype = {
     // properly, but it shouldn't be caught or the sync won't function properly
     this.mCards = [];
     var iter = this.mList.childCards;
+    var data;
     if (AbManager.mVersion == 3) { // TB 3
-      while (iter.hasMoreElements()) {
-        data = iter.getNext();
-        if (data instanceof nsIAbCard)
-          this.mCards.push(data);
+      try {
+        while (iter.hasMoreElements()) {
+          data = iter.getNext();
+          if (data instanceof nsIAbCard)
+            this.mCards.push(data);
+        }
+      }
+      catch (e) {
+        LOGGER.LOG_ERROR("A mailing list is not working:", e);
+        if (confirm(StringBundle.getStr("resetConfirm"))) {
+          this.mParent.reset();
+          alert(StringBundle.getStr("pleaseRestart"));
+        }
+        // Throw an error to stop the sync
+        throw "A mailing list is not working correctly";
       }
     }
     else { // TB 2
@@ -185,7 +197,7 @@ MailList.prototype = {
       try {
         iter.first();
         do {
-          var data = iter.currentItem();
+          data = iter.currentItem();
           if(data instanceof nsIAbCard)
             this.mCards.push(data);
           iter.next();
