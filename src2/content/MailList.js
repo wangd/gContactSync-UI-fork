@@ -204,8 +204,10 @@ MailList.prototype = {
         } while (Components.lastResult == 0);
       }
       catch(e) {
-        // error is expected when finished   
-        //LOGGER.VERBOSE_LOG("This error is expected:\n" + e);
+        // TODO find a way to distinguish between the usual errors and the
+        // broken list errors
+        // error is expected when finished
+        LOGGER.VERBOSE_LOG("This error is expected:\n" + e);
       }
     }
     return this.mCards;
