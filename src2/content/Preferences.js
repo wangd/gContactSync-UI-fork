@@ -78,6 +78,7 @@ var Preferences = {
     phoneColLabels:           new Pref("phoneColLabels",     "bool", true),
     newColLabels:             new Pref("newColLabels",       "bool", true),
     dummyEmail:               new Pref("dummyEmail",         "bool", true),
+    enableImUrls:             new Pref("enableImUrls",       "bool", true),
     myContactsName:           new Pref("myContactsName",     "char", "My Contacts"),
     addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
     updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true),

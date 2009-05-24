@@ -143,6 +143,9 @@
       <preference id="newColLabels"
                   name="extensions.gContactSync.newColLabels"
                   type="bool"/>
+      <preference id="enableImUrls"
+                  name="extensions.gContactSync.enableImUrls"
+                  type="bool"/>
     </preferences>
     <groupbox flex="1">
       <separator class="thin"/>
@@ -161,6 +164,10 @@
         <caption label="&abResults.label;"/>
         <checkbox preference="phoneColLabels" id="phoneColLabels" label="&phoneColLabels.label;"/>
         <checkbox preference="newColLabels" id="newColLabels" label="&newColLabels.label;"/>
+      </groupbox>
+      <groupbox>
+        <caption label="&abCardView.label;"/>
+        <checkbox preference="enableImUrls" id="enableImUrls" label="&enableImUrls.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>

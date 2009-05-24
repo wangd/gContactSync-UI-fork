@@ -57,6 +57,20 @@ var originalSetAbView;
  */
 var Overlay = {
   /**
+   * Special links for various IM protocols
+   * Format: Type (from Google): protocol
+   */
+  links: {
+    AIM:         "aim:goim?screenname=",
+    MSN:         "msnim:chat?contact=",
+    YAHOO:       "ymsgr:sendim?",
+    SKYPE:       "skype:",
+    SKYPES:      "?chat",
+    JABBER:      "xmpp:",
+    XMPP:        "xmpp:",
+    GOOGLE_TALK: "gtalk:chat?jid="
+  },
+  /**
    * Called when the overlay is loaded and initializes everything and begins
    * the authentication check and sync or login prompt.
    */
@@ -744,7 +758,17 @@ var Overlay = {
       // then use the attribute's string as a default value
       var str = label && label != "" ? StringBundle.getStr(label)
                                      : StringBundle.getStr(attr);
-      visible = cvSetNodeWithLabel(cvData["cv" + attr], str, value) || visible;
+      var prefix = this.links[label];
+      // Make this a link if there is a prefix (aim:goim?...), the pref is set,
+      // and there is a box for this data
+      if (prefix && Preferences.mSyncPrefs.enableImUrls.value && cvData["cv" + attr + "Box"]) {
+        var suffix = this.links[label + "S"] ? this.links[label + "S"] : "";
+        visible    = HandleLink(cvData["cv" + attr], str, value,
+                                cvData["cv" + attr + "Box"], prefix +
+                                value + suffix) || visible;
+      }
+      else
+        visible = cvSetNodeWithLabel(cvData["cv" + attr], str, value) || visible;
     }
     return visible;
   },
@@ -774,17 +798,49 @@ var Overlay = {
     cvData.cvFourthEmailBox.appendChild(cvData.cvFourthEmail);
     vbox.insertBefore(cvData.cvFourthEmailBox, document.getElementById("cvScreennameBox"));
     vbox.insertBefore(cvData.cvThirdEmailBox, cvData.cvFourthEmailBox);
+    
     // the screennames
-    cvData.cvTalkScreenName = Overlay.makeDescElement("TalkScreenName", "CardViewText");
-    cvData.cvICQScreenName = Overlay.makeDescElement("ICQScreenName", "CardViewText");
-    cvData.cvYahooScreenName = Overlay.makeDescElement("YahooScreenName", "CardViewText");
-    cvData.cvMSNScreenName = Overlay.makeDescElement("MSNScreenName", "CardViewText");
-    cvData.cvJabberScreenName = Overlay.makeDescElement("JabberScreenName", "CardViewText");
-    vbox.appendChild(cvData.cvTalkScreenName);
-    vbox.appendChild(cvData.cvICQScreenName);
-    vbox.appendChild(cvData.cvMSNScreenName);
-    vbox.appendChild(cvData.cvYahooScreenName);
-    vbox.appendChild(cvData.cvJabberScreenName);
+    if (Preferences.mSyncPrefs.enableImUrls.value) {
+      cvData.cvTalkScreenNameBox  = Overlay.makeDescElement("TalkScreenNameBox", "CardViewLink");
+      cvData.cvTalkScreenName     = document.createElementNS(xhmtl, "html:a");
+      cvData.cvTalkScreenName.setAttribute("id", "TalkScreenName");
+      cvData.cvTalkScreenNameBox.appendChild(cvData.cvTalkScreenName);
+      cvData.cvICQScreenNameBox   = Overlay.makeDescElement("ICQScreenNameBox", "CardViewLink");
+      cvData.cvICQScreenName      = document.createElementNS(xhmtl, "html:a");
+      cvData.cvICQScreenName.setAttribute("id", "ICQScreenName");    
+      cvData.cvICQScreenNameBox.appendChild(cvData.cvICQScreenName);
+      cvData.cvYahooScreenNameBox  = Overlay.makeDescElement("YahooScreenNameBox", "CardViewLink");
+      cvData.cvYahooScreenName     = document.createElementNS(xhmtl, "html:a");
+      cvData.cvYahooScreenName.setAttribute("id", "YahooScreenName");    
+      cvData.cvYahooScreenNameBox.appendChild(cvData.cvYahooScreenName);
+      cvData.cvMSNScreenNameBox    = Overlay.makeDescElement("MSNScreenNameBox", "CardViewLink");
+      cvData.cvMSNScreenName       = document.createElementNS(xhmtl, "html:a");
+      cvData.cvMSNScreenName.setAttribute("id", "MSNScreenName");    
+      cvData.cvMSNScreenNameBox.appendChild(cvData.cvMSNScreenName);
+      cvData.cvJabberScreenNameBox = Overlay.makeDescElement("JabberScreenNameBox", "CardViewLink");
+      cvData.cvJabberScreenName    = document.createElementNS(xhmtl, "html:a");
+      cvData.cvJabberScreenName.setAttribute("id", "JabberScreenName");
+      cvData.cvJabberScreenNameBox.appendChild(cvData.cvJabberScreenName);
+      
+      vbox.appendChild(cvData.cvTalkScreenNameBox);
+      vbox.appendChild(cvData.cvICQScreenNameBox);
+      vbox.appendChild(cvData.cvMSNScreenNameBox);
+      vbox.appendChild(cvData.cvYahooScreenNameBox);
+      vbox.appendChild(cvData.cvJabberScreenNameBox);
+    }
+    else {
+      cvData.cvTalkScreenName   = Overlay.makeDescElement("TalkScreenName", "CardViewText");
+      cvData.cvICQScreenName    = Overlay.makeDescElement("ICQScreenName", "CardViewText");
+      cvData.cvYahooScreenName  = Overlay.makeDescElement("YahooScreenName", "CardViewText");
+      cvData.cvMSNScreenName    = Overlay.makeDescElement("MSNScreenName", "CardViewText");
+      cvData.cvJabberScreenName = Overlay.makeDescElement("JabberScreenName", "CardViewText");
+      vbox.appendChild(cvData.cvTalkScreenName);
+      vbox.appendChild(cvData.cvICQScreenName);
+      vbox.appendChild(cvData.cvMSNScreenName);
+      vbox.appendChild(cvData.cvYahooScreenName);
+      vbox.appendChild(cvData.cvJabberScreenName);
+    }
+    
     // Other Address
     vbox = document.getElementById("cvbOther");
     var otherHbox = document.createElement("hbox");

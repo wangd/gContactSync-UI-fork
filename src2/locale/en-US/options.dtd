@@ -30,6 +30,8 @@
 <!ENTITY abResults.label "Address Book Results Pane">
 <!ENTITY phoneColLabels.label "Rename the phone column labels">
 <!ENTITY newColLabels.label "Add the new fields to the column labels (Thunderbird 3 Only)">
+<!ENTITY abCardView.label "Address Book Contact Details">
+<!ENTITY enableImUrls.label "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
 
 <!ENTITY accounts.tab "Accounts">
 <!ENTITY emailAddress.label "E-mail Address">
