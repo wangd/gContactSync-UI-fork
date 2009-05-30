@@ -1,6 +1,7 @@
 <!ENTITY title.label "gContactSync Preferences">
 
 <!ENTITY main.tab "Main">
+<!ENTITY help.value "Help">
 <!ENTITY gettingStarted1.value "Before you start synchronizing your contacts, please check these settings">
 <!ENTITY autoSync.value "Automatic Synchronization">
 <!ENTITY autoSync.label "Synchronize contacts automatically">

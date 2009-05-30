@@ -82,7 +82,7 @@
     <groupbox flex="1">
       <label href="http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences"
              class="text-link"
-             value="Help"/>
+             value="&help.value;"/>
       <groupbox>
         <caption label="&autoSync.value;"/>
         <checkbox preference="autoSync" id="autoSync" label="&autoSync.label;"/>
