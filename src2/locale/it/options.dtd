@@ -28,6 +28,9 @@
 <!ENTITY abResults.label "Pannello Risultati Rubrica">
 <!ENTITY phoneColLabels.label "Rinomina l&apos;etichetta della colonna del telefono">
 <!ENTITY newColLabels.label "Aggiunge i nuovi campi alle etichette delle colonne (Solo in Thunderbird 3)">
+<!ENTITY abCardView.label "Address Book Contact Details">
+<!ENTITY enableImUrls.label "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
+
 <!ENTITY accounts.tab "Account">
 <!ENTITY emailAddress.label "Indirizzi E-mail">
 <!ENTITY addressBook.label "Rubrica">
