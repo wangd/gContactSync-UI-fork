@@ -1,0 +1,74 @@
+<!ENTITY title.label "Preferenze di gContactSync">
+<!ENTITY main.tab "Generale">
+<!ENTITY gettingStarted1.value "Prima di sincronizzare i tuoi contatti, per favore controlla queste impostazioni">
+<!ENTITY autoSync.value "Sincronizzazione automatica">
+<!ENTITY autoSync.label "Sincronizza i contatti automaticamente">
+<!ENTITY refreshInterval.value "Intervallo di sincronizzazione (in minuti) [il default è 30]">
+<!ENTITY initialDelay.value "Ritardo iniziale di sincronizzazione (in ms) [il default è 500]">
+<!ENTITY abName.value "Nome della Rubrica con cui sincronizzarsi (vecchia o nuova)">
+<!ENTITY groups.label "Gruppi e Liste di Distribuzione">
+<!ENTITY myContacts.label "Sincronizza soltanto il gruppo &apos;Contatti Personali&apos;">
+<!ENTITY syncGroups.label "Sincronizza i gruppi di Gmail con le Liste di Distribuzione di Thunderbird">
+<!ENTITY syncBehavior.label "Comportamento della sincronizzazione">
+<!ENTITY removeOldAddresses.label "Rimuovi i vecchi indirizzi dopo che sono stati convertiti nel nuovo formato">
+<!ENTITY updateGoogle.label "Aggiorna sempre Gmail quando un contatto viene aggiornato su Gmail e Thunderbird">
+<!ENTITY readOnly.label "Abilita la modalità di solo prelievo (Thunderbird riceve gli aggiornamenti ma non li invia)">
+<!ENTITY writeOnly.label "Abilita la modalità di solo invio (Thunderbird invia gli aggiornamenti ma non li riceve)">
+<!ENTITY listenerDeleteFromGoogle.label "Rimuovi i contatti da Google immediatamente dopo che sono stati rimossi da Thunderbird">
+<!ENTITY parseNames.label "Analizza i nomi dei contatti Google e suddividili in Nome e Cognome.">
+<!ENTITY interface.tab "Interfaccia">
+<!ENTITY logging.label "Logging">
+<!ENTITY enableLogging.label "Abilita il logging">
+<!ENTITY verboseLog.label "Abilita il logging verboso">
+<!ENTITY buttons.label "Pulsanti e Menu">
+<!ENTITY enableSyncBtn.label "Abilita il pulsante Sincronizza nella barra degli strumenti">
+<!ENTITY forceBtnImage.label "Forza l&apos;immagine del pulsante Sincronizza della barra degli strumenti (fissa un grande, brutto pulsante Sincronizza)">
+<!ENTITY enableMenu.label "Abilita il menu gContactSync nella finestra della Rubrica">
+<!ENTITY enableMenuLinks.label "Abilita i link nel menu gContactSync">
+<!ENTITY abResults.label "Pannello Risultati Rubrica">
+<!ENTITY phoneColLabels.label "Rinomina l&apos;etichetta della colonna del telefono">
+<!ENTITY newColLabels.label "Aggiunge i nuovi campi alle etichette delle colonne (Solo in Thunderbird 3)">
+<!ENTITY accounts.tab "Account">
+<!ENTITY emailAddress.label "Indirizzi E-mail">
+<!ENTITY addressBook.label "Rubrica">
+<!ENTITY removeLogin.label "Rimuovi Login">
+<!ENTITY addLogin.label "Aggiungi Login">
+<!ENTITY changeAbName.label "Cambia Rubrica">
+<!ENTITY refreshTree.label "Aggiorna">
+<!ENTITY resetAll.label "Azzera Tutte le Rubriche">
+<!ENTITY addresses.tab "Indirizzi">
+<!--  -->
+<!ENTITY addDesc1.label "Google e Thunderbird memorizzano gli indirizzi postali in maniera differente, così gContactSync converte">
+<!ENTITY addDesc2.label "gli indirizzi a campi multipli di Thunderbird in una textbox che consente l&apos;immissione di righe multiple.">
+<!ENTITY addDesc3.label "">
+<!ENTITY addDesc4.label "Di default gli indirizzi vengono convertiti solo quando la scheda di Thunderbird viene sincronizzata per la prima volta e">
+<!ENTITY addDesc5.label "i valori nei vecchi campi vengono rimossi (Campo Indirizzo 1 e 2, Città, Provincia, CAP e  Nazione)">
+<!ENTITY addDesc6.label "">
+<!--  -->
+<!ENTITY customAdd0.label "">
+<!ENTITY customAdd1.label "Puoi personalizzare il modo in cui gContactSync compila i campi dei nuovi indirizzi. Racchiudi il nome">
+<!ENTITY customAdd2.label "dell&apos;attributo tra []. Si possono utilizzare spazi, parole non tra [], punteggiatura eccetera.">
+<!--  -->
+<!ENTITY customAdd3.label "Esempi: [DisplayName] [HomeAddress] [HomeAddress2] [HomeCity] [HomeState]">
+<!ENTITY customAdd4.label "[HomeZipCode] [HomeCountry]">
+<!ENTITY homeAddress.label "Casa">
+<!ENTITY workAddress.label "Ufficio">
+<!ENTITY otherAddress.label "Altro">
+<!ENTITY extended.tab "Avanzate">
+<!ENTITY syncExtended.label "Proprietà di Sincronizzazione Estese">
+<!--  -->
+<!ENTITY extended1.value "Proprietà 1">
+<!ENTITY extended2.value "Proprietà 2">
+<!ENTITY extended3.value "Proprietà 3">
+<!ENTITY extended4.value "Proprietà 4">
+<!ENTITY extended5.value "Proprietà 5">
+<!ENTITY extended6.value "Proprietà 6">
+<!ENTITY extended7.value "Proprietà 7">
+<!ENTITY extended8.value "Proprietà 8">
+<!ENTITY extended9.value "Proprietà 9">
+<!ENTITY extended10.value "Proprietà 10">
+<!ENTITY extendedPropertiesDesc1.value "10 proprietà extra da sincronizzare. Esempi:">
+<!--  -->
+<!ENTITY extendedPropertiesDesc2.value "* WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
+<!ENTITY extendedPropertiesDesc3.value "* Department, AllowRemoteContent, Custom1, Custom2, Custom3">
+<!ENTITY extendedPropertiesDesc4.value "* Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">
