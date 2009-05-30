@@ -466,11 +466,12 @@ var Sync = {
     this.mGroupsToUpdate = [];
     // if there wasn't an error, setup groups
     if (aAtom) {
-      var ab = this.mCurrentAb;
-      var ns = gdata.namespaces.ATOM;
-      var lastSync = parseInt(ab.getLastSyncDate());
+      var ab         = this.mCurrentAb;
+      var ns         = gdata.namespaces.ATOM;
+      var lastSync   = parseInt(ab.getLastSyncDate());
       var myContacts = Preferences.mSyncPrefs.myContacts.value;
-      var arr = aAtom.getElementsByTagNameNS(ns.url, "entry");
+      var arr        = aAtom.getElementsByTagNameNS(ns.url, "entry");
+      var noCatch    = false;
       // get the mailing lists if not only synchronizing my contacts
       if (!myContacts) {
         LOGGER.VERBOSE_LOG("***Getting all mailing lists***");
@@ -495,14 +496,39 @@ var Sync = {
                 var listName = list.getName();
                 LOGGER.LOG("  - Matched with mailing list " + listName);
                 if (listName != title) {
-                  LOGGER.LOG("  - Going to rename the group to " + listName);
-                  group.setTitle(listName);
-                  this.mGroupsToUpdate.push(group);
+                  // You cannot rename system groups...
+                  // In the future system groups will be localized, so this
+                  // must be ignored.
+                  if (group.isSystemGroup()) {
+                    LOGGER.LOG_WARNING("  - A system group was renamed in Thunderbird");
+                  }
+                  else {
+                    LOGGER.LOG("  - Going to rename the group to " + listName);
+                    group.setTitle(listName);
+                    this.mGroupsToUpdate.push(group);
+                  }
                 }
               }
               else {
-                this.mGroupsToDelete.push(group);
-                LOGGER.LOG("  - Didn't find a matching mail list.  It will be deleted");
+                // System groups cannot be deleted.
+                // This would be difficult to recover from, so stop
+                // synchronization and reset the AB
+                if (group.isSystemGroup()) {
+                  noCatch = true; // don't catch this error
+                  LOGGER.LOG_ERROR("  - A system group was deleted from Thunderbird");
+                  var restartStr = StringBundle.getStr("pleaseRestart");
+                  if (confirm(StringBundle.getStr("resetConfirm"))) {
+                    ab.reset();
+                    Overlay.setStatusBarText(restartStr);
+                    alert(restartStr);
+                  }
+                  // Throw an error to stop the sync
+                  throw "A system group was deleted from Thunderbird";                  
+                }
+                else {
+                  this.mGroupsToDelete.push(group);
+                  LOGGER.LOG("  - Didn't find a matching mail list.  It will be deleted");
+                }
               }
             }
             else { // it is new or updated
@@ -524,7 +550,10 @@ var Sync = {
               }
             }
           }
-          catch(e) { LOGGER.LOG_ERROR("Error while syncing groups: " + e); }
+          catch(e) {
+            if (noCatch) throw e;
+            LOGGER.LOG_ERROR("Error while syncing groups: " + e);
+          }
         }
         LOGGER.LOG("***Looking for unmatched mailing lists***");
         for (var i in this.mLists) {
