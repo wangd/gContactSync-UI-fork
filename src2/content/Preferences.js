@@ -81,6 +81,7 @@ var Preferences = {
     enableImUrls:             new Pref("enableImUrls",       "bool", true),
     myContactsName:           new Pref("myContactsName",     "char", "My Contacts"),
     addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
+    lastVersion:              new Pref("lastVersion",        "char", "0"),
     updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true),
     listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", false),
     homeAddress:              new Pref("homeAddress", "char",

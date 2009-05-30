@@ -55,6 +55,8 @@ pref("extensions.gContactSync.newColLabels", true);
 pref("extensions.gContactSync.dummyEmail", true);
 // enable different IM URLs as defined in Overlay.js
 pref("extensions.gContactSync.enableImUrls", true);
+// the last version of gContactSync loaded
+pref("extensions.gContactSync.lastVersion", "0");
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

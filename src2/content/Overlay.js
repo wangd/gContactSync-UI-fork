@@ -56,6 +56,7 @@ var originalSetAbView;
  * @class
  */
 var Overlay = {
+  mLastVersion: "0",
   /**
    * Special links for various IM protocols
    * Format: Type (from Google): protocol
@@ -83,13 +84,23 @@ var Overlay = {
     FileIO.init();              // initialize the FileIO class
     Preferences.getSyncPrefs(); // get the preferences
 
+    // Find the last version of gContactSync and set the pref to the current
+    // version.
+    this.mLastVersion = Preferences.mSyncPrefs.lastVersion.value;
+
+    Preferences.setPref(Preferences.mSyncBranch,
+                        Preferences.mSyncPrefs.lastVersion.label,
+                        Preferences.mSyncPrefs.lastVersion.type,
+                        version);
+
     if (FileIO.mLogFile && FileIO.mLogFile.exists())
       FileIO.mLogFile.remove(false); // delete the old log file
 
     // log some basic system and application info
     LOGGER.LOG("Loading gContactSync at " + new Date());
-    LOGGER.LOG(" * Version is: " + version);
-    LOGGER.LOG(" * User Agent: " + navigator.userAgent + "\n");
+    LOGGER.LOG(" * Version is:       " + version);
+    LOGGER.LOG(" * Last version was: " + this.mLastVersion);
+    LOGGER.LOG(" * User Agent:       " + navigator.userAgent + "\n");
 
     originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
