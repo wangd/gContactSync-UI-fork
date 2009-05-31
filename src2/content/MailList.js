@@ -185,7 +185,7 @@ MailList.prototype = {
       catch (e) {
         LOGGER.LOG_ERROR("A mailing list is not working:", e);
         if (confirm(StringBundle.getStr("resetConfirm"))) {
-          this.mParent.reset();
+          this.mParent.reset(true);
           alert(StringBundle.getStr("pleaseRestart"));
         }
         // Throw an error to stop the sync

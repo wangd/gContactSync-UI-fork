@@ -118,3 +118,10 @@ function isDummyEmail(aEmail) {
   return aEmail && aEmail.indexOf && 
         aEmail.indexOf(StringBundle.getStr("dummy2")) != -1;
 }
+
+function changeDeleteListener(enable) {
+    Preferences.setPref(Preferences.mSyncBranch,
+                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
+                        enable);
+}

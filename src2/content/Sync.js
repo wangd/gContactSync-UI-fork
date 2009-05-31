@@ -518,7 +518,7 @@ var Sync = {
                   LOGGER.LOG_ERROR("  - A system group was deleted from Thunderbird");
                   var restartStr = StringBundle.getStr("pleaseRestart");
                   if (confirm(StringBundle.getStr("resetConfirm"))) {
-                    ab.reset();
+                    ab.reset(true);
                     Overlay.setStatusBarText(restartStr);
                     alert(restartStr);
                   }

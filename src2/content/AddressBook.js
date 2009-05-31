@@ -600,8 +600,19 @@ AddressBook.prototype = {
     *   - Setting primary to true
     *   - Setting the last sync date to 0
     */
-  reset: function AddressBook_reset() {
+  reset: function AddressBook_reset(checkListener) {
     LOGGER.LOG("Resetting the " + this.getName() + " directory.");
+    var original = false;
+    if (checkListener) {
+      // disable the address book listener
+      var original = Preferences.getPref(Preferences.mSyncBranch,
+                                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
+                                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.type);
+      if (original) {
+        LOGGER.LOG("Disabled the listener");
+        changeDeleteListener(false);
+      }
+    }
     try {
       var lists = this.getAllLists(true);
     } catch (e) {}
@@ -620,5 +631,10 @@ AddressBook.prototype = {
     LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
     this.setLastSyncDate(0);
     LOGGER.LOG("Finished resetting the directory.");
+    // re-enable the address book listener, if necessary
+    if (original) {
+      LOGGER.LOG("Re-enabled the listener");
+      changeDeleteListener(true);
+    }
   }
 }

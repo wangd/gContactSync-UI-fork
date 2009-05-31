@@ -443,10 +443,7 @@ function resetAllSyncedABs(showConfirm) {
                                      Preferences.mSyncPrefs.listenerDeleteFromGoogle.type);
   if (original) {
     LOGGER.LOG("Disabled the listener");
-    Preferences.setPref(Preferences.mSyncBranch,
-                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
-                        false);
+    changeDeleteListener(false);
   }
   LOGGER.LOG("Resetting all synchronized directories.");
   var abs = AbManager.getSyncedAddressBooks();
@@ -457,10 +454,7 @@ function resetAllSyncedABs(showConfirm) {
   // re-enable the address book listener, if necessary
   if (original) {
     LOGGER.LOG("Re-enabled the listener");
-    Preferences.setPref(Preferences.mSyncBranch,
-                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
-                       true);
+    changeDeleteListener(true);
   }
   LOGGER.LOG("Finished resetting all synchronized directories.");
   alert(StringBundle.getStr("pleaseRestart"));
