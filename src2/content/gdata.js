@@ -187,7 +187,7 @@ var gdata = {
     // links in the contacts feed.  The property name is the type of link
     // and the value is the value of the "rel" attribute
     links: {
-      PhotoURL: "http://schemas.google.com/contacts/2008/rel#edit-photo",
+      PhotoURL: "http://schemas.google.com/contacts/2008/rel#photo",
       SelfURL:  "self",
       EditURL:  "edit"
     },
