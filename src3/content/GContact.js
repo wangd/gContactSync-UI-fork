@@ -223,7 +223,7 @@ GContact.prototype = {
         if (!organization.childNodes.length)
           this.xml.removeChild(organization);
       }
-      return null;
+      return true;
     }
     // if it gets here, the node must be added, so add <organization> if necessary
     if (!organization) {

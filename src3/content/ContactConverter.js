@@ -74,6 +74,7 @@ var ContactConverter = {
     this.mConverterArr = [
       // general
       new ConverterElement("title",         "DisplayName",  0),
+      new ConverterElement("nickname",      "NickName",     0),
       new ConverterElement("notes",         "Notes",        0),
       new ConverterElement("id",            "GoogleID",     0),
       new ConverterElement("postalAddress", "OtherAddress", 0, "other"),

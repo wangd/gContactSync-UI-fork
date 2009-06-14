@@ -146,34 +146,39 @@ var gdata = {
      * is stored.
      */
     init: function gdata_contacts_init() {
-      var untyped        = gdata.contacts.types.UNTYPED;
-      var typedWithChild = gdata.contacts.types.TYPED_WITH_CHILD;
-      var typedWithAttr  = gdata.contacts.types.TYPED_WITH_ATTR;
-      this.postalAddress = new GElement(typedWithChild, "postalAddress",
-                                       gdata.namespaces.GD, ["work", "home",
-                                       "other"]);
-      this.phoneNumber   = new GElement(typedWithChild, "phoneNumber",
-                                       gdata.namespaces.GD, ["work", "home",
-                                       "mobile", "pager", "other", "home_fax",
-                                       "work_fax"]);
-      this.email         = new GElement(typedWithAttr, "email", gdata.namespaces.GD,
-                                        ["home", "work", "other"], "address");
-      this.im            = new GElement(typedWithAttr, "im", gdata.namespaces.GD,
-                                        ["JABBER", "YAHOO", "AIM", "GOOGLE_TALK", "MSN", "ICQ"],
-                                        "address");
-      this.id            = new GElement(untyped, "id", gdata.namespaces.ATOM);
-      this.updated       = new GElement(untyped, "updated", gdata.namespaces.ATOM);
-      this.title         = new GElement(untyped, "title", gdata.namespaces.ATOM);
-      this.notes         = new GElement(untyped, "content", gdata.namespaces.ATOM);
-      this.orgName       = new GElement(untyped, "orgName", gdata.namespaces.GD);
-      this.orgTitle      = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
-      this.organization  = new GElement(typedWithAttr, "organization",
-                                        gdata.namespaces.GD, ["other"]);
+      var untyped              = gdata.contacts.types.UNTYPED;
+      var typedWithChild       = gdata.contacts.types.TYPED_WITH_CHILD;
+      var typedWithAttr        = gdata.contacts.types.TYPED_WITH_ATTR;
+      this.postalAddress       = new GElement(typedWithChild, "postalAddress",
+                                             gdata.namespaces.GD, ["work", "home",
+                                             "other"]);
+      this.phoneNumber         = new GElement(typedWithChild, "phoneNumber",
+                                             gdata.namespaces.GD, ["work", "home",
+                                             "mobile", "pager", "other", "home_fax",
+                                             "work_fax"]);
+      this.email               = new GElement(typedWithAttr, "email", gdata.namespaces.GD,
+                                             ["home", "work", "other"], "address");
+      this.im                  = new GElement(typedWithAttr, "im", gdata.namespaces.GD,
+                                              ["JABBER", "YAHOO", "AIM", "GOOGLE_TALK", "MSN", "ICQ"],
+                                              "address");
+      this.id                  = new GElement(untyped, "id", gdata.namespaces.ATOM);
+      this.updated             = new GElement(untyped, "updated", gdata.namespaces.ATOM);
+      this.title               = new GElement(untyped, "title", gdata.namespaces.ATOM);
+      this.notes               = new GElement(untyped, "content", gdata.namespaces.ATOM);
+      this.orgName             = new GElement(untyped, "orgName", gdata.namespaces.GD);
+      this.orgTitle            = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
+      this.orgJobDescription   = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
+      this.orgDepartment       = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
+      this.orgSymbol           = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
+      this.organization        = new GElement(typedWithAttr, "organization",
+                                              gdata.namespaces.GD, ["other"]);
       this.groupMembershipInfo = new GElement(untyped, "groupMembershipInfo",
                                               gdata.namespaces.GCONTACT);
-      this.relation      = new GElement(typedWithChild, "relation",
-                                        gdata.namespaces.GCONTACT,
-                                        this.RELATION_TYPES);
+      this.relation            = new GElement(typedWithChild, "relation",
+                                              gdata.namespaces.GCONTACT,
+                                              this.RELATION_TYPES);
+      this.nickname            = new GElement(untyped, "nickname",
+                                              gdata.namespaces.GCONTACT);
     },
     ORG_TAGS: {
       orgDepartment:     "1",
@@ -199,6 +204,7 @@ var gdata = {
     organization:        {},
     groupMembershipInfo: {},
     relation:            {},
+    nickname:            {},
     // links in the contacts feed.  The property name is the type of link
     // and the value is the value of the "rel" attribute
     links: {
