@@ -1,0 +1,142 @@
+/* button-sync */
+/* First - no mode or iconsize */
+#button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+
+#button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
+}
+
+/* Second - iconsize only */
+toolbar[iconsize="large"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+
+toolbar[iconsize="large"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
+}
+
+toolbar[iconsize="small"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(0px 16px 16px 0px);
+}
+
+toolbar[iconsize="small"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(32px 16px 48px 0px) !important;
+}
+/* Third - mode only */
+toolbar[mode="full"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+
+toolbar[mode="full"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
+}
+
+toolbar[mode="icon"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+
+toolbar[mode="icon"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
+}
+
+/* Fourth mode & iconsize */
+toolbar[mode="full"][iconsize="large"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+
+toolbar[mode="full"][iconsize="large"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
+}
+
+toolbar[mode="full"][iconsize="small"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(0px 16px 16px 0px);
+}
+
+toolbar[mode="full"][iconsize="small"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(32px 16px 48px 0px) !important;
+}
+
+toolbar[mode="icon"][iconsize="large"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+
+toolbar[mode="icon"][iconsize="large"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard-large.png");
+  -moz-image-region: rect(48px 24px 72px 0px) !important;
+}
+
+toolbar[mode="icon"][iconsize="small"] #button-sync {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(0px 16px 16px 0px);
+}
+
+toolbar[mode="icon"][iconsize="small"] #button-sync[disabled] {
+  list-style-image:  url("chrome://gcontactsync/skin/abcard.png");
+  -moz-image-region: rect(32px 16px 48px 0px) !important;
+}
+/* End of fun toolbar button CSS */
+
+/* preferences window */
+#gContactSyncPrefs {
+  width: 50em;
+  min-height: 40em;
+}
+
+#loginTree {
+  min-height: 30em;
+}
+
+/* Written by Leszek(teo)Życzkowski */
+radio[pane] {
+  -moz-appearance: none;
+  background-color: transparent;
+  background-position: center bottom;
+  background-repeat: repeat-x;
+  min-width: 80px;
+}
+
+radio[pane]:hover {
+  background-color: rgb(94, 138, 188);
+  background-image: url("chrome://gcontactsync/skin/hover.png");
+  color: white;
+}
+
+radio[pane][selected="true"] {
+  background-color: rgb(174, 198, 226);
+  background-image: none;
+  background-image: url("chrome://gcontactsync/skin/selected.png");
+  color: black;
+}
+
+radio[pane=pane_main] {
+  list-style-image: url("chrome://gcontactsync/skin/general.png");
+}
+radio[pane=pane_interface] {
+  list-style-image: url("chrome://gcontactsync/skin/interface.png");
+}
+radio[pane=pane_accounts] {
+  list-style-image: url("chrome://gcontactsync/skin/accounts.png");
+}
+radio[pane=pane_extended] {
+  list-style-image: url("chrome://gcontactsync/skin/advanced.png");
+}
+radio[pane=pane_addresses] {
+  list-style-image: url("chrome://gcontactsync/skin/addrbook.png");
+}

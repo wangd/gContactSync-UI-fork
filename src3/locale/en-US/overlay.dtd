@@ -1,0 +1,25 @@
+<!ENTITY gContactSync.tab "gContactSync">
+<!ENTITY screenname.box "Additional Screennames">
+<!ENTITY email.box "Additional Email Addresses">
+<!ENTITY first.label "First">
+<!ENTITY second.label "Second">
+<!ENTITY third.label "Third">
+<!ENTITY fourth.label "Fourth">
+<!ENTITY fifth.label "Fifth">
+<!ENTITY sixth.label "Sixth">
+<!ENTITY seventh.label "Seventh">
+<!ENTITY eighth.label "Eighth">
+<!ENTITY numbers.box "Additional Numbers">
+<!ENTITY homeFax.label "Home Fax">
+<!ENTITY address.box "Additional Addresses">
+<!ENTITY home.label "Home">
+<!ENTITY work.label "Work">
+<!ENTITY mobile.label "Mobile">
+<!ENTITY pager.label "Pager">
+<!ENTITY workFax.label "Work Fax">
+<!ENTITY other.label "Other">
+<!ENTITY initialStatus.label "">
+<!ENTITY preferences.label "Preferences">
+<!ENTITY status.tooltip "Click here to view the log file">
+
+<!ENTITY relations.box "Relations">

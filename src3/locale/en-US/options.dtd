@@ -1,0 +1,83 @@
+<!ENTITY title.label "gContactSync Preferences">
+
+<!ENTITY main.tab "Main">
+<!ENTITY help.value "Help">
+<!ENTITY gettingStarted1.value "Before you start synchronizing your contacts, please check these settings">
+<!ENTITY autoSync.value "Automatic Synchronization">
+<!ENTITY autoSync.label "Synchronize contacts automatically">
+<!ENTITY refreshInterval.value "Synchronize Interval (minutes) [Default is 30]">
+<!ENTITY initialDelay.value "Initial sync delay (ms) [Default is 500]">
+<!ENTITY abName.value "Name of the Address Book to sync with (old or new)">
+<!ENTITY groups.label "Groups and Mailing Lists">
+<!ENTITY myContacts.label "Only synchronize the 'My Contacts' group">
+<!ENTITY syncGroups.label "Synchronize Groups in Gmail with Mailing Lists in Thunderbird">
+<!ENTITY syncBehavior.label "Sync Behavior">
+<!ENTITY removeOldAddresses.label "Remove the old Thunderbird addresses after converting to the new format">
+<!ENTITY updateGoogle.label "Always update Gmail when a contact is updated in Gmail and Thunderbird">
+<!ENTITY readOnly.label "Enable fetch-only mode (Thunderbird only receives updates; it never sends them)">
+<!ENTITY writeOnly.label "Enable push-only mode (Thunderbird sends, but doesn't receive, updates)">
+<!ENTITY listenerDeleteFromGoogle.label "Remove contacts from Google immediately after they are removed in Thunderbird">
+<!ENTITY parseNames.label "Parse names from Google contacts into First and Last names.">
+
+<!ENTITY interface.tab "Interface">
+<!ENTITY logging.label "Logging">
+<!ENTITY enableLogging.label "Enable Logging">
+<!ENTITY verboseLog.label "Enable Verbose Logging">
+<!ENTITY buttons.label "Buttons and Menus">
+<!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
+<!ENTITY forceBtnImage.label "Force the Sync toolbar button image (fixes a large, ugly Sync button)">
+<!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">
+<!ENTITY enableMenuLinks.label "Enable links in the gContactSync Menu">
+<!ENTITY abResults.label "Address Book Results Pane">
+<!ENTITY phoneColLabels.label "Rename the phone column labels">
+<!ENTITY newColLabels.label "Add the new fields to the column labels (Thunderbird 3 Only)">
+<!ENTITY abCardView.label "Address Book Contact Details">
+<!ENTITY enableImUrls.label "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
+
+<!ENTITY accounts.tab "Accounts">
+<!ENTITY emailAddress.label "E-mail Address">
+<!ENTITY addressBook.label "Address Book">
+<!ENTITY removeLogin.label "Remove Login">
+<!ENTITY addLogin.label "Add Login">
+<!ENTITY changeAbName.label "Change Address Book">
+<!ENTITY refreshTree.label "Refresh">
+<!ENTITY resetAll.label "Reset All Synced ABs">
+
+<!ENTITY addresses.tab "Addresses">
+<!-- LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating -->
+<!ENTITY addDesc1.label "Google and Thunderbird store postal addresses differently, so gContactSync converts">
+<!ENTITY addDesc2.label "Thunderbird's multiple address fields into a textbox that allows multiple lines.">
+<!ENTITY addDesc3.label "">
+<!ENTITY addDesc4.label "By default, it converts the address only when the Thunderbird card is first synchronized and">
+<!ENTITY addDesc5.label "removes the values in the old fields (Address lines 1 and 2, City, State, Zip, and Country).">
+<!ENTITY addDesc6.label "">
+<!ENTITY removeOldAddresses.label "Remove old addresses after they are converted to the new format">
+<!-- LOCALIZATION NOTE: Use this if necessary if you need more room to translate customAdd1 and 2 -->
+<!ENTITY customAdd0.label "">
+<!ENTITY customAdd1.label "You can customize how gContactSync fills the new address fields below.  Just enclose">
+<!ENTITY customAdd2.label "the name of the attribute in [].  Spaces, words not in [], punctuation, etc. are allowed.">
+<!-- LOCALIZATION NOTE: The words enclosed in [] should not be translated -->
+<!ENTITY customAdd3.label "Samples: [DisplayName] [HomeAddress] [HomeAddress2] [HomeCity] [HomeState]">
+<!ENTITY customAdd4.label "[HomeZipCode] [HomeCountry]">
+<!ENTITY homeAddress.label "Home">
+<!ENTITY workAddress.label "Work">
+<!ENTITY otherAddress.label "Other">
+
+<!ENTITY extended.tab "Advanced">
+<!ENTITY syncExtended.label "Sync Extended Properties">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "Property 1  ">
+<!ENTITY extended2.value "Property 2  ">
+<!ENTITY extended3.value "Property 3  ">
+<!ENTITY extended4.value "Property 4  ">
+<!ENTITY extended5.value "Property 5  ">
+<!ENTITY extended6.value "Property 6  ">
+<!ENTITY extended7.value "Property 7  ">
+<!ENTITY extended8.value "Property 8  ">
+<!ENTITY extended9.value "Property 9  ">
+<!ENTITY extended10.value "Property 10">
+<!ENTITY extendedPropertiesDesc1.value "10 extra properties to sync.  Examples:">
+<!-- LOCALIZATION NOTE: These 3 lines cannot change -->
+<!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
+<!ENTITY extendedPropertiesDesc3.value " * Department, AllowRemoteContent, Custom1, Custom2, Custom3">
+<!ENTITY extendedPropertiesDesc4.value " * Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">
