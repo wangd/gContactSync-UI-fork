@@ -175,6 +175,16 @@ var gdata = {
                                         gdata.namespaces.GCONTACT,
                                         this.RELATION_TYPES);
     },
+    ORG_TAGS: {
+      orgDepartment:     "1",
+      orgJobDescription: "1",
+      orgName:           "1",
+      orgSymbol:         "1",
+      orgTitle:          "1"
+    },
+    isOrgTag: function gdata_contacts_isOrgTag(aTagName) {
+      return this.ORG_TAGS[aTagName] ? true : false;
+    },
     // different tagnames in the Atom feed, must be initialized
     postalAddress:       {},
     phoneNumber:         {},
@@ -188,6 +198,7 @@ var gdata = {
     orgTitle:            {},
     organization:        {},
     groupMembershipInfo: {},
+    relation:            {},
     // links in the contacts feed.  The property name is the type of link
     // and the value is the value of the "rel" attribute
     links: {
@@ -202,7 +213,7 @@ var gdata = {
      */
     getNumberOfContacts: function gdata_contacts_getNumberOfContacts(aAtom) {
       return aAtom.getElementsByTagNameNS("totalResults",
-                                         gdata.namespaces.OPEN_SEARCH.url);
+                                          gdata.namespaces.OPEN_SEARCH.url);
     }
   },
   /**

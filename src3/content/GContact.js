@@ -199,18 +199,16 @@ GContact.prototype = {
    * GContact.setOrg
    * Google's contacts schema puts the organization name and job title in a
    * separate element, so this function handles those two attributes separately.
-   * @param aElement The GElement object with a tag name of "orgName" or
-   *                 "orgTitle"
+   * @param aElement The GElement object with a valid org tag name (orgDepartment,
+   *                 orgJobDescription, orgName, orgSymbol, or orgTitle)
    * @param aValue   The value to set.  Null if the XML Element should be
    *                 removed.
    */
   setOrg: function GContact_setOrg(aElement, aValue) {
     var tagName = aElement ? aElement.tagName : null;
-    if (!tagName && tagName != "orgName" && tagName != "orgTitle") {
-      LOGGER.LOG_WARNING("Error - invalid element passed to the 'setOrg'" +
-                         "method." + StringBundle.getStr("pleaseReport"))
+    if (!tagName || !gdata.contacts.isOrgTag(tagName))
       return null;
-    }
+
     var organization = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
                                                        "organization")[0];
     var thisElem = this.mCurrentElement;
@@ -218,16 +216,12 @@ GContact.prototype = {
       // if there is an existing value that should be updated, do so
       if (aValue)
         this.mCurrentElement.childNodes[0].nodeValue = aValue;
-      // else the element should be removed, first see if the organization
-      // should also be removed
+      // else the element should be removed
       else {
-        var otherTagName = tagName == "orgName" ? "orgTitle" : "orgName";
-        var other = this.xml.getElementsByTagNameNS(aElement.namespace.url,
-                                                    otherTagName)[0];
-        if (!other)
+        organization.removeChild(thisElem);
+        // If the org elem is empty remove it
+        if (!organization.childNodes.length)
           this.xml.removeChild(organization);
-        else if (organization)
-          organization.removeChild(thisElem);
       }
       return null;
     }
@@ -280,8 +274,8 @@ GContact.prototype = {
         LOGGER.VERBOSE_LOG("   - value " + value + " and type " + property.type + " are good");
       return null;
     }
-    // orgName and orgTitle are special cases
-    if (aElement.tagName == "orgTitle" || aElement.tagName == "orgName")
+    // organization tags are special cases
+    if (gdata.contacts.isOrgTag(aElement.tagName))
       return this.setOrg(aElement, aValue, value);
     
     // if the element should be removed
