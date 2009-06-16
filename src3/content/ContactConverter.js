@@ -60,7 +60,7 @@ var ContactConverter = {
     "FaxNumberType", "CellularNumberType", "PagerNumberType",
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
-    "Relation3Type"],
+    "Relation3Type", "CompanySymbol", "JobDescription"],
   mInitialized: false,
   /**
    * ContactConverter.init
@@ -71,6 +71,9 @@ var ContactConverter = {
     this.GD = gdata.namespaces.GD;
     this.ATOM = gdata.namespaces.ATOM;
     // ConverterElement(aElement, aTbName, aIndex, aType)
+    // This array stores info on what tags in Google's feed sync with which
+    // properties in Thunderbird.  gdata.contacts has infor on the tags used
+    // here
     this.mConverterArr = [
       // general
       new ConverterElement("title",         "DisplayName",  0),
