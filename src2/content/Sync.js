@@ -656,10 +656,9 @@ var Sync = {
     var list = this.mGroupsToAdd[0];
     var group = new Group(null, list.getName());
     LOGGER.LOG("-Adding group: " + group.getTitle());
-    if (Preferences.mSyncPrefs.verboseLog.value) {
-      var body = serialize(group.xml);
+    var body = serialize(group.xml);
+    if (Preferences.mSyncPrefs.verboseLog.value)
       LOGGER.VERBOSE_LOG(" * XML feed of new group:\n" + body);
-    }
     var httpReq = new GHttpRequest("addGroup", this.mCurrentAuthToken, null,
                                    body, this.mCurrentUsername);
     httpReq.mOnCreated = ["Sync.addGroups2(httpReq);"];
@@ -701,10 +700,9 @@ var Sync = {
     }
     var group = this.mGroupsToUpdate.shift();
     LOGGER.LOG("-Updating group: " + group.getTitle());
-    if (Preferences.mSyncPrefs.verboseLog.value) {
-      var body = serialize(group.xml);
+    var body = serialize(group.xml);
+    if (Preferences.mSyncPrefs.verboseLog.value)
       LOGGER.VERBOSE_LOG(" * XML feed of group: " + body);
-    }
     var httpReq = new GHttpRequest("update", this.mCurrentAuthToken, group.getEditURL(),
                                    body, this.mCurrentUsername);
     httpReq.mOnSuccess = ["Sync.updateGroups();"];
