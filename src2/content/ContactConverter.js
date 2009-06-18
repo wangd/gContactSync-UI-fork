@@ -104,7 +104,7 @@ var ContactConverter = {
       new ConverterElement("EditURL", "EditURL", 0),
       // the new address fields
       new ConverterElement("postalAddress", "FullHomeAddress", 0, "home"),
-      new ConverterElement("postalAddress", "FullWorkAddress", 0, "work"),
+      new ConverterElement("postalAddress", "FullWorkAddress", 0, "work")
     ];
     this.mInitialized = true;
   },
