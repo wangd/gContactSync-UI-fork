@@ -77,7 +77,7 @@
 <!ENTITY extended9.value "Property 9  ">
 <!ENTITY extended10.value "Property 10">
 <!ENTITY extendedPropertiesDesc1.value "10 extra properties to sync.  Examples:">
-<!-- LOCALIZATION NOTE: These 3 lines cannot change -->
-<!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
+<!-- LOCALIZATION NOTE: These 3 lines should not change -->
+<!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, PreferMailFormat">
 <!ENTITY extendedPropertiesDesc3.value " * Department, AllowRemoteContent, Custom1, Custom2, Custom3">
-<!ENTITY extendedPropertiesDesc4.value " * Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">
+<!ENTITY extendedPropertiesDesc4.value " * Custom4, AnniversayDay, AnniversayMonth, AnniversaryYear">

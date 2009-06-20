@@ -14,8 +14,8 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Josh Geenen <gcontactsync@pirules.org>.
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -182,6 +182,8 @@ GContact.prototype = {
               return new Property(arr[i].getAttribute(aElement.attribute), type);
             }
           case gdata.contacts.types.UNTYPED:
+            if (aElement.tagName == "birthday")
+              return new Property(arr[i].getAttribute("when"));
             if (arr[i].childNodes[0])
               return new Property(arr[i].childNodes[0].nodeValue);
             return null;
@@ -327,6 +329,23 @@ GContact.prototype = {
           }
           break;
         case gdata.contacts.types.UNTYPED:
+          if (aElement.tagName == "birthday") {
+            // make sure the value at least has two -s
+            // valid formats: YYYY-M-D and --M-D
+            if (aValue.split("-").length < 3) {
+              LOGGER.LOG_WARNING("Detected an invalid birthday: " + aValue);
+              return null;
+            }
+            var elem = this.mCurrentElement ? this.mCurrentElement:
+                                              document.createElementNS
+                                                       (aElement.namespace.url,
+                                                        aElement.tagName);
+            elem.setAttribute("when", aValue);
+            // add the element to the XML feed if it is new
+            if (elem != this.mCurrentElement)
+              this.xml.appendChild(elem);
+            return true;
+          }
           if (this.mCurrentElement && this.mCurrentElement.childNodes[0])
             this.mCurrentElement.childNodes[0].nodeValue = aValue;
           else {

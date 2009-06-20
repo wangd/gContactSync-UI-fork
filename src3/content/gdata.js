@@ -14,8 +14,8 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Josh Geenen <gcontactsync@pirules.org>.
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -170,6 +170,7 @@ var gdata = {
       this.orgJobDescription   = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
       this.orgDepartment       = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
       this.orgSymbol           = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
+      this.birthday            = new GElement(untyped, "birthday", gdata.namespaces.GCONTACT);
       this.organization        = new GElement(typedWithAttr, "organization",
                                               gdata.namespaces.GD, ["other"]);
       this.groupMembershipInfo = new GElement(untyped, "groupMembershipInfo",
@@ -205,6 +206,7 @@ var gdata = {
     groupMembershipInfo: {},
     relation:            {},
     nickname:            {},
+    birthday:            {},
     // links in the contacts feed.  The property name is the type of link
     // and the value is the value of the "rel" attribute
     links: {

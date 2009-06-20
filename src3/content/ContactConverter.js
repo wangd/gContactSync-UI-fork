@@ -14,8 +14,8 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Josh Geenen <gcontactsync@pirules.org>.
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -182,6 +182,24 @@ var ContactConverter = {
       LOGGER.VERBOSE_LOG("   - " + value + " type: " + type);
       aContact.setValue(obj.elementName, obj.index, type, value);
     }
+    // Birthday can be either YYYY-M-D or --M-D for no year.
+    // TB can have all three, just a day/month, or just a year through the UI
+    var birthDay    = AbManager.getCardValue(aCard, "BirthDay");
+    var birthMonth  = isNaN(parseInt(birthDay, 10))
+                        ? null
+                        : AbManager.getCardValue(aCard, "BirthMonth");
+    var birthdayVal = null;
+    // if the contact has a birth month (and birth day) add it to the contact
+    // from Google
+    if (birthMonth && !isNaN(parseInt(birthMonth, 10))) {
+      var birthYear = AbManager.getCardValue(aCard, "BirthYear");
+      if (!birthYear || isNaN(parseInt(birthYear, 10)))
+        birthYear = "-";
+      birthdayVal = birthYear + "-" + birthMonth + "-" + birthDay;
+    }
+    LOGGER.VERBOSE_LOG(" * Birthday: " + birthdayVal);
+    aContact.setValue("birthday", 0, null, birthdayVal);
+      
     // set the extended properties
     aContact.removeExtendedProperties();
     arr = Preferences.mExtendedProperties;
@@ -294,6 +312,35 @@ var ContactConverter = {
       }
     }
     
+    // Get the birthday info
+    var bday = aContact.getValue("birthday", 0, gdata.contacts.types.UNTYPED);
+    var year  = null;
+    var month = null;
+    var day   = null;
+    // If it has a birthday...
+    if (bday && bday.value) {
+      LOGGER.VERBOSE_LOG(" * Found a birthday value of " + bday.value);
+      // If it consists of all three date elements: YYYY-M-D
+      if (bday.value.indexOf("--") == -1) {
+        var arr = bday.value.split("-");
+        year  = arr[0];
+        month = arr[1];
+        day   = arr[2];
+      }
+      // Else it is just a month and day: --M-D
+      else {
+        var arr = bday.value.replace("--", "").split("-");
+        month = arr[0];
+        day   = arr[1];
+      }
+      LOGGER.VERBOSE_LOG("  - Year:  " +  year);
+      LOGGER.VERBOSE_LOG("  - Month: " +  month);
+      LOGGER.VERBOSE_LOG("  - Day:   " +  day);
+    }
+    ab.setCardValue(card, "BirthYear",  year);
+    ab.setCardValue(card, "BirthMonth", month);
+    ab.setCardValue(card, "BirthDay",   day);    
+
     if (Preferences.mSyncPrefs.getPhotos.value) {
       var info = aContact.getPhotoInfo();
       if (info) {
