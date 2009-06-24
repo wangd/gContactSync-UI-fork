@@ -164,6 +164,12 @@ var gdata = {
       this.id                  = new GElement(untyped, "id", gdata.namespaces.ATOM);
       this.updated             = new GElement(untyped, "updated", gdata.namespaces.ATOM);
       this.title               = new GElement(untyped, "title", gdata.namespaces.ATOM);
+      this.fullName            = new GElement(untyped, "fullName", gdata.namespaces.GD);
+      this.givenName           = new GElement(untyped, "givenName", gdata.namespaces.GD);
+      this.familyName          = new GElement(untyped, "familyName", gdata.namespaces.GD);
+      this.additionalName      = new GElement(untyped, "additionalName", gdata.namespaces.GD);
+      this.namePrefix          = new GElement(untyped, "namePrefix", gdata.namespaces.GD);
+      this.nameSuffix          = new GElement(untyped, "nameSuffix", gdata.namespaces.GD);
       this.notes               = new GElement(untyped, "content", gdata.namespaces.ATOM);
       this.orgName             = new GElement(untyped, "orgName", gdata.namespaces.GD);
       this.orgTitle            = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
@@ -191,6 +197,17 @@ var gdata = {
     isOrgTag: function gdata_contacts_isOrgTag(aTagName) {
       return this.ORG_TAGS[aTagName] ? true : false;
     },
+    NAME_TAGS: {
+      givenName:         "1",
+      additionalName:    "1",
+      familyName:        "1",
+      namePrefix:        "1",
+      nameSuffix:        "1",
+      fullName:          "1"
+    },
+    isNameTag: function gdata_contacts_isNameTag(aTagName) {
+      return this.NAME_TAGS[aTagName] ? true : false;
+    },
     // different tagnames in the Atom feed, must be initialized
     postalAddress:       {},
     phoneNumber:         {},
@@ -199,6 +216,12 @@ var gdata = {
     id:                  {},
     updated:             {},
     title:               {},
+    fullName:            {},
+    givenName:           {},
+    familyName:          {},
+    additionalName:      {},
+    namePrefix:          {},
+    nameSuffix:          {},
     notes:               {},
     orgName:             {},
     orgTitle:            {},
@@ -233,4 +256,4 @@ var gdata = {
       LoginManager.getAuthTokens();
     return LoginManager.mNumAuthTokens > 0;
   }
-}
+};

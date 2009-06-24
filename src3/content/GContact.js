@@ -76,7 +76,7 @@ GContact.prototype = {
     var ns      = gdata.namespaces.GD.url;
     var arr     = this.xml.getElementsByTagNameNS(ns, "im");
     for (var i = 0, length = arr.length; i < length; i++) {
-      var address = arr[i].getAttribute("address")
+      var address = arr[i].getAttribute("address");
       if (address && address.indexOf(": ") != -1)
         arr[i].setAttribute("address", address.replace(": ", ""));
     }
@@ -151,14 +151,15 @@ GContact.prototype = {
           continue;
         }
         this.mCurrentElement = arr[i];
+        var type;
         // otherwise there is a match and it should be returned
         // get the contact's "type" as defined in gdata and return the attribute's
         // value based on where the value is actually stored in the element
         switch (aElement.contactType) {
           case gdata.contacts.types.TYPED_WITH_CHILD:
             if (arr[i].childNodes[0]) {
-              var type = arr[i].getAttribute("rel");
-              type = type.substring(type.indexOf("#") + 1);
+              type = arr[i].getAttribute("rel")
+                           .substring(type.indexOf("#") + 1);
               if (!type)
                 type = arr[i].getAttribute("label");
               return new Property(arr[i].childNodes[0].nodeValue, type);
@@ -170,7 +171,6 @@ GContact.prototype = {
                                  "getElementValue method." +
                                  StringBundle.getStr("pleaseReport"));
             else {
-              var type;
               if (aElement.tagName == "im")
                 type = arr[i].getAttribute("protocol");
               else {
@@ -242,6 +242,13 @@ GContact.prototype = {
     organization.appendChild(elem);
     return true;
   },
+  setName: function GContact_setName(aElement, aValue) {
+    var tagName = aElement ? aElement.tagName : null;
+    if (!tagName || !gdata.contacts.isNameTag(tagName))
+      return null;
+    // TODO implement
+    return true;
+  },
   /**
    * GContact.setElementValue
    * Sets the value of the specified element.
@@ -278,7 +285,10 @@ GContact.prototype = {
     }
     // organization tags are special cases
     if (gdata.contacts.isOrgTag(aElement.tagName))
-      return this.setOrg(aElement, aValue, value);
+      return this.setOrg(aElement, aValue);
+    // name tags are as well
+    if (gdata.contacts.isNameTag(aElement.tagName))
+      return this.setName(aElement, aValue);
     
     // if the element should be removed
     if (!aValue && this.mCurrentElement)

@@ -101,7 +101,7 @@ var CardDialogOverlay = {
     if (!document.getElementById("abTabs")) {
       // if it has tried to load more than 50 times something is wrong, so quit
       if (this.mLoadNumber < 50)
-        setTimeout("CardDialogOverlay.init", 200);
+        setTimeout(CardDialogOverlay.init, 200);
       this.mLoadNumber++;
       return;
     }
@@ -153,9 +153,10 @@ var CardDialogOverlay = {
     catch(e) {
       alert("Unable to setup screen name protocol menus\n" + e);
     }
+    var pager;
     try {
       //swap pager and mobile phone textboxes and values
-      var pager = document.getElementById("PagerNumber");
+      pager = document.getElementById("PagerNumber");
       pager.setAttribute("id", "tmp");
       var pagerValue = pager.value;
       var mobile = document.getElementById("CellularNumber");
@@ -168,7 +169,6 @@ var CardDialogOverlay = {
       alert("Unable to swap pager and mobile number values\n" + e);
     }
     var newDialog = false; // post-Mailnews Core Bug 63941
-    var pager;
     try {
       // then replace all phone labels and remove the access keys
       var work = document.getElementById("WorkPhone");
@@ -228,7 +228,7 @@ var CardDialogOverlay = {
       alert("Unable to setup phone number types\n" + e);
     }
     
-    var tabs = document.getElementById("abTabs")
+    var tabs = document.getElementById("abTabs");
     try {
       // setup the new screenname/e-mail address/phone numbers tab
       var myTab = document.createElementNS(this.mNamespace, "tab");
@@ -249,6 +249,14 @@ var CardDialogOverlay = {
     }
     if (newDialog) {
       try {
+        // change the width of the phone numbers
+        var phoneIDs = ["HomePhone", "WorkPhone", "CellularNumber", "FaxNumber",
+                        "PagerNumber"];
+        for (var i = 0; i < phoneIDs.length; i++) {
+          var elem = document.getElementById(phoneIDs[i]);
+          if (!elem) continue;
+          elem.setAttribute("width", "150px");
+        }
         // add the sixth and seventh numbers below 1 - 5
         var sixthNum = setupNumBox("SixthNumber", StringBundle.getStr("sixth"));
         pager.parentNode.parentNode.appendChild(sixthNum);
@@ -267,12 +275,34 @@ var CardDialogOverlay = {
             relationTypes.push(i);
           for (var i = 0; i < 4; i++) {
             var relationBox = document.getElementById("Relation" + i + "Box");
-            addMenuItems(relationBox, relationTypes, "Relation" + i + "Type", "");
+            addMenuItems(relationBox, relationTypes, "Relation" + i + "Type", "", StringBundle.getStr("relationWidth"));
           }
         }
         catch (e) {
           LOGGER.LOG_WARNING("Could not add the relation fields.", e);
         }
+        var nameWidth = "250px";
+        document.getElementById("FirstName").setAttribute("width", nameWidth);
+        document.getElementById("LastName").setAttribute("width", nameWidth);
+        document.getElementById("DisplayName").setAttribute("width", nameWidth);
+        document.getElementById("NickName").setAttribute("width", nameWidth);
+        document.getElementById("FirstName").removeAttribute("flex");
+        document.getElementById("LastName").removeAttribute("flex");
+        document.getElementById("DisplayName").removeAttribute("flex");
+        document.getElementById("NickName").removeAttribute("flex");
+        var emailWidth = "180px";
+        document.getElementById("PrimaryEmail").setAttribute("width", emailWidth);
+        document.getElementById("SecondEmail").setAttribute("width", emailWidth);
+        document.getElementById("ScreenName").setAttribute("width", "150px");
+        document.getElementById("PrimaryEmail").removeAttribute("flex");
+        document.getElementById("SecondEmail").removeAttribute("flex");
+        document.getElementById("ScreenName").removeAttribute("flex");
+        document.getElementById("abNameTab").firstChild.firstChild.style.width = "450px";
+        document.getElementById("abNameTab").firstChild.firstChild.style.maxWidth = "450px";
+        var elem = document.getElementById("abTabPanels");
+        elem.style.width = "850px";
+        elem.style.maxWidth = "850px";
+        elem.style.minWidth = "850px";
         // fix the width of the dialog
         window.sizeToContent();
       }
@@ -310,7 +340,7 @@ var CardDialogOverlay = {
     // get the extra card values
     myGetCardValues(gEditCard.card, document);
   }
-}
+};
 
 function setupNumBox(aID, aLabel) {
   var box = document.createElement("hbox");
@@ -326,6 +356,7 @@ function setupNumBox(aID, aLabel) {
   textbox.setAttribute("id", aID);
   textbox.setAttribute("class", "PhoneEditWidth");
   textbox.setAttribute("readonly", CardDialogOverlay.mDisabled);
+  textbox.setAttribute("width", "150px");
   box.appendChild(textbox);
   return box;
 }
@@ -340,15 +371,17 @@ function setupNumBox(aID, aLabel) {
  * @param aID    The ID for this menu list, which should be the name of the
  *               attribute with Type added to the end, such as WorkNumberType
  * @param aValue The default value to set for this list.
+ * @param aWidth The maximum width, if any.
  */
-function addMenuItems(aBox, aArray, aID, aValue) {
+function addMenuItems(aBox, aArray, aID, aValue, aWidth) {
   var menuList = document.createElement("menulist");
   menuList.setAttribute("id", aID);
   var menuPopup = document.createElement("menupopup");
   // put the default value first in the menupopup, if possible
   var index = aArray.indexOf(aValue);
+  var elem;
   if (index != -1) {
-    var elem = document.createElement("menuitem");
+    elem = document.createElement("menuitem");
     elem.setAttribute("value", aValue);
     elem.setAttribute("label", StringBundle.getStr(aValue ? aValue : "blank"));
     aArray[index] = null;
@@ -360,10 +393,16 @@ function addMenuItems(aBox, aArray, aID, aValue) {
       aArray[i] = aValue; // so restore its value and skip adding it again
       continue;
     }
-    var elem = document.createElement("menuitem");
+    elem = document.createElement("menuitem");
     elem.setAttribute("value", aArray[i]);
     elem.setAttribute("label", StringBundle.getStr(aArray[i]));
     menuPopup.appendChild(elem);
+  }
+  menuList.setAttribute("sizetopopup", "always");
+  if (aWidth) {
+    menuList.setAttribute("width", aWidth);
+    menuList.style.width = aWidth;
+    menuList.style.maxWidth = aWidth;
   }
   // add the popup to the menu list
   menuList.appendChild(menuPopup);

@@ -66,14 +66,12 @@
             <caption label="&email.box;"/>
             <hbox>
               <spacer flex="1"/>
-              <label control="ThirdEmail" value="&third.label;" class="CardEditLabel"/>
               <hbox class="CardEditWidth">
                 <textbox id="ThirdEmail" flex="1" class="uri-element"/>
               </hbox>
             </hbox>
             <hbox>
               <spacer flex="1"/>
-              <label control="FourthEmail" value="&fourth.label;" class="CardEditLabel"/>
               <hbox class="CardEditWidth">
                 <textbox id="FourthEmail" flex="1" class="uri-element"/>
               </hbox>
@@ -83,35 +81,30 @@
             <caption label="&screenname.box;"/>
             <hbox>
               <spacer flex="1"/>
-              <label control="TalkScreenName" value="&second.label;" class="CardEditLabel"/>
               <hbox class="CardEditWidth">
                 <textbox id="TalkScreenName" flex="1"/>
               </hbox>
             </hbox>
             <hbox>
              <spacer flex="1"/>
-             <label control="ICQScreenName" value="&third.label;" class="CardEditLabel"/>
               <hbox class="CardEditWidth">
                 <textbox id="ICQScreenName" flex="1"/>
               </hbox>
             </hbox>
             <hbox>
               <spacer flex="1"/>
-              <label control="YahooScreenName" value="&fourth.label;" class="CardEditLabel"/>
               <hbox class="CardEditWidth">
                 <textbox id="YahooScreenName" flex="1"/>
               </hbox>
             </hbox>
             <hbox>
               <spacer flex="1"/>
-              <label control="MSNScreenName" value="&fifth.label;" class="CardEditLabel"/>
               <hbox class="CardEditWidth">
                 <textbox id="MSNScreenName" flex="1"/>
               </hbox>
             </hbox>
             <hbox>
               <spacer flex="1"/>
-              <label control="JabberScreenName" value="&sixth.label;" class="CardEditLabel"/>
               <hbox class="CardEditWidth">
                 <textbox id="JabberScreenName" flex="1"/>
               </hbox>
@@ -144,30 +137,26 @@
               <caption label="&relations.box;"/>
               <hbox id="Relation0Box">
                 <spacer flex="1"/>
-                <label control="Relation0" value="&first.label;" class="CardEditLabel"/>
                 <hbox>
-                  <textbox id="Relation0" class="uri-element" width="214px"/>
+                  <textbox id="Relation0" class="uri-element" width="180px"/>
                 </hbox>
               </hbox>
               <hbox id="Relation1Box">
                 <spacer flex="1"/>
-                <label control="Relation1" value="&second.label;" class="CardEditLabel"/>
                 <hbox>
-                  <textbox id="Relation1" class="uri-element" width="214px"/>
+                  <textbox id="Relation1" class="uri-element" width="180px"/>
                 </hbox>
               </hbox>
               <hbox id="Relation2Box">
                 <spacer flex="1"/>
-                <label control="Relation2" value="&third.label;" class="CardEditLabel"/>
                 <hbox>
-                  <textbox id="Relation2"  class="uri-element" width="214px"/>
+                  <textbox id="Relation2"  class="uri-element" width="180px"/>
                 </hbox>
               </hbox>
               <hbox id="Relation3Box">
                 <spacer flex="1"/>
-                <label control="Relation3" value="&fourth.label;" class="CardEditLabel"/>
                 <hbox>
-                  <textbox id="Relation3" class="uri-element" width="214px"/>
+                  <textbox id="Relation3" class="uri-element" width="180px"/>
                 </hbox>
               </hbox>
             </groupbox>

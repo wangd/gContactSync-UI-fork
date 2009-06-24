@@ -72,15 +72,20 @@ var ContactConverter = {
     this.ATOM = gdata.namespaces.ATOM;
     // ConverterElement(aElement, aTbName, aIndex, aType)
     // This array stores info on what tags in Google's feed sync with which
-    // properties in Thunderbird.  gdata.contacts has infor on the tags used
-    // here
+    // properties in Thunderbird.  gdata.contacts has info on these tags
     this.mConverterArr = [
+      // Various components of a name
+      new ConverterElement("fullName",       "DisplayName",    0),
+      new ConverterElement("givenName",      "FirstName",      0),
+      new ConverterElement("familyName",     "LastName",       0),
+      new ConverterElement("additionalName", "AdditionalName", 0),
+      new ConverterElement("namePrefix",     "namePrefix",     0),
+      new ConverterElement("nameSuffix",     "nameSuffix",     0),
+      new ConverterElement("nickname",       "NickName",       0),
       // general
-      new ConverterElement("title",         "DisplayName",  0),
-      new ConverterElement("nickname",      "NickName",     0),
-      new ConverterElement("notes",         "Notes",        0),
-      new ConverterElement("id",            "GoogleID",     0),
-      new ConverterElement("postalAddress", "OtherAddress", 0, "other"),
+      new ConverterElement("notes",          "Notes",          0),
+      new ConverterElement("id",             "GoogleID",       0),
+      new ConverterElement("postalAddress",  "OtherAddress",   0, "other"),
       // e-mail addresses
       new ConverterElement("email", "PrimaryEmail", 0, "other"),
       new ConverterElement("email", "SecondEmail",  1, "other"),
@@ -348,7 +353,7 @@ var ContactConverter = {
         if (file) {
           ab.setCardValue(card, "PhotoName", file.leafName);
           ab.setCardValue(card, "PhotoURI",  info.url);
-          ab.setCardValue(card, "PhotoEtag", info.etag)
+          ab.setCardValue(card, "PhotoEtag", info.etag);
         }
       }
     }
