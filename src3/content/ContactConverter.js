@@ -60,7 +60,7 @@ var ContactConverter = {
     "FaxNumberType", "CellularNumberType", "PagerNumberType",
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
-    "Relation3Type", "CompanySymbol", "JobDescription"],
+    "Relation3Type", "CompanySymbol", "JobDescription", "PhotoETag"],
   mInitialized: false,
   /**
    * ContactConverter.init
@@ -352,6 +352,7 @@ var ContactConverter = {
         var file = aContact.writePhoto(Sync.mCurrentAuthToken);
         if (file) {
           ab.setCardValue(card, "PhotoName", file.leafName);
+          ab.setCardValue(card, "PhotoType", "file");
           ab.setCardValue(card, "PhotoURI",  info.url);
           ab.setCardValue(card, "PhotoEtag", info.etag);
         }
