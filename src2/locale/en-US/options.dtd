@@ -1,5 +1,6 @@
 <!ENTITY title.label "gContactSync Preferences">
 
+<!-- The 'Main' tab of the Preferences dialog -->
 <!ENTITY main.tab "Main">
 <!ENTITY help.value "Help">
 <!ENTITY gettingStarted1.value "Before you start synchronizing your contacts, please check these settings">
@@ -19,6 +20,7 @@
 <!ENTITY listenerDeleteFromGoogle.label "Remove contacts from Google immediately after they are removed in Thunderbird">
 <!ENTITY parseNames.label "Parse names from Google contacts into First and Last names.">
 
+<!-- The 'Interface' tab of the Preferences dialog -->
 <!ENTITY interface.tab "Interface">
 <!ENTITY logging.label "Logging">
 <!ENTITY enableLogging.label "Enable Logging">
@@ -34,6 +36,7 @@
 <!ENTITY abCardView.label "Address Book Contact Details">
 <!ENTITY enableImUrls.label "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
 
+<!-- The 'Accounts' tab of the Preferences dialog -->
 <!ENTITY accounts.tab "Accounts">
 <!ENTITY emailAddress.label "E-mail Address">
 <!ENTITY addressBook.label "Address Book">
@@ -41,8 +44,11 @@
 <!ENTITY addLogin.label "Add Login">
 <!ENTITY changeAbName.label "Change Address Book">
 <!ENTITY refreshTree.label "Refresh">
-<!ENTITY resetAll.label "Reset All Synced ABs">
+<!-- This option will 'reset' all accounts.  This erases all contacts and lists
+     from TB and starts over with the contacts from Google. -->
+<!ENTITY resetAll.label "Reset All Accounts">
 
+<!-- The 'Addresses' tab of the Preferences dialog -->
 <!ENTITY addresses.tab "Addresses">
 <!-- LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating -->
 <!ENTITY addDesc1.label "Google and Thunderbird store postal addresses differently, so gContactSync converts">
@@ -63,8 +69,10 @@
 <!ENTITY workAddress.label "Work">
 <!ENTITY otherAddress.label "Other">
 
+<!-- The 'Advanced' tab of the Preferences dialog -->
 <!ENTITY extended.tab "Advanced">
-<!ENTITY syncExtended.label "Sync Extended Properties">
+<!-- Google allows syncing up to 10 custom properties which they call 'Extended Properties' -->
+<!ENTITY syncExtended.label "Sync Extra Properties">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
 <!ENTITY extended1.value "Property 1  ">
 <!ENTITY extended2.value "Property 2  ">
@@ -76,6 +84,7 @@
 <!ENTITY extended8.value "Property 8  ">
 <!ENTITY extended9.value "Property 9  ">
 <!ENTITY extended10.value "Property 10">
+
 <!ENTITY extendedPropertiesDesc1.value "10 extra properties to sync.  Examples:">
 <!-- LOCALIZATION NOTE: These 3 lines cannot change -->
 <!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
