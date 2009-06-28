@@ -1,0 +1,23 @@
+<!ENTITY gContactSync.tab "gContactSync">
+<!ENTITY screenname.box "Pseud�nimos Adicionais">
+<!ENTITY email.box "Endere�os de Correio Electr�nico Adicionais">
+<!ENTITY first.label "Primeiro">
+<!ENTITY second.label "Segundo">
+<!ENTITY third.label "Terceiro">
+<!ENTITY fourth.label "Quarto">
+<!ENTITY fifth.label "Quinto">
+<!ENTITY sixth.label "Sexto">
+<!ENTITY seventh.label "S�timo">
+<!ENTITY eighth.label "Oitavo">
+<!ENTITY numbers.box "Telefones Adicionais">
+<!ENTITY homeFax.label "Fax Particular">
+<!ENTITY address.box "Moradas Adicionais">
+<!ENTITY home.label "Particular">
+<!ENTITY work.label "Trabalho">
+<!ENTITY mobile.label "M�vel">
+<!ENTITY pager.label "Pager">
+<!ENTITY workFax.label "Fax Trabalho">
+<!ENTITY other.label "Outro">
+<!ENTITY initialStatus.label "">
+<!ENTITY preferences.label "Prefer�ncias">
+<!ENTITY status.tooltip "Carregue aqui para ver o ficheiro de log">
