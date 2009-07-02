@@ -1,0 +1,77 @@
+<!ENTITY title.label "Предпочтения gContactSync">
+<!ENTITY main.tab "Главная">
+<!ENTITY help.value "Помощь">
+<!ENTITY gettingStarted1.value "Перед синхронизацией своих контактов, проверьте следующие установки">
+<!ENTITY autoSync.value "Автоматическая синхронизация">
+<!ENTITY autoSync.label "Синхронизировать контакты автоматически">
+<!ENTITY refreshInterval.value "Интервал синхронизации (минуты) [по-умолчанию - 30]">
+<!ENTITY initialDelay.value "Начальная задержка синхронизации (мсек) [по-умолчанию - 500]">
+<!ENTITY abName.value "Имя синхронизируемой адресной книги (старое или новое)">
+<!ENTITY groups.label "Группы и списки рассылки">
+<!ENTITY myContacts.label "Синхронизировать только группу &apos;My Contacts&apos;">
+<!ENTITY syncGroups.label "Синхронизировать группы Gmail со списками рассылки в Thunderbird">
+<!ENTITY syncBehavior.label "Режим синх.">
+<!ENTITY removeOldAddresses.label "Удалить старые адреса, после их преобразования в новый формат">
+<!ENTITY updateGoogle.label "Всегда обновлять Gmail при обновлении контактов в Gmail и Thunderbird">
+<!ENTITY readOnly.label "Разрешить режим &quot;только доставка&quot; (Thunderbird только получает обновления, но не отсылает их)">
+<!ENTITY writeOnly.label "Разрешить режим &quot;только отправка&quot; (Thunderbird только отправляет, но не получает обновления)">
+<!ENTITY listenerDeleteFromGoogle.label "Удалить контакты из Google сразу после удаления их из Thunderbird">
+<!ENTITY parseNames.label "Разобрать контакты Google на сочетания имен и фамилий">
+<!ENTITY interface.tab "интерфейс">
+<!ENTITY logging.label "Ведение отчета">
+<!ENTITY enableLogging.label "Разрешить ведение отчета">
+<!ENTITY verboseLog.label "Разрешить ведение подробного отчета">
+<!ENTITY buttons.label "Кнопки и Меню">
+<!ENTITY enableSyncBtn.label "Разрешить кнопку синх. на панели инструментов">
+<!ENTITY forceBtnImage.label "Перерисовать конпку Синх. в панели инструментов (исправляет большую и страшную кнопку Синх.)">
+<!ENTITY enableMenu.label "Разрешить меню gContactSync в окне Адресной Книги">
+<!ENTITY enableMenuLinks.label "Разрешить ссылки в меню gContactSync">
+<!ENTITY abResults.label "Address Book Results Pane">
+<!ENTITY phoneColLabels.label "Переименовать метки колонок телефона">
+<!ENTITY newColLabels.label "Добавить новые поля в колоночные метки (только в Thunderbird 3)">
+<!ENTITY abCardView.label "Детальные контакты в Адресной Книге">
+<!ENTITY enableImUrls.label "Разрешить ссылки для различных IM-протоколов (AIM, Yahoo!, MSN и т.д.)">
+<!ENTITY accounts.tab "Учетные записи">
+<!ENTITY emailAddress.label "Адреса e-mail">
+<!ENTITY addressBook.label "Адресная Книга">
+<!ENTITY removeLogin.label "Удалить логин">
+<!ENTITY addLogin.label "Добавить логин">
+<!ENTITY changeAbName.label "Изменить Адресную Книгу">
+<!ENTITY refreshTree.label "Обновить">
+<!ENTITY resetAll.label "Сбросить все Synced ABs">
+<!ENTITY addresses.tab "Адреса">
+<!--  LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating  -->
+<!ENTITY addDesc1.label "Google и Thunderbird хранят почтовые адреса по-разному, поэтому gContactSync преобразует">
+<!ENTITY addDesc2.label "множественные адресные поля Thunderbird-а в многострочные текстовые блоки.">
+<!ENTITY addDesc3.label "">
+<!ENTITY addDesc4.label "По умолчанию, преобразование адресов происходит только при вервой синхронизации карты Thunderbird и">
+<!ENTITY addDesc5.label "удалении значений в старых полях (Строки адреса 1 и 2, Город, Штат, Индекс и Страна).">
+<!ENTITY addDesc6.label "">
+<!--  LOCALIZATION NOTE: Use this if necessary if you need more room to translate customAdd1 and 2  -->
+<!ENTITY customAdd0.label "">
+<!ENTITY customAdd1.label "You can customize how gContactSync fills the new address fields below.  Just enclose">
+<!ENTITY customAdd2.label "the name of the attribute in [].  Spaces, words not in [], punctuation, etc. are allowed.">
+<!--  LOCALIZATION NOTE: The words enclosed in [] should not be translated  -->
+<!ENTITY customAdd3.label "Образцы:[DisplayName] [HomeAddress] [HomeAddress2] [HomeCity] [HomeState]">
+<!ENTITY customAdd4.label "[HomeZipCode] [HomeCountry]">
+<!ENTITY homeAddress.label "Дом">
+<!ENTITY workAddress.label "Работа">
+<!ENTITY otherAddress.label "Другое">
+<!ENTITY extended.tab "Расширенный">
+<!ENTITY syncExtended.label "Дополнительные свойства синх.">
+<!--  LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9  -->
+<!ENTITY extended1.value "Свойство 1">
+<!ENTITY extended2.value "Свойство 2">
+<!ENTITY extended3.value "Свойство 3">
+<!ENTITY extended4.value "Свойство 4">
+<!ENTITY extended5.value "Свойство 5">
+<!ENTITY extended6.value "Свойство 6">
+<!ENTITY extended7.value "Свойство 7">
+<!ENTITY extended8.value "Свойство 8">
+<!ENTITY extended9.value "Свойство 9">
+<!ENTITY extended10.value "Свойство 10">
+<!ENTITY extendedPropertiesDesc1.value "10 дополнительных свойств для синх. Примеры:">
+<!--  LOCALIZATION NOTE: These 3 lines cannot change  -->
+<!ENTITY extendedPropertiesDesc2.value "* WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
+<!ENTITY extendedPropertiesDesc3.value "* Department, AllowRemoteContent, Custom1, Custom2, Custom3">
+<!ENTITY extendedPropertiesDesc4.value "* Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">

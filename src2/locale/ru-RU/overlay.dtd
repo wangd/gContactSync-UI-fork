@@ -1,0 +1,23 @@
+<!ENTITY gContactSync.tab "gContactSync">
+<!ENTITY screenname.box "Дополнительные имена">
+<!ENTITY email.box "Дополнительные адреса e-mail">
+<!ENTITY first.label "Первый">
+<!ENTITY second.label "Второй">
+<!ENTITY third.label "Третий">
+<!ENTITY fourth.label "Четвертый">
+<!ENTITY fifth.label "Пятый">
+<!ENTITY sixth.label "Шестой">
+<!ENTITY seventh.label "Седьмой">
+<!ENTITY eighth.label "Восьмой">
+<!ENTITY numbers.box "Дополнительные номера">
+<!ENTITY homeFax.label "Домашний Fax">
+<!ENTITY address.box "Дополнительные адреса">
+<!ENTITY home.label "Дом">
+<!ENTITY work.label "Работа">
+<!ENTITY mobile.label "Мобильный">
+<!ENTITY pager.label "Пейджер">
+<!ENTITY workFax.label "Рабочий Fax">
+<!ENTITY other.label "Другой">
+<!ENTITY initialStatus.label "">
+<!ENTITY preferences.label "Предпочтения">
+<!ENTITY status.tooltip "Кликните здесь для просмотра log-файла">
