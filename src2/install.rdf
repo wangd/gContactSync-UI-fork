@@ -3,13 +3,15 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
     <Description about="urn:mozilla:install-manifest">
         <em:id>gContactSync@pirules.net</em:id>
-        <em:version>0.2.5pre2</em:version>
+        <em:version>0.2.5pre3</em:version>
         <em:name>gContactSync</em:name>
         <em:description>gContactSync is an add-on that synchronizes your Google Contacts with an Address Book in Thunderbird</em:description>
         <em:creator>Josh Geenen</em:creator>
         <em:translator>ZaZy - it</em:translator>
         <em:translator>LaPonge - fr</em:translator>
         <em:translator>devezas - pt-PT</em:translator>
+        <em:translator>Guillermo Klew - es</em:translator>
+        <em:translator>Glk63 - ru-RU</em:translator>
         <em:optionsURL>chrome://gcontactsync/content/options.xul</em:optionsURL>
         <em:iconURL>chrome://gcontactsync/skin/logo_main.png</em:iconURL>
         <em:homepageURL>http://gcontactsync.mozdev.org/</em:homepageURL>
