@@ -1,3 +1,6 @@
+<!-- This is the locale file for the Preferences dialog.
+     For more information about this dialog, read the wiki article here:
+     http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences -->
 <!ENTITY title.label "gContactSync Preferences">
 
 <!-- The 'Main' tab of the Preferences dialog -->
@@ -27,7 +30,7 @@
 <!ENTITY verboseLog.label "Enable Verbose Logging">
 <!ENTITY buttons.label "Buttons and Menus">
 <!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
-<!ENTITY forceBtnImage.label "Force the Sync toolbar button image (fixes a large, ugly Sync button)">
+<!ENTITY forceBtnImage.label "Fix the Sync toolbar button image">
 <!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">
 <!ENTITY enableMenuLinks.label "Enable links in the gContactSync Menu">
 <!ENTITY abResults.label "Address Book Results Pane">
@@ -88,5 +91,5 @@
 <!ENTITY extendedPropertiesDesc1.value "10 extra properties to sync.  Examples:">
 <!-- LOCALIZATION NOTE: These 3 lines cannot change -->
 <!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
-<!ENTITY extendedPropertiesDesc3.value " * Department, AllowRemoteContent, Custom1, Custom2, Custom3">
-<!ENTITY extendedPropertiesDesc4.value " * Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">
+<!ENTITY extendedPropertiesDesc3.value " * Department, AllowRemoteContent, Custom1, Custom2, Custom, Custom4, BirthYear">
+<!ENTITY extendedPropertiesDesc4.value " * Department, BirthDay, AnniversaryYear, AnniversaryMonth, AnniversaryDay">
