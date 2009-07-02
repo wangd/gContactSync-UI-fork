@@ -95,7 +95,7 @@ toolbar[mode="icon"][iconsize="small"] #button-sync[disabled] {
 
 /* preferences window */
 #gContactSyncPrefs {
-  width: 50em;
+  min-width: 20em;
   min-height: 40em;
 }
 
