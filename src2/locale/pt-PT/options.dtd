@@ -6,21 +6,21 @@
 <!ENTITY autoSync.label "Sincronizar contactos automaticamente">
 <!ENTITY refreshInterval.value "Intervalo de sincronização (minutos) [Por defeito são 30]">
 <!ENTITY initialDelay.value "Atraso inicial de sincronização (ms) [Por defeito são 500]">
-<!ENTITY abName.value "Nome do Livro de Endereços a sincronizar (velho ou novo)">
+<!ENTITY abName.value "Nome do Livro de Endereços a sincronizar (existente ou novo)">
 <!ENTITY groups.label "Grupos e Mailing Lists">
-<!ENTITY myContacts.label "Sincronizar apenas com o grupo &apos;Os Meus Contactos&apos;">
+<!ENTITY myContacts.label "Sincronizar apenas com o grupo &apos;Contactos pessoais&apos;">
 <!ENTITY syncGroups.label "Sincronizar os Grupos do Gmail com as Mailing Lists do Thunderbird">
 <!ENTITY syncBehavior.label "Comportamento da Syncronização">
 <!ENTITY removeOldAddresses.label "Remove os endereços antigos depois de serem convertidos para o novo formato">
 <!ENTITY updateGoogle.label "Actualizar sempre o Gmail quando um contacto é actualizado no Gmail e no Thunderbird">
-<!ENTITY readOnly.label "Activar o modo de leitura (Thunderbird só recebe actualizações; mas nunca as envia)">
+<!ENTITY readOnly.label "Activar o modo de leitura (Thunderbird só recebe actualizações, mas nunca as envia)">
 <!ENTITY writeOnly.label "Activar o modo de envio (Thunderbird envia, mas não recebe actualizações)">
 <!ENTITY listenerDeleteFromGoogle.label "Remove os contactos do Google imediatamente após a sua remoção no Thunderbird">
 <!ENTITY parseNames.label "Converte os nomes dos contactos Google em Primeiro e Último nome.">
 <!ENTITY interface.tab "Interface">
 <!ENTITY logging.label "Registo">
 <!ENTITY enableLogging.label "Activar Registo">
-<!ENTITY verboseLog.label "Activar Registo Verboso">
+<!ENTITY verboseLog.label "Activar Registo Completo">
 <!ENTITY buttons.label "Botões e Menus">
 <!ENTITY enableSyncBtn.label "Activar o botão de Sincronização da barra de ferramentas">
 <!ENTITY forceBtnImage.label "Forçar a utilização da imagem do botão de Sincronização da barra de ferramentas (corrige um largo e feio botão de Sincronização)">
@@ -34,9 +34,9 @@
 <!ENTITY accounts.tab "Contas">
 <!ENTITY emailAddress.label "Endereço de Correio Electrónico">
 <!ENTITY addressBook.label "Livro de Endereços">
-<!ENTITY removeLogin.label "Remover Início de Sessão">
-<!ENTITY addLogin.label "Adicionar Início de Sessão">
-<!ENTITY changeAbName.label "Mudar Livro de Endereços">
+<!ENTITY removeLogin.label "Remover Conta">
+<!ENTITY addLogin.label "Adicionar Conta">
+<!ENTITY changeAbName.label "Mudar o Livro de Endereços">
 <!ENTITY refreshTree.label "Actualizar">
 <!ENTITY resetAll.label "Restaurar todos os ABs Sincronizados">
 <!ENTITY addresses.tab "Endereços">
@@ -69,7 +69,7 @@
 <!ENTITY extended7.value "Propriedade 7">
 <!ENTITY extended8.value "Propriedade 8">
 <!ENTITY extended9.value "Propriedade 9">
-<!ENTITY extended10.value "Propriedade 1">
+<!ENTITY extended10.value "Propriedade 10">
 <!ENTITY extendedPropertiesDesc1.value "10 propriedades extra para sincronizar. Exemplos:">
 <!--  LOCALIZATION NOTE: These 3 lines cannot change  -->
 <!ENTITY extendedPropertiesDesc2.value "* WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
