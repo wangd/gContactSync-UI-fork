@@ -1,0 +1,77 @@
+<!ENTITY title.label "gContactSync - Preferencias">
+<!ENTITY main.tab "Principal">
+<!ENTITY help.value "Ayuda">
+<!ENTITY gettingStarted1.value "Verifique, por favor, estos datos de configuración.">
+<!ENTITY autoSync.value "Sincronización de manera automática">
+<!ENTITY autoSync.label "Sincronizar los contactos de manera automática">
+<!ENTITY refreshInterval.value "El intervalo de sincronizaciones (minutos) [30 por defecto]">
+<!ENTITY initialDelay.value "El intervalo inicial (ms) [500 por defecto]">
+<!ENTITY abName.value "El nombre de la libreta de direcciones (nuevo o existente)">
+<!ENTITY groups.label "Grupos y Listas">
+<!ENTITY myContacts.label "Solo sincronizar el grupo &apos;Mis Contactos&apos;">
+<!ENTITY syncGroups.label "Sincronizar grupos de Gmail con listas de Thunderbird">
+<!ENTITY syncBehavior.label "Funcionamiento">
+<!ENTITY removeOldAddresses.label "Eliminar direcciones viejas una vez que hayan sido convertidas al nuevo formato.">
+<!ENTITY updateGoogle.label "Siempre actualizar Google cuando un contacto de Google está en pugna con el de Thunderbird.">
+<!ENTITY readOnly.label "Habilitar el modo de solo recepción (Thunderbird recibe pero no envía actualizaciones)">
+<!ENTITY writeOnly.label "Habilitar el modo de solo envío (Thunderbird enví­a per ono recibe actualizaciones)">
+<!ENTITY listenerDeleteFromGoogle.label "Eliminar contactos de Google de manera inmediata cuando sean eliminados de Thunderbird">
+<!ENTITY parseNames.label "Pasar los nombres de los contactos de Google a los campos Nombre y Apellido">
+<!ENTITY interface.tab "Interfaz">
+<!ENTITY logging.label "Consignación">
+<!ENTITY enableLogging.label "Consignar información">
+<!ENTITY verboseLog.label "Consignar más información">
+<!ENTITY buttons.label "Botones y menús">
+<!ENTITY enableSyncBtn.label "Habilitar el botón de sincronizar barra de herramientas">
+<!ENTITY forceBtnImage.label "Forzar imagen para el botón de sincronizar barra de herramientas (corrige la imagen, fea y de gran tamaño)">
+<!ENTITY enableMenu.label "Habilitar el menú de gContactSync en la ventana de la Libreta de Direcciones">
+<!ENTITY enableMenuLinks.label "Habilitar los enlaces en el menú de gContactSync">
+<!ENTITY abResults.label "Panel de resultados de la Libreta de Direcciones">
+<!ENTITY phoneColLabels.label "Renombrar etiquetas de la columna de teléfonos">
+<!ENTITY newColLabels.label "Añadir los nuevos campos a las etiquetas de columna (solo para Thunderbird 3)">
+<!ENTITY abCardView.label "Detalles de contacto de la Libreta de Direcciones">
+<!ENTITY enableImUrls.label "Habilitar enlaces para varios protocolos de mensajerÃ­a instantÃ¡nea (AIM, Yahoo!, MSN y otros)">
+<!ENTITY accounts.tab "Cuentas">
+<!ENTITY emailAddress.label "Correo electrónico">
+<!ENTITY addressBook.label "Libreta de direcciones">
+<!ENTITY removeLogin.label "Borrar">
+<!ENTITY addLogin.label "Añadir Cuenta">
+<!ENTITY changeAbName.label "Cambiar el nombre">
+<!ENTITY refreshTree.label "Refrescar">
+<!ENTITY resetAll.label "Poner a cero todas">
+<!ENTITY addresses.tab "Dirreciones">
+<!--  LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating  -->
+<!ENTITY addDesc1.label "Google y Thunderbird almacenan las direcciones postales en forma distinta,">
+<!ENTITY addDesc2.label "así­ que gContactSync convierte los campos de direcciones múltiples de Thunderbird">
+<!ENTITY addDesc3.label "en una caja de texto que soporta líneas múltiples.">
+<!ENTITY addDesc4.label "Por defecto, convierte las direcciones solo cuando la tarjeta de Thunderbird ha sido">
+<!ENTITY addDesc5.label "primero sincronizada, y elimina los valores en los campos antiguos">
+<!ENTITY addDesc6.label "(líneas 1 y 2 del campo Direcciones, Ciudad, Estado, Código Postal y País)">
+<!--  LOCALIZATION NOTE: Use this if necessary if you need more room to translate customAdd1 and 2  -->
+<!ENTITY customAdd0.label "Puede personalizar el modo en que gContactSync rellena los nuevos campos">
+<!ENTITY customAdd1.label "de direcciones a continuación. Solo encierre el nombre del atributo entre corchetes [].">
+<!ENTITY customAdd2.label "Los espacios, las palabras fuera de los corchetes, signos de puntuación, etc, están permitidos.">
+<!--  LOCALIZATION NOTE: The words enclosed in [] should not be translated  -->
+<!ENTITY customAdd3.label "Ejemplos: [DisplayName] [HomeAddress] [HomeAddress2] [HomeCity] [HomeState]">
+<!ENTITY customAdd4.label "[HomeZipCode] [HomeCountry]">
+<!ENTITY homeAddress.label "Casa">
+<!ENTITY workAddress.label "Trabajo">
+<!ENTITY otherAddress.label "Otro">
+<!ENTITY extended.tab "Avanzado">
+<!ENTITY syncExtended.label "Sincronizar atributos adicionales">
+<!--  LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9  -->
+<!ENTITY extended1.value "Atributo 1">
+<!ENTITY extended2.value "Atributo 2">
+<!ENTITY extended3.value "Atributo 3">
+<!ENTITY extended4.value "Atributo 4">
+<!ENTITY extended5.value "Atributo 5">
+<!ENTITY extended6.value "Atributo 7">
+<!ENTITY extended7.value "Atributo 7">
+<!ENTITY extended8.value "Atributo 8">
+<!ENTITY extended9.value "Atributo 9">
+<!ENTITY extended10.value "Atributo 10">
+<!ENTITY extendedPropertiesDesc1.value "10 atributos adicionales.  Por ejemplo:">
+<!--  LOCALIZATION NOTE: These 3 lines cannot change  -->
+<!ENTITY extendedPropertiesDesc2.value "* WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
+<!ENTITY extendedPropertiesDesc3.value "* Department, AllowRemoteContent, Custom1, Custom2, Custom3">
+<!ENTITY extendedPropertiesDesc4.value "* Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">

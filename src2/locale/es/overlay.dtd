@@ -1,0 +1,23 @@
+<!ENTITY gContactSync.tab "gContactSync">
+<!ENTITY screenname.box "Nombres en pantalla adicionales">
+<!ENTITY email.box "Correos electrónicos adicionales">
+<!ENTITY first.label "Primero">
+<!ENTITY second.label "Segundo">
+<!ENTITY third.label "Tercero">
+<!ENTITY fourth.label "Quarto">
+<!ENTITY fifth.label "Quinto">
+<!ENTITY sixth.label "Sexto">
+<!ENTITY seventh.label "Séptimo">
+<!ENTITY eighth.label "Octavo">
+<!ENTITY numbers.box "Teléfonos adicionales">
+<!ENTITY homeFax.label "Fax de su casa">
+<!ENTITY address.box "Direcciones adicionales">
+<!ENTITY home.label "Casa">
+<!ENTITY work.label "Trabajo">
+<!ENTITY mobile.label "Móvil">
+<!ENTITY pager.label "Buscapersonas">
+<!ENTITY workFax.label "Fax de su trabajo">
+<!ENTITY other.label "Otro">
+<!ENTITY initialStatus.label "">
+<!ENTITY preferences.label "Preferencias">
+<!ENTITY status.tooltip "Haga clic aqui para ver el archivo de bitácora">
