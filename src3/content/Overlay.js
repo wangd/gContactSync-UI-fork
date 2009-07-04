@@ -119,6 +119,9 @@ var Overlay = {
     // override the display card view pane
     originalDisplayCardViewPane = DisplayCardViewPane;
     DisplayCardViewPane = this.myDisplayCardViewPane;
+    // Add a reset menuitem to the directory tree context menu
+    if (Preferences.mSyncPrefs.addReset.value)
+      this.addResetContext();
     // override the ab results tree function
     //originalSetAbView = SetAbView;
     //SetAbView = this.mySetAbView;
@@ -1008,5 +1011,24 @@ var Overlay = {
     catch (e) {}
     LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
     return;
+  },
+  addResetContext: function Overlay_addResetContext() {
+    var item = document.createElement("menuitem");
+    item.id  = "dirTreeContext-reset";
+    item.setAttribute("label",     StringBundle.getStr("reset"));
+    item.setAttribute("accesskey", StringBundle.getStr("resetKey"));
+    item.setAttribute("oncommand", "Overlay.resetSelectedAB()");
+    document.getElementById("dirTreeContext").appendChild(item);
+  },
+  resetSelectedAB: function Overlay_resetSelectedAB() {
+    var dirTree  = document.getElementById("dirTree");
+    var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
+    var ab = new GAddressBook(AbManager.getAbByURI(selected.Value));
+    var restartStr = StringBundle.getStr("pleaseRestart");
+    if (confirm(StringBundle.getStr("resetConfirm2"))) {
+      ab.reset(true);
+      this.setStatusBarText(restartStr);
+      alert(restartStr);
+    }
   }
 };

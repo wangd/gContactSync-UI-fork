@@ -80,6 +80,7 @@ var Preferences = {
     dummyEmail:               new Pref("dummyEmail",         "bool", true),
     enableImUrls:             new Pref("enableImUrls",       "bool", true),
     getPhotos:                new Pref("getPhotos",          "bool", true),
+    addReset:                 new Pref("addReset",           "bool", true),
     myContactsName:           new Pref("myContactsName",     "char", "My Contacts"),
     addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
     lastVersion:              new Pref("lastVersion",        "char", "0"),

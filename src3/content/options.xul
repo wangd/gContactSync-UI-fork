@@ -137,6 +137,9 @@
       <preference id="enableMenu"
                   name="extensions.gContactSync.enableMenu"
                   type="bool"/>
+      <preference id="addReset"
+                  name="extensions.gContactSync.addReset"
+                  type="bool"/>
       <preference id="phoneColLabels"
                   name="extensions.gContactSync.phoneColLabels"
                   type="bool"/>
@@ -159,6 +162,7 @@
         <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>
         <checkbox preference="forceBtnImage" id="forceBtnImage" label="&forceBtnImage.label;"/>
         <checkbox preference="enableMenu" id="enableMenu" label="&enableMenu.label;"/>
+        <checkbox preference="addReset" id="addReset" label="&addReset.label;"/>
       </groupbox>
       <groupbox>
         <caption label="&abResults.label;"/>

@@ -59,6 +59,8 @@ pref("extensions.gContactSync.enableImUrls", true);
 pref("extensions.gContactSync.lastVersion", "0");
 // download contact photos (Thunderbird 3+)
 pref("extensions.gContactSync.getPhotos", true);
+// add a 'reset' menuitem to the AB context menu
+pref("extensions.gContactSync.addReset", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");
