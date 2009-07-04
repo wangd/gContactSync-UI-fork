@@ -123,7 +123,10 @@ var ContactConverter = {
       new ConverterElement("relation", "Relation0", 0, ""),
       new ConverterElement("relation", "Relation1", 1, ""),
       new ConverterElement("relation", "Relation2", 2, ""),
-      new ConverterElement("relation", "Relation3", 3, "")
+      new ConverterElement("relation", "Relation3", 3, ""),
+      // websites
+      new ConverterElement("website",   "WebPage1", 0, "work"),
+      new ConverterElement("website",   "WebPage2", 0, "home")
     ];
     this.mInitialized = true;
   },

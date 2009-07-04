@@ -186,7 +186,13 @@ var gdata = {
                                               this.RELATION_TYPES);
       this.nickname            = new GElement(untyped, "nickname",
                                               gdata.namespaces.GCONTACT);
+      this.website             = new GElement(typedWithAttr, "website",
+                                              gdata.namespaces.GCONTACT,
+                                              this.WEBSITE_TYPES, "href");
     },
+    WEBSITE_TYPES: [
+      "home-page", "blog", "profile", "home", "work", "other", "other", "ftp"
+    ],
     ORG_TAGS: {
       orgDepartment:     "1",
       orgJobDescription: "1",
@@ -230,6 +236,7 @@ var gdata = {
     relation:            {},
     nickname:            {},
     birthday:            {},
+    website:             {},
     // links in the contacts feed.  The property name is the type of link
     // and the value is the value of the "rel" attribute
     links: {

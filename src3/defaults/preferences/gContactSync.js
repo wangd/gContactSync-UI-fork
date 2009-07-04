@@ -62,16 +62,16 @@ pref("extensions.gContactSync.getPhotos", true);
 // add a 'reset' menuitem to the AB context menu
 pref("extensions.gContactSync.addReset", true);
 // extended properties to sync
-pref("extensions.gContactSync.extended1", "WebPage1");
-pref("extensions.gContactSync.extended2", "WebPage2");
-pref("extensions.gContactSync.extended3", "PreferMailFormat");
-pref("extensions.gContactSync.extended4", "AllowRemoteContent");
-pref("extensions.gContactSync.extended5", "Custom1");
-pref("extensions.gContactSync.extended6", "Custom2");
-pref("extensions.gContactSync.extended7", "Custom3");
-pref("extensions.gContactSync.extended8", "AnniversaryYear");
-pref("extensions.gContactSync.extended9", "AnniversaryMonth");
-pref("extensions.gContactSync.extended10", "AnniversaryDay");
+pref("extensions.gContactSync.extended1", "PreferMailFormat");
+pref("extensions.gContactSync.extended2", "AllowRemoteContent");
+pref("extensions.gContactSync.extended3", "AnniversaryYear");
+pref("extensions.gContactSync.extended4", "AnniversaryMonth");
+pref("extensions.gContactSync.extended5", "AnniversaryDay");
+pref("extensions.gContactSync.extended6", "PopularityIndex");
+pref("extensions.gContactSync.extended7", "Custom1");
+pref("extensions.gContactSync.extended8", "Custom2");
+pref("extensions.gContactSync.extended9", "Custom3");
+pref("extensions.gContactSync.extended10", "Custom4");
 pref("extensions.gContactSync.syncExtended", true);
 pref("extensions.gContactSync.wikiURL",  "http://www.pirules.org/tikiwiki/");
 pref("extensions.gContactSync.faqURL",   "http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+FAQs");

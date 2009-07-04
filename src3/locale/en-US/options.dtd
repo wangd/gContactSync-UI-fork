@@ -25,11 +25,11 @@
 <!ENTITY verboseLog.label "Enable Verbose Logging">
 <!ENTITY buttons.label "Buttons and Menus">
 <!ENTITY enableSyncBtn.label "Enable the Sync toolbar button">
-<!ENTITY forceBtnImage.label "Force the Sync toolbar button image (fixes a large, ugly Sync button)">
+<!ENTITY forceBtnImage.label "Fix the Sync toolbar button">
 <!ENTITY enableMenu.label "Enable the gContactSync Menu in the Address Book window">
 <!ENTITY enableMenuLinks.label "Enable links in the gContactSync Menu">
 <!ENTITY addReset.label "Add a Reset link to the Address Book context menu">
-<!ENTITY abResults.label "Address Book Results Pane">
+<!ENTITY abResults.label "Contacts List">
 <!ENTITY phoneColLabels.label "Rename the phone column labels">
 <!ENTITY newColLabels.label "Add the new fields to the column labels (Thunderbird 3 Only)">
 <!ENTITY abCardView.label "Address Book Contact Details">
@@ -42,7 +42,7 @@
 <!ENTITY addLogin.label "Add Login">
 <!ENTITY changeAbName.label "Change Address Book">
 <!ENTITY refreshTree.label "Refresh">
-<!ENTITY resetAll.label "Reset All Synced ABs">
+<!ENTITY resetAll.label "Reset All Accounts">
 
 <!ENTITY addresses.tab "Addresses">
 <!-- LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating -->

@@ -314,6 +314,8 @@ GContact.prototype = {
           else
             this.mCurrentElement.setAttribute("label", aType);
         }
+        else if (aElement.tagName == "website")
+          this.mCurrentElement.setAttribute("rel", aType);
         else
           this.mCurrentElement.setAttribute("rel", gdata.contacts.rel + "#" + aType);
       }
@@ -370,6 +372,8 @@ GContact.prototype = {
               elem.setAttribute("label", "CUSTOM");
               elem.setAttribute("protocol", gdata.contacts.rel + "#" + aType);
             }
+            else if (elem.tagName == "website")
+              elem.setAttribute("rel", aType);
             else
               elem.setAttribute("rel", gdata.contacts.rel + "#" + aType);
             elem.setAttribute(aElement.attribute, aValue);
