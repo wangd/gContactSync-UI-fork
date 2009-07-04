@@ -242,11 +242,49 @@ GContact.prototype = {
     organization.appendChild(elem);
     return true;
   },
+  /**
+   * GContact.setName
+   * Google's contacts schema puts several components of a name into a
+   * separate element, so this function handles those attributes separately.
+   * @param aElement The GElement object with a valid gd:name tag name
+   *                 (givenName, additionalName, familyName, namePrefix,
+   *                  nameSuffix, or fullName).
+   * @param aValue   The value to set.  Null if the XML Element should be
+   *                 removed.
+   */
   setName: function GContact_setName(aElement, aValue) {
     var tagName = aElement ? aElement.tagName : null;
     if (!tagName || !gdata.contacts.isNameTag(tagName))
       return null;
-    // TODO implement
+
+    var name = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
+                                                       "name")[0];
+    var thisElem = this.mCurrentElement;
+    if (thisElem) {
+      // if there is an existing value that should be updated, do so
+      if (aValue)
+        this.mCurrentElement.childNodes[0].nodeValue = aValue;
+      // else the element should be removed
+      else {
+        name.removeChild(thisElem);
+        // If the org elem is empty remove it
+        if (!name.childNodes.length)
+          this.xml.removeChild(name);
+      }
+      return true;
+    }
+    // if it gets here, the node must be added, so add <name> if necessary
+    if (!name) {
+      name = document.createElementNS(gdata.namespaces.GD.url,
+                                              "name");
+      this.xml.appendChild(name);
+    }
+    var elem = document.createElementNS(aElement.namespace.url,
+                                        aElement.tagName);
+    var text = document.createTextNode(aValue);
+    elem.appendChild(text);
+
+    name.appendChild(elem);    
     return true;
   },
   /**
@@ -726,7 +764,7 @@ GContact.prototype = {
     var buffer = Components.classes["@mozilla.org/network/buffered-output-stream;1"]
                            .createInstance(Components.interfaces.nsIBufferedOutputStream);
     fstream.init(file, 0x04 | 0x08 | 0x20, 0600, 0); // write, create, truncate
-    buffer.init(fstream, 8192); // TODO what is 8192 (bufferSize)?
+    buffer.init(fstream, 8192);
 
     buffer.writeFrom(istream, istream.available());
 
