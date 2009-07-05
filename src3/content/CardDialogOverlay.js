@@ -77,7 +77,9 @@ var gAttributes = {
   "Relation2":            {},
   "Relation2Type":        {},
   "Relation3":            {},
-  "Relation3Type":        {}
+  "Relation3Type":        {},
+  "WebPage1Type":         {},
+  "WebPage2Type":         {}
 };
 /**
  * CardDialogOverlay
@@ -228,6 +230,13 @@ var CardDialogOverlay = {
       alert("Unable to setup phone number types\n" + e);
     }
     
+    // Add the website types
+    var arr = gdata.contacts.WEBSITE_TYPES;
+    var site1Box = document.getElementById("WebPage1").parentNode;
+    addMenuItems(site1Box, arr, "WebPage1Type", "work");
+    var site2Box = document.getElementById("WebPage2").parentNode;
+    addMenuItems(site2Box, arr, "WebPage2Type", "home");
+    
     var tabs = document.getElementById("abTabs");
     try {
       // setup the new screenname/e-mail address/phone numbers tab
@@ -281,28 +290,30 @@ var CardDialogOverlay = {
         catch (e) {
           LOGGER.LOG_WARNING("Could not add the relation fields.", e);
         }
-        var nameWidth = "250px";
-        document.getElementById("FirstName").setAttribute("width", nameWidth);
-        document.getElementById("LastName").setAttribute("width", nameWidth);
-        document.getElementById("DisplayName").setAttribute("width", nameWidth);
-        document.getElementById("NickName").setAttribute("width", nameWidth);
+        /*
+        var nameWidth = "width: 30ch;";
+        document.getElementById("FirstName").setAttribute("style", nameWidth);
+        document.getElementById("LastName").setAttribute("style", nameWidth);
+        document.getElementById("DisplayName").setAttribute("style", nameWidth);
+        document.getElementById("NickName").setAttribute("style", nameWidth);
         document.getElementById("FirstName").removeAttribute("flex");
         document.getElementById("LastName").removeAttribute("flex");
         document.getElementById("DisplayName").removeAttribute("flex");
         document.getElementById("NickName").removeAttribute("flex");
-        var emailWidth = "180px";
-        document.getElementById("PrimaryEmail").setAttribute("width", emailWidth);
-        document.getElementById("SecondEmail").setAttribute("width", emailWidth);
+        var emailWidth = "width: 20ch;";
+        document.getElementById("PrimaryEmail").setAttribute("style", emailWidth);
+        document.getElementById("SecondEmail").setAttribute("style", emailWidth);
         document.getElementById("ScreenName").setAttribute("width", "150px");
         document.getElementById("PrimaryEmail").removeAttribute("flex");
         document.getElementById("SecondEmail").removeAttribute("flex");
         document.getElementById("ScreenName").removeAttribute("flex");
-        document.getElementById("abNameTab").firstChild.firstChild.style.width = "450px";
-        document.getElementById("abNameTab").firstChild.firstChild.style.maxWidth = "450px";
+        document.getElementById("abNameTab").firstChild.firstChild.style.minWidth = "50ch";
+        document.getElementById("abNameTab").firstChild.firstChild.style.maxWidth = "50ch";
         var elem = document.getElementById("abTabPanels");
         elem.style.width = "850px";
         elem.style.maxWidth = "850px";
         elem.style.minWidth = "850px";
+        */
         // fix the width of the dialog
         window.sizeToContent();
       }

@@ -191,7 +191,7 @@ var gdata = {
                                               this.WEBSITE_TYPES, "href");
     },
     WEBSITE_TYPES: [
-      "home-page", "blog", "profile", "home", "work", "other", "other", "ftp"
+      "home-page", "blog", "profile", "home", "work", "other", "ftp"
     ],
     ORG_TAGS: {
       orgDepartment:     "1",

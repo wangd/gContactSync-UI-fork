@@ -60,7 +60,8 @@ var ContactConverter = {
     "FaxNumberType", "CellularNumberType", "PagerNumberType",
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
-    "Relation3Type", "CompanySymbol", "JobDescription", "PhotoETag"],
+    "Relation3Type", "CompanySymbol", "JobDescription", "PhotoETag",
+    "WebPage1Type", "WebPage2Type"],
   mInitialized: false,
   /**
    * ContactConverter.init
@@ -126,7 +127,7 @@ var ContactConverter = {
       new ConverterElement("relation", "Relation3", 3, ""),
       // websites
       new ConverterElement("website",   "WebPage1", 0, "work"),
-      new ConverterElement("website",   "WebPage2", 0, "home")
+      new ConverterElement("website",   "WebPage2", 1, "home")
     ];
     this.mInitialized = true;
   },
