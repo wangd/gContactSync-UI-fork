@@ -48,11 +48,8 @@ var gAttributes = {
   "YahooScreenName":      {},
   "MSNScreenName":        {},
   "ICQScreenName":        {},
-  "OtherAddress":         {},
   "HomeFaxNumber":        {},
   "OtherNumber":          {},
-  "FullHomeAddress":      {},
-  "FullWorkAddress":      {},
   "PrimaryEmailType":     {},
   "SecondEmailType":      {},
   "ThirdEmailType":       {},
@@ -245,13 +242,6 @@ var CardDialogOverlay = {
       myTab.setAttribute("id", "gContactSyncTab");
       // add the new tab to the dialog
       tabs.appendChild(myTab);
-
-      // setup the new address tab
-      var myAddressTab = document.createElementNS(this.mNamespace, "tab");
-      myAddressTab.setAttribute("label", "gContactSync 2");
-      myAddressTab.setAttribute("id", "gContactSyncTab2");
-      tabs.appendChild(myAddressTab);
-      
     }
     catch(e) {
       alert("Unable to setup the extra tabs\n" + e);
@@ -324,11 +314,11 @@ var CardDialogOverlay = {
     // if this is the old dialog, show the extra phone numbers
     else {
       document.getElementById("numbersGroupBox").removeAttribute("hidden");
-      tabs.appendChild(myAddressTab);
     }
     
     // if this is a read-only card, make added elements disabled
     // the menulists are already taken care of
+    // TODO update this...
     if (this.mDisabled) {
       document.getElementById("ThirdEmail").readOnly       = true;
       document.getElementById("FourthEmail").readOnly      = true;
@@ -339,9 +329,6 @@ var CardDialogOverlay = {
       document.getElementById("JabberScreenName").readOnly = true;
       document.getElementById("HomeFaxNumber").readOnly    = true;
       document.getElementById("OtherNumber").readOnly      = true;
-      document.getElementById("FullHomeAddress").readOnly  = true;
-      document.getElementById("FullWorkAddress").readOnly  = true;
-      document.getElementById("OtherAddress").readOnly     = true;
       document.getElementById("Relation").readOnly         = true;
     }
 

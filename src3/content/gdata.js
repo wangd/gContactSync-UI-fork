@@ -189,6 +189,16 @@ var gdata = {
       this.website             = new GElement(typedWithAttr, "website",
                                               gdata.namespaces.GCONTACT,
                                               this.WEBSITE_TYPES, "href");
+      this.street              = new GElement(untyped, "street",
+                                              gdata.namespaces.GD),
+      this.city                = new GElement(untyped, "city",
+                                              gdata.namespaces.GD),
+      this.region              = new GElement(untyped, "region",
+                                              gdata.namespaces.GD),
+      this.postcode            = new GElement(untyped, "postcode",
+                                              gdata.namespaces.GD),
+      this.country             = new GElement(untyped, "country",
+                                              gdata.namespaces.GD)
     },
     WEBSITE_TYPES: [
       "home-page", "blog", "profile", "home", "work", "other", "ftp"
@@ -213,6 +223,20 @@ var gdata = {
     },
     isNameTag: function gdata_contacts_isNameTag(aTagName) {
       return this.NAME_TAGS[aTagName] ? true : false;
+    },
+    ADDRESS_TAGS: {
+      housename:    "1",
+      street:       "1",
+      poBox:        "1",
+      neighborhood: "1",
+      city:         "1",
+      subregion:    "1",
+      region:       "1",
+      postcode:     "1",
+      country:      "1"
+    },
+    isAddressTag: function gdata_contacts_isAddressTag(aTagName) {
+      return this.ADDRESS_TAGS[aTagName] ? true : false;
     },
     // different tagnames in the Atom feed, must be initialized
     postalAddress:       {},

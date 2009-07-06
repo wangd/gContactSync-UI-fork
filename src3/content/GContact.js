@@ -276,7 +276,7 @@ GContact.prototype = {
     // if it gets here, the node must be added, so add <name> if necessary
     if (!name) {
       name = document.createElementNS(gdata.namespaces.GD.url,
-                                              "name");
+                                      "name");
       this.xml.appendChild(name);
     }
     var elem = document.createElementNS(aElement.namespace.url,
@@ -288,6 +288,62 @@ GContact.prototype = {
     return true;
   },
   /**
+   * GContact.setAddress
+   * Google's contacts schema puts several components of an address into a
+   * separate element, so this function handles those attributes separately.
+   * @param aElement The GElement object with a valid gd:name tag name
+   * @param aValue   The value to set.  Null if the XML Element should be
+   *                 removed.
+   * @param aType    The 'type' of address (home, work, or other)
+   * @param aIndex   The index of the address (0 for the first, 1 for the
+   *                 second, etc)
+   */
+  setAddress: function GContact_setAddress(aElement, aValue, aType, aIndex) {
+    var tagName = aElement ? aElement.tagName : null;
+    if (!tagName || !gdata.contacts.isAddressTag(tagName))
+      return null;
+
+    var addresses = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
+                                                "structuredPostalAddress");
+    var address = null;
+    for (var i = 0; i < addresses.length; i++) {
+      if (addresses[i].getAttribute("rel").indexOf(aType) != -1)
+        address = addresses[i];
+    }
+    this.getElementValue(aElement, (aIndex ? aIndex : 0), aType);
+    var thisElem = this.mCurrentElement;
+    LOGGER.VERBOSE_LOG("  - Setting address..." + address + " " + aValue + " " + aType + " " + thisElem);
+    if (thisElem) {
+      // if there is an existing value that should be updated, do so
+      if (aValue)
+        this.mCurrentElement.childNodes[0].nodeValue = aValue;
+      // else the element should be removed
+      else {
+        address.removeChild(thisElem);
+        // If the elem is empty remove it
+        if (!address.childNodes.length)
+          this.xml.removeChild(address);
+      }
+      return true;
+    }
+    // if it gets here, the node must be added, so add <name> if necessary
+    if (!address) {
+      address = document.createElementNS(gdata.namespaces.GD.url,
+                                              "structuredPostalAddress");
+      address.setAttribute("rel", "http://schemas.google.com/g/2005#" + aType);
+      this.xml.appendChild(address);
+    }
+    var elem = document.createElementNS(aElement.namespace.url,
+                                        aElement.tagName);
+    var text = document.createTextNode(aValue);
+    elem.appendChild(text);
+
+    address.appendChild(elem);    
+    return true;
+  },  
+  
+  
+  /**
    * GContact.setElementValue
    * Sets the value of the specified element.
    * NOTE: removeElements MUST be called after all elements are set
@@ -298,6 +354,9 @@ GContact.prototype = {
    * @param aValue   The value to set for the element.
    */
   setElementValue: function GContact_setElementValue(aElement, aIndex, aType, aValue) {
+    // Postal addresses are different...
+    if (gdata.contacts.isAddressTag(aElement.tagName))
+      return this.setAddress(aElement, aValue, aType, aIndex);
     // get the current element (as this.mCurrentElement) and it's value (returned)
     var property = this.getElementValue(aElement, aIndex, aType);
     property = property ? property : new Property(null, null);
@@ -329,7 +388,7 @@ GContact.prototype = {
     // name tags are as well
     if (gdata.contacts.isNameTag(aElement.tagName))
       return this.setName(aElement, aValue);
-    
+
     // if the element should be removed
     if (!aValue && this.mCurrentElement)
       this.mElementsToRemove.push(this.mCurrentElement);

@@ -137,6 +137,3 @@ radio[pane=pane_accounts] {
 radio[pane=pane_extended] {
   list-style-image: url("chrome://gcontactsync/skin/advanced.png");
 }
-radio[pane=pane_addresses] {
-  list-style-image: url("chrome://gcontactsync/skin/addrbook.png");
-}

@@ -192,46 +192,6 @@
       <button id="resetAll" label="&resetAll.label;" oncommand="resetAllSyncedABs(true);"/>
     </hbox>
   </prefpane>
-  <prefpane id="pane_addresses" index="addresses" label="&addresses.tab;">
-    <preferences>
-      <preference id="removeOldAddresses"
-                  name="extensions.gContactSync.removeOldAddresses"
-                  type="bool"/>
-      <preference id="homeAddress"
-                  name="extensions.gContactSync.homeAddress"
-                  type="string"/>
-      <preference id="workAddress"
-                  name="extensions.gContactSync.workAddress"
-                  type="string"/>
-      <preference id="otherAddress"
-                  name="extensions.gContactSync.otherAddress"
-                  type="string"/>
-    </preferences>
-    <label value="&addDesc1.label;"/>
-    <label value="&addDesc2.label;"/>
-    <label value="&addDesc3.label;"/>
-    <label value="&addDesc4.label;"/>
-    <label value="&addDesc5.label;"/>
-    <label value="&addDesc6.label;"/>
-    <checkbox preference="removeOldAddresses" id="removeOldAddresses" label="&removeOldAddresses.label;"/>
-    <label value="&customAdd0.label;"/>
-    <label value="&customAdd1.label;"/>
-    <label value="&customAdd2.label;"/>
-    <label value="&customAdd3.label;"/>
-    <label value="&customAdd4.label;"/>
-    <hbox>
-      <label control="HomeAddress" value="&homeAddress.label;"/>
-      <textbox id="HomeAddress" multiline="true" wrap="virtual" flex="1" preference="homeAddress"/>
-    </hbox>
-    <hbox>
-      <label control="WorkAddress" value="&workAddress.label;"/>
-      <textbox id="WorkAddress" multiline="true" wrap="virtual" flex="1" preference="workAddress"/>
-    </hbox>
-    <hbox>
-      <label control="OtherAddress" value="&otherAddress.label;"/>
-      <textbox id="OtherAddress" multiline="true" wrap="virtual" flex="1" preference="otherAddress"/>
-    </hbox>
-  </prefpane>
   <prefpane id="pane_extended" index="extended" label="&extended.tab;">
     <preferences>
       <preference id="syncExtended"

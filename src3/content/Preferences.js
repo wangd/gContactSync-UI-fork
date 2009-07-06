@@ -85,18 +85,7 @@ var Preferences = {
     addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
     lastVersion:              new Pref("lastVersion",        "char", "0"),
     updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true),
-    listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", false),
-    homeAddress:              new Pref("homeAddress", "char",
-                                       "[HomeAddress]\n[HomeAddress2]\n" +
-                                       "[HomeCity], [HomeState]  [HomeZipCode]" +
-                                       "\n[HomeCountry]"),
-    workAddress:              new Pref("workAddress", "char", "[WorkAddress]\n" +
-                                       "[WorkAddress2]\n[WorkCity], [WorkState]" +
-                                       "[WorkZipCode]\n[WorkCountry]"),
-    otherAddress:             new Pref("otherAddress", "char", "[OtherAddress]" +
-                                       "\n[OtherAddress2]\n[OtherCity], " +
-                                       "[OtherState]  [OtherZipCode]\n" +
-                                       "[OtherCountry]")
+    listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", false)
   },
   /**
    * Preferences.getPref

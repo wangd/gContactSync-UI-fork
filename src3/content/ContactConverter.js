@@ -53,9 +53,9 @@ var ContactConverter = {
   // extra attributes added by this extension.  Doesn't include GoogleID or any
   // of the URLs.  Should be obtained w/ ContactConverter.getExtraSyncAttributes
   mAddedAttributes: [
-    "HomeFaxNumber", "OtherNumber", "OtherAddress", "ThirdEmail", "FourthEmail",
+    "HomeFaxNumber", "OtherNumber", "ThirdEmail", "FourthEmail",
     "TalkScreenName", "ICQScreenName", "YahooScreenName", "MSNScreenName", 
-    "JabberScreenName", "FullHomeAddress", "FullWorkAddress", "PrimaryEmailType",
+    "JabberScreenName",  "PrimaryEmailType",
     "SecondEmailType", "_AimScreenNameType", "HomePhoneType", "WorkPhoneType",
     "FaxNumberType", "CellularNumberType", "PagerNumberType",
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
@@ -86,7 +86,6 @@ var ContactConverter = {
       // general
       new ConverterElement("notes",          "Notes",          0),
       new ConverterElement("id",             "GoogleID",       0),
-      new ConverterElement("postalAddress",  "OtherAddress",   0, "other"),
       // e-mail addresses
       new ConverterElement("email", "PrimaryEmail", 0, "other"),
       new ConverterElement("email", "SecondEmail",  1, "other"),
@@ -117,9 +116,18 @@ var ContactConverter = {
       new ConverterElement("PhotoURL", "PhotoURL", 0),
       new ConverterElement("SelfURL",  "SelfURL",  0),
       new ConverterElement("EditURL",  "EditURL",  0),
-      // the new address fields
-      new ConverterElement("postalAddress", "FullHomeAddress", 0, "home"),
-      new ConverterElement("postalAddress", "FullWorkAddress", 0, "work"),
+      // Home address
+      new ConverterElement("street",   "HomeAddress", 0, "home"),
+      new ConverterElement("city",     "HomeCity",    0, "home"),
+      new ConverterElement("region",   "HomeState",   0, "home"),
+      new ConverterElement("postcode", "HomeZipCode", 0, "home"),
+      new ConverterElement("country",  "HomeCountry", 0, "home"),
+      // Work address
+      new ConverterElement("street",   "WorkAddress", 0, "work"),
+      new ConverterElement("city",     "WorkCity",    0, "work"),
+      new ConverterElement("region",   "WorkState",   0, "work"),
+      new ConverterElement("postcode", "WorkZipCode", 0, "work"),
+      new ConverterElement("country",  "WorkCountry", 0, "work"),
       // relation fields
       new ConverterElement("relation", "Relation0", 0, ""),
       new ConverterElement("relation", "Relation1", 1, ""),
@@ -164,11 +172,6 @@ var ContactConverter = {
     var ab = Sync.mCurrentAb;
     AbManager.checkCard(aCard, "cardToAtomXML");
     this.mCurrentCard = aCard;
-    // use the address with multiple lines instead of the 6 fields
-    // if the full address doesn't exist, but the card has at least 1 of the
-    // fields convert those to the full address
-    this.fixAddress(aCard, "Home");
-    this.fixAddress(aCard, "Work");
     var arr = this.mConverterArr;
     // set the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
@@ -385,128 +388,6 @@ var ContactConverter = {
           list.addCard(card);
       }
     }
-  },
-  /**
-   * ContactConverter.fixAddress
-   * Fixes the address with the given prefix (Home or Work) and combines the
-   * 6 address fields: Address Line 1, Address Line 2, City, State, Zip Code,
-   * and Country into a field that allows multiple lines.
-   * @param aCard   The card with the address to fix.
-   * @param aPrefix The prefix (Home or Work)
-   */
-  fixAddress: function ContactConverter_fixAddress(aCard, aPrefix) {
-    if (!aCard || !aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
-      return;
-    if (!this.mInitialized)
-      this.init();
-    var ab = Sync.mCurrentAb;
-    // if there isn't a value in the Full (multi-lined address) then create one
-    // from the existing address
-    if (!AbManager.getCardValue(aCard, "Full" + aPrefix + "Address")) {   
-      // form the new address from the old
-      var newAddress = "";
-      var pref = Preferences.mSyncPrefs[aPrefix.toLowerCase() + "Address"];
-      // use the preference that describes how to format the address
-      if (pref && pref.value) {
-        var curToken = "";
-        var isToken = false;
-        for (var i = 0; i < pref.value.length; i++) {
-          var character = pref.value[i];
-          if (isToken) {
-            if (character == ']') {
-              var cardValue = AbManager.getCardValue(aCard, curToken);
-              newAddress += cardValue ? cardValue : "";
-              curToken = "";
-              isToken = false;
-            }
-            else if (character != ']') {
-              curToken += character;
-            }
-          }
-          else {
-            if (character == '[') {
-              isToken = true;
-            }
-            else {
-              newAddress += character;
-            }
-          }
-        }
-        // remove any blank lines
-        var newAddressArr = newAddress.split('\n');
-        var arr = [];
-        newAddress = "";
-        for (var i = 0; i < newAddressArr.length; i++) {
-          // if the current line is valid, add it to the address
-          if (this.validAddrLine(newAddressArr[i]))
-            arr.push(newAddressArr[i]);
-        }
-        newAddress = arr.join('\n');
-      }
-      // if the preference wasn't found default to the old hard-coded way
-      else {
-        // get the current info
-        var address1 = AbManager.getCardValue(aCard, aPrefix + "Address");
-        var address2 = AbManager.getCardValue(aCard, aPrefix + "Address2");
-        var city     = AbManager.getCardValue(aCard, aPrefix + "City");
-        var state    = AbManager.getCardValue(aCard, aPrefix + "State");
-        var zip      = AbManager.getCardValue(aCard, aPrefix + "ZipCode");
-        var country  = AbManager.getCardValue(aCard, aPrefix + "Country");
-        if (address1)
-          newAddress = address1;
-        if (address2)
-          newAddress += "\n" + address2;
-        if (city) {
-          if (newAddress != "")
-            newAddress += "\n";
-          newAddress += city;
-          if (state)
-            newAddress += " " + state;
-          if (zip)
-            newAddress += "  " + zip;
-        }
-        else if (state) {
-          if (newAddress != "")
-            newAddress += "\n";
-          newAddress += state;
-          if (zip)
-            newAddress += "  " + zip;
-        }
-        else if (zip) {
-          if (newAddress != "")
-            newAddress += "\n";
-          newAddress += zip;
-        }
-        if (country) {
-          if (newAddress != "")
-            newAddress += "\n"
-          newAddress += country;
-        }
-      }
-      // set the attribute and update the card
-      ab.setCardValue(aCard, "Full" + aPrefix + "Address", newAddress);
-      // clear the old attributes (so an address can be removed)
-      if (Preferences.mSyncPrefs.removeOldAddresses.value) {
-        var arr = ["Address", "Address2", "City", "State", "ZipCode", "Country"];
-        for (var i = 0, length = arr.length; i < length; i++)
-          ab.setCardValue(aCard, aPrefix + arr[i], "");
-      }
-      ab.updateCard(aCard);
-    }
-  },
-  /**
-   * ContactConverter.validAddrLine
-   * Check if the given string is a valid address line.
-   * A 'valid' address line current consists of at least one letter or number
-   */
-  validAddrLine: function ContactConverter_validAddrLine(aLine) {
-    if (!aLine || !aLine.length) return false;
-    // if something changes between the string and it's lowercase representation
-    if (aLine != aLine.toLowerCase()) {
-      return true;
-    }
-    // if not, check it for at least one number
-    return (new RegExp("[0-9]")).test(aLine);
   },
   /**
    * ContactConverter.checkValue
