@@ -1,3 +1,4 @@
+<!--  This is used in the new/edit contact dialog  -->
 <!ENTITY gContactSync.tab "gContactSync">
 <!ENTITY screenname.box "Дополнительные имена">
 <!ENTITY email.box "Дополнительные адреса e-mail">
@@ -9,6 +10,7 @@
 <!ENTITY sixth.label "Шестой">
 <!ENTITY seventh.label "Седьмой">
 <!ENTITY eighth.label "Восьмой">
+<!--  Phone numbers  -->
 <!ENTITY numbers.box "Дополнительные номера">
 <!ENTITY homeFax.label "Домашний Fax">
 <!ENTITY address.box "Дополнительные адреса">
@@ -18,6 +20,7 @@
 <!ENTITY pager.label "Пейджер">
 <!ENTITY workFax.label "Рабочий Fax">
 <!ENTITY other.label "Другой">
+<!--  This can be blank  -->
 <!ENTITY initialStatus.label "">
 <!ENTITY preferences.label "Предпочтения">
 <!ENTITY status.tooltip "Кликните здесь для просмотра log-файла">

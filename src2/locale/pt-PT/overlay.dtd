@@ -1,3 +1,4 @@
+<!--  This is used in the new/edit contact dialog  -->
 <!ENTITY gContactSync.tab "gContactSync">
 <!ENTITY screenname.box "Pseudónimos Adicionais">
 <!ENTITY email.box "Endereços de Correio Electrónico Adicionais">
@@ -9,6 +10,7 @@
 <!ENTITY sixth.label "Sexto">
 <!ENTITY seventh.label "Sétimo">
 <!ENTITY eighth.label "Oitavo">
+<!--  Phone numbers  -->
 <!ENTITY numbers.box "Telefones Adicionais">
 <!ENTITY homeFax.label "Fax Particular">
 <!ENTITY address.box "Moradas Adicionais">
@@ -18,6 +20,7 @@
 <!ENTITY pager.label "Pager">
 <!ENTITY workFax.label "Fax Trabalho">
 <!ENTITY other.label "Outro">
+<!--  This can be blank  -->
 <!ENTITY initialStatus.label "">
 <!ENTITY preferences.label "Preferências">
 <!ENTITY status.tooltip "Carregue aqui para ver o ficheiro de log">
