@@ -45,7 +45,7 @@ var Cr = Components.results;
 
 var nsIAbCard      = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
-var version        = "0.2.5pre3";
+var version        = "0.2.5";
 
 function serialize(aXML, aRemoveVersion) {
   if (!aXML)
@@ -58,7 +58,7 @@ function serialize(aXML, aRemoveVersion) {
     return XML(str).toXMLString();
   }
   catch(e) {
-    LOGGER.LOG_WARNING("Error while serializing the following XML: " + aXML,e );
+    LOGGER.LOG_WARNING("Error while serializing the following XML: " + aXML, e);
   }
   return "";
 }
