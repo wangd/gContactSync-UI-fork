@@ -87,6 +87,7 @@ var Overlay = {
     // Find the last version of gContactSync and set the pref to the current
     // version.
     this.mLastVersion = Preferences.mSyncPrefs.lastVersion.value;
+    //alert(LoginManager.getAllEmailAccts());
 
     Preferences.setPref(Preferences.mSyncBranch,
                         Preferences.mSyncPrefs.lastVersion.label,
@@ -104,8 +105,8 @@ var Overlay = {
 
     originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
-    if (Preferences.mSyncPrefs.enableSyncBtn.value)
-      Overlay.setupButton();    // insert the Sync button
+    //if (Preferences.mSyncPrefs.enableSyncBtn.value)
+      //Overlay.setupButton();    // insert the Sync button
     if (Preferences.mSyncPrefs.enableMenu.value)
       Overlay.setupMenu();      // add a shortcut menu
     gdata.contacts.init();
@@ -494,7 +495,7 @@ var Overlay = {
   showLog: function Overlay_showLog() {
     try {
       var windowFeatures = "chrome=yes,resizable=yes,height=480,width=600";
-      window.open("view-source:chrome://gcontactsync/content/log/log.txt",
+      window.open("view-source:file://" + FileIO.mLogFile.path,
                   "Log",
                   windowFeatures);
     }
