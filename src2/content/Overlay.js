@@ -491,7 +491,7 @@ var Overlay = {
   showLog: function Overlay_showLog() {
     try {
       var windowFeatures = "chrome=yes,resizable=yes,height=480,width=600";
-      window.open("view-source:chrome://gcontactsync/content/log/log.txt",
+      window.open("view-source:file://" + FileIO.mLogFile.path,
                   "Log",
                   windowFeatures);
     }

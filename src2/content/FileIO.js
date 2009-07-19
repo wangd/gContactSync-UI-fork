@@ -42,7 +42,7 @@
 var FileIO = {
   mLogFile: null,
   fileNames: {
-    LOG_FILE: "content/log/log.txt" // stores the log from the last sync
+    LOG_FILE: "gcontactsync_log.txt" // stores the log from the last sync
   },
   /**
    * FileIO.init
@@ -50,12 +50,12 @@ var FileIO = {
    * Also creates the log directory, if necessary.
    */
   init: function FileIO_init() {
-    var directory =
-        this.getFileInExtDir(this.fileNames.LOG_FILE.replace("log.txt", ""));
+    var directory = this.getProfileDirectory();
     // if the directory doesn't exist yet
+    // This really shouldn't happen since this currently uses the profile dir
     if (!directory.exists()) {
       // create the directory (type = 1) - rw for the user and r for others
-      try { directory.create("1", parseInt("755", 8)); } catch(e) {alert(e);}
+      try { directory.create("1", parseInt("755", 8)); } catch(e) {}
       // if it still doesn't exist let the user know, then quit
       if (!directory.exists()) {
         alert(StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
@@ -70,7 +70,8 @@ var FileIO = {
       alert(StringBundle.getStr("notWritable") + "\n" + directory.path);
       throw "Error - Cannot write to the following directory: " + directory.path;
     }
-    this.mLogFile = this.getFileInExtDir(this.fileNames.LOG_FILE);
+    this.mLogFile = directory;
+    this.mLogFile.append(this.fileNames.LOG_FILE);
     if (this.mLogFile.exists && !this.mLogFile.isWritable) {
       alert(StringBundle.getStr("logNotWritable") + "\n" + this.mLogFile.path);
       throw "Error - cannot write to the log file: " + this.mLogFile.path;
@@ -87,6 +88,16 @@ var FileIO = {
     var em = Cc["@mozilla.org/extensions/manager;1"]
               .getService(Ci.nsIExtensionManager);
     return em.getInstallLocation(MY_ID).getItemFile(MY_ID, aName);
+  },
+  /**
+   * FileIO.getProfileDirectory
+   * Returns an nsIFile of the current profile directory of the application.
+   * @return An nsIFile of the current profile directory of the application.
+   */
+  getProfileDirectory: function FileIO_getProfileDirectory() {
+    return Cc["@mozilla.org/file/directory_service;1"]
+            .getService(Ci.nsIProperties)
+            .get("ProfD", Ci.nsIFile);
   },
   /**
    * FileIO.readFile
