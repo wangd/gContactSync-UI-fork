@@ -257,13 +257,13 @@ var CardDialogOverlay = {
           elem.setAttribute("width", "150px");
         }
         // add the sixth and seventh numbers below 1 - 5
-        var sixthNum = setupNumBox("SixthNumber", StringBundle.getStr("sixth"));
+        var sixthNum = setupNumBox("HomeFaxNumber", StringBundle.getStr("sixth"));
         pager.parentNode.parentNode.appendChild(sixthNum);
-        addMenuItems(sixthNum, phoneTypes, "SixthNumberType", "other");
-        var seventhNum = setupNumBox("SeventhNumber",
+        addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax");
+        var seventhNum = setupNumBox("OtherNumber",
                                      StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
-        addMenuItems(seventhNum, phoneTypes, "SeventhNumberType", "other");
+        addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other");
         
         // Add the relation fields
         try {
