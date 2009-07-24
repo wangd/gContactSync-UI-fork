@@ -496,10 +496,12 @@ var Sync = {
                 var listName = list.getName();
                 LOGGER.LOG("  - Matched with mailing list " + listName);
                 if (listName != title) {
-                  // You cannot rename system groups...
-                  // In the future system groups will be localized, so this
-                  // must be ignored.
+                  // You cannot rename system groups, so change the name back in TB
+                  // They are renamed because anyone using a different locale had
+                  // English group names prior to 0.2.6
                   if (group.isSystemGroup()) {
+                    list.setName(title);
+                    list.update();
                     LOGGER.LOG_WARNING("  - A system group was renamed in Thunderbird");
                   }
                   else {

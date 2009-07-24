@@ -95,12 +95,32 @@ Group.prototype = {
   },
   /**
    * Group.getTitle
-   * Returns the title of this Group.
+   * Returns the title of this Group.  If this is a system group, which is NOT
+   * translated through the API, then this method will return a localized name
+   * for this group.
    * @return the title of this Group.
    */
   getTitle: function Group_getTitle() {
     if (this.mTitle)
       return this.mTitle;
+    // System Groups aren't localized through the API, so this will find the
+    // system group's ID (Contact, Coworker, Family, or Friend) and return the
+    // localized version of that group
+    if (this.isSystemGroup()) {
+      var elem = this.xml.getElementsByTagNameNS(gdata.namespaces.GCONTACT.url,
+                                                 "systemGroup")[0];
+      var id = elem ? elem.getAttribute("id") : null;
+      if (id) {
+        // The strings in v0.2 aren't named exactly the same as the strings
+        if (id == "Contacts")
+          id = "myContacts";
+        else
+          id = id.toLowerCase();
+        this.mTitle = StringBundle.getStr(id);
+        if (this.mTitle)
+          return this.mTitle;
+      }
+    }
     var atom  = gdata.namespaces.ATOM;
     var title = this.xml.getElementsByTagNameNS(atom.url, "title")[0];
     if (title && title.childNodes[0]) {
