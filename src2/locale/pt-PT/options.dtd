@@ -12,7 +12,7 @@
 <!ENTITY groups.label "Grupos e Mailing Lists">
 <!ENTITY myContacts.label "Sincronizar apenas com o grupo &apos;Contactos pessoais&apos;">
 <!ENTITY syncGroups.label "Sincronizar os Grupos do Gmail com as Mailing Lists do Thunderbird">
-<!ENTITY syncBehavior.label "Comportamento da Syncronização">
+<!ENTITY syncBehavior.label "Comportamento da Sincronização">
 <!ENTITY removeOldAddresses.label "Remove os endereços antigos depois de serem convertidos para o novo formato">
 <!ENTITY updateGoogle.label "Actualizar sempre o Gmail quando um contacto é actualizado no Gmail e no Thunderbird">
 <!ENTITY readOnly.label "Activar o modo de leitura (Thunderbird só recebe actualizações, mas nunca as envia)">
@@ -29,7 +29,7 @@
 <!ENTITY forceBtnImage.label "Forçar a utilização da imagem do botão de Sincronização da barra de ferramentas (corrige um largo e feio botão de Sincronização)">
 <!ENTITY enableMenu.label "Activar o Menu gContactSync na janela do Livro de Endereço">
 <!ENTITY enableMenuLinks.label "Activar links no Menu do gContactSync">
-<!ENTITY abResults.label "Painel de Reulstados do Livro de Endereços">
+<!ENTITY abResults.label "Painel de contactos do Livro de Endereços">
 <!ENTITY phoneColLabels.label "Mudar o nome da coluna das etiquetas telefone">
 <!ENTITY newColLabels.label "Adicionar um novo campo nas coluna das etiquetas (Só no Thunderbird 3)">
 <!ENTITY abCardView.label "Detalhes do Contacto do Livro de Endereços">
@@ -43,7 +43,7 @@
 <!ENTITY changeAbName.label "Mudar o Livro de Endereços">
 <!ENTITY refreshTree.label "Actualizar">
 <!--   LOCALIZATION NOTE: These 3 lines cannot change   -->
-<!ENTITY resetAll.label "Restaurar todos os ABs Sincronizados">
+<!ENTITY resetAll.label "Restaurar todas as Contas">
 <!--  The 'Addresses' tab of the Preferences dialog  -->
 <!ENTITY addresses.tab "Endereços">
 <!--  LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating  -->
@@ -56,7 +56,7 @@
 <!--  LOCALIZATION NOTE: Use this if necessary if you need more room to translate customAdd1 and 2  -->
 <!ENTITY customAdd0.label "">
 <!ENTITY customAdd1.label "Pode personalizar como o gContactSync preenche, em baixo, os novos campos de endereço. Basta colocar">
-<!ENTITY customAdd2.label "o nome do atributo entre []. Espaços, palavras que não estejam entre [], pontuação, etc. são permitidos.">
+<!ENTITY customAdd2.label "o nome do atributo entre []. São permitidos espaços, palavras que não estejam entre [], pontuação, etc.">
 <!--  LOCALIZATION NOTE: The words enclosed in [] should not be translated  -->
 <!ENTITY customAdd3.label "Exemplos: [DisplayName] [HomeAddress] [HomeAddress2] [HomeCity] [HomeState]">
 <!ENTITY customAdd4.label "[HomeZipCode] [HomeCountry]">
@@ -66,7 +66,7 @@
 <!--  The 'Advanced' tab of the Preferences dialog  -->
 <!ENTITY extended.tab "Avançado">
 <!--  Google allows syncing up to 10 custom properties which they call 'Extended Properties'  -->
-<!ENTITY syncExtended.label "Sincronizar Propriedades Estendidas">
+<!ENTITY syncExtended.label "Sincronizar Propriedades Extras">
 <!--  LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9  -->
 <!ENTITY extended1.value "Propriedade 1">
 <!ENTITY extended2.value "Propriedade 2">
