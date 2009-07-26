@@ -42,6 +42,8 @@ var Cc = Components.classes;
 var CC = Components.Constructor;
 var Ci = Components.interfaces;
 var Cr = Components.results;
+var Cu = Components.utils;
+var doc = document;
 
 var nsIAbCard      = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
