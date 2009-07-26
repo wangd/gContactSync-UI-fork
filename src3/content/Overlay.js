@@ -260,12 +260,20 @@ var Overlay = {
       errorMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.errorURL');");
       errorMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
+      var logMenuItem = document.createElement("menuitem");
+      logMenuItem.setAttribute("id", "logMenuItem");
+      logMenuItem.setAttribute("label", StringBundle.getStr("logMenu"));
+      logMenuItem.setAttribute("accesskey", StringBundle.getStr("logMenuKey"));
+      logMenuItem.setAttribute("oncommand", "Overlay.showLog();");
+      logMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       menupopup.appendChild(syncMenuItem);
       menupopup.appendChild(prefMenuItem);
       menupopup.appendChild(forumMenuItem);
       menupopup.appendChild(wikiMenuItem);
       menupopup.appendChild(faqMenuItem);
       menupopup.appendChild(errorMenuItem);
+      menupopup.appendChild(logMenuItem);
       menu.appendChild(menupopup);
       menubar.insertBefore(menu, toolsMenu);
     }
