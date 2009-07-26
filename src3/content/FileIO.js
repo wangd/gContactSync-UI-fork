@@ -70,7 +70,7 @@ var FileIO = {
       alert(StringBundle.getStr("notWritable") + "\n" + directory.path);
       throw "Error - Cannot write to the following directory: " + directory.path;
     }
-    this.mLogFile = this.directory;
+    this.mLogFile = directory;
     this.mLogFile.append(this.fileNames.LOG_FILE);
     if (this.mLogFile.exists && !this.mLogFile.isWritable) {
       alert(StringBundle.getStr("logNotWritable") + "\n" + this.mLogFile.path);
