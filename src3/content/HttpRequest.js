@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -129,13 +129,9 @@ HttpRequest.prototype = {
         // this may be called after the address book window is closed
         // if the window is closed there will be an exception thrown as
         // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
-//        try {
           LOGGER.VERBOSE_LOG(" * The request has finished with status: " + httpReq.status);
           LOGGER.VERBOSE_LOG(" * Headers:\n" + httpReq.getAllResponseHeaders() + "\n");
-          //if (confirm("Fake 401?")) {
-          //  alert('Faking a 401');
-          //  return handle401(httpReq);
-          //}
+          
           switch (httpReq.status) { 
             case 0: // the user is offline
               commands = onOffline;
@@ -155,15 +151,8 @@ HttpRequest.prototype = {
           LOGGER.VERBOSE_LOG(" * Evaluating commands");
           for (var i in commands) {
             LOGGER.VERBOSE_LOG("   o " + commands[i]);
-//            try {
-              eval(commands[i]);
-//            }
-//            catch (e) {
-//              LOGGER.LOG_WARNING("Couldn't evaluate command", e);
-//            }
+            eval(commands[i]);
           }
-//        }
-//        catch (e) {}
       } // end of readyState
     }
   }
