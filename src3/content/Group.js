@@ -112,7 +112,8 @@ Group.prototype = {
       var id = elem ? elem.getAttribute("id") : null;
       if (id) {
         this.mTitle = StringBundle.getStr(id);
-        return this.mTitle;
+        if (this.mTitle)
+          return this.mTitle;
       }
     }
     var atom  = gdata.namespaces.ATOM;
