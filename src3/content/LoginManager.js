@@ -56,6 +56,7 @@ var LoginManager = {
   addAuthToken: function LoginManager_addAuthToken(aUsername, aToken) {
     if (this.mNumAuthTokens == 0)
       this.getAuthTokens();
+    // Thunderbird 2
     if ("@mozilla.org/passwordmanager;1" in Cc) {
      var passwordManager =  Cc["@mozilla.org/passwordmanager;1"]
                             .getService(Ci.nsIPasswordManager);
@@ -63,6 +64,7 @@ var LoginManager = {
      this.mAuthTokens[aUsername] = aToken;
      this.mNumAuthTokens++;
     }
+    // Thunderbird 3, Seamonkey 2
     else if ("@mozilla.org/login-manager;1" in Cc) {
       var loginManager =  Cc["@mozilla.org/login-manager;1"]
                            .getService(Ci.nsILoginManager);
@@ -84,6 +86,7 @@ var LoginManager = {
   getAuthTokens: function LoginManager_getAuthTokens() {
     this.mAuthTokens = {};
     this.mNumAuthTokens = 0;
+    // Thunderbird 2
     if ("@mozilla.org/passwordmanager;1" in Cc) {
       var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
                              .getService(Ci.nsIPasswordManager);
@@ -98,6 +101,7 @@ var LoginManager = {
         } catch (e) {}
       }
     }
+    // Thunderbird 3, Seamonkey 2
     else if ("@mozilla.org/login-manager;1" in Cc) {
       var loginManager =  Cc["@mozilla.org/login-manager;1"]
                            .getService(Ci.nsILoginManager);
@@ -128,6 +132,7 @@ var LoginManager = {
    * @return True if the auth token was successfully removed.
    */
   removeAuthToken: function LoginManager_removeAuthToken(aUsername) {
+    // Thunderbird 2
     if ("@mozilla.org/passwordmanager;1" in Cc) {
       var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
                              .getService(Ci.nsIPasswordManager);
@@ -140,6 +145,7 @@ var LoginManager = {
         alert(StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
       }
     }
+    // Thunderbird 3, Seamonkey 2
     else if ("@mozilla.org/login-manager;1" in Cc) {
       var loginManager = Cc["@mozilla.org/login-manager;1"]
                           .getService(Ci.nsILoginManager);
@@ -160,8 +166,52 @@ var LoginManager = {
           }
         }
       }
-      // it didn't find the login...
+      // Could not find the login...
       alert(StringBundle.getStr("removeLoginFailure"));
     }
+  },
+  /**
+   * LoginManager.getAllEmailAccts
+   * Returns an array of all e-mail account usernames matching an optional
+   * pattern.
+   *
+   * @param aPattern A RegExp to match against.  If not provided all imap and
+   *                 mailbox usernames are returned.
+   */
+  getAllEmailAccts: function LoginManager_getAllEmailAccts(aPattern) {
+    var arr = [];
+    // Thunderbird 2
+    if ("@mozilla.org/passwordmanager;1" in Cc) {
+      var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
+                             .getService(Ci.nsIPasswordManager);
+      var iter = passwordManager.enumerator;
+      while (iter.hasMoreElements()) {
+        try {
+          var pass = iter.getNext().QueryInterface(Ci.nsIPassword);
+          if (pass.host.indexOf("imap://") == 0 || pass.host.indexOf("mailbox://") == 0) {
+            if (!aPattern || aPattern.test(pass.user))
+              arr.push(pass.user);
+          }
+        } catch (e) {}
+      }
+    }
+    // Thunderbird 3, Seamonkey 2
+    else if ("@mozilla.org/login-manager;1" in Cc) {
+      var loginManager =  Cc["@mozilla.org/login-manager;1"]
+                           .getService(Ci.nsILoginManager);
+      // Find users for the given parameters
+      var count  = {};
+      var out    = {};
+      var logins = loginManager.getAllLogins(count, out);
+      // Find user from returned array of nsILoginInfo objects
+      for (var i = 0; i < logins.length; i++) {
+        var hostname = logins[i].hostname;
+        if (hostname.indexOf("imap://") == 0 || hostname.indexOf("mailbox://") == 0) {
+          if (!aPattern || aPattern.test(logins[i].username))
+            arr.push(logins[i].username);
+        }
+      }
+    }
+    return arr;
   }
 }
