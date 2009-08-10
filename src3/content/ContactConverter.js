@@ -60,7 +60,7 @@ var ContactConverter = {
     "FaxNumberType", "CellularNumberType", "PagerNumberType",
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
-    "Relation3Type", "CompanySymbol", "JobDescription", "PhotoETag",
+    "Relation3Type", "CompanySymbol", "JobDescription",
     "WebPage1Type", "WebPage2Type"],
   mInitialized: false,
   /**
