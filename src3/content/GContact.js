@@ -310,10 +310,11 @@ GContact.prototype = {
       if (addresses[i].getAttribute("rel").indexOf(aType) != -1)
         address = addresses[i];
     }
+    // TODO how will this work w/ multiple addresses...
     this.getElementValue(aElement, (aIndex ? aIndex : 0), aType);
     var thisElem = this.mCurrentElement;
     LOGGER.VERBOSE_LOG("  - Setting address..." + address + " " + aValue + " " + aType + " " + thisElem);
-    if (thisElem) {
+    if (thisElem && address) {
       // if there is an existing value that should be updated, do so
       if (aValue)
         this.mCurrentElement.childNodes[0].nodeValue = aValue;
@@ -326,6 +327,8 @@ GContact.prototype = {
       }
       return true;
     }
+    if (!aValue)
+      return true;
     // if it gets here, the node must be added, so add <name> if necessary
     if (!address) {
       address = document.createElementNS(gdata.namespaces.GD.url,
