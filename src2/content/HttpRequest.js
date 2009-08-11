@@ -130,7 +130,8 @@ HttpRequest.prototype = {
         // if the window is closed there will be an exception thrown as
         // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
         try {
-          LOGGER.VERBOSE_LOG(" * The request has finished with status: " + httpReq.status);
+          LOGGER.VERBOSE_LOG(" * The request has finished with status: " +
+                             httpReq.status + "/" + httpReq.statusText);
           LOGGER.VERBOSE_LOG(" * Headers:\n" + httpReq.getAllResponseHeaders() + "\n");
           //if (confirm("Fake 401?")) {
           //  alert('Faking a 401');

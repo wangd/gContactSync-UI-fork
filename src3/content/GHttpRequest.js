@@ -210,8 +210,9 @@ function handle401(httpRequest) {
 function finish401(aUsername, aAuthToken) {
   LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername + " - " + aAuthToken);
   if (aUsername && aAuthToken) {
-    LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
-    Sync.mCurrentAuthToken = aAuthToken;
+    var token = 'GoogleLogin ' + aAuthToken;
+    LoginManager.addAuthToken(aUsername, token);
+    Sync.mCurrentAuthToken = token;
     if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts)
       Sync.getGroups();
     else

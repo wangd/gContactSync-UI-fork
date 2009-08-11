@@ -192,7 +192,8 @@ function handle401(httpRequest) {
     var httpReq = new GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["finish401('" + username.value +
+    httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText));",
+                          "finish401('" + username.value +
                           "', httpReq.responseText.split(\"\\n\")[2]);"];
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError   = ["alert(StringBundle.getStr('authErr'));",
@@ -209,8 +210,9 @@ function handle401(httpRequest) {
 function finish401(aUsername, aAuthToken) {
   LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername + " - " + aAuthToken);
   if (aUsername && aAuthToken) {
-    LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
-    Sync.mCurrentAuthToken = aAuthToken;
+    var token = 'GoogleLogin ' + aAuthToken;
+    LoginManager.addAuthToken(aUsername, token);
+    Sync.mCurrentAuthToken = token;
     if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts)
       Sync.getGroups();
     else
