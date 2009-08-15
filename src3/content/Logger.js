@@ -85,7 +85,7 @@ var LOGGER = {
     var str = "***WARNING: " + aWarningMessage;
     if (aError)
       str += "\nError Message:\n" + aError;
-    str += "\n" + StringBundle.getStr("pleaseReport");
+    //str += "\n" + StringBundle.getStr("pleaseReport");
     this.LOG(str);
     this.mWarningCount++;
   }
