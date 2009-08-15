@@ -635,7 +635,7 @@ var Overlay = {
         cvSetVisible(cvData["cv" + aArray[i]], false);
       }
       catch (e) {
-        LOGGER.LOG_WARNING("Error while hiding nodes: ", e);
+        LOGGER.LOG_WARNING("Error while hiding node '" + aArray[i] + "'", e);
       }
     }
   },
@@ -655,7 +655,7 @@ var Overlay = {
         cvSetVisible(cvData["cv" + aArray[i]], true);
       }
       catch (e) {
-        LOGGER.LOG_WARNING("Error while showing nodes", e);
+        LOGGER.LOG_WARNING("Error while showing node '" + aArray[i] + "'", e);
       }
     }
   },
@@ -756,10 +756,10 @@ var Overlay = {
       vbox.appendChild(cvData.cvJabberScreenNameBox);
     }
     else {
-      cvData.cvTalkScreenName   = Overlay.makeDescElement("TalkScreenName", "CardViewText");
-      cvData.cvICQScreenName    = Overlay.makeDescElement("ICQScreenName", "CardViewText");
-      cvData.cvYahooScreenName  = Overlay.makeDescElement("YahooScreenName", "CardViewText");
-      cvData.cvMSNScreenName    = Overlay.makeDescElement("MSNScreenName", "CardViewText");
+      cvData.cvTalkScreenName   = Overlay.makeDescElement("TalkScreenName",   "CardViewText");
+      cvData.cvICQScreenName    = Overlay.makeDescElement("ICQScreenName",    "CardViewText");
+      cvData.cvYahooScreenName  = Overlay.makeDescElement("YahooScreenName",  "CardViewText");
+      cvData.cvMSNScreenName    = Overlay.makeDescElement("MSNScreenName",    "CardViewText");
       cvData.cvJabberScreenName = Overlay.makeDescElement("JabberScreenName", "CardViewText");
       vbox.appendChild(cvData.cvTalkScreenName);
       vbox.appendChild(cvData.cvICQScreenName);
@@ -767,6 +767,15 @@ var Overlay = {
       vbox.appendChild(cvData.cvYahooScreenName);
       vbox.appendChild(cvData.cvJabberScreenName);
     }
+
+    // Work section
+    cvData.cvJobDescription = Overlay.makeDescElement("JobDescription", "CardViewText");
+    cvData.cvCompanySymbol  = Overlay.makeDescElement("CompanySymbol",  "CardViewText");
+    vbox = document.getElementById("cvbWork");
+    // Add the job description after the job title
+    vbox.insertBefore(cvData.cvJobDescription, cvData.cvJobTitle.nextSibling);
+    // Add the company symbol after the company name
+    vbox.insertBefore(cvData.cvCompanySymbol, cvData.cvCompany.nextSibling);
 
     // Other section    
     vbox = document.getElementById("cvbOther");
@@ -778,6 +787,7 @@ var Overlay = {
       cvData["cvRelation" + i] = Overlay.makeDescElement("Relation" + i, "CardViewText");
       otherVbox.appendChild(cvData["cvRelation" + i]);
     }
+
     // Other Number and HomeFaxNumber
     cvData.cvOtherNumber = Overlay.makeDescElement("OtherNumber", "CardViewText");
     cvData.cvHomeFaxNumber = Overlay.makeDescElement("HomeFaxNumber", "CardViewText");
