@@ -23,3 +23,6 @@
 <!ENTITY status.tooltip "Click here to view the log file">
 
 <!ENTITY relations.box "Relations">
+
+<!ENTITY sync.label    "Sync">
+<!ENTITY sync.tooltip  "Synchronize your contacts">

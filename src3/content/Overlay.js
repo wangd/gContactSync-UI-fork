@@ -87,7 +87,7 @@ var Overlay = {
     // Find the last version of gContactSync and set the pref to the current
     // version.
     this.mLastVersion = Preferences.mSyncPrefs.lastVersion.value;
-    //alert(LoginManager.getAllEmailAccts());
+    //alert(LoginManager.getAllEmailAccts(/@/).join('\n'));
 
     Preferences.setPref(Preferences.mSyncBranch,
                         Preferences.mSyncPrefs.lastVersion.label,

@@ -106,4 +106,13 @@
                     label="&initialStatus.label;"
                     tooltip="&status.tooltip;"/>
   </statusbar>
+  <toolbarpalette id="AddressBookToolbarPalette">
+    <toolbarbutton id="button-sync"/>
+  </toolbarpalette>
+  <toolbarbutton id="button-sync"
+                 label="&sync.label;"
+                 tooltiptext="&sync.tooltip;"
+                 oncommand="Sync.begin()"
+                 class="gContactSync-Button toolbarbutton-1 chromeclass-toolbar-additional"
+                 />
 </overlay>

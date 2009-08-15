@@ -50,6 +50,11 @@ function GAddressBook(aDirectory) {
 // Copy the AB prototype (methods and member variables)
 GAddressBook.prototype = AddressBook.prototype;
 
+GAddressBook.prototype.mPrefs = {
+  syncURL: "",
+  
+}
+
 /**
  * AddressBook.setUsername
  * Sets the username for the account with which this address book is synced.
@@ -183,6 +188,7 @@ GAddressBook.prototype.reset = function GAddressBook_reset(checkListener) {
 GAddressBook.prototype.newListObj = function GAddressBook_newListObj(aList, aParentDirectory, aNew) {
   return new GMailList(aList, aParentDirectory, aNew);
 }
+
 /**
  * GAddressBook.getAllLists
  * Returns an an object containing GMailList objects whose attribute name is
