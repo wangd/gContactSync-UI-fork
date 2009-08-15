@@ -81,11 +81,19 @@ function fillLoginTree() {
   var logins = LoginManager.getAuthTokens();
   var abs    = AbManager.getSyncedAddressBooks();
   for (var i in logins) {
-    var abName = "";
-    if (abs[i] && abs[i].primary && abs[i].primary.mDirectory)
-      abName = abs[i].primary.getName();
-    usernames[i] = true;
-    addLoginToTree(newTreeChildren, i, abName);
+    // add logins even if there aren't any associated ABs
+    if (!abs[i]) {
+      addLoginToTree(newTreeChildren, i, "");
+      continue;
+    }
+    for (var j in abs[i]) {
+      var ab = abs[i][j];
+      var abName = "";
+      if (ab.mDirectory)
+        abName = ab.getName();
+      usernames[i] = true;
+      addLoginToTree(newTreeChildren, i, abName);
+    }
   }
 }
 /**
@@ -103,16 +111,11 @@ function removeSelectedLogin() {
     // remove the saved prefs from the address books
     var abs   = AbManager.getSyncedAddressBooks();
     var abObj = abs[cellText];
-    if (abObj && abObj.primary && abObj.secondary) {
-      var primary = abObj.primary;
-      primary.setUsername("");
-      primary.setPrimary("");
-      primary.setLastSyncDate(0);
-      var secondary = abObj.secondary;
-      for (var j in secondary) {
-        secondary[j].setUsername("");
-        secondary[j].setPrimary("");
-        secondary[j].setLastSyncDate(0);
+    if (abObj) {
+      for (var j in abObj) {
+        // TODO add clearPrefs
+        abObj[j].setUsername("");
+        abObj[j].setLastSyncDate(0);
       }
     }
     var treeitem     = document.getElementById(cellText);
@@ -199,7 +202,6 @@ function addToken(aUsername, aAuthToken) {
     usernames[aUsername] = true;
     var ab = new GAddressBook(AbManager.getAbByName(input.value));
     ab.setUsername(aUsername);
-    ab.setPrimary(true);
     ab.setLastSyncDate(0);
     var treechildren = document.getElementById("loginTreeChildren");
     addLoginToTree(treechildren, aUsername, input.value);
@@ -247,13 +249,12 @@ function changeAbName() {
   if (!tree || tree.currentIndex == -1)
     return false;
   var username = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
-  var oldAb    = AbManager.getSyncedAddressBooks()[username];
-  if (oldAb)
-    oldAb = oldAb.primary;
+  var abname   = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(1));
+  var oldAb    = abname ? AbManager.getAbByName(input.value, true) : null;
   var prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"]
                  .getService(Ci.nsIPromptService);
   // set the default to the existing name or, if not present, the username
-  var input  = {value: oldAb && oldAb.mDirectory ? oldAb.mDirectory.dirName : username};
+  var input  = {value: oldAb ? abname : username};
   var check  = {};
   var result = prompts.prompt(null, StringBundle.getStr("abNameTitle") + " " +
                               username, StringBundle.getStr("abName"), input,
@@ -279,12 +280,10 @@ function changeAbName() {
       // remove the prefs from the old address book
       if (oldAb) {
         oldAb.setUsername("");
-        oldAb.setPrimary(false);
         oldAb.setLastSyncDate(0);
       }
       // setup the prefs for the new address book
       newAb.setUsername(username);
-      newAb.setPrimary(true);
       newAb.setLastSyncDate(0);
     }
     // rename the old address book, if present, and don't change any prefs
@@ -296,11 +295,9 @@ function changeAbName() {
         newAb = new GAddressBook(AbManager.getAbByName(input.value));
         // setup the prefs for the new address book
         newAb.setUsername(username);
-        newAb.setPrimary(true);
         newAb.setLastSyncDate(0);
         // remove the prefs from the old one
         oldAb.setUsername("");
-        oldAb.setPrimary(false);
         oldAb.setLastSyncDate(0);
       }
       else {
@@ -321,7 +318,6 @@ function changeAbName() {
       newAb = new GAddressBook(AbManager.getAbByName(input.value));
       // setup the prefs for the new address book
       newAb.setUsername(username);
-      newAb.setPrimary(true);
       newAb.setLastSyncDate(0);
     }
     tree.view.setCellText(tree.currentIndex, tree.columns.getColumnAt(1), input.value);
@@ -446,9 +442,9 @@ function resetAllSyncedABs(showConfirm) {
     changeDeleteListener(false);
   }
   LOGGER.LOG("Resetting all synchronized directories.");
-  var abs = AbManager.getSyncedAddressBooks();
+  var abs = AbManager.getSyncedAddressBooks(true);
   for (var i in abs) {
-    abs[i].primary.reset();
+    abs[i].ab.reset();
   }
   
   // re-enable the address book listener, if necessary

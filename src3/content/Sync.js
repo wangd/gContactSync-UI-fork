@@ -105,7 +105,7 @@ var Sync = {
     this.mCurrentUsername = obj.username;
     LOGGER.LOG("Starting Synchronization for " + this.mCurrentUsername +
                " at: " + Date() + "\n");
-    this.mCurrentAb        = obj.primary;
+    this.mCurrentAb        = obj.ab;
     this.mCurrentAuthToken = LoginManager.getAuthTokens()[this.mCurrentUsername];
     this.mContactsUrl      = null;
     if (!this.mCurrentAuthToken) {

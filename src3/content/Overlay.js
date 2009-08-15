@@ -388,7 +388,6 @@ var Overlay = {
         var name = Preferences.mSyncPrefs.addressBookName.value;
         var ab   = new GAddressBook(AbManager.getAbByName(name));
         ab.setUsername(this.mUsername);
-        ab.setPrimary(true);
         ab.setLastSyncDate(0);
         Sync.begin();
       }

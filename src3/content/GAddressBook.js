@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -71,27 +71,6 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
  */
 GAddressBook.prototype.getUsername = function GAddressBook_getUsername() {
   return this.getStringPref("gContactSyncUsername");
-}
-
-/**
- * AddressBook.setPrimary
- * Sets whether or not this address book is the primary book to synchronize
- * with the account.
- * @param aPrimary True if this address book is the primary AB with which the
- *                 account is synchronized.
- */
-GAddressBook.prototype.setPrimary = function GAddressBook_setPrimary(aPrimary) {
-  this.setStringPref("gContactSyncPrimary", aPrimary);
-}
-
-/**
- * AddressBook.setPrimary
- * Returns true if this address book is the primary AB with which the account
- * is synchronized.
- * @return True if this is the primary AB for the account.
- */
-GAddressBook.prototype.getPrimary = function GAddressBook_getPrimary() {
-  return this.getStringPref("gContactSyncPrimary");
 }
 
 /**
@@ -171,10 +150,6 @@ GAddressBook.prototype.reset = function GAddressBook_reset(checkListener) {
   LOGGER.VERBOSE_LOG(" * Finished deleting lists");
   LOGGER.VERBOSE_LOG(" * Deleting all contacts");
   this.deleteCards(this.getAllCards());
-  LOGGER.VERBOSE_LOG(" * Setting GroupID to ''");
-  this.setGroupID("");
-  LOGGER.VERBOSE_LOG(" * Setting primary to true");
-  this.setPrimary(true);
   LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
   this.setLastSyncDate(0);
   LOGGER.LOG("Finished resetting the directory.");
