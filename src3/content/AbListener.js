@@ -97,41 +97,6 @@ var AbListener = {
                              aItem + " " + uri + " " + now, e);
         }
       }
-      // if it was removed from a directory
-      // This has to check every time because the preference may be toggled
-      // from the preferences dialog temporarily while switching from one group
-      // to all groups or vice versa.
-      // it checks the cached value first to avoid refetching the pref
-      // without reason.
-      else if (Preferences.getPref(Preferences.mSyncPrefs.listenerDeleteFromGoogle.value &&
-                                   Preferences.mSyncBranch,
-                                   Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                                   Preferences.mSyncPrefs.listenerDeleteFromGoogle.type)) {
-        try {
-          var ab = new GAddressBook(aParentDir);
-          var contact = new TBContact(aItem, ab);
-          var editURL = contact.getValue("EditURL");
-          var username = ab.getUsername();
-          // if it has a URL and the address book is synchronized, remove it
-          // TODO add pref to confirm?
-          if (editURL && username && !Preferences.mSyncPrefs.readOnly.value) {
-            var token = LoginManager.getAuthTokens()[username];
-            LOGGER.VERBOSE_LOG(contact.getValue("DisplayName") + " was deleted from TB, " +
-                               "trying to remove from Google " + editURL);
-
-            var httpReq = new GHttpRequest("delete", token, editURL, null, username);
-            httpReq.addHeaderItem("If-Match", "*");
-            httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(' * Successful');"];
-            httpReq.mOnError =   ["LOGGER.LOG_WARNING('Error while deleting contact', " +
-                                  "httpReq.responseText);"];
-            httpReq.mOnOffline = ["LOGGER.VERBOSE_LOG(' * User is offline');"];
-            httpReq.send();
-          }
-        } catch (e) {
-          alert("Error in AbListener: " + e);
-          LOGGER.LOG_WARNING("Error removing contact from Google in AbListener", e);
-        }
-      }
     }
   },
   /**
