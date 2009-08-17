@@ -61,7 +61,6 @@ var Preferences = {
     initialDelay:             new Pref("initialDelay",       "int",  500),
     refreshInterval:          new Pref("refreshInterval",    "int",  30),
     maxContacts:              new Pref("maxContacts",        "int",  5000),
-    confirmDuplicates:        new Pref("confirmDuplicates",  "bool", true),
     syncExtended:             new Pref("syncExtended",       "bool", true),
     overrideCopy:             new Pref("overrideCopy",       "bool", true),
     autoSync:                 new Pref("autoSync",           "bool", true),
@@ -85,7 +84,6 @@ var Preferences = {
     addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
     lastVersion:              new Pref("lastVersion",        "char", "0"),
     updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true),
-    listenerDeleteFromGoogle: new Pref("listenerDeleteFromGoogle", "bool", false)
   },
   /**
    * Preferences.getPref

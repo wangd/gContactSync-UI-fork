@@ -225,6 +225,13 @@ var Overlay = {
       syncMenuItem.setAttribute("oncommand", "Sync.begin();");
       syncMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
+      var acctMenuItem = document.createElement("menuitem");
+      acctMenuItem.setAttribute("id", "acctMenuItem");
+      acctMenuItem.setAttribute("label", StringBundle.getStr("acctMenu"));
+      acctMenuItem.setAttribute("accesskey", StringBundle.getStr("acctMenuKey"));
+      acctMenuItem.setAttribute("oncommand", "Overlay.openAccounts();");
+      acctMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       var prefMenuItem = document.createElement("menuitem");
       prefMenuItem.setAttribute("id", "prefMenuItem");
       prefMenuItem.setAttribute("label", StringBundle.getStr("prefMenu"));
@@ -268,6 +275,7 @@ var Overlay = {
       logMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       menupopup.appendChild(syncMenuItem);
+      menupopup.appendChild(acctMenuItem);
       menupopup.appendChild(prefMenuItem);
       menupopup.appendChild(forumMenuItem);
       menupopup.appendChild(wikiMenuItem);
@@ -823,6 +831,14 @@ var Overlay = {
     };
   },
   /**
+   * Overlay.openAccounts
+   * Opens the Accounts dialog for gContactSync
+   */
+  openAccounts: function Overlay_openAccounts() {
+    window.open("chrome://gcontactsync/content/Accounts.xul", "accts",
+                "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
+  },
+  /**
    * openURL
    * Opens the given URL using the openFormattedURL and
    * openFormattedRegionURL functions.
@@ -863,7 +879,7 @@ var Overlay = {
   resetSelectedAB: function Overlay_resetSelectedAB() {
     var dirTree  = document.getElementById("dirTree");
     var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
-    var ab = new GAddressBook(AbManager.getAbByURI(selected.Value));
+    var ab = new GAddressBook(AbManager.getAbByURI(selected.Value), true);
     var restartStr = StringBundle.getStr("pleaseRestart");
     if (confirm(StringBundle.getStr("resetConfirm2"))) {
       ab.reset(true);

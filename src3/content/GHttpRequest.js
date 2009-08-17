@@ -46,11 +46,14 @@
  *                   Not required for authenticate, getAll, getGroups, and add.
  * @param aBody      The body of the request.
  * @param aUsername  Optional.  Replaces "default" in the URL.
+ * @param aOther     Additional parameter to use when needed.  Currently this is
+ *                   only used for GET requests for obtaining contacts in a
+ *                   specified group (pass the Group ID in that case)
  * @constructor
  * @class
  * @extends HttpRequest
  */
-function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
+function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
   HttpRequest.call(this);  // call the superclass' constructor
   this.mBody = aBody;
   // all urls in gdata use SSL.  If a URL is supplied, make sure it uses SSL
@@ -74,6 +77,14 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
       this.mContentType = this.CONTENT_TYPES.ATOM;
       this.mUrl         = gdata.contacts.GET_ALL_URL + Preferences.mSyncPrefs
                                                                   .maxContacts.value;
+      this.mType        = gdata.contacts.requestTypes.GET_ALL;
+      this.addHeaderItem("Authorization", aAuth);
+      break;
+    case "getFromGroup":
+      this.mContentType = this.CONTENT_TYPES.ATOM;
+      this.mUrl         = gdata.contacts.GET_ALL_URL
+                          + Preferences.mSyncPrefs.maxContacts.value
+                          + "&group=" + encodeURIComponent(aOther);
       this.mType        = gdata.contacts.requestTypes.GET_ALL;
       this.addHeaderItem("Authorization", aAuth);
       break;

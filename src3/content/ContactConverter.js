@@ -221,12 +221,12 @@ var ContactConverter = {
     }
     // If the myContacts pref is set and this contact is new then add the
     // myContactsName group
-    if (Preferences.mSyncPrefs.myContacts.value) {
+    if (ab.mPrefs.myContacts) {
       if (isNew && Sync.mContactsUrl) {
         aContact.setGroups([Sync.mContactsUrl]);
       }
     }
-    else if (Preferences.mSyncPrefs.syncGroups.value) {
+    else if (ab.mPrefs.syncGroups) {
       // set the groups
       var groups = [];
       for (var i in Sync.mLists) {
@@ -289,7 +289,7 @@ var ContactConverter = {
     }
     
     // parse the DisplayName into FirstName and LastName
-    if (Preferences.mSyncPrefs.parseNames.value) {
+    if (ab.mPrefs.parseNames) {
       var name  = ab.getCardValue(card, "DisplayName");
       var first = ab.getCardValue(card, "FirstName");
       var last  = ab.getCardValue(card, "LastName");
@@ -353,7 +353,7 @@ var ContactConverter = {
     ab.setCardValue(card, "BirthMonth", month);
     ab.setCardValue(card, "BirthDay",   day);    
 
-    if (Preferences.mSyncPrefs.getPhotos.value) {
+    if (ab.mPrefs.getPhotos) {
       var info = aContact.getPhotoInfo();
       if (info) {
         var file = aContact.writePhoto(Sync.mCurrentAuthToken);
@@ -367,7 +367,7 @@ var ContactConverter = {
     }
 
     ab.updateCard(card);
-    if (Preferences.mSyncPrefs.syncGroups.value && !Preferences.mSyncPrefs.myContacts.value) {
+    if (ab.mPrefs.syncGroups && !ab.mPrefs.myContacts) {
       // get the groups after updating the card
       var groups = aContact.getValue("groupMembershipInfo");
       var lists = Sync.mLists;

@@ -119,7 +119,7 @@ var Sync = {
                        "\n - Pref ID: " + this.mCurrentAb.getPrefId());
     // getGroups must be called if the myContacts pref is set so it can find the
     // proper group URL
-    if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts)
+    if (this.mCurrentAb.mPrefs.syncGroups || this.mCurrentAb.mPrefs.myContacts)
       this.getGroups();
     else
       this.getContacts();
@@ -149,8 +149,15 @@ var Sync = {
    */
   getContacts: function Sync_getContacts() {
     LOGGER.LOG("***Beginning Contact Synchronization***");
-    var httpReq = new GHttpRequest("getAll", this.mCurrentAuthToken, null, null,
-                                   this.mCurrentUsername);
+    var httpReq;
+    if (this.mContactsUrl) {
+      var httpReq = new GHttpRequest("getFromGroup", this.mCurrentAuthToken, null, null,
+                                     this.mCurrentUsername, this.mContactsUrl);
+    }
+    else {
+      var httpReq = new GHttpRequest("getAll", this.mCurrentAuthToken, null, null,
+                                     this.mCurrentUsername);
+    }
     // serializeFromText does not do anything if verbose logging is disabled
     // so this next line won't waste time
     httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(serializeFromText(httpReq.responseText))",
@@ -187,6 +194,7 @@ var Sync = {
     ContactConverter.mCurrentCard = {};
     this.mSynced                  = true;
     this.mCurrentAb               = {};
+    this.mContactsUrl             = null;
     this.mCurrentUsername         = {};
     this.mCurrentAuthToken        = {};
     // refresh the ab results pane
@@ -201,12 +209,7 @@ var Sync = {
     else
       this.schedule(Preferences.mSyncPrefs.refreshInterval.value * 60000);
   },
-  // could be faster by fetching new and deleted contacts?
-  // should modify the listener:
-  //  when a contact is added to TB, try to add to google (would need something
-  // to bypass the default sync behavior - check the response and set a flag in
-  // the contact to override)
-  //  when a contact is modified, try to modify the Google contact
+
   sync2: function Sync_sync2(aAtom) {
     // get the address book
     var ab = this.mCurrentAb;
@@ -239,24 +242,14 @@ var Sync = {
     var bothGoogle  = " * The contact from Google will be updated";
     var bothTB      = " * The card from Thunderbird will be updated";
     var gContacts   = {};
+    var gContact;
     // Step 1: get all contacts from Google into GContact objects in an object
-    // keyed by ID.  If the myContacts pref is set, only put the contacts who
-    // are in that group into the gContacts object.
+    // keyed by ID.
     for (var i = 0, length = googleContacts.length; i < length; i++) {
-      var gContact = new GContact(googleContacts[i]);
-      // put this contact in the object if all groups are synced or the contact
-      // is in the group that is being synchronized
-      if (!this.mContactsUrl || gContact.getGroups()[this.mContactsUrl]) {
-        var id = gContact.getValue("id").value;
-        var lastModified = gContact.getLastModifiedDate();
-        gContact.lastModified = lastModified;
-        gContact.id = id;
-        gContacts[id] = gContact;
-      }
-      else {
-        LOGGER.VERBOSE_LOG(gContact.getName() + " will not be synchronized " +
-                           "because it is not in the synced group");
-      }
+      gContact               = new GContact(googleContacts[i]);
+      gContact.lastModified  = gContact.getLastModifiedDate();
+      gContact.id            = gContact.getValue("id").value;
+      gContacts[gContact.id] = gContact;
     }
     // Step 2: iterate through TB Contacts and check for matches
     for (var i = 0, length = abCards.length; i < length; i++) {
@@ -270,7 +263,7 @@ var Sync = {
       }
       // if there is a matching Google Contact
       else if (gContacts[id]) {
-        var gContact   = gContacts[id];
+        gContact   = gContacts[id];
         // remove it from gContacts
         gContacts[id]  = null;
         var tbCardDate = tbContact.getValue("LastModifiedDate");
@@ -283,7 +276,7 @@ var Sync = {
         // preference and updates Google if it's true, or Thunderbird if false
         if (gCardDate > lastSync && tbCardDate > lastSync/1000) {
           LOGGER.LOG(bothChanged);
-          if (Preferences.mSyncPrefs.updateGoogleInConflicts.value) {
+          if (this.mCurrentAb.mPrefs.updateGoogleInConflicts.value) {
             LOGGER.LOG(bothGoogle);
             var toUpdate = {};
             toUpdate.gContact = gContact;
@@ -394,6 +387,7 @@ var Sync = {
     var cardToAdd = this.mContactsToAdd.shift();
     LOGGER.LOG("\n" + cardToAdd.displayName);
     // get the XML representation of the card
+    // NOTE: cardToAtomXML adds the contact to the current group, if any
     var xml = ContactConverter.cardToAtomXML(cardToAdd).xml;
     var string = serialize(xml);
     if (Preferences.mSyncPrefs.verboseLog.value)
@@ -469,7 +463,7 @@ var Sync = {
       var ab         = this.mCurrentAb;
       var ns         = gdata.namespaces.ATOM;
       var lastSync   = parseInt(ab.getLastSyncDate());
-      var myContacts = Preferences.mSyncPrefs.myContacts.value;
+      var myContacts = ab.mPrefs.myContacts;
       var arr        = aAtom.getElementsByTagNameNS(ns.url, "entry");
       var noCatch    = false;
       // get the mailing lists if not only synchronizing my contacts
@@ -578,7 +572,7 @@ var Sync = {
         }
       }
       else {
-        var groupName = Preferences.mSyncPrefs.myContactsName.value;
+        var groupName = ab.mPrefs.myContactsName.toLowerCase();
         LOGGER.LOG("Only synchronizing the " + groupName + " group.");
         var group, id, sysId, title;
         var foundGroup = false;
@@ -591,17 +585,15 @@ var Sync = {
             // system group then this method won't work because system gruoups
             // are first.
             id    = group.getID();
-            sysId = group.getSystemId();
-            title = group.getTitle();
+            sysId = group.getSystemId().toLowerCase();
+            title = group.getTitle().toLowerCase();
             LOGGER.VERBOSE_LOG("  - Found a group named " + title + " - ID: " + id);
             if (sysId == groupName || title == groupName) {
               foundGroup = true;
               break;
             }
           }
-          catch (e) {
-            
-          }
+          catch (e) {}
         }
         if (foundGroup) {
           LOGGER.LOG(" * Found the group to synchronize: " + id);

@@ -391,7 +391,7 @@ AddressBook.prototype = {
    */
   getStringPref: function AddressBook_getStringPref(aName, aDefaultValue) {
     var id = this.getPrefId();
-    LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
+    //LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
     /* The code below is commented out for backward compatibility with TB 2,
      * which crashes if you set a custom pref for a directory.  It is a somewhat
      * sloppy workaround that, instead of using preferences from the directory's
@@ -406,7 +406,7 @@ AddressBook.prototype = {
         var value = this.mDirectory.getStringValue(aName, aDefaultValue);
         LOGGER.VERBOSE_LOG("-Found the value: " + value);
         return value;
-      } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+      } catch (e) { return 0; }
       return null;
     }*/
     if (!id)
@@ -417,12 +417,13 @@ AddressBook.prototype = {
                     .getBranch(id)
                     .QueryInterface(Ci.nsIPrefBranch2);
       var value = branch.getCharPref(aName);
-      LOGGER.VERBOSE_LOG("-Found the value: " + value);
+      //LOGGER.VERBOSE_LOG("-Found the value: " + value);
       return value;
     }
+    // an error is expected if the value isn't present
     catch(e) {
-      //LOGGER.VERBOSE_LOG("getStringPref: (this error is usually expected)\n" + e);
-    } // an error is expected if the value isn't present
+      return 0;
+    }
     return null;
   },
   /**

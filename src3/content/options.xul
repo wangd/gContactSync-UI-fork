@@ -175,23 +175,6 @@
       </groupbox>
     </groupbox>
   </prefpane>
-  <prefpane id="pane_accounts" index="accounts" label="&accounts.tab;">
-    <tree flex="1" id="loginTree" seltype="single">
-      <treecols>
-        <treecol id="email" label="&emailAddress.label;" flex="1"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="addressBook" label="&addressBook.label;" flex="1"/>
-      </treecols>
-      <treechildren id="loginTreeChildren"/>
-    </tree>
-    <hbox id="accountButtons">
-      <button id="addLogin" label="&addLogin.label;" oncommand="addLogin();"/>
-      <button id="removeLogin" label="&removeLogin.label;" oncommand="removeSelectedLogin();"/>
-      <button id="changeAbName" label="&changeAbName.label;" oncommand="changeAbName();"/>
-      <button id="refreshTree" label="&refreshTree.label;" oncommand="fillLoginTree();"/>
-      <button id="resetAll" label="&resetAll.label;" oncommand="resetAllSyncedABs(true);"/>
-    </hbox>
-  </prefpane>
   <prefpane id="pane_extended" index="extended" label="&extended.tab;">
     <preferences>
       <preference id="syncExtended"
@@ -288,6 +271,7 @@
       </vbox>
     </groupbox>
   </prefpane>
+  <!-- TODO: Remove unnecessary scripts -->
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/synonyms.js"/>
   <script type="application/x-javascript"

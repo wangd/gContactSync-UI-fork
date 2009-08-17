@@ -38,21 +38,59 @@
  * GAddressBook
  * An extension of AddressBook that adds functionality specific to gContactSync.
  * @param aDirectory The actual directory.
+ * @param aNoPrefs   Set this to true to skip fetching the preferences.
  * @constructor
  * @class
  * @extends AddressBook
  */
-function GAddressBook(aDirectory) {
+function GAddressBook(aDirectory, aNoPrefs) {
   // call the AddressBook constructor using this object
   AddressBook.call(this, aDirectory);
+  if (!aNoPrefs)
+    this.getPrefs();
 }
 
 // Copy the AB prototype (methods and member variables)
 GAddressBook.prototype = AddressBook.prototype;
 
+// A prefix for all preferences used to prevent conflicts with other extensions
+GAddressBook.prototype.prefPrefix = "gContactSync";
+
+// Preferences for this address book
+// If these aren't set the global preference with the same name, if any, is used
 GAddressBook.prototype.mPrefs = {
-  syncURL: "",
-  
+  Plugin:         "", // The name of the plugin to use
+  Username:       "", // The username of the acct synced with
+  myContacts:     "", // true if only one group should be synced
+  myContactsName: "", // The name of the group to sync
+  readOnly:       "", // Fetch updates from Google but don't send any changes
+  writeOnly:      "", // Send changes to the server, but don't fetch any changes
+  syncGroups:     "", // Synchronize groups
+  getPhotos:      "", // Fetch contact photos
+  parseNames:     "", // Try to parse names into first and last
+  updateGoogleInConflicts: ""
+};
+
+GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
+  LOGGER.VERBOSE_LOG("\nGetting Prefs:")
+  for (var i in this.mPrefs) {
+    var val = this.getStringPref(this.prefPrefix + i);
+    // getStringPref returns 0 iff the pref doesn't exist
+    // if the pref doesn't exist, then use the global gContactSync pref
+    // this behavior is mostly for backwards compatibility
+    if (val === 0) {
+      var pref = Preferences.mSyncPrefs[i];
+      val = pref ? pref.value : "";
+    }
+    LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
+    this.mPrefs[i] = val;
+  }
+  LOGGER.VERBOSE_LOG("\n");
+};
+
+GAddressBook.prototype.savePref = function GAddressBook_savePref(aName, aValue) {
+  this.setStringPref(this.prefPrefix + aName, aValue);
+  this.mPrefs[aName] = aValue;
 }
 
 /**
@@ -62,16 +100,8 @@ GAddressBook.prototype.mPrefs = {
  */
 GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername) {
   this.setStringPref("gContactSyncUsername", aUsername);
-}
-
-/**
- * AddressBook.getUsername
- * Returns the username for the account with which this address book is synced.
- * @return The username for the Google account.
- */
-GAddressBook.prototype.getUsername = function GAddressBook_getUsername() {
-  return this.getStringPref("gContactSyncUsername");
-}
+  this.mPrefs["username"] = aUsername;
+};
 
 /**
  * AddressBook.getGroupID
@@ -81,7 +111,7 @@ GAddressBook.prototype.getUsername = function GAddressBook_getUsername() {
  */
  GAddressBook.prototype.getGroupID = function GAddressBook_getGroupID() {
    return this.getStringPref("GroupID");
- }
+ };
  
  /**
  * AddressBook.getGroupID
@@ -91,7 +121,7 @@ GAddressBook.prototype.getUsername = function GAddressBook_getUsername() {
  */
  GAddressBook.prototype.setGroupID = function GAddressBook_setGroupID(aGroupID) {
    this.setStringPref("GroupID", aGroupID);
- }
+ };
  
  /**
   * AddressBook.getLastSyncDate
@@ -101,7 +131,7 @@ GAddressBook.prototype.getUsername = function GAddressBook_getUsername() {
   */
  GAddressBook.prototype.getLastSyncDate = function GAddressBook_getLastSyncDate() {
    return this.getStringPref("lastSync");
- }
+ };
  
  /**
   * AddressBook.setLastSyncDate
@@ -111,7 +141,7 @@ GAddressBook.prototype.getUsername = function GAddressBook_getUsername() {
   */
  GAddressBook.prototype.setLastSyncDate = function GAddressBook_setLastSyncDate(aLastSync) {
    this.setStringPref("lastSync", aLastSync);
- }
+ };
  
  /**
   * AddressBook.reset
@@ -158,11 +188,11 @@ GAddressBook.prototype.reset = function GAddressBook_reset(checkListener) {
     LOGGER.LOG("Re-enabled the listener");
     changeDeleteListener(true);
   }
-}
+};
 
 GAddressBook.prototype.newListObj = function GAddressBook_newListObj(aList, aParentDirectory, aNew) {
   return new GMailList(aList, aParentDirectory, aNew);
-}
+};
 
 /**
  * GAddressBook.getAllLists
@@ -187,4 +217,4 @@ GAddressBook.prototype.getAllLists = function GAddressBook_getAllLists(skipGetCa
     }
   }
   return obj;
-}
+};

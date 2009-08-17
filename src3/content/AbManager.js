@@ -86,7 +86,7 @@ var AbManager = {
       if (data instanceof Ci.nsIAbDirectory && (this.mVersion == 3 ||
           data instanceof Ci.nsIAbMDBDirectory)) {
         var ab = new GAddressBook(data);
-        var username = ab.getUsername();
+        var username = ab.mPrefs.Username;
         if (username) {
           if (!this.mAddressBooks[username])
             this.mAddressBooks[username] = [];

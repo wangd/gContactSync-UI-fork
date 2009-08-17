@@ -35,15 +35,6 @@
 <!ENTITY abCardView.label "Address Book Contact Details">
 <!ENTITY enableImUrls.label "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
 
-<!ENTITY accounts.tab "Accounts">
-<!ENTITY emailAddress.label "E-mail Address">
-<!ENTITY addressBook.label "Address Book">
-<!ENTITY removeLogin.label "Remove Login">
-<!ENTITY addLogin.label "Add Login">
-<!ENTITY changeAbName.label "Change Address Book">
-<!ENTITY refreshTree.label "Refresh">
-<!ENTITY resetAll.label "Reset All Accounts">
-
 <!ENTITY extended.tab "Advanced">
 <!ENTITY syncExtended.label "Sync Extended Properties">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
