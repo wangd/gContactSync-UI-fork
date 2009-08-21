@@ -119,7 +119,7 @@ var Sync = {
                        "\n - Pref ID: " + this.mCurrentAb.getPrefId());
     // getGroups must be called if the myContacts pref is set so it can find the
     // proper group URL
-    if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts)
+    if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts.value)
       this.getGroups();
     else
       this.getContacts();
