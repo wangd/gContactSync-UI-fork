@@ -134,10 +134,32 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername) {
   if (!this.mUrl)
     throw "Error - no URL was found for the HTTP Request";
   if (aUsername && this.mUrl)
-    this.mUrl = this.mUrl.replace("default", encodeURIComponent(aUsername));
+    this.mUrl = this.mUrl.replace("default", encodeURIComponent(this.fixUsername(aUsername)));
 }
 
 GHttpRequest.prototype = new HttpRequest(); // get the superclass' prototype
+
+/**
+ * GHttpRequest.fixUsername
+ * Attempts a few basic fixes for 'broken' usernames.
+ * In the past, gContactSync didn't check that a username included the domain
+ * which would pass authentication and then fail to do anything else.
+ * It also didn't make sure there were no spaces in a username which would
+ * also pass authentication and break for everything else.
+ * See Bug 21567
+ *
+ * @param aUsername {string} The username to fix.
+ *
+ * @return A username with a domain and no spaces.
+ */
+GHttpRequest.prototype.fixUsername = function GHttpRequest_fixUsername(aUsername) {
+  if (!aUsername)
+    return null;
+  if (aUsername.indexOf("@") == -1)
+    aUsername += "@gmail.com";
+  aUsername = aUsername.replace(/ /g, "");
+  return aUsername;
+}
 
 /**
  * handle401
