@@ -44,20 +44,83 @@
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <prefpane id="pane_accounts" index="accounts" label="&accounts.tab;">
-    <tree flex="1" id="loginTree" seltype="single">
-      <treecols>
-        <treecol id="email" label="&emailAddress.label;" flex="1"/>
-        <splitter class="tree-splitter"/>
-        <treecol id="addressBook" label="&addressBook.label;" flex="1"/>
-      </treecols>
-      <treechildren id="loginTreeChildren"/>
-    </tree>
-    <hbox id="accountButtons">
-      <button id="addLogin" label="&addLogin.label;" oncommand="addLogin();"/>
-      <button id="removeLogin" label="&removeLogin.label;" oncommand="removeSelectedLogin();"/>
-      <button id="changeAbName" label="&changeAbName.label;" oncommand="changeAbName();"/>
-      <button id="refreshTree" label="&refreshTree.label;" oncommand="fillLoginTree();"/>
-      <button id="resetAll" label="&resetAll.label;" oncommand="resetAllSyncedABs(true);"/>
+    <hbox>
+      <vbox flex="1">
+        <tree flex="1" id="loginTree" seltype="single"
+              onselect="Accounts.selectedAbChange();">
+          <treecols>
+            <treecol id="addressBook" label="&addressBook.label;" flex="1"/>
+            <splitter class="treesplitter"/>
+            <treecol id="synced"      label="&abSynced.label;"    flex="1"/>
+          </treecols>
+          <treechildren id="loginTreeChildren"/>
+        </tree>
+        <hbox id="globalButtons">
+          <button id="addLogin"    label="&addLogin.label;"
+                  oncommand="addLogin();"/>
+          <button id="refreshTree" label="&refreshTree.label;"
+                  oncommand="Accounts.fillAbTree();"/>
+          <button id="resetAll"    label="&resetAll.label;"
+                  oncommand="resetAllSyncedABs(true);"/>
+        </hbox>
+      </vbox>
+      <vbox>
+        <groupbox id="BasicGroupbox">
+          <caption label="&Basic.label;"/>
+          <hbox>
+            <label control="Username" value="&Username.label;"/>
+            <label id="link-label"    value="&NewUsername.label;"
+                   onclick="Accounts.newUsername();"/>
+          </hbox>
+          <menulist id="Username">
+            <menupopup id="UsernamePopup">
+              <menuitem value="None" label="&NoUsername.label;"/>
+            </menupopup>
+          </menulist>
+          <spacer height="5px"/>
+          <label control="Groups" value="&Groups.label;"/>
+          <menulist id="Groups">
+            <menupopup id="GroupsPopup">
+              <menuitem value="All"        label="&AllGroups.label;"/>
+              <menuitem value="None"       label="&NoGroups.label;"/>
+              <menuitem value="contacts"   label="&Contacts.label;"/>
+              <menuitem value="coworkers"  label="&Coworkers.label;"/>
+              <menuitem value="family"     label="&Family.label;"/>
+              <menuitem value="friends"    label="&Friends.label;"/>
+              <menuitem value="Other"      label="&Other.label;"/>
+            </menupopup>
+          </menulist>
+        </groupbox>
+        <checkbox id="showAdvanced" label="&showAdvanced.label;"
+                  oncommand="Accounts.showAdvancedSettings(this.checked);"/>
+        <spacer height="5px"/>
+        <groupbox id="advancedGroupBox">
+          <label control="Plugin" value="&Plugin.label;"/>
+          <menulist id="Plugin">
+            <menupopup id="PluginPopup">
+              <menuitem id="google" value="Google" label="&Google.label;"/>
+            </menupopup>
+          </menulist>
+          <spacer height="5px"/>
+          <caption label="&Advanced.label;"/>
+          <spacer height="5px"/>
+          <label control="SyncDirection"  value="&SyncDirection.label;"/>
+          <menulist id="SyncDirection">
+            <menupopup id="SyncDirectionPopup">
+              <menuitem value="Complete"  label="&Complete.label;"/>
+              <menuitem value="ReadOnly"  label="&ReadOnly.label;"/>
+              <menuitem value="WriteOnly" label="&WriteOnly.label;"/>
+            </menupopup>
+          </menulist>
+          <spacer height="5px"/>
+          <checkbox id="disabled" label="&Disable.label;"/>
+        </groupbox>
+        <spacer height="5px"/>
+        <hbox id="acctButtons">
+          <button id="removeLogin" label="&removeLogin.label;" oncommand="removeSelectedLogin();"/>
+          <button id="saveChanges" label="&saveChanges.label;" oncommand="Accounts.saveSelectedAccount();"/>
+        </hbox>
+      </vbox>
     </hbox>
   </prefpane>
   <script type="application/x-javascript"
@@ -92,6 +155,8 @@
           src="chrome://gcontactsync/content/Pref.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Preferences.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Accounts.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="otherStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>

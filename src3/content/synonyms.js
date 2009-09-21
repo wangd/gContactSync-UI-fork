@@ -49,7 +49,19 @@ var nsIAbCard      = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
 var version        = "0.3.0a1pre";
 
-function serialize(aXML, aRemoveVersion) {
+/**
+ * serialize
+ * Creates an XMLSerializer to serialize the given XML then create a more
+ * human-friendly string representation of that XML.
+ * This is an expensive method of serializing XML but results in the most
+ * human-friendly string from XML.
+ * 
+ * Also see serializeFromText.
+ *
+ * @param aXML {XML} The XML to serialize into a human-friendly string.
+ * @return A formatted string of the given XML.
+ */
+function serialize(aXML) {
   if (!aXML)
     return "";
   try {
@@ -64,6 +76,16 @@ function serialize(aXML, aRemoveVersion) {
   }
   return "";
 }
+
+/**
+ * serializeFromText
+ * A less expensive (but still costly) function that serializes a string of XML
+ * adding newlines between adjacent tags (...><...).
+ * If the verboseLog preference is set as false then this function does nothing.
+ *
+ * @param aString {string} The XML string to serialize.
+ * @return The serialized text if verboseLog is true; else the original text.
+ */
 function serializeFromText(aString) {
   // if verbose logging is disabled, don't replace >< with >\n< because it only
   // wastes time
@@ -73,6 +95,30 @@ function serializeFromText(aString) {
   }
   return aString;
 }
+
+/**
+ * makeDummyEmail
+ * Creates a 'dummy' e-mail for the given contact if possible.
+ * The dummy e-mail contains 'nobody' (localized) and '@nowhere.invalid' (not
+ * localized) as well as a string of numbers.  The numbers are the ID from
+ * Google, if any, or a random sequence.  The numbers are fairly unique because
+ * mailing lists require contacts with distinct e-mail addresses otherwise they
+ * fail silently.
+ *
+ * The purpose of the dummy e-mail addresses is to prevent mailing list bugs
+ * relating to contacts without e-mail addresses.
+ *
+ * This function checks the 'dummyEmail' pref and if that pref is set as true
+ * then this function will not set the e-mail unless the ignorePref parameter is
+ * supplied and evaluates to true.
+ *
+ * @param aContact A contact from Thunderbird.  It can be one of the following:
+ *                 TBContact, GContact, or an nsIAbCard (Thunderbird 2 or 3)
+ * @param ignorePref {boolean} Set this as true to ignore the preference
+ *                             disabling dummy e-mail addresses.  Use this in
+ *                             situations where not adding an address would
+ *                             definitely cause problems.
+ */
 function makeDummyEmail(aContact, ignorePref) {
   if (!aContact) throw "Invalid contact sent to makeDummyEmail";
   if (!ignorePref && !Preferences.mSyncPrefs.dummyEmail.value) {
@@ -116,14 +162,48 @@ function makeDummyEmail(aContact, ignorePref) {
   }
 }
 
+/**
+ * isDummyEmail
+ * Returns true if the given e-mail address is a fake 'dummy' address.
+ *
+ * @param aEmail {string} The e-mail address to check.
+ * @return true  if aEmail is a dummy e-mail address
+ *         false otherwise
+ */
 function isDummyEmail(aEmail) {
   return aEmail && aEmail.indexOf && 
         aEmail.indexOf(StringBundle.getStr("dummy2")) != -1;
 }
 
-function changeDeleteListener(enable) {
-    Preferences.setPref(Preferences.mSyncBranch,
-                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                        Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
-                        enable);
+/**
+ * selectMenuItem
+ * Selects the menuitem with the given value (value or label attribute) in the
+ * given menulist.
+ * Optionally creates the menuitem if it cannot be found.
+ *
+ * @param aMenuList {menulist} The menu list element to search.
+ * @param aValue    {string}   The value to find in a menuitem.  This can be
+ *                             either the 'value' or 'label' attribute of the
+ *                             matched item.
+ * @param aCreate   {boolean}  Set as true to create and select a new menuitem
+ *                             if a match cannot be found.
+ */
+function selectMenuItem(aMenuList, aValue, aCreate) {
+  if (!aMenuList || !aMenuList.menupopup || !aValue)
+    throw "Invalid parameter sent to selectMenuItem";
+
+  var arr = aMenuList.menupopup.childNodes;
+  var item;
+  for (var i = 0; i < arr.length; i++) {
+    item = arr[i];
+    if (item.getAttribute("value") == aValue || item.getAttribute("label") == aValue) {
+      aMenuList.selectedIndex = aMenuList.getIndexOfItem(item);
+      return true;
+    }
+  }
+  if (!aCreate)
+    return false;
+  item = aMenuList.appendItem(aValue, aValue);
+  aMenuList.selectedIndex = aMenuList.getIndexOfItem(item);
+  return true;
 }

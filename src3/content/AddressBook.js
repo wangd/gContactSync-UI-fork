@@ -517,6 +517,9 @@ AddressBook.prototype = {
       addressbook.modifyAddressBook(datasource, parent, this.mDirectory, properties);
     }
   },
+  getDirType: function AddressBook_getDirType() {
+    return this.mDirectory.dirType;
+  },
   newListObj: function AddressBook_newListObj(aList, aParentDirectory, aNew) {
     return new MailList(aList, aParentDirectory, aNew);
   }

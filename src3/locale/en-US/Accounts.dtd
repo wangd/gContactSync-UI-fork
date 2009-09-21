@@ -1,10 +1,45 @@
-<!ENTITY title.label "Accounts">
+<!ENTITY title.label          "Accounts">
 
-<!ENTITY accounts.tab "Accounts">
-<!ENTITY emailAddress.label "E-mail Address">
-<!ENTITY addressBook.label "Address Book">
-<!ENTITY removeLogin.label "Remove Login">
-<!ENTITY addLogin.label "Add Login">
-<!ENTITY changeAbName.label "Change Address Book">
-<!ENTITY refreshTree.label "Refresh">
-<!ENTITY resetAll.label "Reset All Accounts">
+<!ENTITY accounts.tab         "Accounts">
+<!ENTITY addressBook.label    "Address Book">
+<!ENTITY abSynced.label       "Google Account">
+
+<!-- Global buttons -->
+<!ENTITY addLogin.label       "New Address Book">
+<!ENTITY refreshTree.label    "Refresh">
+<!ENTITY resetAll.label       "Reset All Accounts">
+
+<!-- Account labels and options -->
+
+<!-- Basic Settings -->
+<!ENTITY Basic.label          "Basic Settings">
+<!ENTITY Username.label       "Choose an Account">
+<!ENTITY NewUsername.label    "Add a New Account">
+<!ENTITY NoUsername.label     "No usernames found">
+
+<!ENTITY Groups.label         "Groups and Contacts to Synchronize">
+<!ENTITY AllGroups.label      "All groups and contacts">
+<!ENTITY NoGroups.label       "All contacts but no groups">
+<!ENTITY Contacts.label       "'My Contacts' only">
+<!ENTITY Coworkers.label      "'Coworkers' only">
+<!ENTITY Family.label         "'Family' only">
+<!ENTITY Friends.label        "'Friends' only">
+<!ENTITY Other.label          "Pick another group">
+
+<!-- Advanced Settings -->
+<!ENTITY showAdvanced.label   "Show Advanced Settings">
+<!ENTITY Advanced.label       "Advanced Settings">
+
+<!ENTITY Plugin.label         "Pick a Plugin to use">
+<!ENTITY Google.label         "Google">
+
+<!ENTITY SyncDirection.label  "Pick the direction for synchronization">
+<!ENTITY Complete.label       "Complete (both Google and Thunderbird are updated) [Recommended]">
+<!ENTITY ReadOnly.label       "Read-only (Thunderbird receives new and updated contacts from Google)">
+<!ENTITY WriteOnly.label      "Write-only (Thunderbird sends new and updated contacts to Google)">
+
+<!ENTITY Disable.label        "Temporarily disable synchronization with this address book">
+
+<!-- Account buttons -->
+<!ENTITY removeLogin.label    "Remove Settings">
+<!ENTITY saveChanges.label    "Save Changes">

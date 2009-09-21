@@ -61,18 +61,29 @@ GAddressBook.prototype.prefPrefix = "gContactSync";
 GAddressBook.prototype.mPrefs = {
   Plugin:         "", // The name of the plugin to use
   Username:       "", // The username of the acct synced with
+  // NOTE: These three prefs aren't combined into a single pref for backwards
+  // compatibility with 0.2.x
   myContacts:     "", // true if only one group should be synced
   myContactsName: "", // The name of the group to sync
+  syncGroups:     "", // Synchronize groups
+  // NOTE: These two prefs aren't combined into a single pref for backwards
+  // compatibility with 0.2.x
   readOnly:       "", // Fetch updates from Google but don't send any changes
   writeOnly:      "", // Send changes to the server, but don't fetch any changes
-  syncGroups:     "", // Synchronize groups
   getPhotos:      "", // Fetch contact photos
   parseNames:     "", // Try to parse names into first and last
-  updateGoogleInConflicts: ""
+  updateGoogleInConflicts: "" // If a contact was updated in Google and TB then
+                              // this pref determines which contact to update
 };
 
+/**
+ * GAddressBook.getPrefs
+ * Fetches all of this directory's preferences.  If the directory does not have
+ * any given preferences this function will use the global preference's value,
+ * if any.
+ */
 GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
-  LOGGER.VERBOSE_LOG("\nGetting Prefs:")
+  LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':")
   for (var i in this.mPrefs) {
     var val = this.getStringPref(this.prefPrefix + i);
     // getStringPref returns 0 iff the pref doesn't exist
@@ -88,10 +99,17 @@ GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
   LOGGER.VERBOSE_LOG("\n");
 };
 
+/**
+ * GAddressBook.savePref
+ * Save the value of a given preference for this address book.
+ *
+ * @param aName  {string} The name of the preference to set.
+ * @param aValue {string} The value to set the preference to.
+ */
 GAddressBook.prototype.savePref = function GAddressBook_savePref(aName, aValue) {
   this.setStringPref(this.prefPrefix + aName, aValue);
   this.mPrefs[aName] = aValue;
-}
+};
 
 /**
  * AddressBook.setUsername
@@ -117,6 +135,7 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
  * AddressBook.getGroupID
  * Setsthe ID of the group in Google with which this Address Book is
  * synchronized.
+ * @param aGroupID {string} The ID of the group.
  * @return The ID of the group with which this directory is synchronized.
  */
  GAddressBook.prototype.setGroupID = function GAddressBook_setGroupID(aGroupID) {
@@ -137,7 +156,7 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
   * AddressBook.setLastSyncDate
   * Sets the last time this address book was synchronized, in milliseconds
   * since the epoch.
-  * @param aLastSync The last sync time.
+  * @param aLastSync {integer} The last sync time.
   */
  GAddressBook.prototype.setLastSyncDate = function GAddressBook_setLastSyncDate(aLastSync) {
    this.setStringPref("lastSync", aLastSync);
@@ -156,19 +175,8 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
   *   - Setting primary to true
   *   - Setting the last sync date to 0
   */
-GAddressBook.prototype.reset = function GAddressBook_reset(checkListener) {
+GAddressBook.prototype.reset = function GAddressBook_reset() {
   LOGGER.LOG("Resetting the " + this.getName() + " directory.");
-  var original = false;
-  if (checkListener) {
-    // disable the address book listener
-    var original = Preferences.getPref(Preferences.mSyncBranch,
-                                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
-                                       Preferences.mSyncPrefs.listenerDeleteFromGoogle.type);
-    if (original) {
-      LOGGER.LOG("Disabled the listener");
-      changeDeleteListener(false);
-    }
-  }
   try {
     var lists = this.getAllLists(true);
   } catch (e) {}
@@ -183,13 +191,24 @@ GAddressBook.prototype.reset = function GAddressBook_reset(checkListener) {
   LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
   this.setLastSyncDate(0);
   LOGGER.LOG("Finished resetting the directory.");
-  // re-enable the address book listener, if necessary
-  if (original) {
-    LOGGER.LOG("Re-enabled the listener");
-    changeDeleteListener(true);
-  }
 };
 
+/**
+ * GAddressBook.newListObj
+ * Returns a new GMailList object given the same parameters as the GMailList
+ * constructor.
+ *
+ * See the GMailList constructor for the most recent comments.
+ *
+ * @param aList {Ci.nsIAbDirectory}       The actual nsIAbDirectory
+ *                                        representation of a mailing list.
+ * @param aParentDirectory {GAddressBook} The parent directory (as an
+ *                                        AddressBook object) containing this
+ *                                        mailing list.
+ * @param aNew             {boolean}      Set as true for new mailing lists where
+ *                                        no attempt should be made to fetch the
+ *                                        contacts contained in the list.
+ */
 GAddressBook.prototype.newListObj = function GAddressBook_newListObj(aList, aParentDirectory, aNew) {
   return new GMailList(aList, aParentDirectory, aNew);
 };
@@ -198,7 +217,7 @@ GAddressBook.prototype.newListObj = function GAddressBook_newListObj(aList, aPar
  * GAddressBook.getAllLists
  * Returns an an object containing GMailList objects whose attribute name is
  * the name of the mail list.
- * @param skipGetCards True to skip getting the cards of each list.
+ * @param skipGetCards {boolean} True to skip getting the cards of each list.
  * @return An object containing GMailList objects.
  */
 GAddressBook.prototype.getAllLists = function GAddressBook_getAllLists(skipGetCards) {

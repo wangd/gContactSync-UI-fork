@@ -65,6 +65,36 @@ var AbManager = {
   isRegularAttribute: function AbManager_isRegularAttribute(aAttribute) {
     return this.mBasicAttributes.indexOf(aAttribute) != -1;
   },
+  getAllAddressBooks: function AbManager_getAllAddressBooks(aDirType) {
+    var iter;
+    var abs = {};
+    if (this.mVersion == 3) { // TB 3
+      var abManager = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager);
+      iter = abManager.directories;
+    }
+    else { // TB 2
+      // obtain the main directory through the RDF service
+      var dir = Cc["@mozilla.org/rdf/rdf-service;1"]
+                 .getService(Ci.nsIRDFService)
+                 .GetResource("moz-abdirectory://")
+                 .QueryInterface(Ci.nsIAbDirectory);
+      iter = dir.childNodes;
+    }
+    var data, ab, dirType;
+    while(iter.hasMoreElements()) {
+      data = iter.getNext();
+      if (data instanceof Ci.nsIAbDirectory && (this.mVersion == 3 ||
+          data instanceof Ci.nsIAbMDBDirectory)) {
+        ab = new GAddressBook(data);
+        dirType = ab.getDirType();
+        
+        // If no dir type was passed or the type matches then add it to abs
+        if (aDirType === undefined || dirType == aDirType)
+          abs[ab.getName()] = ab;
+      }
+    }
+    return abs;
+  },
   getSyncedAddressBooks: function AbManager_getSyncedAddressBooks(aMakeArray) {
     this.mAddressBooks = {};
     var iter;

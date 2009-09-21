@@ -38,6 +38,15 @@
  * MailList is an abstraction of a mailing list that facilitates getting the
  * cards contained within the actual list as well as accessing and modifying the
  * list and its properties.
+ *
+ * @param aList {Ci.nsIAbDirectory}       The actual nsIAbDirectory
+ *                                        representation of a mailing list.
+ * @param aParentDirectory {GAddressBook} The parent directory (as an
+ *                                        AddressBook object) containing this
+ *                                        mailing list.
+ * @param aNew             {boolean}      Set as true for new mailing lists where
+ *                                        no attempt should be made to fetch the
+ *                                        contacts contained in the list.
  * @constructor
  * @class
  */

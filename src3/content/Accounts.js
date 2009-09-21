@@ -1,4 +1,3 @@
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -16,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2009
+ * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -34,3 +33,281 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+/**
+ * Accounts
+ * The JavaScript variables and functions that handle different gContactSync
+ * accounts allowing each synchronized address book to have its own preferences.
+ * @class
+ */
+var Accounts = {
+  // The column index of the address book name
+  // change this if adding a column before the AB name
+  mAbNameIndex:  0,
+  // Element IDs used when enabling/disabling the preferences
+  mPrefElemIDs: [
+    "Username",
+    "Groups",
+    "showAdvanced",
+    "Plugin",
+    "SyncDirection",
+    "disabled"
+  ],
+  /**
+   * Accounts.initDialog
+   * Initializes the Accounts dialog by filling the tree of address books,
+   * filling in the usernames, hiding the advanced settings, etc.
+   */
+  initDialog:  function Accounts_initDialog() {
+    try {
+      this.fillAbTree();
+      this.fillUsernames();
+      this.showAdvancedSettings(document.getElementById("showAdvanced").checked);
+      this.selectedAbChange();
+    // TODO remove the alert
+    }
+    catch (e) {
+      LOGGER.LOG_WARNING("Error in Accounts.initDialog", e);
+      alert(e);
+    }
+  },
+  /**
+   * Accounts.newUsername
+   * Create a new username/account for the selected plugin.
+   */
+  newUsername: function Accounts_newUsername() {
+    var prompt   = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+                    .getService(Ci.nsIPromptService)
+                    .promptUsernameAndPassword;
+    var username = {};
+    var password = {};
+    // opens a username/password prompt
+    var ok = prompt(window, StringBundle.getStr("loginTitle"),
+                    StringBundle.getStr("loginText"), username, password, null,
+                    {value: false});
+    if (!ok)
+      return false;
+    if (LoginManager.getAuthToken(username.value)) { // the username already exists
+      alert(StringBundle.getStr("usernameExists"));
+      return false;
+    }
+    // This is a primitive way of validating an e-mail address, but Google takes
+    // care of the rest.  It seems to allow getting an auth token w/ only the
+    // username, but returns an error when trying to do anything w/ that token
+    // so this makes sure it is a full e-mail address.
+    if (username.value.indexOf("@") < 1) {
+      alert(StringBundle.getStr("invalidEmail"));
+      return addLogin();
+    }
+    var body    = gdata.makeAuthBody(username.value, password.value);
+    var httpReq = new GHttpRequest("authenticate", null, null, body);
+    // if it succeeds and Google returns the auth token, store it and then start
+    // a new sync
+    httpReq.mOnSuccess = ["LoginManager.addAuthToken('" + username.value +
+                          "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
+                          "Accounts.selectedAbChange();"];
+    // if it fails, alert the user and prompt them to try again
+    httpReq.mOnError   = ["alert(StringBundle.getStr('authErr'));",
+                          "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
+                          "httpReq.status, httpReq.responseText);",
+                          "Accounts.newUsername();"];
+    // if the user is offline, alert them and quit
+    httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
+                          "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
+    httpReq.send();
+    return true;
+  },
+  /**
+   * Accounts.newAddressBook
+   * Create a new address book.
+   */
+  newAddressBook: function Accounts_newAddressBook() {
+    // TODO fill in
+    alert("Sorry, this feature is not complete");
+  },
+  /**
+   * Accounts.saveSelectedAccount
+   * Saves the preferences for the selected address book
+   */
+  saveSelectedAccount: function Accounts_saveSelectedAccount() {
+    alert("Sorry, this feature is not complete");
+  },
+  /**
+   * Accounts.enablePreferences
+   * Enables or disables the preference elements.
+   *
+   * @param aEnable {boolean} Set to true to enable elements or false to disable
+   *                          them.
+   */
+  enablePreferences: function Accounts_enablePreferences(aEnable) {
+    for (var i = 0; i < this.mPrefElemIDs.length; i++) {
+      var elem = document.getElementById(this.mPrefElemIDs[i]);
+      if (!elem) {alert(this.mPrefElemIDs[i] + " not found"); continue;}
+      elem.disabled = aEnable ? false : true;
+    }
+  },
+  /**
+   * Accounts.showAdvancedSettings
+   * Show or hide the advanced settings and then call window.sizeToContent().
+   *
+   * @param aShow {boolean} Set to true to show the advanced settings or false
+   *                        to hide them.
+   */
+  showAdvancedSettings: function Accounts_showAdvanceDsettings(aShow) {
+    var elem = document.getElementById("advancedGroupBox");
+    if (!elem) return false;
+    elem.setAttribute("collapsed", aShow ? "false" : "true");
+    window.sizeToContent();
+    return true;
+  },
+  /**
+   * Accounts.selectedAbChange
+   * Called when the selection changes in the
+   */
+  selectedAbChange: function Accounts_selectedAbChange() {
+    var tree          = document.getElementById("loginTree");
+    var usernameElem  = document.getElementById("Username");
+    var groupElem     = document.getElementById("Groups");
+    var directionElem = document.getElementById("SyncDirection");
+    if (!tree || !usernameElem || !groupElem || !directionElem)
+      return false;
+    if (tree.currentIndex < 0) {
+      this.enablePreferences(false);
+      return false;
+    }
+    this.enablePreferences(true);
+    var abName = tree.view.getCellText(tree.currentIndex,
+                                       tree.columns.getColumnAt(this.mAbNameIndex));
+    var ab = AbManager.getAbByName(abName);
+    if (!ab)
+      return false;
+    ab = new GAddressBook(ab);
+    // Username/Account
+    this.fillUsernames(ab.mPrefs.Username);
+    // Group
+    // The myContacts pref (enable sync w/ one group) has priority
+    // If that is checked an the myContactsName is pref sync just that group
+    // Otherwise sync all or no groups based on the syncGroups pref
+    var group        = ab.mPrefs.myContacts
+                         ? (ab.mPrefs.myContactsName
+                            ? ab.mPrefs.myContactsName
+                            : "None")
+                         : (ab.mPrefs.syncGroups
+                            ? "All"
+                            : "None");
+    selectMenuItem(groupElem, group, true);
+    // Sync Direction
+    var direction = ab.mPrefs.readOnly
+                      ? "ReadOnly"
+                      : ab.mPrefs.writeOnly
+                        ? "WriteOnly"
+                        : "Complete";
+    selectMenuItem(directionElem, direction, true);
+    // TODO Plugin
+    
+    return true;
+  },
+  /**
+   * Accounts.fillUsernames
+   * Fills the 'Username' menulist with all the usernames of the current plugin.
+   *
+   * @param aDefault {string} The default account to select.  If not present or
+   *                          evaluating to 'false' then 'None' will be
+   *                          selected.
+   */
+  fillUsernames: function Accounts_fillUsernames(aDefault) {
+    var usernameElem = document.getElementById("Username");
+    if (!usernameElem)
+      return false;
+    // Remove all existing logins
+    usernameElem.removeAllItems();
+
+    var tokens = LoginManager.getAuthTokens();
+    var item;
+    var index = 0;
+    usernameElem.appendItem(StringBundle.getStr("noAccount"), "none");
+    // Add a menuitem for each account
+    for (var username in tokens) {
+      item = usernameElem.appendItem(username, username);
+      if (aDefault == username && aDefault !== undefined) {
+        index = usernameElem.getIndexOfItem(item);
+      }
+    }
+
+    usernameElem.selectedIndex = index;
+
+    return true;
+  },
+  /**
+   * Accounts.fillAbTree
+   * Populates the address book tree with all Personal/Mork Address Books
+   */
+  fillAbTree: function Accounts_fillAbTree() {
+    var tree          = document.getElementById("loginTree");
+    var treechildren  = document.getElementById("loginTreeChildren");
+  
+    if (treechildren)
+      try { tree.removeChild(treechildren); } catch(e) {}
+    var newTreeChildren = document.createElement("treechildren");
+    newTreeChildren.setAttribute("id", "loginTreeChildren");
+    tree.appendChild(newTreeChildren);
+  
+    // Get all Personal/Mork DB Address Books (type == 2,
+    // see mailnews/addrbook/src/nsDirPrefs.h)
+    // TODO - there should be a way to change the allowed dir types...
+    var abs    = AbManager.getAllAddressBooks(2);
+    for (var i in abs)
+      Accounts.addToTree(newTreeChildren, abs[i]);
+    return true;
+  },
+  /**
+   * addToTree
+   * Adds login information (username and directory name) to the tree.
+   * @param aTreeChildren {object} The <treechildren> XUL element.
+   * @param aAB           {GAddressBook} The GAddressBook to add.
+   */
+  addToTree: function Accounts_addToTree(aTreeChildren, aAB) {
+    if (!aAB || !aAB instanceof GAddressBook)
+      throw "Error - Invalid AB passed to addToTree";
+    var treeitem    = document.createElement("treeitem");
+    var treerow     = document.createElement("treerow");
+    var addressbook = document.createElement("treecell");
+    var synced      = document.createElement("treecell");
+    
+    aAB.getPrefs();
+  
+    addressbook.setAttribute("label", aAB.getName());
+    synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : StringBundle.getStr("no"));
+  
+    treerow.appendChild(addressbook);
+    treerow.appendChild(synced);
+    treeitem.appendChild(treerow);
+    aTreeChildren.appendChild(treeitem);
+  
+    return true;
+  }
+}
+
+/**
+ * removeSelectedLogin
+ * Removes the selected account's username and auth token from the login manager.
+ */
+function removeSelectedLogin() {
+  // TODO FIXME
+  alert("Sorry, function not complete");
+  return;
+
+  if (confirm(StringBundle.getStr("removeLogin"))) {
+    // remove the saved prefs from the address books
+    var abs   = AbManager.getSyncedAddressBooks();
+    var abObj = abs[cellText];
+    if (abObj) {
+      for (var j in abObj) {
+        // TODO add clearPrefs
+        abObj[j].setUsername("");
+        abObj[j].setLastSyncDate(0);
+      }
+    }
+  }
+}
+

@@ -38,6 +38,15 @@
  * MailList is an abstraction of a mailing list that facilitates getting the
  * cards contained within the actual list as well as accessing and modifying the
  * list and its properties.
+ *
+ * @param aList {Ci.nsIAbDirectory}      The actual nsIAbDirectory
+ *                                       representation of a mailing list.
+ * @param aParentDirectory {AddressBook} The parent directory (as an
+ *                                       AddressBook object) containing this
+ *                                       mailing list.
+ * @param aNew             {boolean}     Set as true for new mailing lists where
+ *                                       no attempt should be made to fetch the
+ *                                       contacts contained in the list.
  * @constructor
  * @class
  */
@@ -186,7 +195,7 @@ MailList.prototype = {
       catch (e) {
         LOGGER.LOG_ERROR("A mailing list is not working:", e);
         if (confirm(StringBundle.getStr("resetConfirm"))) {
-          this.mParent.reset(true);
+          this.mParent.reset();
           alert(StringBundle.getStr("pleaseRestart"));
         }
         // Throw an error to stop the sync

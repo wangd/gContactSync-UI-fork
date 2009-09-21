@@ -55,28 +55,14 @@
       <preference id="initialDelay"
                   name="extensions.gContactSync.initialDelay"
                   type="int"/>
-      <preference id="myContacts"
-                  name="extensions.gContactSync.myContacts"
-                  type="bool"/>
-      <preference id="syncGroups"
-                  name="extensions.gContactSync.syncGroups"
-                  type="bool"/>
-      <preference id="updateGoogleInConflicts"
-                  name="extensions.gContactSync.updateGoogleInConflicts"
-                  type="bool"/>
-      <preference id="readOnly"
-                  name="extensions.gContactSync.readOnly"
-                  type="bool"/>
-      <!--
-      <preference id="writeOnly"
-                  name="extensions.gContactSync.writeOnly"
-                  type="bool"/>
-      -->
-      <preference id="listenerDeleteFromGoogle"
-                  name="extensions.gContactSync.listenerDeleteFromGoogle"
-                  type="bool"/>
       <preference id="parseNames"
                   name="extensions.gContactSync.parseNames"
+                  type="bool"/>
+      <preference id="enableLogging"
+                  name="extensions.gContactSync.enableLogging"
+                  type="bool"/>
+      <preference id="verboseLog"
+                  name="extensions.gContactSync.verboseLog"
                   type="bool"/>
     </preferences>
     <groupbox flex="1">
@@ -104,30 +90,19 @@
       </groupbox>
       <separator class="thin"/>
       <groupbox>
-        <caption label="&groups.label;"/>
-        <checkbox preference="myContacts" id="cMyContacts" label="&myContacts.label;" onclick="myContactsChange(this);"/>
-        <checkbox preference="syncGroups" id="cSyncGroups" label="&syncGroups.label;" onclick="groupsChange(this);"/>
+        <caption label="&syncBehavior.label;"/>
+        <checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>
       </groupbox>
       <separator class="thin"/>
       <groupbox>
-        <caption label="&syncBehavior.label;"/>
-        <checkbox preference="updateGoogleInConflicts" id="macContacts" label="&updateGoogle.label;"/>
-        <checkbox preference="readOnly" id="readOnly" label="&readOnly.label;"/>
-        <!-- NOTE: to add a write-only checkbox remove the <! - - and - - > from the next line -->
-        <!--<checkbox preference="writeOnly" id="writeOnly" label="&writeOnly.label;"/>-->
-        <checkbox preference="listenerDeleteFromGoogle" id="listenerDeleteFromGoogle" label="&listenerDeleteFromGoogle.label;"/>
-        <checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>
+        <caption label="&logging.label;"/>
+        <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
+        <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>
   <prefpane id="pane_interface" index="interface" label="&interface.tab;">
     <preferences>
-      <preference id="enableLogging"
-                  name="extensions.gContactSync.enableLogging"
-                  type="bool"/>
-      <preference id="verboseLog"
-                  name="extensions.gContactSync.verboseLog"
-                  type="bool"/>
       <preference id="enableSyncBtn"
                   name="extensions.gContactSync.enableSyncBtn"
                   type="bool"/>
@@ -152,11 +127,6 @@
     </preferences>
     <groupbox flex="1">
       <separator class="thin"/>
-      <groupbox>
-        <caption label="&logging.label;"/>
-        <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
-        <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
-      </groupbox>
       <groupbox>
         <caption label="&buttons.label;"/>
         <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>

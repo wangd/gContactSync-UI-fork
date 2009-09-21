@@ -26,8 +26,6 @@ pref("extensions.gContactSync.removeOldAddresses", false);
 pref("extensions.gContactSync.enableSyncBtn", true);
 // enable/disable the menu
 pref("extensions.gContactSync.enableMenu", true);
-// remove contacts from Google immediately after contacts are removed from Thunderbird
-pref("extensions.gContactSync.listenerDeleteFromGoogle", false);
 // enable/disable read-only mode (TB gets updates from Google only)
 pref("extensions.gContactSync.readOnly", false);
 // enable/disable write-only mode (TB writes updates Google only)

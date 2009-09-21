@@ -868,6 +868,11 @@ var Overlay = {
     LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
     return;
   },
+  /**
+   * Overlay.addResetContext
+   * Adds a 'Reset' menuitem to the Address Book contaxt menu for the list on
+   * the left side of the Address Book window.
+   */
   addResetContext: function Overlay_addResetContext() {
     var item = document.createElement("menuitem");
     item.id  = "dirTreeContext-reset";
@@ -876,13 +881,18 @@ var Overlay = {
     item.setAttribute("oncommand", "Overlay.resetSelectedAB()");
     document.getElementById("dirTreeContext").appendChild(item);
   },
+  /**
+   * Overlay.resetSelectedAB
+   * Resets the currently selected address book after showing a confirmation
+   * dialog.
+   */
   resetSelectedAB: function Overlay_resetSelectedAB() {
     var dirTree  = document.getElementById("dirTree");
     var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
     var ab = new GAddressBook(AbManager.getAbByURI(selected.Value), true);
     var restartStr = StringBundle.getStr("pleaseRestart");
     if (confirm(StringBundle.getStr("resetConfirm2"))) {
-      ab.reset(true);
+      ab.reset();
       this.setStatusBarText(restartStr);
       alert(restartStr);
     }
