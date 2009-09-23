@@ -83,7 +83,7 @@ var Preferences = {
     myContactsName:           new Pref("myContactsName",     "char", "My Contacts"),
     addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
     lastVersion:              new Pref("lastVersion",        "char", "0"),
-    updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true),
+    updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true)
   },
   /**
    * Preferences.getPref
