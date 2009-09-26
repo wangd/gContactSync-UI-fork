@@ -99,9 +99,9 @@ var CardDialogOverlay = {
     // if it isn't finished loading yet wait another 200 ms and try again
     if (!document.getElementById("abTabs")) {
       // if it has tried to load more than 50 times something is wrong, so quit
-      if (this.mLoadNumber < 50)
+      if (CardDialogOverlay.mLoadNumber < 50)
         setTimeout(CardDialogOverlay.init, 200);
-      this.mLoadNumber++;
+      CardDialogOverlay.mLoadNumber++;
       return;
     }
     StringBundle.init(); // initialize the string bundle
@@ -116,10 +116,10 @@ var CardDialogOverlay = {
     // some contacts are read-only so extra attributes should be disabled for
     // those cards (see Mozdev Bug 20169)
     try {
-      this.mDisabled = document.getElementById("PreferMailFormatPopup").disabled;
+      CardDialogOverlay.mDisabled = document.getElementById("PreferMailFormatPopup").disabled;
     } catch (e) {
       alert("Error while determining if contact is read-only: " + e);
-      this.mDisabled = true;
+      CardDialogOverlay.mDisabled = true;
     }
     // add the email type drop down menus
     try {
@@ -237,7 +237,7 @@ var CardDialogOverlay = {
     var tabs = document.getElementById("abTabs");
     try {
       // setup the new screenname/e-mail address/phone numbers tab
-      var myTab = document.createElementNS(this.mNamespace, "tab");
+      var myTab = document.createElementNS(CardDialogOverlay.mNamespace, "tab");
       myTab.setAttribute("label", "gContactSync");
       myTab.setAttribute("id", "gContactSyncTab");
       // add the new tab to the dialog
@@ -318,8 +318,8 @@ var CardDialogOverlay = {
     
     // if this is a read-only card, make added elements disabled
     // the menulists are already taken care of
-    // TODO update this...
-    if (this.mDisabled) {
+    // TODO update CardDialogOverlay...
+    if (CardDialogOverlay.mDisabled) {
       document.getElementById("ThirdEmail").readOnly       = true;
       document.getElementById("FourthEmail").readOnly      = true;
       document.getElementById("TalkScreenName").readOnly   = true;

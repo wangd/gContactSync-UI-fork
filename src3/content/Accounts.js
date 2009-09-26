@@ -118,6 +118,26 @@ var Accounts = {
     return true;
   },
   /**
+   * Accounts.getSelectedAb
+   * Returns a new GAddressBook corresponding to the currently-selected address
+   * book in the accounts tree.
+   * @return A GAddressBook if one is selected, else false.
+   */
+  getSelectedAb: function Accounts_getSelectedAb() {
+    var tree = document.getElementById("loginTree");
+    if (tree.currentIndex < 0) {
+      this.enablePreferences(false);
+      return false;
+    }
+    this.enablePreferences(true);
+    var abName = tree.view.getCellText(tree.currentIndex,
+                                       tree.columns.getColumnAt(this.mAbNameIndex));
+    var ab = AbManager.getAbByName(abName);
+    if (!ab)
+      return false;
+    return new GAddressBook(ab);    
+  },
+  /**
    * Accounts.newAddressBook
    * Create a new address book.
    */
@@ -130,7 +150,35 @@ var Accounts = {
    * Saves the preferences for the selected address book
    */
   saveSelectedAccount: function Accounts_saveSelectedAccount() {
-    alert("Sorry, this feature is not complete");
+    var usernameElem  = document.getElementById("Username");
+    var groupElem     = document.getElementById("Groups");
+    var directionElem = document.getElementById("SyncDirection");
+    var pluginElem    = document.getElementById("Plugin");
+    var disableElem   = document.getElementById("disabled");
+    var ab = this.getSelectedAb();
+    if (!ab)
+      return ab;
+
+    if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem)
+      return false;
+    // the simple preferences
+    ab.savePref("Username", usernameElem.value);
+    ab.savePref("Plugin",   pluginElem.value);
+    ab.savePref("Disabled", disableElem.checked);
+    // Group to sync
+    ab.savePref("syncGroups", groupElem.value == "All");
+    ab.savePref("myContacts", new String(groupElem.value != "All" && groupElem.value != "None"));
+    // TODO support groupElem.value == "Other";
+    ab.savePref("myContactsName", groupElem.value);
+    // Sync Direction
+    ab.savePref("writeOnly", directionElem.value == "WriteOnly");
+    ab.savePref("readOnly",  directionElem.value == "ReadOnly");
+    // TODO only reset if necessary
+    ab.reset();
+    this.fillUsernames();
+    this.selectedAbChange();
+    alert(StringBundle.getStr("finishedAcctSave"));
+    return true;
   },
   /**
    * Accounts.enablePreferences
@@ -162,26 +210,20 @@ var Accounts = {
   },
   /**
    * Accounts.selectedAbChange
-   * Called when the selection changes in the
+   * Called when the selected address book changes in the accounts tree.
+   * @return true if there is currently an address book selected.
    */
   selectedAbChange: function Accounts_selectedAbChange() {
-    var tree          = document.getElementById("loginTree");
     var usernameElem  = document.getElementById("Username");
     var groupElem     = document.getElementById("Groups");
     var directionElem = document.getElementById("SyncDirection");
-    if (!tree || !usernameElem || !groupElem || !directionElem)
+    var pluginElem    = document.getElementById("Plugin");
+    var disableElem   = document.getElementById("disabled");
+    if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem)
       return false;
-    if (tree.currentIndex < 0) {
-      this.enablePreferences(false);
-      return false;
-    }
-    this.enablePreferences(true);
-    var abName = tree.view.getCellText(tree.currentIndex,
-                                       tree.columns.getColumnAt(this.mAbNameIndex));
-    var ab = AbManager.getAbByName(abName);
+    var ab = this.getSelectedAb();
     if (!ab)
-      return false;
-    ab = new GAddressBook(ab);
+      return ab;
     // Username/Account
     this.fillUsernames(ab.mPrefs.Username);
     // Group
@@ -191,19 +233,22 @@ var Accounts = {
     var group        = ab.mPrefs.myContacts
                          ? (ab.mPrefs.myContactsName
                             ? ab.mPrefs.myContactsName
-                            : "None")
-                         : (ab.mPrefs.syncGroups
+                            : "false")
+                         : (ab.mPrefs.syncGroups != "false"
                             ? "All"
-                            : "None");
+                            : "false");
     selectMenuItem(groupElem, group, true);
     // Sync Direction
-    var direction = ab.mPrefs.readOnly
+    var direction = ab.mPrefs.readOnly == "true"
                       ? "ReadOnly"
-                      : ab.mPrefs.writeOnly
+                      : ab.mPrefs.writeOnly == "true"
                         ? "WriteOnly"
                         : "Complete";
     selectMenuItem(directionElem, direction, true);
-    // TODO Plugin
+    // Temporarily disable synchronization with the address book
+    disableElem.checked = ab.mPrefs.Disabled == "true";
+    // Select the correct plugin
+    selectMenuItem(pluginElem, ab.mPrefs.Plugin, true);
     
     return true;
   },

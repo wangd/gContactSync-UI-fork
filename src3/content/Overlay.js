@@ -157,6 +157,8 @@ var Overlay = {
         // fix the existing phone numbers
         var arr = ["WorkPhone", "HomePhone", "FaxNumber","CellularNumber",
                    "PagerNumber"];
+        // the strings from the string bundle
+        //var arr2 = ["first", "second", "third", "fourth", "fifth"];
         var elem;
         for (var i = 0; i < arr.length; i++) {
           elem = document.getElementById(arr[i]);
@@ -165,6 +167,7 @@ var Overlay = {
           // remove it
           treeCols.removeChild(elem);
           elem.setAttribute("label", StringBundle.getStr(arr[i]));
+//          elem.setAttribute("label", StringBundle.getStr(arr2[i]));
           // and then add it to the end of the treecols element
           treeCols.appendChild(elem);
         }

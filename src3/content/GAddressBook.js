@@ -46,21 +46,14 @@
 function GAddressBook(aDirectory, aNoPrefs) {
   // call the AddressBook constructor using this object
   AddressBook.call(this, aDirectory);
-  if (!aNoPrefs)
-    this.getPrefs();
-}
-
-// Copy the AB prototype (methods and member variables)
-GAddressBook.prototype = AddressBook.prototype;
-
-// A prefix for all preferences used to prevent conflicts with other extensions
-GAddressBook.prototype.prefPrefix = "gContactSync";
 
 // Preferences for this address book
 // If these aren't set the global preference with the same name, if any, is used
-GAddressBook.prototype.mPrefs = {
+// NOTE: All these preferences are converted to strings
+this.mPrefs = {
   Plugin:         "", // The name of the plugin to use
   Username:       "", // The username of the acct synced with
+  Disabled:       "", // Temporarily disable synchronization with this AB
   // NOTE: These three prefs aren't combined into a single pref for backwards
   // compatibility with 0.2.x
   myContacts:     "", // true if only one group should be synced
@@ -75,6 +68,15 @@ GAddressBook.prototype.mPrefs = {
   updateGoogleInConflicts: "" // If a contact was updated in Google and TB then
                               // this pref determines which contact to update
 };
+  if (!aNoPrefs)
+    this.getPrefs();
+}
+
+// Copy the AB prototype (methods and member variables)
+GAddressBook.prototype = AddressBook.prototype;
+
+// A prefix for all preferences used to prevent conflicts with other extensions
+GAddressBook.prototype.prefPrefix = "gContactSync";
 
 /**
  * GAddressBook.getPrefs
@@ -91,7 +93,7 @@ GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
     // this behavior is mostly for backwards compatibility
     if (val === 0) {
       var pref = Preferences.mSyncPrefs[i];
-      val = pref ? pref.value : "";
+      val = pref ? new String(pref.value) : "";
     }
     LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
     this.mPrefs[i] = val;
@@ -107,6 +109,7 @@ GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
  * @param aValue {string} The value to set the preference to.
  */
 GAddressBook.prototype.savePref = function GAddressBook_savePref(aName, aValue) {
+  LOGGER.VERBOSE_LOG(" * Setting pref '" + aName + "' to value '" + aValue + "'");
   this.setStringPref(this.prefPrefix + aName, aValue);
   this.mPrefs[aName] = aValue;
 };

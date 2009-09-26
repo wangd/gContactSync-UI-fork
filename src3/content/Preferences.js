@@ -83,6 +83,8 @@ var Preferences = {
     myContactsName:           new Pref("myContactsName",     "char", "My Contacts"),
     addressBookName:          new Pref("addressBookName",    "char", "Google Contacts"),
     lastVersion:              new Pref("lastVersion",        "char", "0"),
+    Plugin:                   new Pref("Plugin",             "char", "Google"),
+    Disabled:                 new Pref("Disabled",           "char", "false"),
     updateGoogleInConflicts:  new Pref("updateGoogleInConflicts",  "bool", true)
   },
   /**

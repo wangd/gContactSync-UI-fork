@@ -82,12 +82,13 @@
           <menulist id="Groups">
             <menupopup id="GroupsPopup">
               <menuitem value="All"        label="&AllGroups.label;"/>
-              <menuitem value="None"       label="&NoGroups.label;"/>
+              <menuitem value="false"      label="&NoGroups.label;"/>
               <menuitem value="contacts"   label="&Contacts.label;"/>
               <menuitem value="coworkers"  label="&Coworkers.label;"/>
               <menuitem value="family"     label="&Family.label;"/>
               <menuitem value="friends"    label="&Friends.label;"/>
-              <menuitem value="Other"      label="&Other.label;"/>
+              <!-- TODO uncomment and implement -->
+              <!--<menuitem value="Other"      label="&Other.label;"/>-->
             </menupopup>
           </menulist>
         </groupbox>

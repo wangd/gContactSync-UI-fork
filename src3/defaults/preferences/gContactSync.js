@@ -55,6 +55,10 @@ pref("extensions.gContactSync.lastVersion", "0");
 pref("extensions.gContactSync.getPhotos", true);
 // add a 'reset' menuitem to the AB context menu
 pref("extensions.gContactSync.addReset", true);
+// default plugin for new synchronization accounts
+pref("extensions.gContactSync.Plugin", "Google");
+// disable synchronization with all address books--even those setup to sync--by default
+pref("extensions.gContactSync.Disabled", "false");
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "PreferMailFormat");
 pref("extensions.gContactSync.extended2", "AllowRemoteContent");
