@@ -71,7 +71,6 @@ var Sync = {
    * @param firstLog Should be true if the user just logged in.
    */
   begin: function Sync_begin() {
-    alert("Sync.begin" + " - " + Sync.mSynced);
     if (!gdata.isAuthValid()) {
       alert(StringBundle.getStr("pleaseAuth"));
       return;
@@ -111,6 +110,7 @@ var Sync = {
     Sync.mContactsUrl      = null;
     if (!Sync.mCurrentAuthToken) {
       LOGGER.LOG_WARNING("Unable to find the auth token for: " + Sync.mCurrentUsername);
+      Sync.mCurrentAb = null;
       Sync.syncNextUser();
       return;
     }
@@ -580,7 +580,7 @@ var Sync = {
         }
       }
       else {
-        var groupName = Preferences.mSyncPrefs.myContactsName.value;
+        var groupName = Preferences.mSyncPrefs.myContactsName.value.toLowerCase();
         LOGGER.LOG("Only synchronizing the " + groupName + " group.");
         var group, id, sysId, title;
         var foundGroup = false;
@@ -593,8 +593,8 @@ var Sync = {
             // system group then this method won't work because system gruoups
             // are first.
             id    = group.getID();
-            sysId = group.getSystemId();
-            title = group.getTitle();
+            sysId = group.getSystemId().toLowerCase();
+            title = group.getTitle().toLowerCase();
             LOGGER.VERBOSE_LOG("  - Found a group named " + title + " - ID: " + id);
             if (sysId == groupName || title == groupName) {
               foundGroup = true;
