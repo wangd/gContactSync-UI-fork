@@ -198,13 +198,23 @@ var Overlay = {
   /**
    * Overlay.setupMenu
    * Sets up the gContactSync menu in the address book menubar
+   *
+   * @return true  - The menu was created
+   * @return false - The menu could not be added
    */
   setupMenu: function Overlay_setupMenu() {
     try {
-      var menubar      = document.getElementById("mail-menubar");
+      // Workaround for those who have the TinyMenu extension
+      var menubar      = document.getElementById("tinymenu-popup");
+      if (!menubar)
+        menubar      = document.getElementById("mail-menubar");
       var isSeamonkey  = menubar ? true : false;
       if (!menubar) // seamonkey
           menubar      = document.getElementById("ab-menubar");
+      if (!menubar) {
+        LOGGER.LOG_WARNING("Unable to find the menubar");
+        return false;
+      }
 
       var toolsMenu    = document.getElementById("tasksMenu");
       var menu         = document.createElement("menu");
@@ -264,9 +274,11 @@ var Overlay = {
       menupopup.appendChild(errorMenuItem);
       menu.appendChild(menupopup);
       menubar.insertBefore(menu, toolsMenu);
+      return true;
     }
     catch(e) {
       LOGGER.LOG_WARNING("Unable to setup the menu", e);
+      return false;
     }
   },
   /**
