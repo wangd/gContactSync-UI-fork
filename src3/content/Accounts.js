@@ -165,6 +165,8 @@ var Accounts = {
     ab.savePref("Username", usernameElem.value);
     ab.savePref("Plugin",   pluginElem.value);
     ab.savePref("Disabled", disableElem.checked);
+    // this is for backwards compatibility
+    ab.savePref("Primary",  "true");
     // Group to sync
     ab.savePref("syncGroups", groupElem.value == "All");
     ab.savePref("myContacts", new String(groupElem.value != "All" && groupElem.value != "None"));
