@@ -267,7 +267,14 @@ var Sync = {
       tbContact.id = id;
       // no ID = new contact
       if (!id) {
-        Sync.mContactsToAdd.push(tbContact.mContact); // TODO convert the array to use TBContacts
+        if (Preferences.mSyncPrefs.readOnly.value) {
+          LOGGER.LOG(" * The contact is new. " +
+                     "Ignoring since read-only mode is on.");
+        }
+        else {
+          LOGGER.LOG(" * This contact is new and will be added to Google.");
+          Sync.mContactsToAdd.push(tbContact.mContact); // TODO convert the array to use TBContacts
+        }
       }
       // if there is a matching Google Contact
       else if (gContacts[id]) {
@@ -328,14 +335,19 @@ var Sync = {
     for (var id in gContacts) {
       var gContact = gContacts[id];
       if (gContact) {
+        LOGGER.LOG(gContact.getName());
         var gCardDate = gContact.lastModified;
         if (gCardDate > lastSync) {
           LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
           ContactConverter.makeCard(gContact);
         }
-        else {
+        else if (Preferences.mSyncPrefs.readOnly.value) {
           LOGGER.LOG(" * The contact is old will be deleted");
           Sync.mContactsToDelete.push(gContact);
+        }
+        else {
+          LOGGER.LOG (" * The contact was deleted in Thunderbird.  " +
+                      "Ignoring since read-only mode is on.");
         }
       }
     }
@@ -505,6 +517,10 @@ var Sync = {
                     list.update();
                     LOGGER.LOG_WARNING("  - A system group was renamed in Thunderbird");
                   }
+                  else if (Preferences.mSyncPrefs.readOnly.value) {
+                    LOGGER.LOG(" - The mailing list's name has changed.  " +
+                               "Ignoring since read-only mode is on.");
+                  }
                   else {
                     LOGGER.LOG("  - Going to rename the group to " + listName);
                     group.setTitle(listName);
@@ -513,24 +529,30 @@ var Sync = {
                 }
               }
               else {
-                // System groups cannot be deleted.
-                // This would be difficult to recover from, so stop
-                // synchronization and reset the AB
-                if (group.isSystemGroup()) {
-                  noCatch = true; // don't catch this error
-                  LOGGER.LOG_ERROR("  - A system group was deleted from Thunderbird");
-                  var restartStr = StringBundle.getStr("pleaseRestart");
-                  if (confirm(StringBundle.getStr("resetConfirm"))) {
-                    ab.reset(true);
-                    Overlay.setStatusBarText(restartStr);
-                    alert(restartStr);
-                  }
-                  // Throw an error to stop the sync
-                  throw "A system group was deleted from Thunderbird";                  
+                if (Preferences.mSyncPrefs.readOnly.value) {
+                  LOGGER.LOG(" - A mailing list was deleted.  " +
+                             "Ignoring since read-only mode is on.");
                 }
                 else {
-                  Sync.mGroupsToDelete.push(group);
-                  LOGGER.LOG("  - Didn't find a matching mail list.  It will be deleted");
+                  // System groups cannot be deleted.
+                  // This would be difficult to recover from, so stop
+                  // synchronization and reset the AB
+                  if (group.isSystemGroup()) {
+                    noCatch = true; // don't catch this error
+                    LOGGER.LOG_ERROR("  - A system group was deleted from Thunderbird");
+                    var restartStr = StringBundle.getStr("pleaseRestart");
+                    if (confirm(StringBundle.getStr("resetConfirm"))) {
+                      ab.reset(true);
+                      Overlay.setStatusBarText(restartStr);
+                      alert(restartStr);
+                    }
+                    // Throw an error to stop the sync
+                    throw "A system group was deleted from Thunderbird";                  
+                  }
+                  else {
+                    Sync.mGroupsToDelete.push(group);
+                    LOGGER.LOG("  - Didn't find a matching mail list.  It will be deleted");
+                  }
                 }
               }
             }
@@ -566,8 +588,13 @@ var Sync = {
             if (i.indexOf("http://www.google.com/m8/feeds/groups/") == -1) {
               LOGGER.LOG("-Found new list named " + list.getName());
               LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
-              LOGGER.LOG(" * It will be added to Google");
-              Sync.mGroupsToAdd.push(list);
+              if (Preferences.mSyncPrefs.readOnly.value) {
+                LOGGER.LOG(" * Ignoring since read-only mode is on");  
+              }
+              else {
+                LOGGER.LOG(" * It will be added to Google");
+                Sync.mGroupsToAdd.push(list);
+              }
             }
             // if it is old, delete it
             else {
