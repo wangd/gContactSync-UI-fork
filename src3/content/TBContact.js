@@ -70,7 +70,8 @@ TBContact.prototype = {
   getValue: function TBContact_getValue(aAttribute) {
     if (!aAttribute)
       throw "Error - invalid attribute sent to TBContact_getValue";
-    if (aAttribute == "LastModifiedDate" && Preferences.mSyncPrefs.readOnly.value) {
+    if (aAttribute == "LastModifiedDate" && this.mAddressBook &&
+        this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly == "true") {
       LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
       return 0;
     }
