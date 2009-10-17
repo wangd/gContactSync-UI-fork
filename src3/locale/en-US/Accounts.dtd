@@ -34,12 +34,14 @@
 <!ENTITY Google.label         "Google">
 
 <!ENTITY SyncDirection.label  "Pick the direction for synchronization">
-<!ENTITY Complete.label       "Complete (both Google and Thunderbird are updated) [Recommended]">
-<!ENTITY ReadOnly.label       "Read-only (Thunderbird receives new and updated contacts from Google)">
-<!ENTITY WriteOnly.label      "Write-only (Thunderbird sends new and updated contacts to Google)">
+<!ENTITY DirectionHelp.label  "What is this?">
+<!ENTITY Complete.label       "Complete (both Google and Thunderbird are updated)">
+<!ENTITY ReadOnly.label       "Read-only (Thunderbird receives updates from Google)">
+<!ENTITY WriteOnly.label      "Write-only (Thunderbird sends updates to Google)">
 
 <!ENTITY Disable.label        "Temporarily disable synchronization with this address book">
 
 <!-- Account buttons -->
+<!ENTITY deleteAB.label       "Delete this Address Book">
 <!ENTITY removeLogin.label    "Remove Settings">
 <!ENTITY saveChanges.label    "Save Changes">
