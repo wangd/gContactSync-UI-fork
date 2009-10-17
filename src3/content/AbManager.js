@@ -186,6 +186,7 @@ var AbManager = {
         LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
                            + aCard);
     }
+    return null;
   },
   /**
    * AbManager.getCardEmailAddresses
@@ -322,11 +323,13 @@ var AbManager = {
   setMDBCardValue: function AbManager_setMDBCardValue(aCard, aAttrName, aValue) {
     try {
       aCard.setStringAttribute(aAttrName, aValue);
+      return true;
     }
     catch(e) {
       LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
                          "\n" + aValue);
     }
+    return false;
   },
   /**
    * AbManager.getMDBCardValue
@@ -343,6 +346,7 @@ var AbManager = {
     catch(e) {
       LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
     }
+    return null;
   },
   /**
    * AbManager.getAbByURI
@@ -354,7 +358,7 @@ var AbManager = {
     if (!aURI) {
       LOGGER.LOG_WARNING("Invalid aURI supplied to the 'getAbByURI' method" +
                          StringBundle.getStr("pleaseReport"));
-      return;
+      return null;
     }
     try {
       var dir;
@@ -372,6 +376,7 @@ var AbManager = {
       return dir;
     }
     catch(e) { LOGGER.LOG_ERROR("Error in getAbByURI", e); }
+    return null;
   },
   /**
    * AbManager.getAbByName
@@ -406,8 +411,9 @@ var AbManager = {
           return data;
     }
     if (aDontMakeAb)
-      return;
+      return null;
     // the AB doesn't exist, so make one:
+    // TODO - this should be in its own method
     if (this.mVersion == 3) { // TB 3
       abManager.newAddressBook(aDirName, "moz-abmdbdirectory://", 2);
       iter = abManager.directories;
