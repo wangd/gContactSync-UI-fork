@@ -34,15 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
- /**
- * GAddressBook
- * An extension of AddressBook that adds functionality specific to gContactSync.
- * @param aDirectory The actual directory.
- * @param aNoPrefs   Set this to true to skip fetching the preferences.
- * @constructor
- * @class
- * @extends AddressBook
- */
+/**
+* GAddressBook
+* An extension of AddressBook that adds functionality specific to gContactSync.
+* @param aDirectory The actual directory.
+* @param aNoPrefs   Set this to true to skip fetching the preferences.
+* @constructor
+* @class
+* @extends AddressBook
+*/
 function GAddressBook(aDirectory, aNoPrefs) {
   // call the AddressBook constructor using this object
   AddressBook.call(this, aDirectory);
@@ -115,7 +115,7 @@ GAddressBook.prototype.savePref = function GAddressBook_savePref(aName, aValue) 
 };
 
 /**
- * AddressBook.setUsername
+ * GAddressBook.setUsername
  * Sets the username for the account with which this address book is synced.
  * @param aUsername The username for the Google account.
  */
@@ -125,7 +125,7 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
 };
 
 /**
- * AddressBook.getGroupID
+ * GAddressBook.getGroupID
  * Gets and returns the ID of the group in Google with which this Address
  * Book is synchronized, if any.
  * @return The ID of the group with which this directory is synchronized.
@@ -134,8 +134,8 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
    return this.getStringPref("GroupID");
  };
  
- /**
- * AddressBook.getGroupID
+/**
+ * GAddressBook.getGroupID
  * Setsthe ID of the group in Google with which this Address Book is
  * synchronized.
  * @param aGroupID {string} The ID of the group.
@@ -146,7 +146,7 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
  };
  
  /**
-  * AddressBook.getLastSyncDate
+  * GAddressBook.getLastSyncDate
   * Returns the last time this address book was synchronized in milliseconds
   * since the epoch.
   * @return The last time this address book was synchronized.
@@ -156,7 +156,7 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
  };
  
  /**
-  * AddressBook.setLastSyncDate
+  * GAddressBook.setLastSyncDate
   * Sets the last time this address book was synchronized, in milliseconds
   * since the epoch.
   * @param aLastSync {integer} The last sync time.
@@ -166,7 +166,7 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
  };
  
  /**
-  * AddressBook.reset
+  * gAddressBook.reset
   * 'Resets' this address book making it appear to be brand new and never
   * synchronized.
   * The username is NOT erased.
