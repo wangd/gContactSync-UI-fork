@@ -165,7 +165,7 @@ var Accounts = {
     ab.savePref("Username", usernameElem.value);
     ab.savePref("Plugin",   pluginElem.value);
     ab.savePref("Disabled", disableElem.checked);
-    // this is for backwards compatibility
+    // this is for backward compatibility
     ab.savePref("Primary",  "true");
     // Group to sync
     ab.savePref("syncGroups", groupElem.value == "All");
@@ -176,7 +176,8 @@ var Accounts = {
     ab.savePref("writeOnly", directionElem.value == "WriteOnly");
     ab.savePref("readOnly",  directionElem.value == "ReadOnly");
     // TODO only reset if necessary
-    ab.reset();
+    if (usernameElem.value)
+      ab.reset();
     this.fillUsernames();
     this.selectedAbChange();
     alert(StringBundle.getStr("finishedAcctSave"));
@@ -324,7 +325,7 @@ var Accounts = {
     aAB.getPrefs();
   
     addressbook.setAttribute("label", aAB.getName());
-    synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : StringBundle.getStr("no"));
+    synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : StringBundle.getStr("noAccount"));
   
     treerow.appendChild(addressbook);
     treerow.appendChild(synced);
@@ -332,29 +333,48 @@ var Accounts = {
     aTreeChildren.appendChild(treeitem);
   
     return true;
-  }
-}
-
-/**
- * removeSelectedLogin
- * Removes the selected account's username and auth token from the login manager.
- */
-function removeSelectedLogin() {
-  // TODO FIXME
-  alert("Sorry, function not complete");
-  return;
-
-  if (confirm(StringBundle.getStr("removeLogin"))) {
-    // remove the saved prefs from the address books
-    var abs   = AbManager.getSyncedAddressBooks();
-    var abObj = abs[cellText];
-    if (abObj) {
-      for (var j in abObj) {
-        // TODO add clearPrefs
-        abObj[j].setUsername("");
-        abObj[j].setLastSyncDate(0);
+  },
+  /**
+   * Accounts.deleteSelectedAB
+   * Deletes the selected address book
+   */
+  deleteSelectedAB: function Accounts_deleteSelectedAB() {
+    if (!confirm(StringBundle.getStr("deleteAB")))
+      return false;
+    var ab = this.getSelectedAb();
+    if (!ab)
+      return ab;
+    // TODO FIXME
+    alert("Sorry, this feature is not yet complete");
+    return true;
+  },
+  /**
+   * Accounts.removeSyncSettings
+   * Removes the selected account's username and auth token from the login manager.
+   */
+  removeSyncSettings: function Accounts_removeSelectedLogin() {  
+    if (confirm(StringBundle.getStr("removeSyncSettings"))) {
+      // TODO FIXME
+      alert("Sorry, function not complete");
+      return;
+      // remove the saved prefs from the address books
+      var abs   = AbManager.getSyncedAddressBooks();
+      var abObj = abs[cellText];
+      if (abObj) {
+        for (var j in abObj) {
+          // TODO add clearPrefs
+          abObj[j].setUsername("");
+          abObj[j].setLastSyncDate(0);
+        }
       }
     }
+  },
+  /**
+   * Accounts.directionPopup
+   * Shows an alert dialog that briefly explains the synchronization direction
+   * preference.
+   */
+  directionPopup: function Accounts_directionPopup() {
+    alert(StringBundle.getStr("directionPopup")); 
   }
 }
-

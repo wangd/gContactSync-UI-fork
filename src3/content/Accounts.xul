@@ -87,8 +87,7 @@
               <menuitem value="coworkers"  label="&Coworkers.label;"/>
               <menuitem value="family"     label="&Family.label;"/>
               <menuitem value="friends"    label="&Friends.label;"/>
-              <!-- TODO uncomment and implement -->
-              <!--<menuitem value="Other"      label="&Other.label;"/>-->
+              <menuitem value="Other"      label="&Other.label;"/>
             </menupopup>
           </menulist>
         </groupbox>
@@ -96,16 +95,20 @@
                   oncommand="Accounts.showAdvancedSettings(this.checked);"/>
         <spacer height="5px"/>
         <groupbox id="advancedGroupBox">
-          <label control="Plugin" value="&Plugin.label;"/>
-          <menulist id="Plugin">
+          <label control="Plugin" value="&Plugin.label;" collapsed="true"/>
+          <menulist id="Plugin" collapsed="true">
             <menupopup id="PluginPopup">
               <menuitem id="google" value="Google" label="&Google.label;"/>
             </menupopup>
           </menulist>
-          <spacer height="5px"/>
+          <spacer height="5px" collapsed="true"/>
           <caption label="&Advanced.label;"/>
           <spacer height="5px"/>
-          <label control="SyncDirection"  value="&SyncDirection.label;"/>
+          <hbox>
+            <label control="SyncDirection"  value="&SyncDirection.label;"/>
+            <label id="link-label"    value="&DirectionHelp.label;"
+                  onclick="Accounts.directionPopup();"/>
+          </hbox>
           <menulist id="SyncDirection">
             <menupopup id="SyncDirectionPopup">
               <menuitem value="Complete"  label="&Complete.label;"/>
@@ -118,7 +121,8 @@
         </groupbox>
         <spacer height="5px"/>
         <hbox id="acctButtons">
-          <button id="removeLogin" label="&removeLogin.label;" oncommand="removeSelectedLogin();"/>
+          <button id="deleteAB" label="&deleteAB.label;" oncommand="Accounts.deleteSelectedAB();"/>
+          <button id="removeLogin" label="&removeLogin.label;" oncommand="Accounts.removeSyncSettings();"/>
           <button id="saveChanges" label="&saveChanges.label;" oncommand="Accounts.saveSelectedAccount();"/>
         </hbox>
       </vbox>
