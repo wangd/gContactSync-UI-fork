@@ -140,7 +140,6 @@ function myOnDrop(row, orientation) {
       }
       else {
         var values = [];
-        var types  = [];
         // put in a try/catch block in case the card can't be QI'd to nsIAbMDBCard
         var isMDBCard = false;
         // only copy over the extra attributes if this is before Bug 413260 and
@@ -155,7 +154,6 @@ function myOnDrop(row, orientation) {
             isMDBCard = true;
             for (var k = 0; k < attributesLen; k++) {
               values[k] = card.getStringAttribute(attributes[k]);
-              types[k]  = card.getStringAttribute(attributes[k] + "Type");
             }
           }
         }
@@ -184,9 +182,7 @@ function myOnDrop(row, orientation) {
             if (isMDBCard) {
               for (var k = 0; k < attributesLen; k++) {
                 var value = values[k] ? values[k] : "";
-                var type  = types[k]  ? types[k]  : "";
                 newCard.setStringAttribute(attributes[k], value);
-                newCard.getStringAttribute(attributes[k] + "Type", type);
               }
             }
           } catch (e) { LOGGER.LOG_WARNING("Error while copying card", e); }
