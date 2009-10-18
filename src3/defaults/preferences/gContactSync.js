@@ -51,6 +51,9 @@ pref("extensions.gContactSync.dummyEmail", true);
 pref("extensions.gContactSync.enableImUrls", true);
 // the last version of gContactSync loaded
 pref("extensions.gContactSync.lastVersion", "0");
+// fix a CSS problem in Duplicate Contacts Manager
+// https://www.mozdev.org/bugs/show_bug.cgi?id=21883
+pref("extensions.gContactSync.fixDupContactManagerCSS", false);
 // download contact photos (Thunderbird 3+)
 pref("extensions.gContactSync.getPhotos", true);
 // add a 'reset' menuitem to the AB context menu

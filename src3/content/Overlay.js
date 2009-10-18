@@ -129,6 +129,11 @@ var Overlay = {
     AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
+    // Fix the style for description elements accidentally set in the
+    // Duplicate Contacts Manager extension
+    // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
+    if (Preferences.mSyncPrefs.fixDupContactManagerCSS.value)
+      this.fixDescriptionStyle();
     // load the card view (required by seamonkey)
     if (gAddressBookBundle) {
       this.myOnLoadCardView();
@@ -409,7 +414,7 @@ var Overlay = {
       if (this.mUsername) {
         Preferences.getSyncPrefs();
         var name = Preferences.mSyncPrefs.addressBookName.value;
-        var ab   = new GAddressBook(AbManager.getAbByName(name));
+        var ab   = new GAddressBook(GAbManager.getAbByName(name));
         ab.setUsername(this.mUsername);
         ab.setLastSyncDate(0);
         Sync.begin();
@@ -579,7 +584,7 @@ var Overlay = {
     }
     try {
       Overlay.showNodes(ContactConverter.getExtraSyncAttributes());
-      var primaryEmail = AbManager.getCardValue(aCard, dummyEmailName);
+      var primaryEmail = GAbManager.getCardValue(aCard, dummyEmailName);
       // if the primary e-mail address is the dummy address, hide it
       if (isDummyEmail(primaryEmail)) {
         // TODO recalculate if the contact info box must be collapsed too
@@ -599,8 +604,8 @@ var Overlay = {
       // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
       // JabberScreenName, YahooScreenName, ICQScreenName)
       var visible     = !cvData.cvbContact.getAttribute("collapsed");
-      var thirdEmail  = AbManager.getCardValue(aCard, "ThirdEmail");
-      var fourthEmail = AbManager.getCardValue(aCard, "FourthEmail");
+      var thirdEmail  = GAbManager.getCardValue(aCard, "ThirdEmail");
+      var fourthEmail = GAbManager.getCardValue(aCard, "FourthEmail");
       visible = HandleLink(cvData.cvThirdEmail, StringBundle.getStr("ThirdEmail"),
                            thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
                            thirdEmail) || visible;
@@ -698,9 +703,9 @@ var Overlay = {
     // return true if the card has the current attribute
     for (var i = 0; i < aArray.length; i++) {
       var attr = aArray[i];
-      var value = AbManager.getCardValue(aCard, attr);
+      var value = GAbManager.getCardValue(aCard, attr);
       // get the name of the string to find in the bundle
-      var label = aUseTypeLabel ? AbManager.getCardValue(aCard, attr + "Type")
+      var label = aUseTypeLabel ? GAbManager.getCardValue(aCard, attr + "Type")
                                 : attr;
       // get the actual string
       // if the label is null (ie aUseTypeLabel was true, but there wasn't a type)
@@ -904,12 +909,44 @@ var Overlay = {
   resetSelectedAB: function Overlay_resetSelectedAB() {
     var dirTree  = document.getElementById("dirTree");
     var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
-    var ab = new GAddressBook(AbManager.getAbByURI(selected.Value), true);
+    var ab = new GAddressBook(GAbManager.getAbByURI(selected.Value), true);
     var restartStr = StringBundle.getStr("pleaseRestart");
     if (confirm(StringBundle.getStr("resetConfirm2"))) {
       ab.reset();
       this.setStatusBarText(restartStr);
       alert(restartStr);
     }
+  },
+  /**
+   * Overlay.fixDescriptionStyle
+   * Fixes the description style as set (accidentally?) by the
+   * Duplicate Contacts Manager extension in duplicateContactsManager.css
+   * It appears that the new description style was applied to addressbook.xul
+   * on accident when it was meant only for duplicateEntriesWindow.xul
+   *
+   * @return true if the description style was removed.
+   */
+  fixDescriptionStyle: function Overlay_fixDescriptionStyle() {
+    // Make sure this is addressbook.xul only
+    if (document.location && document.location.href.indexOf("/addressbook.xul") != -1) {
+      var ss = document.styleSheets;
+      var s;
+      // Iterate through each stylesheet and look for one from
+      // Duplicate Contacts Manager
+      for (var i = 0; i < ss.length; i++) {
+        // If this is duplicateContactsManager.css then remove the
+        // description style
+        if (ss[i] && ss[i].href == "chrome://duplicatecontactsmanager/skin/duplicateContactsManager.css") {
+          var rules = ss[i].cssRules;
+          for (var j = 0; j < rules.length; j++) {
+            if (rules[j].selectorText == "description") {
+              ss[i].deleteRule(j);
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
   }
 };

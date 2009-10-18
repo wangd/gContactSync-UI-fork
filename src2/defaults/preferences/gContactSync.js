@@ -57,6 +57,9 @@ pref("extensions.gContactSync.dummyEmail", true);
 pref("extensions.gContactSync.enableImUrls", true);
 // the last version of gContactSync loaded
 pref("extensions.gContactSync.lastVersion", "0");
+// fix a CSS problem in Duplicate Contacts Manager
+// https://www.mozdev.org/bugs/show_bug.cgi?id=21883
+pref("extensions.gContactSync.fixDupContactManagerCSS", false);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "WebPage1");
 pref("extensions.gContactSync.extended2", "WebPage2");

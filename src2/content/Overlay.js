@@ -125,6 +125,11 @@ var Overlay = {
     AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
+    // Fix the style for description elements accidentally set in the
+    // Duplicate Contacts Manager extension
+    // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
+    if (Preferences.mSyncPrefs.fixDupContactManagerCSS.value)
+      this.fixDescriptionStyle();
     // load the card view (required by seamonkey)
     if (gAddressBookBundle) {
       this.myOnLoadCardView();
@@ -691,7 +696,6 @@ var Overlay = {
       cvSetVisible(cvData.cvhPhone, visible);
       cvSetVisible(cvData.cvbPhone, visible);
     } catch(e) { 
-        alert("Error while modifying view pane: " + e);
         LOGGER.LOG_WARNING("Error while modifying the view pane.", e);
     }
   },
@@ -1011,5 +1015,37 @@ var Overlay = {
     catch (e) {}
     LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
     return;
+  },
+  /**
+   * Overlay.fixDescriptionStyle
+   * Fixes the description style as set (accidentally?) by the
+   * Duplicate Contacts Manager extension in duplicateContactsManager.css
+   * It appears that the new description style was applied to addressbook.xul
+   * on accident when it was meant only for duplicateEntriesWindow.xul
+   *
+   * @return true if the description style was removed.
+   */
+  fixDescriptionStyle: function Overlay_fixDescriptionStyle() {
+    // Make sure this is addressbook.xul only
+    if (document.location && document.location.href.indexOf("/addressbook.xul") != -1) {
+      var ss = document.styleSheets;
+      var s;
+      // Iterate through each stylesheet and look for one from
+      // Duplicate Contacts Manager
+      for (var i = 0; i < ss.length; i++) {
+        // If this is duplicateContactsManager.css then remove the
+        // description style
+        if (ss[i] && ss[i].href == "chrome://duplicatecontactsmanager/skin/duplicateContactsManager.css") {
+          var rules = ss[i].cssRules;
+          for (var j = 0; j < rules.length; j++) {
+            if (rules[j].selectorText == "description") {
+              ss[i].deleteRule(j);
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
   }
 };

@@ -78,6 +78,7 @@ var Preferences = {
     newColLabels:             new Pref("newColLabels",       "bool", true),
     dummyEmail:               new Pref("dummyEmail",         "bool", true),
     enableImUrls:             new Pref("enableImUrls",       "bool", true),
+    fixDupContactManagerCSS:  new Pref("fixDupContactManagerCSS", "bool", false),
     getPhotos:                new Pref("getPhotos",          "bool", true),
     addReset:                 new Pref("addReset",           "bool", true),
     myContactsName:           new Pref("myContactsName",     "char", "My Contacts"),
