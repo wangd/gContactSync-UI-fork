@@ -306,7 +306,10 @@ function setupNumBox(aID, aLabel) {
   var textbox = document.createElement("textbox");
   textbox.setAttribute("id", aID);
   textbox.setAttribute("class", "PhoneEditWidth");
-  textbox.setAttribute("readonly", CardDialogOverlay.mDisabled);
+  if (CardDialogOverlay.mDisabled)
+    textbox.setAttribute("readonly", true);
+  else if (textbox.hasAttribute("readonly"))
+    textbox.removeAttribute("readonly");
   box.appendChild(textbox);
   return box;
 }
