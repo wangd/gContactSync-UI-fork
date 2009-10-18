@@ -85,7 +85,7 @@ var Sync = {
     LOGGER.mErrorCount  = 0; // reset the error count
     Overlay.setStatusBarText(StringBundle.getStr("syncing"));
     Sync.mIndex         = 0;
-    Sync.mAddressBooks  = AbManager.getSyncedAddressBooks(true);
+    Sync.mAddressBooks  = GAbManager.getSyncedAddressBooks(true);
     Sync.syncNextUser()
   },
   /**

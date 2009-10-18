@@ -170,7 +170,7 @@ var ContactConverter = {
     if (!this.mInitialized)
       this.init();
     var ab = Sync.mCurrentAb;
-    AbManager.checkCard(aCard, "cardToAtomXML");
+    GAbManager.checkCard(aCard, "cardToAtomXML");
     this.mCurrentCard = aCard;
     var arr = this.mConverterArr;
     // set the regular properties from the array mConverterArr
@@ -180,9 +180,9 @@ var ContactConverter = {
         continue;
       var obj = arr[i];
       LOGGER.VERBOSE_LOG(" * " + obj.tbName);
-      var value = this.checkValue(AbManager.getCardValue(aCard, obj.tbName));
+      var value = this.checkValue(GAbManager.getCardValue(aCard, obj.tbName));
       // for the type, get the type from the card, or use its default
-      var type = AbManager.getCardValue(aCard, obj.tbName + "Type");
+      var type = GAbManager.getCardValue(aCard, obj.tbName + "Type");
       if (!type || type == "")
         type = obj.type;
       // see the dummy e-mail note below
@@ -196,15 +196,15 @@ var ContactConverter = {
     }
     // Birthday can be either YYYY-M-D or --M-D for no year.
     // TB can have all three, just a day/month, or just a year through the UI
-    var birthDay    = AbManager.getCardValue(aCard, "BirthDay");
+    var birthDay    = GAbManager.getCardValue(aCard, "BirthDay");
     var birthMonth  = isNaN(parseInt(birthDay, 10))
                         ? null
-                        : AbManager.getCardValue(aCard, "BirthMonth");
+                        : GAbManager.getCardValue(aCard, "BirthMonth");
     var birthdayVal = null;
     // if the contact has a birth month (and birth day) add it to the contact
     // from Google
     if (birthMonth && !isNaN(parseInt(birthMonth, 10))) {
-      var birthYear = AbManager.getCardValue(aCard, "BirthYear");
+      var birthYear = GAbManager.getCardValue(aCard, "BirthYear");
       if (!birthYear || isNaN(parseInt(birthYear, 10)))
         birthYear = "-";
       birthdayVal = birthYear + "-" + birthMonth + "-" + birthDay;
@@ -216,7 +216,7 @@ var ContactConverter = {
     aContact.removeExtendedProperties();
     arr = Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
-      var value = this.checkValue(AbManager.getCardValue(aCard, arr[i]));
+      var value = this.checkValue(GAbManager.getCardValue(aCard, arr[i]));
       aContact.setExtendedProperty(arr[i], value);
     }
     // If the myContacts pref is set and this contact is new then add the

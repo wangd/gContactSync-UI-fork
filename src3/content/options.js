@@ -125,7 +125,7 @@ function resetAllSyncedABs(showConfirm) {
   }
 
   LOGGER.LOG("Resetting all synchronized directories.");
-  var abs = AbManager.getSyncedAddressBooks(true);
+  var abs = GAbManager.getSyncedAddressBooks(true);
   for (var i in abs) {
     abs[i].ab.reset();
   }

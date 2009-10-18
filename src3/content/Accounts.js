@@ -132,7 +132,7 @@ var Accounts = {
     this.enablePreferences(true);
     var abName = tree.view.getCellText(tree.currentIndex,
                                        tree.columns.getColumnAt(this.mAbNameIndex));
-    var ab = AbManager.getAbByName(abName);
+    var ab = GAbManager.getAbByName(abName);
     if (!ab)
       return false;
     return new GAddressBook(ab);    
@@ -303,7 +303,7 @@ var Accounts = {
     // Get all Personal/Mork DB Address Books (type == 2,
     // see mailnews/addrbook/src/nsDirPrefs.h)
     // TODO - there should be a way to change the allowed dir types...
-    var abs    = AbManager.getAllAddressBooks(2);
+    var abs    = GAbManager.getAllAddressBooks(2);
     for (var i in abs)
       Accounts.addToTree(newTreeChildren, abs[i]);
     return true;
@@ -358,7 +358,7 @@ var Accounts = {
       alert("Sorry, function not complete");
       return;
       // remove the saved prefs from the address books
-      var abs   = AbManager.getSyncedAddressBooks();
+      var abs   = GAbManager.getSyncedAddressBooks();
       var abObj = abs[cellText];
       if (abObj) {
         for (var j in abObj) {

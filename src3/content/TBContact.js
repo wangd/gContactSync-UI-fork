@@ -37,7 +37,7 @@
 /**
  * TBContact
  * Makes a new TBContact object that has functions to get and set various values
- * for a contact independently of the version of Thunderbird (using AbManager).
+ * for a contact independently of the version of Thunderbird (using GAbManager).
  * Optionally takes the parent directory and is able to update the card in that
  * directory.
  * 
@@ -47,7 +47,7 @@
  * @constructor
  */
 function TBContact(aContact, aDirectory) {
-  AbManager.checkCard(aContact, "TBContact constructor");
+  GAbManager.checkCard(aContact, "TBContact constructor");
   //if (!aDirectory instanceof AddressBook) {
   //  throw "Error - invalid directory sent to the TBContact constructor";
   //}
@@ -75,7 +75,7 @@ TBContact.prototype = {
       LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
       return 0;
     }
-    return AbManager.getCardValue(this.mContact, aAttribute);
+    return GAbManager.getCardValue(this.mContact, aAttribute);
   },
   /**
    * TBContact.setValue
@@ -89,7 +89,7 @@ TBContact.prototype = {
    *                   the value of the attribute.
    */
   setValue: function TBContact_setValue(aAttribute, aValue, aUpdate) {
-    AbManager.setCardValue(this.mContact, aAttribute, aValue);
+    GAbManager.setCardValue(this.mContact, aAttribute, aValue);
     if (aUpdate) {
       return this.update();
     }

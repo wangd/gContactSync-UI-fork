@@ -52,6 +52,8 @@
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/AbManager.js"/>
   <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GAbManager.js"/>
+  <script type="application/x-javascript"
           src="chrome://gcontactsync/content/AbListener.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Group.js"/>
