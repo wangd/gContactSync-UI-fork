@@ -131,9 +131,8 @@ var Overlay = {
     if (Preferences.mSyncPrefs.fixDupContactManagerCSS.value)
       this.fixDescriptionStyle();
     // load the card view (required by seamonkey)
-    if (gAddressBookBundle) {
+    if (document.getElementById("ab-menubar"))
       this.myOnLoadCardView();
-    }
     this.checkAuthentication(); // check if the Auth token is valid
   },
   /**
@@ -549,7 +548,7 @@ var Overlay = {
    * @param aCard The card being viewed.
    */
   myDisplayCardViewPane: function Overlay_myDisplayCardViewPane(aCard) {
-    originalDisplayCardViewPane(aCard); // call the original first
+    originalDisplayCardViewPane.apply(this, arguments); // call the original first
     if (aCard.isMailList) {
       // collapse all the attributes added
       Overlay.hideNodes(ContactConverter.getExtraSyncAttributes());
@@ -809,18 +808,18 @@ var Overlay = {
     if (!originalOnLoadCardView){
       return;
     }
-    originalOnLoadCardView();
+    originalOnLoadCardView.apply(this, arguments);
 
     // add the <description> elements
     var vbox = document.getElementById("cvbContact");
     // setup the third and fourth e-mail addresses
-    var xhmtl = "http://www.w3.org/1999/xhtml";
+    var xhtml = "http://www.w3.org/1999/xhtml";
     cvData.cvThirdEmailBox = Overlay.makeDescElement("ThirdEmailBox", "CardViewLink");
-    cvData.cvThirdEmail = document.createElementNS(xhmtl, "html:a");
+    cvData.cvThirdEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvThirdEmail.setAttribute("id", "ThirdEmail");
     cvData.cvThirdEmailBox.appendChild(cvData.cvThirdEmail);
     cvData.cvFourthEmailBox = Overlay.makeDescElement("FourthEmailBox", "CardViewLink");
-    cvData.cvFourthEmail = document.createElementNS(xhmtl, "html:a");
+    cvData.cvFourthEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvFourthEmail.setAttribute("id", "FourthEmail");
     cvData.cvFourthEmailBox.appendChild(cvData.cvFourthEmail);
     vbox.insertBefore(cvData.cvFourthEmailBox, document.getElementById("cvScreennameBox"));
@@ -829,23 +828,23 @@ var Overlay = {
     // the screennames
     if (Preferences.mSyncPrefs.enableImUrls.value) {
       cvData.cvTalkScreenNameBox  = Overlay.makeDescElement("TalkScreenNameBox", "CardViewLink");
-      cvData.cvTalkScreenName     = document.createElementNS(xhmtl, "html:a");
+      cvData.cvTalkScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvTalkScreenName.setAttribute("id", "TalkScreenName");
       cvData.cvTalkScreenNameBox.appendChild(cvData.cvTalkScreenName);
       cvData.cvICQScreenNameBox   = Overlay.makeDescElement("ICQScreenNameBox", "CardViewLink");
-      cvData.cvICQScreenName      = document.createElementNS(xhmtl, "html:a");
+      cvData.cvICQScreenName      = document.createElementNS(xhtml, "html:a");
       cvData.cvICQScreenName.setAttribute("id", "ICQScreenName");    
       cvData.cvICQScreenNameBox.appendChild(cvData.cvICQScreenName);
       cvData.cvYahooScreenNameBox  = Overlay.makeDescElement("YahooScreenNameBox", "CardViewLink");
-      cvData.cvYahooScreenName     = document.createElementNS(xhmtl, "html:a");
+      cvData.cvYahooScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvYahooScreenName.setAttribute("id", "YahooScreenName");    
       cvData.cvYahooScreenNameBox.appendChild(cvData.cvYahooScreenName);
       cvData.cvMSNScreenNameBox    = Overlay.makeDescElement("MSNScreenNameBox", "CardViewLink");
-      cvData.cvMSNScreenName       = document.createElementNS(xhmtl, "html:a");
+      cvData.cvMSNScreenName       = document.createElementNS(xhtml, "html:a");
       cvData.cvMSNScreenName.setAttribute("id", "MSNScreenName");    
       cvData.cvMSNScreenNameBox.appendChild(cvData.cvMSNScreenName);
       cvData.cvJabberScreenNameBox = Overlay.makeDescElement("JabberScreenNameBox", "CardViewLink");
-      cvData.cvJabberScreenName    = document.createElementNS(xhmtl, "html:a");
+      cvData.cvJabberScreenName    = document.createElementNS(xhtml, "html:a");
       cvData.cvJabberScreenName.setAttribute("id", "JabberScreenName");
       cvData.cvJabberScreenNameBox.appendChild(cvData.cvJabberScreenName);
       
