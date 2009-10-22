@@ -72,15 +72,15 @@ var AbListener = {
    *                   an Address Book card removed from a mail list.
    */
   onItemRemoved: function AbListener_onItemRemoved(aParentDir, aItem) {
-    aParentDir.QueryInterface(Ci.nsIAbDirectory);
+    aParentDir.QueryInterface(Components.interfaces.nsIAbDirectory);
 
     // if a contact was removed and there is not an ongoing synchronization
-    if (aItem instanceof Ci.nsIAbCard && Sync.mSynced) {
+    if (aItem instanceof Components.interfaces.nsIAbCard && Sync.mSynced) {
       // if a contact was removed from just a amiling list, update the contact's
       // last modified date in the parent address book
       if (aParentDir.isMailList) {
         try {
-          aItem.QueryInterface(Ci.nsIAbCard);
+          aItem.QueryInterface(Components.interfaces.nsIAbCard);
           var now = (new Date).getTime()/1000;
           var uri = this.getURI(aParentDir);
           // the URI of the list's parent
@@ -108,10 +108,10 @@ var AbListener = {
   getURI: function AbListener_getURI(aDirectory) {
     var error;
     try {
-      if (aDirectory && (aDirectory instanceof Ci.nsIAbDirectory)) {
+      if (aDirectory && (aDirectory instanceof Components.interfaces.nsIAbDirectory)) {
         if (aDirectory.URI) // Thunderbird 3
           return aDirectory.URI;
-        aDirectory.QueryInterface(Ci.nsIAbMDBDirectory); // Thunderbird 2
+        aDirectory.QueryInterface(Components.interfaces.nsIAbMDBDirectory); // Thunderbird 2
         if (aDirectory.getDirUri)
           return aDirectory.getDirUri();
      } 
@@ -127,17 +127,17 @@ var AbListener = {
    * directory (address book or mail list).
    */
   add: function AbListener_add() {
-    if (Cc["@mozilla.org/abmanager;1"]) { // Thunderbird 3
-      var flags = Ci.nsIAbListener.directoryItemRemoved;
-      Cc["@mozilla.org/abmanager;1"]
-       .getService(Ci.nsIAbManager)
-       .addAddressBookListener(AbListener, flags);
+    if (Components.classes["@mozilla.org/abmanager;1"]) { // Thunderbird 3
+      var flags = Components.interfaces.nsIAbListener.directoryItemRemoved;
+      Components.classes["@mozilla.org/abmanager;1"]
+                .getService(Components.interfaces.nsIAbManager)
+                .addAddressBookListener(AbListener, flags);
     }
     else { // Thunderbird 2
-      var flags = Ci.nsIAddrBookSession.directoryItemRemoved;
-      Cc["@mozilla.org/addressbook/services/session;1"]
-       .getService(Ci.nsIAddrBookSession)
-       .addAddressBookListener(AbListener, flags);
+      var flags = Components.interfaces.nsIAddrBookSession.directoryItemRemoved;
+      Components.classes["@mozilla.org/addressbook/services/session;1"]
+                .getService(Components.interfaces.nsIAddrBookSession)
+                .addAddressBookListener(AbListener, flags);
     }
   },
   /**
@@ -145,13 +145,13 @@ var AbListener = {
    * Removes this listener.
    */
   remove: function AbListener_remove() {
-    if (Cc["@mozilla.org/abmanager;1"]) // Thunderbird 3
-      Cc["@mozilla.org/abmanager;1"]
-       .getService(Ci.nsIAbManager)
-       .removeAddressBookListener(AbListener);
+    if (Components.classes["@mozilla.org/abmanager;1"]) // Thunderbird 3
+      Components.classes["@mozilla.org/abmanager;1"]
+                .getService(Components.interfaces.nsIAbManager)
+                .removeAddressBookListener(AbListener);
     else // Thunderbird 2
-      Cc["@mozilla.org/addressbook/services/session;1"]
-       .getService(Ci.nsIAddrBookSession)
-       .removeAddressBookListener(AbListener);
+      Components.classes["@mozilla.org/addressbook/services/session;1"]
+                .getService(Components.interfaces.nsIAddrBookSession)
+                .removeAddressBookListener(AbListener);
   }
 };

@@ -57,19 +57,19 @@ var LoginManager = {
     if (this.mNumAuthTokens == 0)
       this.getAuthTokens();
     // Thunderbird 2
-    if ("@mozilla.org/passwordmanager;1" in Cc) {
-     var passwordManager =  Cc["@mozilla.org/passwordmanager;1"]
-                            .getService(Ci.nsIPasswordManager);
+    if ("@mozilla.org/passwordmanager;1" in Components.classes) {
+     var passwordManager =  Components.classes["@mozilla.org/passwordmanager;1"]
+                                      .getService(Components.interfaces.nsIPasswordManager);
      passwordManager.addUser(this.mHostname, aUsername, aToken);
      this.mAuthTokens[aUsername] = aToken;
      this.mNumAuthTokens++;
     }
     // Thunderbird 3, Seamonkey 2
-    else if ("@mozilla.org/login-manager;1" in Cc) {
-      var loginManager =  Cc["@mozilla.org/login-manager;1"]
-                           .getService(Ci.nsILoginManager);
+    else if ("@mozilla.org/login-manager;1" in Components.classes) {
+      var loginManager =  Components.classes["@mozilla.org/login-manager;1"]
+                                    .getService(Components.interfaces.nsILoginManager);
       var nsLoginInfo  = new CC("@mozilla.org/login-manager/loginInfo;1",
-                                Ci.nsILoginInfo, "init");
+                                Components.interfaces.nsILoginInfo, "init");
       var extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
                                          this.mHttpRealm, aUsername, aToken,
                                          this.mUsernameField, this.mPasswordField);
@@ -87,13 +87,13 @@ var LoginManager = {
     this.mAuthTokens = {};
     this.mNumAuthTokens = 0;
     // Thunderbird 2
-    if ("@mozilla.org/passwordmanager;1" in Cc) {
-      var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
-                             .getService(Ci.nsIPasswordManager);
+    if ("@mozilla.org/passwordmanager;1" in Components.classes) {
+      var passwordManager = Components.classes["@mozilla.org/passwordmanager;1"]
+                                      .getService(Components.interfaces.nsIPasswordManager);
       var iter = passwordManager.enumerator;
       while (iter.hasMoreElements()) {
         try {
-          var pass = iter.getNext().QueryInterface(Ci.nsIPassword);
+          var pass = iter.getNext().QueryInterface(Components.interfaces.nsIPassword);
           if (pass.host == this.mHostname) {
             this.mAuthTokens[pass.user] = pass.password;
             this.mNumAuthTokens++;
@@ -102,9 +102,9 @@ var LoginManager = {
       }
     }
     // Thunderbird 3, Seamonkey 2
-    else if ("@mozilla.org/login-manager;1" in Cc) {
-      var loginManager =  Cc["@mozilla.org/login-manager;1"]
-                           .getService(Ci.nsILoginManager);
+    else if ("@mozilla.org/login-manager;1" in Components.classes) {
+      var loginManager =  Components.classes["@mozilla.org/login-manager;1"]
+                                    .getService(Components.interfaces.nsILoginManager);
       // Find users for the given parameters
       var logins = loginManager.findLogins({}, this.mHostname, this.mSubmitURL,
                                            this.mHttpRealm);
@@ -133,9 +133,9 @@ var LoginManager = {
    */
   removeAuthToken: function LoginManager_removeAuthToken(aUsername) {
     // Thunderbird 2
-    if ("@mozilla.org/passwordmanager;1" in Cc) {
-      var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
-                             .getService(Ci.nsIPasswordManager);
+    if ("@mozilla.org/passwordmanager;1" in Components.classes) {
+      var passwordManager = Components.classes["@mozilla.org/passwordmanager;1"]
+                                      .getService(Components.interfaces.nsIPasswordManager);
       try {
         passwordManager.removeUser(this.mHostname, aUsername);
         this.mAuthTokens[aUsername] = null;
@@ -146,9 +146,9 @@ var LoginManager = {
       }
     }
     // Thunderbird 3, Seamonkey 2
-    else if ("@mozilla.org/login-manager;1" in Cc) {
-      var loginManager = Cc["@mozilla.org/login-manager;1"]
-                          .getService(Ci.nsILoginManager);
+    else if ("@mozilla.org/login-manager;1" in Components.classes) {
+      var loginManager = Components.classes["@mozilla.org/login-manager;1"]
+                                   .getService(Components.interfaces.nsILoginManager);
       // Find logins for the given parameters
       var logins = loginManager.findLogins({}, this.mHostname, this.mSubmitURL,
                                             this.mHttpRealm);
@@ -181,13 +181,13 @@ var LoginManager = {
   getAllEmailAccts: function LoginManager_getAllEmailAccts(aPattern) {
     var arr = [];
     // Thunderbird 2
-    if ("@mozilla.org/passwordmanager;1" in Cc) {
-      var passwordManager = Cc["@mozilla.org/passwordmanager;1"]
-                             .getService(Ci.nsIPasswordManager);
+    if ("@mozilla.org/passwordmanager;1" in Components.classes) {
+      var passwordManager = Components.classes["@mozilla.org/passwordmanager;1"]
+                                      .getService(Components.interfaces.nsIPasswordManager);
       var iter = passwordManager.enumerator;
       while (iter.hasMoreElements()) {
         try {
-          var pass = iter.getNext().QueryInterface(Ci.nsIPassword);
+          var pass = iter.getNext().QueryInterface(Components.interfaces.nsIPassword);
           if (pass.host.indexOf("imap://") == 0 || pass.host.indexOf("mailbox://") == 0) {
             if (!aPattern || aPattern.test(pass.user))
               arr.push(pass.user);
@@ -196,9 +196,9 @@ var LoginManager = {
       }
     }
     // Thunderbird 3, Seamonkey 2
-    else if ("@mozilla.org/login-manager;1" in Cc) {
-      var loginManager =  Cc["@mozilla.org/login-manager;1"]
-                           .getService(Ci.nsILoginManager);
+    else if ("@mozilla.org/login-manager;1" in Components.classes) {
+      var loginManager =  Components.classes["@mozilla.org/login-manager;1"]
+                                    .getService(Components.interfaces.nsILoginManager);
       // Find users for the given parameters
       var count  = {};
       var out    = {};

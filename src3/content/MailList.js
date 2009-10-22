@@ -39,7 +39,7 @@
  * cards contained within the actual list as well as accessing and modifying the
  * list and its properties.
  *
- * @param aList {Ci.nsIAbDirectory}      The actual nsIAbDirectory
+ * @param aList {Components.interfaces.nsIAbDirectory}      The actual nsIAbDirectory
  *                                       representation of a mailing list.
  * @param aParentDirectory {AddressBook} The parent directory (as an
  *                                       AddressBook object) containing this
@@ -57,7 +57,7 @@ function MailList(aList, aParentDirectory, aNew) {
   this.mParent = aParentDirectory;
   this.mParent.checkList(aList, "MailList constructor");
   this.mList   = aList;
-  this.mList.QueryInterface(Ci.nsIAbMDBDirectory);
+  this.mList.QueryInterface(Components.interfaces.nsIAbMDBDirectory);
   this.mNew    = aNew;
   if (!aNew)
     this.getAllCards();
@@ -188,7 +188,7 @@ MailList.prototype = {
       try {
         while (iter.hasMoreElements()) {
           data = iter.getNext();
-          if (data instanceof nsIAbCard)
+          if (data instanceof Components.interfaces.nsIAbCard)
             this.mCards.push(data);
         }
       }
@@ -208,7 +208,7 @@ MailList.prototype = {
         iter.first();
         do {
           data = iter.currentItem();
-          if(data instanceof nsIAbCard)
+          if(data instanceof Components.interfaces.nsIAbCard)
             this.mCards.push(data);
           iter.next();
         } while (Components.lastResult == 0);
@@ -232,15 +232,16 @@ MailList.prototype = {
       return;
     var arr;
     if (AbManager.mVersion == 3) { // TB 3
-      arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+      arr = Components.classes["@mozilla.org/array;1"]
+                      .createInstance(Components.interfaces.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
         AbManager.checkCard(aCards[i]);
         arr.appendElement(aCards[i], false);
       }
     }
     else { // TB 2
-      arr =  Cc["@mozilla.org/supports-array;1"]
-              .createInstance(Ci.nsISupportsArray);
+      arr =  Components.classes["@mozilla.org/supports-array;1"]
+                       .createInstance(Components.interfaces.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
         AbManager.checkCard(aCards[i]);
         arr.AppendElement(aCards[i], false);

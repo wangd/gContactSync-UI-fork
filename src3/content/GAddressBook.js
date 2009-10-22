@@ -231,7 +231,7 @@ GAddressBook.prototype.getAllLists = function GAddressBook_getAllLists(skipGetCa
   var list, id, data;
   while (iter.hasMoreElements()) {
     data = iter.getNext();
-    if (data instanceof Ci.nsIAbDirectory && data.isMailList) {
+    if (data instanceof Components.interfaces.nsIAbDirectory && data.isMailList) {
       list    = this.newListObj(data, this, skipGetCards);
       id      = list.getGroupID();
       obj[id] = list;

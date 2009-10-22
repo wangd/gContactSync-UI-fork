@@ -196,9 +196,9 @@ function handle401(httpRequest) {
     }
     alert(StringBundle.getStr("tokenExpiredMsg"));
     // Prompt for the username and password
-    var prompt   = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-                    .getService(Ci.nsIPromptService)
-                    .promptUsernameAndPassword;
+    var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                             .getService(Components.interfaces.nsIPromptService)
+                             .promptUsernameAndPassword;
     // set the username
     var username = { value: username };
     var password = {};

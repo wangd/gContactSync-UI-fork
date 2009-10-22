@@ -76,9 +76,9 @@ var Accounts = {
    * Create a new username/account for the selected plugin.
    */
   newUsername: function Accounts_newUsername() {
-    var prompt   = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-                    .getService(Ci.nsIPromptService)
-                    .promptUsernameAndPassword;
+    var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                             .getService(Components.interfaces.nsIPromptService)
+                             .promptUsernameAndPassword;
     var username = {};
     var password = {};
     // opens a username/password prompt

@@ -57,8 +57,8 @@ function myOnDrop(row, orientation) {
   var attributes = ContactConverter.getExtraSyncAttributes();
   var attributesLen = attributes.length;
 
-  var trans = Cc["@mozilla.org/widget/transferable;1"]
-               .createInstance(Ci.nsITransferable);
+  var trans = Components.classes["@mozilla.org/widget/transferable;1"]
+                        .createInstance(Components.interfaces.nsITransferable);
   trans.addDataFlavor("moz/abcard");
 
   var targetResource = dirTree.builderView.getResourceAtIndex(row);
@@ -77,7 +77,7 @@ function myOnDrop(row, orientation) {
     var needToRefresh = false;
     try {
       trans.getAnyTransferData(flavor, dataObj, len);
-      dataObj = dataObj.value.QueryInterface(Ci.nsISupportsString);
+      dataObj = dataObj.value.QueryInterface(Components.interfaces.nsISupportsString);
     }
     catch (ex) { continue; }
     var transData = dataObj.data.split("\n");
@@ -150,7 +150,7 @@ function myOnDrop(row, orientation) {
             // longer necessary to copy the extra attributes manually
             // the card may also be an LDAP card in which case it won't have
             // extra attributes to copy
-            card.QueryInterface(Ci.nsIAbMDBCard);
+            card.QueryInterface(Components.interfaces.nsIAbMDBCard);
             isMDBCard = true;
             for (var k = 0; k < attributesLen; k++) {
               values[k] = card.getStringAttribute(attributes[k]);
@@ -178,7 +178,7 @@ function myOnDrop(row, orientation) {
         var newCard = toDirectory.addCard(card);
         if (isMDBCard) { // copy the attributes if this is an MDB card
           try {
-            newCard.QueryInterface(Ci.nsIAbMDBCard);
+            newCard.QueryInterface(Components.interfaces.nsIAbMDBCard);
             if (isMDBCard) {
               for (var k = 0; k < attributesLen; k++) {
                 var value = values[k] ? values[k] : "";
@@ -230,12 +230,13 @@ function deleteCard(aDirectory, aCard) {
   // Thunderbird 2 and 3 differ in the type of array that must be passed to
   // the deleteCards method
   if (aDirectory.modifyCard) { // TB 3
-    arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+    arr = Components.classes["@mozilla.org/array;1"]
+                    .createInstance(Components.interfaces.nsIMutableArray);
     arr.appendElement(aCard, false);
   }
   else { // TB 2
-    arr = Cc["@mozilla.org/supports-array;1"]
-           .createInstance(Ci.nsISupportsArray);
+    arr = Components.classes["@mozilla.org/supports-array;1"]
+                    .createInstance(Components.interfaces.nsISupportsArray);
     arr.AppendElement(aCard, false);
   }
   aDirectory.deleteCards(arr);

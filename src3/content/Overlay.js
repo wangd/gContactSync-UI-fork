@@ -77,29 +77,28 @@ var Overlay = {
    */
   initialize: function Overlay_initialize() {
     // determine if this is before or after Bug 413260 landed
-    var card = Cc["@mozilla.org/addressbook/cardproperty;1"]
-               .createInstance(nsIAbCard);
+    var card = Components.classes["@mozilla.org/addressbook/cardproperty;1"]
+                         .createInstance(Components.interfaces.nsIAbCard);
     this.mBug413260 = card.getProperty ? true : false;
     StringBundle.init();        // initialize the string bundle
     FileIO.init();              // initialize the FileIO class
     Preferences.getSyncPrefs(); // get the preferences
 
     // Find the last version of gContactSync and set the pref to the current
-    // version.
     this.mLastVersion = Preferences.mSyncPrefs.lastVersion.value;
     //alert(LoginManager.getAllEmailAccts(/@/).join('\n'));
 
     Preferences.setPref(Preferences.mSyncBranch,
                         Preferences.mSyncPrefs.lastVersion.label,
                         Preferences.mSyncPrefs.lastVersion.type,
-                        version);
+                        com.gContactSync.version);
 
     if (FileIO.mLogFile && FileIO.mLogFile.exists())
       FileIO.mLogFile.remove(false); // delete the old log file
 
     // log some basic system and application info
     LOGGER.LOG("Loading gContactSync at " + new Date());
-    LOGGER.LOG(" * Version is:       " + version);
+    LOGGER.LOG(" * Version is:       " + com.gContactSync.version);
     LOGGER.LOG(" * Last version was: " + this.mLastVersion);
     LOGGER.LOG(" * User Agent:       " + navigator.userAgent + "\n");
 
@@ -431,9 +430,9 @@ var Overlay = {
    * gets an authentication token to store and use.
    */
   promptLogin: function Overlay_promptLogin() {
-    var prompt   = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-                    .getService(Ci.nsIPromptService)
-                    .promptUsernameAndPassword;
+    var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                             .getService(Components.interfaces.nsIPromptService)
+                             .promptUsernameAndPassword;
     var username = {};
     var password = {};
     // opens a username/password prompt
@@ -583,11 +582,12 @@ var Overlay = {
     }
     try {
       Overlay.showNodes(ContactConverter.getExtraSyncAttributes());
-      var primaryEmail = GAbManager.getCardValue(aCard, dummyEmailName);
+      var primaryEmail = GAbManager.getCardValue(aCard,
+                                                 com.gContactSync.dummyEmailName);
       // if the primary e-mail address is the dummy address, hide it
       if (isDummyEmail(primaryEmail)) {
         // TODO recalculate if the contact info box must be collapsed too
-        switch (dummyEmailName) {
+        switch (com.gContactSync.dummyEmailName) {
           case "PrimaryEmail" :
             cvData.cvEmail1Box.collapsed = true;
             break;

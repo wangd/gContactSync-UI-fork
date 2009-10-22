@@ -111,7 +111,7 @@ var CardDialogOverlay = {
       // if the card cannot accept custom attributes, quit and do not add the
       // extra tabs
       if (!gEditCard.card.getProperty)
-        gEditCard.card.QueryInterface(Ci.nsIAbMDBCard);
+        gEditCard.card.QueryInterface(Components.interfaces.nsIAbMDBCard);
     } catch(e) { return; }
     // some contacts are read-only so extra attributes should be disabled for
     // those cards (see Mozdev Bug 20169)

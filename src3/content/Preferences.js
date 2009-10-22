@@ -40,13 +40,13 @@
  */
 var Preferences = {
   // the preferences service
-  mService: Cc["@mozilla.org/preferences-service;1"]
-             .getService(Ci.nsIPrefService),
+  mService: Components.classes["@mozilla.org/preferences-service;1"]
+                      .getService(Components.interfaces.nsIPrefService),
   // the branch used by gContactSync
-  mSyncBranch: Cc["@mozilla.org/preferences-service;1"]
-               .getService(Ci.nsIPrefService)
-               .getBranch("extensions.gContactSync.")
-               .QueryInterface(Ci.nsIPrefBranch2),
+  mSyncBranch: Components.classes["@mozilla.org/preferences-service;1"]
+                         .getService(Components.interfaces.nsIPrefService)
+                         .getBranch("extensions.gContactSync.")
+                        .QueryInterface(Components.interfaces.nsIPrefBranch2),
   mExtendedProperties: [],
   // different types of preferences (bool, int, and char)
   mTypes: {

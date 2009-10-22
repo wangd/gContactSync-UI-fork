@@ -186,7 +186,7 @@ var ContactConverter = {
       if (!type || type == "")
         type = obj.type;
       // see the dummy e-mail note below
-      if (obj.tbName == dummyEmailName &&
+      if (obj.tbName == com.gContactSync.dummyEmailName &&
           isDummyEmail(value)) {
         value = null;
         type = null;
@@ -271,7 +271,7 @@ var ContactConverter = {
       // Thunderbird has problems with contacts who do not have an e-mail addr
       // and are in Mailing Lists.  To avoid problems, use a dummy e-mail addr
       // that is hidden from the user
-      if (obj.tbName == dummyEmailName && !property.value) {
+      if (obj.tbName == com.gContactSync.dummyEmailName && !property.value) {
         property.value = makeDummyEmail(aContact);
         property.type  = "home";
       }

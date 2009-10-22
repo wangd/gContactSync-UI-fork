@@ -41,10 +41,10 @@
  * @class
  */
 var AbManager = {
-  mVersion: Cc["@mozilla.org/abmanager;1"] ? 3 : 2,
-  mBug413260: Cc["@mozilla.org/addressbook/cardproperty;1"]
-              .createInstance(nsIAbCard)
-              .getProperty ? true : false,
+  mVersion:   Components.classes["@mozilla.org/abmanager;1"] ? 3 : 2,
+  mBug413260: Components.classes["@mozilla.org/addressbook/cardproperty;1"]
+                        .createInstance(Components.interfaces.nsIAbCard)
+                        .getProperty ? true : false,
   // attributes that can be set by getCardValue and setCardValue
   mBasicAttributes: [
     "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
@@ -69,22 +69,23 @@ var AbManager = {
     var iter;
     var abs = {};
     if (this.mVersion == 3) { // TB 3
-      var abManager = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager);
+      var abManager = Components.classes["@mozilla.org/abmanager;1"]
+                                .getService(Components.interfaces.nsIAbManager);
       iter = abManager.directories;
     }
     else { // TB 2
       // obtain the main directory through the RDF service
-      var dir = Cc["@mozilla.org/rdf/rdf-service;1"]
-                 .getService(Ci.nsIRDFService)
-                 .GetResource("moz-abdirectory://")
-                 .QueryInterface(Ci.nsIAbDirectory);
+      var dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                          .getService(Components.interfaces.nsIRDFService)
+                          .GetResource("moz-abdirectory://")
+                          .QueryInterface(Components.interfaces.nsIAbDirectory);
       iter = dir.childNodes;
     }
     var data, ab, dirType;
     while(iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory && (this.mVersion == 3 ||
-          data instanceof Ci.nsIAbMDBDirectory)) {
+      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion == 3 ||
+          data instanceof Components.interfaces.nsIAbMDBDirectory)) {
         ab = new GAddressBook(data);
         dirType = ab.getDirType();
         
@@ -99,22 +100,23 @@ var AbManager = {
     this.mAddressBooks = {};
     var iter;
     if (this.mVersion == 3) { // TB 3
-      var abManager = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager);
+      var abManager = Components.classes["@mozilla.org/abmanager;1"]
+                                .getService(Components.interfaces.nsIAbManager);
       iter = abManager.directories;
     }
     else { // TB 2
       // obtain the main directory through the RDF service
-      var dir = Cc["@mozilla.org/rdf/rdf-service;1"]
-                 .getService(Ci.nsIRDFService)
-                 .GetResource("moz-abdirectory://")
-                 .QueryInterface(Ci.nsIAbDirectory);
+      var dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                          .getService(Components.interfaces.nsIRDFService)
+                          .GetResource("moz-abdirectory://")
+                          .QueryInterface(Components.interfaces.nsIAbDirectory);
       iter = dir.childNodes;
     }
     var data;
     while(iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory && (this.mVersion == 3 ||
-          data instanceof Ci.nsIAbMDBDirectory)) {
+      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion == 3 ||
+          data instanceof Components.interfaces.nsIAbMDBDirectory)) {
         var ab = new GAddressBook(data);
         var username = ab.mPrefs.Username;
         if (username) {
@@ -144,7 +146,7 @@ var AbManager = {
    * @param aDirectory The directory to check.
    */
   isDirectoryValid: function AbManager_isDirectoryValid(aDirectory) {
-    return aDirectory && aDirectory instanceof Ci.nsIAbDirectory 
+    return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory 
           && aDirectory.dirName != "";
   },
   /**
@@ -156,8 +158,8 @@ var AbManager = {
    */
   checkCard: function AbManager_checkCard(aCard, aMethodName) {
     var card = aCard && aCard.mCard ? aCard.mCard : aCard;
-    if (!card || (!(card instanceof Ci.nsIAbCard) &&
-                  !(Ci.nsIAbMDBCard && card instanceof Ci.nsIAbMDBCard))) {
+    if (!card || (!(card instanceof Components.interfaces.nsIAbCard) &&
+                  !(Components.interfaces.nsIAbMDBCard && card instanceof Components.interfaces.nsIAbMDBCard))) {
       throw "Invalid card: " + aCard + "passed to the '" + aMethodName +
             "' method." + StringBundle.getStr("pleaseReport");
     }
@@ -180,7 +182,7 @@ var AbManager = {
       if (this.isRegularAttribute(aAttrName))
         try { return aCard.getCardValue(aAttrName); }
         catch (e) { LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
-      else if (Ci.nsIAbMDBCard && aCard instanceof Ci.nsIAbMDBCard)
+      else if (Components.interfaces.nsIAbMDBCard && aCard instanceof Components.interfaces.nsIAbMDBCard)
         return this.getMDBCardValue(aCard, aAttrName);
       else
         LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
@@ -305,7 +307,7 @@ var AbManager = {
       else if (this.isRegularAttribute(aAttrName))
         try { aCard.setCardValue(aAttrName, aValue); }
         catch (e) { LOGGER.LOG_WARNING("Error in setCardValue: " + e); }
-     else if (Ci.nsIAbMDBCard && aCard instanceof Ci.nsIAbMDBCard)
+     else if (Components.interfaces.nsIAbMDBCard && aCard instanceof Components.interfaces.nsIAbMDBCard)
         this.setMDBCardValue(aCard, aAttrName, aValue);
      else
        LOGGER.LOG_WARNING("Couldn't set the value " + aAttrName + " of the card "
@@ -363,13 +365,15 @@ var AbManager = {
     try {
       var dir;
       if (this.mVersion == 3)
-        dir = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager)
-               .getDirectory(aURI).QueryInterface(Ci.nsIAbDirectory);
+        dir = Components.classes["@mozilla.org/abmanager;1"]
+                        .getService(Components.interfaces.nsIAbManager)
+                        .getDirectory(aURI)
+                        .QueryInterface(Components.interfaces.nsIAbDirectory);
       else
-       dir = Cc["@mozilla.org/rdf/rdf-service;1"]
-              .getService(Ci.nsIRDFService)
+       dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+              .getService(Components.interfaces.nsIRDFService)
               .GetResource(aURI)
-              .QueryInterface(Ci.nsIAbDirectory);
+              .QueryInterface(Components.interfaces.nsIAbDirectory);
       // checks that the directory exists and is valid.  returns null if not.
       if (!this.isDirectoryValid(dir))
         return null;
@@ -393,20 +397,21 @@ var AbManager = {
             StringBundle.getStr("pleaseReport");
     var iter, data;
     if (this.mVersion == 3) { // TB 3
-      var abManager = Cc["@mozilla.org/abmanager;1"].getService(Ci.nsIAbManager);
+      var abManager = Components.classes["@mozilla.org/abmanager;1"]
+                                .getService(Components.interfaces.nsIAbManager);
       iter = abManager.directories;
     }
     else { // TB 2
       // obtain the main directory through the RDF service
-      var dir = Cc["@mozilla.org/rdf/rdf-service;1"]
-                 .getService(Ci.nsIRDFService)
-                 .GetResource("moz-abdirectory://")
-                 .QueryInterface(Ci.nsIAbDirectory);
+      var dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                          .getService(Components.interfaces.nsIRDFService)
+                          .GetResource("moz-abdirectory://")
+                          .QueryInterface(Components.interfaces.nsIAbDirectory);
       iter = dir.childNodes;
     }
     while(iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory)
+      if (data instanceof Components.interfaces.nsIAbDirectory)
         if (data.dirName == aDirName)
           return data;
     }
@@ -420,16 +425,16 @@ var AbManager = {
     }
     else {
       // setup the "properties" of the new address book
-      var properties = Cc["@mozilla.org/addressbook/properties;1"]
-	                   .createInstance(Ci.nsIAbDirectoryProperties);
-	    properties.description = aDirName;
+      var properties = Components.classes["@mozilla.org/addressbook/properties;1"]
+	                             .createInstance(Components.interfaces.nsIAbDirectoryProperties);
+	    properties.description = aDirName;s
 	    properties.dirType = 2; // address book
       dir.createNewDirectory(properties);
       iter = dir.childNodes;
     }
     while(iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory)
+      if (data instanceof Components.interfaces.nsIAbDirectory)
         if (data.dirName == aDirName) {
           var ab = new GAddressBook(data);
           ab.setLastSyncDate(0);

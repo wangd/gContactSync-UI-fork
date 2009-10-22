@@ -52,7 +52,7 @@ function AddressBook(aDirectory) {
   if (this.mDirectory.URI)
     this.mURI = this.mDirectory.URI;
   else {
-    this.mDirectory.QueryInterface(Ci.nsIAbMDBDirectory);
+    this.mDirectory.QueryInterface(Components.interfaces.nsIAbMDBDirectory);
     this.mURI = this.mDirectory.getDirUri();
   }
 }
@@ -91,7 +91,7 @@ AddressBook.prototype = {
     if (AbManager.mVersion == 3) { // TB 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
-        if (data instanceof nsIAbCard && !data.isMailList)
+        if (data instanceof Components.interfaces.nsIAbCard && !data.isMailList)
           this.mCards.push(data);
       }
     }
@@ -101,7 +101,7 @@ AddressBook.prototype = {
         iter.first();
         do {
           data = iter.currentItem();
-          if(data instanceof nsIAbCard && !data.isMailList)
+          if(data instanceof Components.interfaces.nsIAbCard && !data.isMailList)
             this.mCards.push(data);
           iter.next();
         } while (Components.lastResult == 0);
@@ -124,7 +124,7 @@ AddressBook.prototype = {
     var list, id, data;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory && data.isMailList) {
+      if (data instanceof Components.interfaces.nsIAbDirectory && data.isMailList) {
         list    = this.newListObj(data, this, skipGetCards);
         obj.push(list);
         LOGGER.VERBOSE_LOG(" * " + list.getName() + " - " + id);
@@ -149,7 +149,7 @@ AddressBook.prototype = {
     var data;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Ci.nsIAbDirectory && data.isMailList &&
+      if (data instanceof Components.interfaces.nsIAbDirectory && data.isMailList &&
           data.listNickName == aNickName) {
         return this.newListObj(data, this, true);
       }
@@ -170,8 +170,8 @@ AddressBook.prototype = {
       throw "Error - aName sent to addList is invalid";
     if (!aNickName)
       throw "Error - aNickName sent to addList is invalid";
-    var list          = Cc["@mozilla.org/addressbook/directoryproperty;1"]
-                         .createInstance(Ci.nsIAbDirectory);
+    var list          = Components.classes["@mozilla.org/addressbook/directoryproperty;1"]
+                                  .createInstance(Components.interfaces.nsIAbDirectory);
     list.dirName      = aName;
     list.listNickName = aNickName;
     list.isMailList   = true;
@@ -191,15 +191,16 @@ AddressBook.prototype = {
       return;
     var arr;
     if (AbManager.mVersion == 3) { // TB 3
-      arr = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
+      arr = Components.classes["@mozilla.org/array;1"]
+                      .createInstance(Components.interfaces.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
         AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
         arr.appendElement(aCards[i], false);
       }
     }
     else { // TB 2
-      arr =  Cc["@mozilla.org/supports-array;1"]
-              .createInstance(Ci.nsISupportsArray);
+      arr =  Components.classes["@mozilla.org/supports-array;1"]
+                       .createInstance(Components.interfaces.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
         AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
         arr.AppendElement(aCards[i], false);
@@ -233,7 +234,7 @@ AddressBook.prototype = {
   checkList: function AddressBook_checkList(aList, aMethodName) {
     // if it is a MailList object, get it's actual list
     var list = aList && aList.mList ? aList.mList : aList;
-    if (!list || !(list instanceof Ci.nsIAbDirectory) || !list.isMailList) {
+    if (!list || !(list instanceof Components.interfaces.nsIAbDirectory) || !list.isMailList) {
       throw "Invalid list: " + aList + " sent to the '" + aMethodName +
             "' method" +  StringBundle.getStr("pleaseReport");
     }
@@ -256,9 +257,9 @@ AddressBook.prototype = {
    * @param aDirectory The directory to check.
    */
   isDirectoryValid: function AddressBook_isDirectoryValid(aDirectory) {
-    return aDirectory && aDirectory instanceof Ci.nsIAbDirectory 
+    return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory 
           && aDirectory.dirName != "" && (AbManager.mVersion == 3 || 
-          aDirectory instanceof Ci.nsIAbMDBDirectory);
+          aDirectory instanceof Components.interfaces.nsIAbMDBDirectory);
   },
   /**
    * AddressBook.getCardValue
@@ -305,8 +306,8 @@ AddressBook.prototype = {
    * @return A new instantiation of nsIAbCard.
    */
   makeCard: function AddressBook_makeCard() {
-    return Cc["@mozilla.org/addressbook/cardproperty;1"]
-           .createInstance(Ci.nsIAbCard);
+    return Components.classes["@mozilla.org/addressbook/cardproperty;1"]
+                     .createInstance(Components.interfaces.nsIAbCard);
   },
   
   /**
@@ -412,10 +413,10 @@ AddressBook.prototype = {
     if (!id)
       return null;
     try {
-      var branch = Cc["@mozilla.org/preferences-service;1"]
-                    .getService(Ci.nsIPrefService)
-                    .getBranch(id)
-                    .QueryInterface(Ci.nsIPrefBranch2);
+      var branch = Components.classes["@mozilla.org/preferences-service;1"]
+                             .getService(Components.interfaces.nsIPrefService)
+                             .getBranch(id)
+                             .QueryInterface(Components.interfaces.nsIPrefBranch2);
       var value = branch.getCharPref(aName);
       //LOGGER.VERBOSE_LOG("-Found the value: " + value);
       return value;
@@ -460,10 +461,10 @@ AddressBook.prototype = {
       return;
     }
     try {
-      var branch = Cc["@mozilla.org/preferences-service;1"]
-                    .getService(Ci.nsIPrefService)
-                    .getBranch(id)
-                    .QueryInterface(Ci.nsIPrefBranch2);
+      var branch = Components.classes["@mozilla.org/preferences-service;1"]
+                             .getService(Components.interfaces.nsIPrefService)
+                             .getBranch(id)
+                             .QueryInterface(Components.interfaces.nsIPrefBranch2);
       branch.setCharPref(aName, aValue);
     } catch(e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
   },
@@ -500,16 +501,16 @@ AddressBook.prototype = {
       * mailnews/addrbook/resources/content/addressbook.js:
       * http://mxr.mozilla.org/mozilla1.8/source/mailnews/addrbook/resources/content/addressbook.js#353
       */
-      var addressbook = Cc["@mozilla.org/addressbook;1"]
-                         .createInstance(Ci.nsIAddressBook);
+      var addressbook = Components.classes["@mozilla.org/addressbook;1"]
+                                  .createInstance(Components.interfaces.nsIAddressBook);
       // the rdf service
-      var RDF = Cc["@mozilla.org/rdf/rdf-service;1"].getService(Ci.nsIRDFService);
+      var RDF = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
       // get the datasource for the addressdirectory
       var datasource = RDF.GetDataSource("rdf:addressdirectory");
 
       // moz-abdirectory:// is the RDF root to get all types of addressbooks.
       var parent = RDF.GetResource("moz-abdirectory://")
-                         .QueryInterface(Ci.nsIAbDirectory);
+                      .QueryInterface(Components.interfaces.nsIAbDirectory);
       // Copy existing dir type category id and mod time so they won't get reset.
       var properties = this.mDirectory.directoryProperties;
       properties.description = aName;

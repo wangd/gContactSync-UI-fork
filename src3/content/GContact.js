@@ -797,10 +797,10 @@ GContact.prototype = {
       LOGGER.VERBOSE_LOG(" * This contact does not have a photo");
       return null;
     }
-    var ios = Cc["@mozilla.org/network/io-service;1"]
-               .getService(Ci.nsIIOService);
+    var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                        .getService(Components.interfaces.nsIIOService);
     var ch = ios.newChannel(info.url, null, null);
-    ch.QueryInterface(Ci.nsIHttpChannel);
+    ch.QueryInterface(Components.interfaces.nsIHttpChannel);
     ch.setRequestHeader("Authorization", aAuthToken, false);
     // TODO use existing functions, if possible, after 119459 lands
     var istream = ch.open();

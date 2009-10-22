@@ -85,8 +85,8 @@ var FileIO = {
    */
   getFileInExtDir: function FileIO_getFileInExtDir(aName) {
     var MY_ID = "gContactSync@pirules.net";
-    var em = Cc["@mozilla.org/extensions/manager;1"]
-              .getService(Ci.nsIExtensionManager);
+    var em = Components.classes["@mozilla.org/extensions/manager;1"]
+                       .getService(Components.interfaces.nsIExtensionManager);
     return em.getInstallLocation(MY_ID).getItemFile(MY_ID, aName);
   },
   /**
@@ -95,9 +95,9 @@ var FileIO = {
    * @return An nsIFile of the current profile directory of the application.
    */
   getProfileDirectory: function FileIO_getProfileDirectory() {
-    return Cc["@mozilla.org/file/directory_service;1"]
-            .getService(Ci.nsIProperties)
-            .get("ProfD", Ci.nsIFile);
+    return Components.classes["@mozilla.org/file/directory_service;1"]
+                     .getService(Components.interfaces.nsIProperties)
+                     .get("ProfD", Components.interfaces.nsIFile);
   },
   /**
    * FileIO.readFile
@@ -110,10 +110,10 @@ var FileIO = {
     if (!aFile.exists())
       return [];
     try {
-      var istream = Cc["@mozilla.org/network/file-input-stream;1"]
-                     .createInstance(Ci.nsIFileInputStream);
+      var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+                              .createInstance(Components.interfaces.nsIFileInputStream);
       istream.init(aFile, 0x01, 0444, 0);
-      istream.QueryInterface(Ci.nsILineInputStream);
+      istream.QueryInterface(Components.interfaces.nsILineInputStream);
 
       var line = {}, lines = [], hasmore;
       do {
@@ -142,8 +142,8 @@ var FileIO = {
     if (!aData)
       return false;
     try {
-      var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
-                      .createInstance(Ci.nsIFileOutputStream);
+      var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
+                               .createInstance(Components.interfaces.nsIFileOutputStream);
       foStream.init(aFile, 0x02 | 0x08 | 0x20, 0666, 0);
       foStream.write(aData, aData.length);
       foStream.close();
@@ -166,8 +166,8 @@ var FileIO = {
       return false;
     this.checkFile(aFile);
     try {
-      var foStream = Cc["@mozilla.org/network/file-output-stream;1"]
-                      .createInstance(Ci.nsIFileOutputStream);
+      var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
+                               .createInstance(Components.interfaces.nsIFileOutputStream);
       if (aFile.exists())
         foStream.init(aFile, 0x02 | 0x10, 0666, 0);
       else
@@ -189,7 +189,7 @@ var FileIO = {
    * @param aCaller  The name of the calling method.
    */
   checkFile: function FileIO_checkFile(aFile) {
-    if (!aFile || !aFile instanceof Ci.nsIFile || (aFile.exists() && !aFile.isFile()))
+    if (!aFile || !aFile instanceof Components.interfaces.nsIFile || (aFile.exists() && !aFile.isFile()))
       throw "Invalid File: " + aFile + " sent to the '" + this.checkFile.caller
             + "' method" + StringBundle.getStr("pleaseReport");
   }

@@ -38,16 +38,11 @@
  * Some synonyms to shorten commonly-used items and some functions that don't
  * fit anywhere else.
  */
-var Cc = Components.classes;
-var CC = Components.Constructor;
-var Ci = Components.interfaces;
-var Cr = Components.results;
-var Cu = Components.utils;
-var doc = document;
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
 
-var nsIAbCard      = Ci.nsIAbCard;
-var dummyEmailName = "PrimaryEmail";
-var version        = "0.3.0a1pre";
+com.gContactSync.dummyEmailName = "PrimaryEmail";
+com.gContactSync.version        = "0.3.0a1pre";
 
 /**
  * serialize
