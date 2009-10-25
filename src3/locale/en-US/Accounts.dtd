@@ -20,11 +20,11 @@
 <!ENTITY Groups.label         "Groups and Contacts to Synchronize">
 <!ENTITY AllGroups.label      "All groups and contacts">
 <!ENTITY NoGroups.label       "All contacts but no groups">
-<!ENTITY Contacts.label       "'My Contacts' only">
-<!ENTITY Coworkers.label      "'Coworkers' only">
-<!ENTITY Family.label         "'Family' only">
-<!ENTITY Friends.label        "'Friends' only">
-<!ENTITY Other.label          "Pick another group">
+<!ENTITY Contacts.label       "My Contacts">
+<!ENTITY Coworkers.label      "Coworkers">
+<!ENTITY Family.label         "Family">
+<!ENTITY Friends.label        "Friends">
+<!ENTITY GetGroups.label      "Find all Groups">
 
 <!-- Advanced Settings -->
 <!ENTITY showAdvanced.label   "Show Advanced Settings">

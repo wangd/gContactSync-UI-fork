@@ -441,7 +441,7 @@ function myGetCardValues(aCard, aDoc) {
     } catch(e) { alert("Error in myGetCardValues: " + attr + "\n" + e); }
   }
 
-  if (isDummyEmail(aDoc.getElementById("PrimaryEmail").value)) {
+  if (com.gContactSync.isDummyEmail(aDoc.getElementById("PrimaryEmail").value)) {
     aDoc.getElementById("PrimaryEmail").value = null;
   }
 }
@@ -491,7 +491,7 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   // e-mail address
   var primEmailElem = aDoc.getElementById("PrimaryEmail");
   if (!primEmailElem.value)
-    primEmailElem.value = makeDummyEmail(aCard);
+    primEmailElem.value = com.gContactSync.makeDummyEmail(aCard);
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }

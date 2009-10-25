@@ -115,7 +115,7 @@ var Overlay = {
     // override the onDrop method of abDirTreeObserver
     // so when a card is copied the extra attributes are copied with it
     if (Preferences.mSyncPrefs.overrideCopy.value)
-      abDirTreeObserver.onDrop = myOnDrop;
+      abDirTreeObserver.onDrop = com.gContactSync.myOnDrop;
     // override the display card view pane
     originalDisplayCardViewPane = DisplayCardViewPane;
     DisplayCardViewPane = this.myDisplayCardViewPane;
@@ -585,7 +585,7 @@ var Overlay = {
       var primaryEmail = GAbManager.getCardValue(aCard,
                                                  com.gContactSync.dummyEmailName);
       // if the primary e-mail address is the dummy address, hide it
-      if (isDummyEmail(primaryEmail)) {
+      if (com.gContactSync.isDummyEmail(primaryEmail)) {
         // TODO recalculate if the contact info box must be collapsed too
         switch (com.gContactSync.dummyEmailName) {
           case "PrimaryEmail" :

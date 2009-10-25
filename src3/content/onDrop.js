@@ -21,7 +21,7 @@
  * Contributor(s):
  *   Seth Spitzer <sspitzer@netscape.com>
  *   Mark Banner <mark@standard8.demon.co.uk>
- *   Josh Geenen <gcontactsync@pirules.net>
+ *   Josh Geenen <gcontactsync@pirules.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -37,19 +37,22 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * myOnDrop
  * Meant to override the code in the onDrop method of abDirTreeObserver (an
  * instance of nsIXULTreeBuilderObserver), which is called when the user drops
  * one or more cards.  The code is a modified version of onDrop found in
- * mailnews/addrbook/resources/content/abDragDrop.js
+ * mailnews/addrbook/resources/abDragDrop.js
  * It's purpose is to copy over extra attributes that this extension adds to
  * address book cards.
  *
  * @param row          The row
  * @param orientation  An integer specifying on/after/before the given row
  */
-function myOnDrop(row, orientation) {
+com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
   var dragSession = dragService.getCurrentSession();
   if (!dragSession)
     return;
@@ -164,14 +167,14 @@ function myOnDrop(row, orientation) {
         }
         // delete the card if the user chose to move it (rather than copy it)
         if (actionIsMoving)
-          deleteCard(srcDirectory, card);
+          com.gContactSync.deleteCard(srcDirectory, card);
         if (toDirectory.isMailList) {
           needToRefresh = true;
           var contact   = new TBContact(card);
           if (!contact.getValue("PrimaryEmail")) {
             LOGGER.VERBOSE_LOG("Forcing dummy email");
             // force a dummy e-mail address
-            var dummyEmail = makeDummyEmail(contact, true);
+            var dummyEmail = com.gContactSync.makeDummyEmail(contact, true);
             contact.setValue("PrimaryEmail", dummyEmail, false);
           }
         }
@@ -218,12 +221,12 @@ function myOnDrop(row, orientation) {
   }
 }
 /**
- * deleteCard
+ * com.gContactSync.deleteCard
  * Deletes the given card from the given directory.
  * @param aDirectory The directory from which the card is deleted.
  * @param aCard      The card that is deleted from the directory.
  */
-function deleteCard(aDirectory, aCard) {
+com.gContactSync.deleteCard = function gCS_deleteCard(aDirectory, aCard) {
   if (!aCard || !aDirectory)
     return;
   var arr;

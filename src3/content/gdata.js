@@ -146,6 +146,7 @@ var gdata = {
      * is stored.
      */
     init: function gdata_contacts_init() {
+      var GElement             = com.gContactSync.GElement;
       var untyped              = gdata.contacts.types.UNTYPED;
       var typedWithChild       = gdata.contacts.types.TYPED_WITH_CHILD;
       var typedWithAttr        = gdata.contacts.types.TYPED_WITH_ATTR;

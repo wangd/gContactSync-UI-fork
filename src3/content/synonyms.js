@@ -45,7 +45,7 @@ com.gContactSync.dummyEmailName = "PrimaryEmail";
 com.gContactSync.version        = "0.3.0a1pre";
 
 /**
- * serialize
+ * com.gContactSync.serialize
  * Creates an XMLSerializer to serialize the given XML then create a more
  * human-friendly string representation of that XML.
  * This is an expensive method of serializing XML but results in the most
@@ -56,7 +56,7 @@ com.gContactSync.version        = "0.3.0a1pre";
  * @param aXML {XML} The XML to serialize into a human-friendly string.
  * @return A formatted string of the given XML.
  */
-function serialize(aXML) {
+com.gContactSync.serialize = function gCS_serialize(aXML) {
   if (!aXML)
     return "";
   try {
@@ -73,7 +73,7 @@ function serialize(aXML) {
 }
 
 /**
- * serializeFromText
+ * com.gContactSync.serializeFromText
  * A less expensive (but still costly) function that serializes a string of XML
  * adding newlines between adjacent tags (...><...).
  * If the verboseLog preference is set as false then this function does nothing.
@@ -81,7 +81,7 @@ function serialize(aXML) {
  * @param aString {string} The XML string to serialize.
  * @return The serialized text if verboseLog is true; else the original text.
  */
-function serializeFromText(aString) {
+com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
   // if verbose logging is disabled, don't replace >< with >\n< because it only
   // wastes time
   if (Preferences.mSyncPrefs.verboseLog.value) {
@@ -92,7 +92,7 @@ function serializeFromText(aString) {
 }
 
 /**
- * makeDummyEmail
+ * com.gContactSync.makeDummyEmail
  * Creates a 'dummy' e-mail for the given contact if possible.
  * The dummy e-mail contains 'nobody' (localized) and '@nowhere.invalid' (not
  * localized) as well as a string of numbers.  The numbers are the ID from
@@ -114,7 +114,7 @@ function serializeFromText(aString) {
  *                             situations where not adding an address would
  *                             definitely cause problems.
  */
-function makeDummyEmail(aContact, ignorePref) {
+com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePref) {
   if (!aContact) throw "Invalid contact sent to makeDummyEmail";
   if (!ignorePref && !Preferences.mSyncPrefs.dummyEmail.value) {
     LOGGER.VERBOSE_LOG(" * Not setting dummy e-mail");
@@ -158,20 +158,20 @@ function makeDummyEmail(aContact, ignorePref) {
 }
 
 /**
- * isDummyEmail
+ * com.gContactSync.isDummyEmail
  * Returns true if the given e-mail address is a fake 'dummy' address.
  *
  * @param aEmail {string} The e-mail address to check.
  * @return true  if aEmail is a dummy e-mail address
  *         false otherwise
  */
-function isDummyEmail(aEmail) {
+com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
   return aEmail && aEmail.indexOf && 
         aEmail.indexOf(StringBundle.getStr("dummy2")) != -1;
 }
 
 /**
- * selectMenuItem
+ * com.gContactSync.selectMenuItem
  * Selects the menuitem with the given value (value or label attribute) in the
  * given menulist.
  * Optionally creates the menuitem if it cannot be found.
@@ -183,7 +183,7 @@ function isDummyEmail(aEmail) {
  * @param aCreate   {boolean}  Set as true to create and select a new menuitem
  *                             if a match cannot be found.
  */
-function selectMenuItem(aMenuList, aValue, aCreate) {
+com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue, aCreate) {
   if (!aMenuList || !aMenuList.menupopup || !aValue)
     throw "Invalid parameter sent to selectMenuItem";
 

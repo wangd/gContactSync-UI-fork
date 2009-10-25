@@ -33,6 +33,8 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+ 
+// TODO make a Groups dialog and allow creating a new group
 
 /**
  * Accounts
@@ -64,6 +66,7 @@ var Accounts = {
       this.fillUsernames();
       this.showAdvancedSettings(document.getElementById("showAdvanced").checked);
       this.selectedAbChange();
+      gdata.contacts.init();
     // TODO remove the alert
     }
     catch (e) {
@@ -170,7 +173,6 @@ var Accounts = {
     // Group to sync
     ab.savePref("syncGroups", groupElem.value == "All");
     ab.savePref("myContacts", new String(groupElem.value != "All" && groupElem.value != "None"));
-    // TODO support groupElem.value == "Other";
     ab.savePref("myContactsName", groupElem.value);
     // Sync Direction
     ab.savePref("writeOnly", directionElem.value == "WriteOnly");
@@ -222,6 +224,7 @@ var Accounts = {
     var directionElem = document.getElementById("SyncDirection");
     var pluginElem    = document.getElementById("Plugin");
     var disableElem   = document.getElementById("disabled");
+    this.restoreGroups();
     if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem)
       return false;
     var ab = this.getSelectedAb();
@@ -240,18 +243,18 @@ var Accounts = {
                          : (ab.mPrefs.syncGroups != "false"
                             ? "All"
                             : "false");
-    selectMenuItem(groupElem, group, true);
+    com.gContactSync.selectMenuItem(groupElem, group, true);
     // Sync Direction
     var direction = ab.mPrefs.readOnly == "true"
                       ? "ReadOnly"
                       : ab.mPrefs.writeOnly == "true"
                         ? "WriteOnly"
                         : "Complete";
-    selectMenuItem(directionElem, direction, true);
+    com.gContactSync.selectMenuItem(directionElem, direction, true);
     // Temporarily disable synchronization with the address book
     disableElem.checked = ab.mPrefs.Disabled == "true";
     // Select the correct plugin
-    selectMenuItem(pluginElem, ab.mPrefs.Plugin, true);
+    com.gContactSync.selectMenuItem(pluginElem, ab.mPrefs.Plugin, true);
     
     return true;
   },
@@ -376,5 +379,68 @@ var Accounts = {
    */
   directionPopup: function Accounts_directionPopup() {
     alert(StringBundle.getStr("directionPopup")); 
+  },
+  /**
+   * Accounts.restoreGroups
+   * Restores the Groups menulist to contain only the default groups.
+   */
+  restoreGroups: function Accounts_restoreGroups() {
+    var groupElem = document.getElementById("GroupsPopup");
+    for (var i = groupElem.childNodes.length - 1; i > -1; i--) {
+      if (groupElem.childNodes[i].getAttribute("class") != "default")
+        groupElem.removeChild(groupElem.childNodes[i]);
+    }
+  },
+  /**
+   * Accounts.getAllGroups
+   * Fetch all groups for the selected account and add custom groups to the
+   * menulist.
+   */
+  getAllGroups: function Accounts_getAllGroups() {
+    var usernameElem  = document.getElementById("Username");
+    this.restoreGroups();
+    if (!usernameElem.value)
+      return false;
+    var token = LoginManager.getAuthTokens()[usernameElem.value];
+    LOGGER.VERBOSE_LOG("Fetching groups for username: " + usernameElem.value);
+    var httpReq = new GHttpRequest("getGroups", token, null,
+                                   null, usernameElem.value);
+    httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
+                          "Accounts.addGroups(httpReq.responseXML, '"
+                          + usernameElem.value + "');"],
+    httpReq.mOnError   = ["LOGGER.LOG_ERROR(httpReq.responseText);"];
+    httpReq.mOnOffline = [];
+    httpReq.send();
+    return true;
+  },
+  /**
+   * Accounts.addGroups
+   * Adds groups in the given atom feed to the Groups menulist provided the
+   * username hasn't changed since the groups request was sent and the username
+   * isn't blank.
+   */
+  addGroups: function Accounts_addGroups(aAtom, aUsername) {
+    var usernameElem  = document.getElementById("Username");
+    var menulistElem  = document.getElementById("Groups");
+    if (!aAtom)
+      return false;
+    if (!usernameElem.value || usernameElem.value != aUsername)
+      return false;
+    var arr = aAtom.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "entry");
+    var group, title;
+    LOGGER.VERBOSE_LOG("Adding groups from username: " + aUsername);
+    alert(arr.length);
+    for (var i = 0; i < arr.length; i++) {
+      group = new Group(arr[i]);
+      title = group.getTitle();
+      LOGGER.VERBOSE_LOG(" * " + title);
+      // don't add system groups again
+      if (!title || group.isSystemGroup()) {
+        LOGGER.VERBOSE_LOG("    - Skipping system group");
+        continue;
+      }
+      menulistElem.appendItem(title, title);
+    }
+    return true;
   }
 }

@@ -187,7 +187,7 @@ var ContactConverter = {
         type = obj.type;
       // see the dummy e-mail note below
       if (obj.tbName == com.gContactSync.dummyEmailName &&
-          isDummyEmail(value)) {
+          com.gContactSync.isDummyEmail(value)) {
         value = null;
         type = null;
       }
@@ -207,6 +207,9 @@ var ContactConverter = {
       var birthYear = GAbManager.getCardValue(aCard, "BirthYear");
       if (!birthYear || isNaN(parseInt(birthYear, 10)))
         birthYear = "-";
+      birthYear = new String(birthYear);
+      while (birthYear.length < 4)
+        birthYear = "0" + birthYear;
       birthdayVal = birthYear + "-" + birthMonth + "-" + birthDay;
     }
     LOGGER.VERBOSE_LOG(" * Birthday: " + birthdayVal);
@@ -272,7 +275,7 @@ var ContactConverter = {
       // and are in Mailing Lists.  To avoid problems, use a dummy e-mail addr
       // that is hidden from the user
       if (obj.tbName == com.gContactSync.dummyEmailName && !property.value) {
-        property.value = makeDummyEmail(aContact);
+        property.value = com.gContactSync.makeDummyEmail(aContact);
         property.type  = "home";
       }
       ab.setCardValue(card, obj.tbName, property.value);

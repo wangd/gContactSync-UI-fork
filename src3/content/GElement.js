@@ -33,6 +33,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * GElement
  * A simple class for storing information about how Google represents a contact
@@ -48,7 +52,7 @@
  * @constructor
  * @class
  */
-function GElement(aType, aTagName, aNamespace, aValidTypes, aAttribute) {
+com.gContactSync.GElement = function gCS_GElement(aType, aTagName, aNamespace, aValidTypes, aAttribute) {
   this.contactType = aType;
   this.tagName = aTagName;
   this.namespace = aNamespace;
