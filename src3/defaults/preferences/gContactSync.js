@@ -79,4 +79,5 @@ pref("extensions.gContactSync.wikiURL",  "http://www.pirules.org/tikiwiki/");
 pref("extensions.gContactSync.faqURL",   "http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+FAQs");
 pref("extensions.gContactSync.forumURL", "http://www.pirules.org/forum/");
 pref("extensions.gContactSync.errorURL", "http://www.pirules.org/extensions/submit_error.php?ext=gContactSync");
+pref("extensions.gContactSync.googleContactsURL", "http://www.google.com/contacts");
 pref("extensions.gContactSync@pirules.net.description", "chrome://gContactSync/locale/gcontactsync.properties");

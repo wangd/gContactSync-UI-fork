@@ -290,6 +290,13 @@ var Overlay = {
       logMenuItem.setAttribute("oncommand", "Overlay.showLog();");
       logMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
+      var gcMenuItem = document.createElement("menuitem");
+      gcMenuItem.setAttribute("id", "gcMenuItem");
+      gcMenuItem.setAttribute("label", StringBundle.getStr("gcMenu"));
+      gcMenuItem.setAttribute("accesskey", StringBundle.getStr("gcMenuKey"));
+      gcMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.googleContactsURL');");
+      gcMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
+
       menupopup.appendChild(syncMenuItem);
       menupopup.appendChild(acctMenuItem);
       menupopup.appendChild(prefMenuItem);
@@ -298,6 +305,7 @@ var Overlay = {
       menupopup.appendChild(faqMenuItem);
       menupopup.appendChild(errorMenuItem);
       menupopup.appendChild(logMenuItem);
+      menupopup.appendChild(gcMenuItem);
       menu.appendChild(menupopup);
       menubar.insertBefore(menu, toolsMenu);
       return true;
