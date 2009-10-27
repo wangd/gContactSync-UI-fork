@@ -103,35 +103,3 @@ function enableDelays() {
     initialElem.disabled  = !disableElem.value;
   return true;
 }
-
-// TODO move to AbManager (or GAbManager)
-/**
- * resetAllSyncedABs
- * Resets all synchronized address books in the following ways:
- *  - Deletes all mailing lists
- *  - Deletes all contacts
- *  - Sets the last sync date to 0.
- * See AddressBook.reset for more details.
- *
- * It asks the user to restart Thunderbird when finished.
- *
- * @param showConfirm {boolean} Show a confirmation dialog first and quit if
- * the user presses Cancel.
- */
-function resetAllSyncedABs(showConfirm) {
-  if (showConfirm) {
-    if (!confirm(StringBundle.getStr("confirmReset"))) {
-      return false;
-    }
-  }
-
-  LOGGER.LOG("Resetting all synchronized directories.");
-  var abs = GAbManager.getSyncedAddressBooks(true);
-  for (var i in abs) {
-    abs[i].ab.reset();
-  }
-  
-  LOGGER.LOG("Finished resetting all synchronized directories.");
-  alert(StringBundle.getStr("pleaseRestart"));
-  return true;
-}

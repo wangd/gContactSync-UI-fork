@@ -61,7 +61,7 @@
           <button id="refreshTree" label="&refreshTree.label;"
                   oncommand="Accounts.fillAbTree();"/>
           <button id="resetAll"    label="&resetAll.label;"
-                  oncommand="resetAllSyncedABs(true);"/>
+                  oncommand="GAbManager.resetAllSyncedABs(true);"/>
         </hbox>
       </vbox>
       <vbox>
