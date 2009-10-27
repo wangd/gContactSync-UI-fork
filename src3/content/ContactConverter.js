@@ -37,6 +37,11 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
+window.addEventListener("load", function optionsLoadListener(e) {
+  ContactConverter.init();
+ }, false);
+
+
 /**
  * ContactConverter
  * Converts contacts between Thunderbird's format (a 'card') and the Atom/XML

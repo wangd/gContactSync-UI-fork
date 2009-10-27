@@ -39,7 +39,6 @@ if (!com.gContactSync) com.gContactSync = {};
 
 // when the window is loaded wait 200 ms and try to add the tab
 window.addEventListener("load", function CardDialogOverlay_loadListener(e) {
-  gdata.contacts.init();
   CardDialogOverlay.init();
 }, false);
 // the original method CheckAndSetCardValues
@@ -98,7 +97,6 @@ var CardDialogOverlay = {
    * loaded.
    */
   init: function CardDialogOverlay_init() {
-    FileIO.init();
     Preferences.getSyncPrefs();
     // if it isn't finished loading yet wait another 200 ms and try again
     if (!document.getElementById("abTabs")) {
@@ -108,7 +106,6 @@ var CardDialogOverlay = {
       CardDialogOverlay.mLoadNumber++;
       return;
     }
-    StringBundle.init(); // initialize the string bundle
 
     try {
       // QI the card if it doesn't have the getProperty method

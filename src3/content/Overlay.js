@@ -84,8 +84,6 @@ var Overlay = {
     var card = Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                          .createInstance(Components.interfaces.nsIAbCard);
     this.mBug413260 = card.getProperty ? true : false;
-    StringBundle.init();        // initialize the string bundle
-    FileIO.init();              // initialize the FileIO class
     Preferences.getSyncPrefs(); // get the preferences
 
     // Find the last version of gContactSync and set the pref to the current
@@ -112,8 +110,6 @@ var Overlay = {
       //Overlay.setupButton();    // insert the Sync button
     if (Preferences.mSyncPrefs.enableMenu.value)
       Overlay.setupMenu();      // add a shortcut menu
-    gdata.contacts.init();
-    ContactConverter.init();
     // add the extra attributes as tree columns to show and
     this.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver

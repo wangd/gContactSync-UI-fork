@@ -48,8 +48,6 @@ window.addEventListener("load", function optionsLoadListener(e) {
  * login tree.
  */
 function initialize() {
-  StringBundle.init();
-  FileIO.init();
   Preferences.getSyncPrefs();
   //document.getElementById("cMyContacts").addEventListener("change", myContactsChange, false);
   // if this is the full preferences dialog add a few event listeners

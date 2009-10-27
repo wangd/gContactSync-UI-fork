@@ -37,6 +37,11 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
+window.addEventListener("load", function optionsLoadListener(e) {
+  StringBundle.init();
+ }, false);
+
+
 /**
  * StringBundle
  * Contains all of the string bundles included in gContactSync and provides

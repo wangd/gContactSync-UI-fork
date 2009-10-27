@@ -67,11 +67,10 @@ var Accounts = {
       this.fillUsernames();
       this.showAdvancedSettings(document.getElementById("showAdvanced").checked);
       this.selectedAbChange();
-      gdata.contacts.init();
-    // TODO remove the alert
     }
     catch (e) {
       LOGGER.LOG_WARNING("Error in Accounts.initDialog", e);
+      // TODO remove the alert
       alert(e);
     }
   },

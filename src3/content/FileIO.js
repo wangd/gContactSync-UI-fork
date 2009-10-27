@@ -37,6 +37,10 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
+window.addEventListener("load", function optionsLoadListener(e) {
+  FileIO.init();
+ }, false);
+
 /**
  * FileIO
  * A class for reading, writing, and appending to files with an nsIFile for

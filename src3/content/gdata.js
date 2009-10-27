@@ -37,6 +37,10 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
+window.addEventListener("load", function optionsLoadListener(e) {
+  gdata.contacts.init();
+ }, false);
+
 /**
  * gdata
  * Stores information on using the Google Data Api™ protocol, specifically the
