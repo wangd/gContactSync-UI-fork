@@ -270,22 +270,32 @@ var Accounts = {
     var usernameElem = document.getElementById("Username");
     if (!usernameElem)
       return false;
-    // Remove all existing logins
+    // Remove all existing logins from the menulist
     usernameElem.removeAllItems();
 
     var tokens = LoginManager.getAuthTokens();
     var item;
-    var index = 0;
+    var index = -1;
     usernameElem.appendItem(StringBundle.getStr("noAccount"), "none");
-    // Add a menuitem for each account
+    // Add a menuitem for each account with an auth token
     for (var username in tokens) {
       item = usernameElem.appendItem(username, username);
-      if (aDefault == username && aDefault !== undefined) {
-        index = usernameElem.getIndexOfItem(item);
-      }
+      if (aDefault == username && aDefault !== undefined)
+        index = usernameElem.menupopup.childNodes.length - 1;
     }
 
-    usernameElem.selectedIndex = index;
+    if (index > -1)
+      usernameElem.selectedIndex = index;
+    // if the default value isn't in the menu list, add & select it
+    // this can happen when an account is added through one version of the
+    // login manager and the Accounts dialog was opened in another
+    // This isn't retained (for now?) to prevent anyone from setting up a new
+    // synchronized account with it and expecting it to work.
+    else if (aDefault)
+      com.gContactSync.selectMenuItem(usernameElem, aDefault, true);
+    // Otherwise select None
+    else
+      usernameElem.selectedIndex = 0;
 
     return true;
   },
@@ -324,9 +334,9 @@ var Accounts = {
     var treerow     = document.createElement("treerow");
     var addressbook = document.createElement("treecell");
     var synced      = document.createElement("treecell");
-    
+
     aAB.getPrefs();
-  
+
     addressbook.setAttribute("label", aAB.getName());
     synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : StringBundle.getStr("noAccount"));
   
@@ -334,7 +344,7 @@ var Accounts = {
     treerow.appendChild(synced);
     treeitem.appendChild(treerow);
     aTreeChildren.appendChild(treeitem);
-  
+
     return true;
   },
   /**
@@ -347,8 +357,8 @@ var Accounts = {
     var ab = this.getSelectedAb();
     if (!ab)
       return ab;
-    // TODO FIXME
-    alert("Sorry, this feature is not yet complete");
+    ab.deleteAB();
+    this.fillAbTree();
     return true;
   },
   /**
@@ -399,9 +409,13 @@ var Accounts = {
   getAllGroups: function Accounts_getAllGroups() {
     var usernameElem  = document.getElementById("Username");
     this.restoreGroups();
-    if (!usernameElem.value)
+    if (usernameElem.value == "none" || !usernameElem.value)
       return false;
     var token = LoginManager.getAuthTokens()[usernameElem.value];
+    if (!token) {
+      LOGGER.LOG_WARNING("Unable to find the token for username " + usernameElem.value);
+      return false;
+    }
     LOGGER.VERBOSE_LOG("Fetching groups for username: " + usernameElem.value);
     var httpReq = new GHttpRequest("getGroups", token, null,
                                    null, usernameElem.value);
@@ -424,7 +438,7 @@ var Accounts = {
     var menulistElem  = document.getElementById("Groups");
     if (!aAtom)
       return false;
-    if (!usernameElem.value || usernameElem.value != aUsername)
+    if (usernameElem.value == "none" || usernameElem.value != aUsername)
       return false;
     var arr = aAtom.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "entry");
     var group, title;

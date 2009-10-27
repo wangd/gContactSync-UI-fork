@@ -112,7 +112,10 @@ var Sync = {
     Sync.mCurrentAuthToken = LoginManager.getAuthTokens()[Sync.mCurrentUsername];
     Sync.mContactsUrl      = null;
     if (!Sync.mCurrentAuthToken) {
+      // TODO Bug 21936
       LOGGER.LOG_WARNING("Unable to find the auth token for: " + Sync.mCurrentUsername);
+      alert(StringBundle.getStr("noTokenFound") + ": " + Sync.mCurrentUsername +
+            "\n" + StringBundle.getStr("ab") + ": " + Sync.mCurrentAb.getName());
       Sync.mCurrentAb = null;
       Sync.syncNextUser();
       return;

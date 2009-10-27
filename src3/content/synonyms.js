@@ -192,13 +192,14 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
   for (var i = 0; i < arr.length; i++) {
     item = arr[i];
     if (item.getAttribute("value") == aValue || item.getAttribute("label") == aValue) {
-      aMenuList.selectedIndex = aMenuList.getIndexOfItem(item);
+      aMenuList.selectedIndex = i;
       return true;
     }
   }
   if (!aCreate)
     return false;
   item = aMenuList.appendItem(aValue, aValue);
-  aMenuList.selectedIndex = aMenuList.getIndexOfItem(item);
+  // getIndexOfItem was added in TB/FF 3
+  aMenuList.selectedIndex = aMenuList.menupopup.childNodes.length - 1;
   return true;
 }

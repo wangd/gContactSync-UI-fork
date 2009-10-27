@@ -65,6 +65,11 @@ var AbManager = {
   isRegularAttribute: function AbManager_isRegularAttribute(aAttribute) {
     return this.mBasicAttributes.indexOf(aAttribute) != -1;
   },
+  /**
+   * AbManager.getAllAddressBooks
+   * Returns an object filled with GAddressBook objects.
+   * The properties are the names of those address books.
+   */
   getAllAddressBooks: function AbManager_getAllAddressBooks(aDirType) {
     var iter;
     var abs = {};
@@ -88,14 +93,25 @@ var AbManager = {
           data instanceof Components.interfaces.nsIAbMDBDirectory)) {
         ab = new GAddressBook(data);
         dirType = ab.getDirType();
-        
         // If no dir type was passed or the type matches then add it to abs
-        if (aDirType === undefined || dirType == aDirType)
+        if (this.mVersion < 3 || aDirType === undefined || dirType == aDirType)
           abs[ab.getName()] = ab;
       }
     }
     return abs;
   },
+  /**
+   * AbManager.getAllAddressBooks
+   * Returns an object filled with GAddressBook objects.
+   * The properties are the names of those address books.
+   * @param aMakeArray If this parameter evaluates as true then the returned
+   *                   object will be an array.
+   * @return If aMakeArray then the returned object is an array of objects.
+   *         Each object has a 'username' property with the username of this
+   *         synced AB and an 'ab' property with a GAddressBook object.
+   *         If !aMakeArray then the returned object is keyed by username and
+   *         the value of that property is an array of GAddressBook objects.
+   */
   getSyncedAddressBooks: function AbManager_getSyncedAddressBooks(aMakeArray) {
     this.mAddressBooks = {};
     var iter;
@@ -427,7 +443,7 @@ var AbManager = {
       // setup the "properties" of the new address book
       var properties = Components.classes["@mozilla.org/addressbook/properties;1"]
 	                             .createInstance(Components.interfaces.nsIAbDirectoryProperties);
-	    properties.description = aDirName;s
+	    properties.description = aDirName;
 	    properties.dirType = 2; // address book
       dir.createNewDirectory(properties);
       iter = dir.childNodes;
@@ -442,5 +458,67 @@ var AbManager = {
         }
     }// end of while loop
     return null;
+  },
+  /**
+   * AbManager.deleteAB
+   * Deletes the Address Book with the given URI.
+   * This does NOT provide any confirmation dialog.
+   * Note: This will not work in Thunderbird 2 with mailing lists.
+   */
+  deleteAB: function AbManager_deleteAB(aURI) {
+    if (!aURI) {
+      LOGGER.LOG_ERROR("Invalid URI passed to AbManager.deleteAB");
+      return false;
+    }
+    LOGGER.VERBOSE_LOG("Deleting address book with the URI " + aURI);
+    // In TB 3 just use the AbManager to delete the AB
+    if (this.mVersion == 3) {
+      var abManager = Components.classes["@mozilla.org/abmanager;1"]
+                                .getService(Components.interfaces.nsIAbManager);
+      if (!abManager) {
+        LOGGER.LOG_ERROR("Unable to get the AB Manager service");
+        return false;
+      }
+      abManager.deleteAddressBook(aURI);
+    }
+    // TB 2 requires a bit more work
+    else {
+      // First create an array of parent resources
+      var parentArray = Components.classes["@mozilla.org/supports-array;1"]
+                                  .createInstance(Components.interfaces.nsISupportsArray);
+      if (!parentArray) {
+        LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
+        return false;
+      }
+      var parentId  = "moz-abdirectory://";
+      var parentDir = GetDirectoryFromURI(parentId);
+      parentArray.AppendElement(parentDir);
+
+      // Next create an array of the resources to delete
+      var resourceArray = Components.classes["@mozilla.org/supports-array;1"]
+                                    .createInstance(Components.interfaces.nsISupportsArray);
+      if (!resourceArray) {
+        LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
+        return false;
+      }
+      var selectedABResource = GetDirectoryFromURI(aURI)
+                                    .QueryInterface(Components.interfaces.nsIRDFResource);
+      if (!selectedABResource) {
+        LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
+        return false;
+      }
+      resourceArray.AppendElement(selectedABResource);
+
+      // Get the directory tree
+      var dirTree = GetDirTree();
+      if (!dirTree) {
+        LOGGER.LOG_ERROR("Unable to get the directory tree");
+        return false;
+      }
+
+      // Finally delete the address book
+      top.addressbook.deleteAddressBooks(dirTree.database, parentArray, resourceArray);
+    }
+    return true;
   }
 }

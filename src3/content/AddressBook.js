@@ -309,7 +309,6 @@ AddressBook.prototype = {
     return Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                      .createInstance(Components.interfaces.nsIAbCard);
   },
-  
   /**
    * AddressBook.equals
    * Returns true if the directory passed in is the same as the directory
@@ -504,7 +503,8 @@ AddressBook.prototype = {
       var addressbook = Components.classes["@mozilla.org/addressbook;1"]
                                   .createInstance(Components.interfaces.nsIAddressBook);
       // the rdf service
-      var RDF = Components.classes["@mozilla.org/rdf/rdf-service;1"].getService(Components.interfaces.nsIRDFService);
+      var RDF = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                          .getService(Components.interfaces.nsIRDFService);
       // get the datasource for the addressdirectory
       var datasource = RDF.GetDataSource("rdf:addressdirectory");
 
@@ -518,10 +518,27 @@ AddressBook.prototype = {
       addressbook.modifyAddressBook(datasource, parent, this.mDirectory, properties);
     }
   },
+  /**
+   * AddressBook.getDirType
+   * Returns the directory type of this address book.
+   * See mailnews/addrbook/src/nsDirPrefs.h
+   */
   getDirType: function AddressBook_getDirType() {
     return this.mDirectory.dirType;
   },
+  /**
+   * AddressBook.newListObj
+   * Creates a new mailing list in this directory and returns a MailList object
+   * representing the new list.
+   */
   newListObj: function AddressBook_newListObj(aList, aParentDirectory, aNew) {
     return new MailList(aList, aParentDirectory, aNew);
+  },
+  /**
+   * AddressBook.deleteAB
+   * Permanently deletes this address book without a confirmation dialog.
+   */
+  deleteAB: function AddressBook_delete() {
+    return AbManager.deleteAB(this.mURI);
   }
 }
