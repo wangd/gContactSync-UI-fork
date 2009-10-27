@@ -14,8 +14,8 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Josh Geenen <gcontactsync@pirules.org>.
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -34,14 +34,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/**
- * Sync.js
- * Synchronizes a Thunderbird Address Book with Google Contacts.
- * @class
- */
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
+/**
+ * Sync
+ * Synchronizes a Thunderbird Address Book with Google Contacts.
+ * @class
+ */
 var Sync = {
   // a few arrays treated as queues to add/delete/update contacts and cards
   mContactsToDelete: [],
@@ -222,7 +222,7 @@ var Sync = {
     else
       Sync.schedule(Preferences.mSyncPrefs.refreshInterval.value * 60000);
   },
-
+  // TODO document
   sync2: function Sync_sync2(aAtom) {
     // get the address book
     var ab = Sync.mCurrentAb;

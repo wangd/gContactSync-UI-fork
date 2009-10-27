@@ -34,7 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
  
-// TODO make a Groups dialog and allow creating a new group
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
 
 /**
  * Accounts

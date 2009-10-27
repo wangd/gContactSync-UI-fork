@@ -14,8 +14,8 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Josh Geenen <gcontactsync@pirules.org>.
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -34,6 +34,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * AbListener
  * AbListener is a listener for the Address Book that is currently only used to
@@ -41,7 +44,7 @@
  * them.
  * @class
  */
-var AbListener = {
+com.gContactSync.AbListener = {
   /**
    * AbListener.onItemAdded
    * Unused.

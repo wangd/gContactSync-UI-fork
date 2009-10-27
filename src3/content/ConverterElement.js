@@ -14,7 +14,7 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
+ * Josh Geenen <gcontactsync@pirules.org>.
  * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
@@ -33,6 +33,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * ConverterElement
  * Creates a new object used to convert data between a contact's XML
@@ -46,7 +50,7 @@
  * @constructor
  * @class
  */
-function ConverterElement(aElementName, aTbName, aIndex, aType) {
+com.gContactSync.ConverterElement = function gCS_ConverterElement(aElementName, aTbName, aIndex, aType) {
   this.elementName = aElementName;
   this.tbName = aTbName;
   this.index = aIndex;

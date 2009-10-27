@@ -14,7 +14,7 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
+ * Josh Geenen <gcontactsync@pirules.org>.
  * Portions created by the Initial Developer are Copyright (C) 2009
  * the Initial Developer. All Rights Reserved.
  *
@@ -33,7 +33,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * TBContact
  * Makes a new TBContact object that has functions to get and set various values

@@ -14,7 +14,7 @@
  * The Original Code is gContactSync.
  *
  * The Initial Developer of the Original Code is
- * Josh Geenen <gcontactsync@pirules.net>.
+ * Josh Geenen <gcontactsync@pirules.org>.
  * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
@@ -33,6 +33,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * Overlay.js
  * Contains the Overlay class and a load listener for the Address Book.
@@ -125,7 +129,7 @@ var Overlay = {
     // override the ab results tree function
     //originalSetAbView = SetAbView;
     //SetAbView = this.mySetAbView;
-    AbListener.add(); // add the address book listener
+    com.gContactSync.AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
     // Fix the style for description elements accidentally set in the
@@ -142,7 +146,7 @@ var Overlay = {
    * Called when the overlay is unloaded and removes the address book listener.
    */
   unload: function Overlay_unload() {
-    AbListener.remove();
+    com.gContactSync.AbListener.remove();
   },
   /**
    * ContactConverter.addTreeCols

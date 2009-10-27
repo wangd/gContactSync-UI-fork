@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -33,6 +33,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * GHttpRequest
  * Sets up an HTTP request to send to Google.
@@ -141,7 +145,7 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
   // use version 3 of the contacts api
   this.addHeaderItem("GData-Version", "3");
   // handle Token Expired errors
-  this.mOn401 = ["handle401(httpReq);"];
+  this.mOn401 = ["com.gContactSync.handle401(httpReq);"];
   if (!this.mUrl)
     throw "Error - no URL was found for the HTTP Request";
   if (aUsername && this.mUrl)
@@ -173,7 +177,7 @@ GHttpRequest.prototype.fixUsername = function GHttpRequest_fixUsername(aUsername
 }
 
 /**
- * handle401
+ * com.gContactSync.handle401
  * Handles 'Token Expired' errors.
  * If a sync is in progress:
  *  - Get the username
@@ -183,7 +187,7 @@ GHttpRequest.prototype.fixUsername = function GHttpRequest_fixUsername(aUsername
  *  - Get a new auth token to replace the old one
  *  - Restart the sync
  */
-function handle401(httpRequest) {
+com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
   LOGGER.LOG("***Found an expired token***");
   // If there is a synchronization in process
   if (!Sync.mSynced) {
@@ -219,20 +223,20 @@ function handle401(httpRequest) {
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
       alert(StringBundle.getStr("invalidEmail"));
-      return handle401();
+      return com.gContactSync.handle401();
     }
     var body    = gdata.makeAuthBody(username.value, password.value);
     var httpReq = new GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
     httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText));",
-                          "finish401('" + username.value +
+                          "com.gContactSync.finish401('" + username.value +
                           "', httpReq.responseText.split(\"\\n\")[2]);"];
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError   = ["alert(StringBundle.getStr('authErr'));",
                           "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
                           "httpReq.status, httpReq.responseText);",
-                          "handle401();"];
+                          "com.gContactSync.handle401();"];
     // if the user is offline, alert them and quit
     httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
                           "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
@@ -240,7 +244,7 @@ function handle401(httpRequest) {
   }
 }
 
-function finish401(aUsername, aAuthToken) {
+com.gContactSync.finish401 = function gCS_finish401(aUsername, aAuthToken) {
   LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername + " - " + aAuthToken);
   if (aUsername && aAuthToken) {
     var token = 'GoogleLogin ' + aAuthToken;

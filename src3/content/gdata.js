@@ -33,6 +33,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * gdata
  * Stores information on using the Google Data Api™ protocol, specifically the
@@ -86,14 +90,14 @@ var gdata = {
   },
   // The namespaces used
   namespaces: {
-    APP:         new Namespace("http://www.w3.org/2007/app", "app:"),
-    ATOM:        new Namespace("http://www.w3.org/2005/Atom", "atom:"),
-    GD:          new Namespace("http://schemas.google.com/g/2005", "gd:"),
-    GCONTACT:    new Namespace("http://schemas.google.com/contact/2008",
+    APP:         new com.gContactSync.Namespace("http://www.w3.org/2007/app", "app:"),
+    ATOM:        new com.gContactSync.Namespace("http://www.w3.org/2005/Atom", "atom:"),
+    GD:          new com.gContactSync.Namespace("http://schemas.google.com/g/2005", "gd:"),
+    GCONTACT:    new com.gContactSync.Namespace("http://schemas.google.com/contact/2008",
                                "gContact:"),
-    OPEN_SEARCH: new Namespace("http://a9.com/-/spec/opensearch/1.1/",
+    OPEN_SEARCH: new com.gContactSync.Namespace("http://a9.com/-/spec/opensearch/1.1/",
                                "openSearch:"),
-    BATCH:       new Namespace("http://schemas.google.com/gdata/batch","batch:")
+    BATCH:       new com.gContactSync.Namespace("http://schemas.google.com/gdata/batch","batch:")
   },
   // some things related to contacts, such as related URLs and HTTP Request
   // types

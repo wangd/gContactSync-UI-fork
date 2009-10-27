@@ -33,6 +33,10 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+if (!com) var com = {};
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * ContactConverter
  * Converts contacts between Thunderbird's format (a 'card') and the Atom/XML
@@ -76,66 +80,66 @@ var ContactConverter = {
     // properties in Thunderbird.  gdata.contacts has info on these tags
     this.mConverterArr = [
       // Various components of a name
-      new ConverterElement("fullName",       "DisplayName",    0),
-      new ConverterElement("givenName",      "FirstName",      0),
-      new ConverterElement("familyName",     "LastName",       0),
-      new ConverterElement("additionalName", "AdditionalName", 0),
-      new ConverterElement("namePrefix",     "namePrefix",     0),
-      new ConverterElement("nameSuffix",     "nameSuffix",     0),
-      new ConverterElement("nickname",       "NickName",       0),
+      new com.gContactSync.ConverterElement("fullName",       "DisplayName",    0),
+      new com.gContactSync.ConverterElement("givenName",      "FirstName",      0),
+      new com.gContactSync.ConverterElement("familyName",     "LastName",       0),
+      new com.gContactSync.ConverterElement("additionalName", "AdditionalName", 0),
+      new com.gContactSync.ConverterElement("namePrefix",     "namePrefix",     0),
+      new com.gContactSync.ConverterElement("nameSuffix",     "nameSuffix",     0),
+      new com.gContactSync.ConverterElement("nickname",       "NickName",       0),
       // general
-      new ConverterElement("notes",          "Notes",          0),
-      new ConverterElement("id",             "GoogleID",       0),
+      new com.gContactSync.ConverterElement("notes",          "Notes",          0),
+      new com.gContactSync.ConverterElement("id",             "GoogleID",       0),
       // e-mail addresses
-      new ConverterElement("email", "PrimaryEmail", 0, "other"),
-      new ConverterElement("email", "SecondEmail",  1, "other"),
-      new ConverterElement("email", "ThirdEmail",   2, "other"),
-      new ConverterElement("email", "FourthEmail",  3, "other"),
+      new com.gContactSync.ConverterElement("email", "PrimaryEmail", 0, "other"),
+      new com.gContactSync.ConverterElement("email", "SecondEmail",  1, "other"),
+      new com.gContactSync.ConverterElement("email", "ThirdEmail",   2, "other"),
+      new com.gContactSync.ConverterElement("email", "FourthEmail",  3, "other"),
       // IM screennames
-      new ConverterElement("im", "_AimScreenName",   0, "AIM"),
-      new ConverterElement("im", "TalkScreenName",   1, "GOOGLE_TALK"),
-      new ConverterElement("im", "ICQScreenName",    2, "ICQ"),
-      new ConverterElement("im", "YahooScreenName",  3, "YAHOO"),
-      new ConverterElement("im", "MSNScreenName",    4, "MSN"),
-      new ConverterElement("im", "JabberScreenName", 5, "JABBER"),
+      new com.gContactSync.ConverterElement("im", "_AimScreenName",   0, "AIM"),
+      new com.gContactSync.ConverterElement("im", "TalkScreenName",   1, "GOOGLE_TALK"),
+      new com.gContactSync.ConverterElement("im", "ICQScreenName",    2, "ICQ"),
+      new com.gContactSync.ConverterElement("im", "YahooScreenName",  3, "YAHOO"),
+      new com.gContactSync.ConverterElement("im", "MSNScreenName",    4, "MSN"),
+      new com.gContactSync.ConverterElement("im", "JabberScreenName", 5, "JABBER"),
       // the phone numbers
-      new ConverterElement("phoneNumber", "WorkPhone",      0, "work"),
-      new ConverterElement("phoneNumber", "HomePhone",      1, "home"),
-      new ConverterElement("phoneNumber", "FaxNumber",      2, "work_fax"),
-      new ConverterElement("phoneNumber", "CellularNumber", 3, "mobile"),
-      new ConverterElement("phoneNumber", "PagerNumber",    4, "pager"),
-      new ConverterElement("phoneNumber", "HomeFaxNumber",  5, "home_fax"),
-      new ConverterElement("phoneNumber", "OtherNumber",    6, "other"),
+      new com.gContactSync.ConverterElement("phoneNumber", "WorkPhone",      0, "work"),
+      new com.gContactSync.ConverterElement("phoneNumber", "HomePhone",      1, "home"),
+      new com.gContactSync.ConverterElement("phoneNumber", "FaxNumber",      2, "work_fax"),
+      new com.gContactSync.ConverterElement("phoneNumber", "CellularNumber", 3, "mobile"),
+      new com.gContactSync.ConverterElement("phoneNumber", "PagerNumber",    4, "pager"),
+      new com.gContactSync.ConverterElement("phoneNumber", "HomeFaxNumber",  5, "home_fax"),
+      new com.gContactSync.ConverterElement("phoneNumber", "OtherNumber",    6, "other"),
       // company info
-      new ConverterElement("orgTitle",          "JobTitle",       0),
-      new ConverterElement("orgName",           "Company",        0),
-      new ConverterElement("orgDepartment",     "Department",     0),
-      new ConverterElement("orgJobDescription", "JobDescription", 0),
-      new ConverterElement("orgSymbol",         "CompanySymbol",  0),
+      new com.gContactSync.ConverterElement("orgTitle",          "JobTitle",       0),
+      new com.gContactSync.ConverterElement("orgName",           "Company",        0),
+      new com.gContactSync.ConverterElement("orgDepartment",     "Department",     0),
+      new com.gContactSync.ConverterElement("orgJobDescription", "JobDescription", 0),
+      new com.gContactSync.ConverterElement("orgSymbol",         "CompanySymbol",  0),
       // the URLs from Google - Photo, Self, and Edit
-      new ConverterElement("PhotoURL", "PhotoURL", 0),
-      new ConverterElement("SelfURL",  "SelfURL",  0),
-      new ConverterElement("EditURL",  "EditURL",  0),
+      new com.gContactSync.ConverterElement("PhotoURL", "PhotoURL", 0),
+      new com.gContactSync.ConverterElement("SelfURL",  "SelfURL",  0),
+      new com.gContactSync.ConverterElement("EditURL",  "EditURL",  0),
       // Home address
-      new ConverterElement("street",   "HomeAddress", 0, "home"),
-      new ConverterElement("city",     "HomeCity",    0, "home"),
-      new ConverterElement("region",   "HomeState",   0, "home"),
-      new ConverterElement("postcode", "HomeZipCode", 0, "home"),
-      new ConverterElement("country",  "HomeCountry", 0, "home"),
+      new com.gContactSync.ConverterElement("street",   "HomeAddress", 0, "home"),
+      new com.gContactSync.ConverterElement("city",     "HomeCity",    0, "home"),
+      new com.gContactSync.ConverterElement("region",   "HomeState",   0, "home"),
+      new com.gContactSync.ConverterElement("postcode", "HomeZipCode", 0, "home"),
+      new com.gContactSync.ConverterElement("country",  "HomeCountry", 0, "home"),
       // Work address
-      new ConverterElement("street",   "WorkAddress", 0, "work"),
-      new ConverterElement("city",     "WorkCity",    0, "work"),
-      new ConverterElement("region",   "WorkState",   0, "work"),
-      new ConverterElement("postcode", "WorkZipCode", 0, "work"),
-      new ConverterElement("country",  "WorkCountry", 0, "work"),
+      new com.gContactSync.ConverterElement("street",   "WorkAddress", 0, "work"),
+      new com.gContactSync.ConverterElement("city",     "WorkCity",    0, "work"),
+      new com.gContactSync.ConverterElement("region",   "WorkState",   0, "work"),
+      new com.gContactSync.ConverterElement("postcode", "WorkZipCode", 0, "work"),
+      new com.gContactSync.ConverterElement("country",  "WorkCountry", 0, "work"),
       // relation fields
-      new ConverterElement("relation", "Relation0", 0, ""),
-      new ConverterElement("relation", "Relation1", 1, ""),
-      new ConverterElement("relation", "Relation2", 2, ""),
-      new ConverterElement("relation", "Relation3", 3, ""),
+      new com.gContactSync.ConverterElement("relation", "Relation0", 0, ""),
+      new com.gContactSync.ConverterElement("relation", "Relation1", 1, ""),
+      new com.gContactSync.ConverterElement("relation", "Relation2", 2, ""),
+      new com.gContactSync.ConverterElement("relation", "Relation3", 3, ""),
       // websites
-      new ConverterElement("website",   "WebPage1", 0, "work"),
-      new ConverterElement("website",   "WebPage2", 1, "home")
+      new com.gContactSync.ConverterElement("website",   "WebPage1", 0, "work"),
+      new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home")
     ];
     this.mInitialized = true;
   },

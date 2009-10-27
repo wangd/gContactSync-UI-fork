@@ -130,7 +130,7 @@ GContact.prototype = {
    * @param aIndex   The index of the value (ie 0 for primary email, 1 for
    *                 second...).  Set to 0 if not supplied.
    * @param aType    The type, if the element can have types.
-   * @return A new Property object with the value of the element, if found.  The
+   * @return A new com.gContactSync.Property object with the value of the element, if found.  The
    *         type of the Property will be aType.
    */
   getElementValue: function GContact_getElementValue(aElement, aIndex, aType) {
@@ -162,7 +162,7 @@ GContact.prototype = {
                            .substring(type.indexOf("#") + 1);
               if (!type)
                 type = arr[i].getAttribute("label");
-              return new Property(arr[i].childNodes[0].nodeValue, type);
+              return new com.gContactSync.Property(arr[i].childNodes[0].nodeValue, type);
             }
             return null;
           case gdata.contacts.types.TYPED_WITH_ATTR:
@@ -179,13 +179,13 @@ GContact.prototype = {
                   type = arr[i].getAttribute("label");
               }
               type = type.substring(type.indexOf("#") + 1);
-              return new Property(arr[i].getAttribute(aElement.attribute), type);
+              return new com.gContactSync.Property(arr[i].getAttribute(aElement.attribute), type);
             }
           case gdata.contacts.types.UNTYPED:
             if (aElement.tagName == "birthday")
-              return new Property(arr[i].getAttribute("when"));
+              return new com.gContactSync.Property(arr[i].getAttribute("when"));
             if (arr[i].childNodes[0])
-              return new Property(arr[i].childNodes[0].nodeValue);
+              return new com.gContactSync.Property(arr[i].childNodes[0].nodeValue);
             return null;
           default:
             LOGGER.LOG_WARNING("Error - invalid contact type passed to the " +
@@ -362,7 +362,7 @@ GContact.prototype = {
       return this.setAddress(aElement, aValue, aType, aIndex);
     // get the current element (as this.mCurrentElement) and it's value (returned)
     var property = this.getElementValue(aElement, aIndex, aType);
-    property = property ? property : new Property(null, null);
+    property = property ? property : new com.gContactSync.Property(null, null);
     var value = property.value;
     // if the current value is already good, check the type and return
     if (value == aValue) {
@@ -525,7 +525,7 @@ GContact.prototype = {
     var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("name") == aName)
-        return new Property(arr[i].getAttribute("value"));
+        return new com.gContactSync.Property(arr[i].getAttribute("value"));
     return null;
   },
   /**
@@ -560,7 +560,7 @@ GContact.prototype = {
    * @param aIndex Optional.  The index, if non-zero, of the value to get.
    * @param aType  The type of element to get if the tag name has different
    *               types (home, work, other, etc.).
-   * @return A new Property object with the value and type, if applicable.
+   * @return A new com.gContactSync.Property object with the value and type, if applicable.
    *         If aName is groupMembership info, returns an array of the group IDs
    */
   getValue: function GContact_getValue(aName, aIndex, aType) {
@@ -570,7 +570,7 @@ GContact.prototype = {
         var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "link");
         for (var i = 0, length = arr.length; i < length; i++)
           if (arr[i].getAttribute("rel") == gdata.contacts.links[aName])
-            return new Property(arr[i].getAttribute("href"));
+            return new com.gContactSync.Property(arr[i].getAttribute("href"));
       }
       else if (aName == "groupMembershipInfo")
         return this.getGroups();
