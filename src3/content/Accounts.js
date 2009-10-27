@@ -37,6 +37,10 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
+window.addEventListener("load", function optionsLoadListener(e) {
+  Accounts.initDialog();
+ }, false);
+
 /**
  * Accounts
  * The JavaScript variables and functions that handle different gContactSync
@@ -63,6 +67,7 @@ var Accounts = {
    */
   initDialog:  function Accounts_initDialog() {
     try {
+      Preferences.getSyncPrefs();
       this.fillAbTree();
       this.fillUsernames();
       this.showAdvancedSettings(document.getElementById("showAdvanced").checked);
@@ -322,7 +327,7 @@ var Accounts = {
     return true;
   },
   /**
-   * addToTree
+   * Accounts.addToTree
    * Adds login information (username and directory name) to the tree.
    * @param aTreeChildren {object} The <treechildren> XUL element.
    * @param aAB           {GAddressBook} The GAddressBook to add.
@@ -443,7 +448,6 @@ var Accounts = {
     var arr = aAtom.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "entry");
     var group, title;
     LOGGER.VERBOSE_LOG("Adding groups from username: " + aUsername);
-    alert(arr.length);
     for (var i = 0; i < arr.length; i++) {
       group = new Group(arr[i]);
       title = group.getTitle();

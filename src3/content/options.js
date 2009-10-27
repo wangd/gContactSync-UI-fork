@@ -38,68 +38,67 @@ if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
 window.addEventListener("load", function optionsLoadListener(e) {
-  initialize();
+  com.gContactSync.Options.init();
   window.sizeToContent();
  }, false);
 
 /**
- * initialize
- * Initializes the string bundle, FileIO and Preferences scripts and fills the
- * login tree.
+ * com.gContactSync.Options
+ * Provides helper functions for the Preferences dialog.
  */
-function initialize() {
-  Preferences.getSyncPrefs();
-  //document.getElementById("cMyContacts").addEventListener("change", myContactsChange, false);
-  // if this is the full preferences dialog add a few event listeners
-  if (document.getElementById("syncExtended")) {
-    document.getElementById("syncExtended")
-            .addEventListener("change", enableExtended, false);
-    enableExtended();
-    document.getElementById("autoSync")
-            .addEventListener("change", enableDelays, false);
-    enableDelays();
+com.gContactSync.Options = {
+  /**
+   * Options.init
+   * Initializes the string bundle, FileIO and Preferences scripts and fills the
+   * login tree.
+   */
+  init: function Options_init() {
+    Preferences.getSyncPrefs();
+    //document.getElementById("cMyContacts").addEventListener("change", myContactsChange, false);
+    // if this is the full preferences dialog add a few event listeners
+    if (document.getElementById("syncExtended")) {
+      document.getElementById("syncExtended")
+              .addEventListener("change", com.gContactSync.Options.enableExtended, false);
+      enableExtended();
+      document.getElementById("autoSync")
+              .addEventListener("change", com.gContactSync.Options.enableDelays, false);
+      enableDelays();
+    }
+  },
+  /**
+   * Options.enableExtended
+   * Enables or disables the extended property textboxes based on the state of
+   * the syncExtended checkbox.
+   */
+  enableExtended: function Options_enableExtended() {
+    var disableElem = document.getElementById("syncExtended");
+    if (!disableElem) return false;
+    var disable = !disableElem.value;
+    document.getElementById("extended1").disabled  = disable;
+    document.getElementById("extended2").disabled  = disable;
+    document.getElementById("extended3").disabled  = disable;
+    document.getElementById("extended4").disabled  = disable;
+    document.getElementById("extended5").disabled  = disable;
+    document.getElementById("extended6").disabled  = disable;
+    document.getElementById("extended7").disabled  = disable;
+    document.getElementById("extended8").disabled  = disable;
+    document.getElementById("extended9").disabled  = disable;
+    document.getElementById("extended10").disabled = disable;
+    return true;
+  },
+  /**
+   * Options.enableDelays
+   * Enables or disables the delay textboxes based on the auto sync checkbox.
+   */
+  enableDelays: function Options_enableDelays() {
+    var disableElem  = document.getElementById("autoSync");
+    var intervalElem = document.getElementById("refreshIntervalBox");
+    var initialElem  = document.getElementById("initialDelayBox");
+    if (!disableElem) return false;
+    if (intervalElem)
+      intervalElem.disabled = !disableElem.value;
+    if (initialElem)
+      initialElem.disabled  = !disableElem.value;
+    return true;
   }
-  try {
-    Accounts.initDialog();
-  }
-  catch (e) {}
-}
-
-
-/**
- * enableExtended
- * Enables or disables the extended property textboxes based on the state of
- * the syncExtended checkbox.
- */
-function enableExtended() {
-  var disableElem = document.getElementById("syncExtended");
-  if (!disableElem) return false;
-  var disable = !disableElem.value;
-  document.getElementById("extended1").disabled  = disable;
-  document.getElementById("extended2").disabled  = disable;
-  document.getElementById("extended3").disabled  = disable;
-  document.getElementById("extended4").disabled  = disable;
-  document.getElementById("extended5").disabled  = disable;
-  document.getElementById("extended6").disabled  = disable;
-  document.getElementById("extended7").disabled  = disable;
-  document.getElementById("extended8").disabled  = disable;
-  document.getElementById("extended9").disabled  = disable;
-  document.getElementById("extended10").disabled = disable;
-  return true;
-}
-
-/**
- * enableDelays
- * Enables or disables the delay textboxes based on the auto sync checkbox.
- */
-function enableDelays() {
-  var disableElem  = document.getElementById("autoSync");
-  var intervalElem = document.getElementById("refreshIntervalBox");
-  var initialElem  = document.getElementById("initialDelayBox");
-  if (!disableElem) return false;
-  if (intervalElem)
-    intervalElem.disabled = !disableElem.value;
-  if (initialElem)
-    initialElem.disabled  = !disableElem.value;
-  return true;
 }

@@ -137,8 +137,6 @@
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/StringBundle.js"/>
   <script type="application/x-javascript"
-          src="chrome://gcontactsync/content/options.js"/>
-  <script type="application/x-javascript"
           src="chrome://gcontactsync/content/AddressBook.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/GAddressBook.js"/>
