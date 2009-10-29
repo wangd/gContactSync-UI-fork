@@ -98,6 +98,7 @@ var CardDialogOverlay = {
    */
   init: function CardDialogOverlay_init() {
     Preferences.getSyncPrefs();
+    alert('init');
     // if it isn't finished loading yet wait another 200 ms and try again
     if (!document.getElementById("abTabs")) {
       // if it has tried to load more than 50 times something is wrong, so quit
@@ -124,6 +125,7 @@ var CardDialogOverlay = {
     }
     // add the email type drop down menus
     try {
+      // TODO move to gdata
       var arr = ["other", "home", "work"];
       var primaryEmailBox = document.getElementById("PrimaryEmail").parentNode;
       addMenuItems(primaryEmailBox, arr, "PrimaryEmailType", "other");
@@ -135,6 +137,7 @@ var CardDialogOverlay = {
       addMenuItems(fourthEmailBox, arr, "FourthEmailType", "other");
     } catch(e) { alert("Unable to setup email types: " + e); }
     try {
+      // TODO move to gdata
       // add drop down menus for screen name protocols
       var arr = ["AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER", "SKYPE", "QQ"];
       var aimBox = document.getElementById("ScreenName").parentNode;
@@ -203,6 +206,7 @@ var CardDialogOverlay = {
     catch(e) {
       alert("Unable to replace phone labels and remove access keys\n" + e);
     }
+    // TODO this really should be in gdata
     var phoneTypes = ["work", "home", "work_fax", "mobile", "pager", "home_fax",
                       "assistant", "callback", "car", "company_main", "fax",
                       "isdn", "main", "other_fax", "radio", "telex", "tty_tdd",

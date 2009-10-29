@@ -134,13 +134,13 @@ com.gContactSync.AbListener = {
       var flags = Components.interfaces.nsIAbListener.directoryItemRemoved;
       Components.classes["@mozilla.org/abmanager;1"]
                 .getService(Components.interfaces.nsIAbManager)
-                .addAddressBookListener(AbListener, flags);
+                .addAddressBookListener(com.gContactSync.AbListener, flags);
     }
     else { // Thunderbird 2
       var flags = Components.interfaces.nsIAddrBookSession.directoryItemRemoved;
       Components.classes["@mozilla.org/addressbook/services/session;1"]
                 .getService(Components.interfaces.nsIAddrBookSession)
-                .addAddressBookListener(AbListener, flags);
+                .addAddressBookListener(com.gContactSync.AbListener, flags);
     }
   },
   /**
@@ -151,10 +151,10 @@ com.gContactSync.AbListener = {
     if (Components.classes["@mozilla.org/abmanager;1"]) // Thunderbird 3
       Components.classes["@mozilla.org/abmanager;1"]
                 .getService(Components.interfaces.nsIAbManager)
-                .removeAddressBookListener(AbListener);
+                .removeAddressBookListener(com.gContactSync.AbListener);
     else // Thunderbird 2
       Components.classes["@mozilla.org/addressbook/services/session;1"]
                 .getService(Components.interfaces.nsIAddrBookSession)
-                .removeAddressBookListener(AbListener);
+                .removeAddressBookListener(com.gContactSync.AbListener);
   }
 };

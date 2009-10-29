@@ -71,7 +71,7 @@ var gdata = {
     // domain accounts won't work
     return "accountType=HOSTED_OR_GOOGLE&Email=" + encodeURIComponent(aEmail) +
            "&Passwd=" + encodeURIComponent(aPassword) +
-           "&service=cp&source=Josh-gContactSync-0-2";
+           "&service=cp&source=Josh-gContactSync-0-3";
   },
   /**
    * gdata.getEmailFromId

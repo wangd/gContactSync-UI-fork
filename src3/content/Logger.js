@@ -54,7 +54,7 @@ var LOGGER = {
   LOG: function LOGGER_LOG(aMessage) {
     if (!aMessage)
       return;
-    FileIO.appendToFile(FileIO.mLogFile, aMessage + "\n");
+    com.gContactSync.FileIO.appendToFile(com.gContactSync.FileIO.mLogFile, aMessage + "\n");
   },
   /**
    * Logger.VERBOSE_LOG

@@ -45,7 +45,8 @@ if (!com.gContactSync) com.gContactSync = {};
  * @constructor
  * @class
  */
-com.gContactSync.Namespace = function gCS_Namespace(aUrl, aPrefix) {
+function gContactSync_Namespace(aUrl, aPrefix) {
   this.url    = aUrl;
   this.prefix = aPrefix;
 }
+com.gContactSync.Namespace = gContactSync_Namespace;

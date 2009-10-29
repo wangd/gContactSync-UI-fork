@@ -38,7 +38,7 @@ if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
 window.addEventListener("load", function optionsLoadListener(e) {
-  FileIO.init();
+  com.gContactSync.FileIO.init();
  }, false);
 
 /**
@@ -47,7 +47,7 @@ window.addEventListener("load", function optionsLoadListener(e) {
  * storing data, authentication info, and logs.
  * @class
  */
-var FileIO = {
+com.gContactSync.FileIO = {
   mLogFile: null,
   fileNames: {
     LOG_FILE: "gcontactsync_log.txt" // stores the log from the last sync

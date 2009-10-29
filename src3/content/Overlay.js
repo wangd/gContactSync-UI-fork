@@ -95,8 +95,8 @@ var Overlay = {
                         Preferences.mSyncPrefs.lastVersion.type,
                         com.gContactSync.version);
 
-    if (FileIO.mLogFile && FileIO.mLogFile.exists())
-      FileIO.mLogFile.remove(false); // delete the old log file
+    if (com.gContactSync.FileIO.mLogFile && com.gContactSync.FileIO.mLogFile.exists())
+      com.gContactSync.FileIO.mLogFile.remove(false); // delete the old log file
 
     // log some basic system and application info
     LOGGER.LOG("Loading gContactSync at " + new Date());
@@ -536,7 +536,7 @@ var Overlay = {
   showLog: function Overlay_showLog() {
     try {
       var windowFeatures = "chrome=yes,resizable=yes,height=480,width=600";
-      window.open("view-source:file://" + FileIO.mLogFile.path,
+      window.open("view-source:file://" + com.gContactSync.FileIO.mLogFile.path,
                   "Log",
                   windowFeatures);
     }
