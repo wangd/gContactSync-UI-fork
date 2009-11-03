@@ -47,7 +47,7 @@
     <hbox>
       <vbox flex="1">
         <tree flex="1" id="loginTree" seltype="single"
-              onselect="Accounts.selectedAbChange();">
+              onselect="com.gContactSync.Accounts.selectedAbChange();">
           <treecols>
             <treecol id="addressBook" label="&addressBook.label;" flex="1"/>
             <splitter class="treesplitter"/>
@@ -59,7 +59,7 @@
           <button id="addLogin"    label="&addLogin.label;"
                   oncommand="addLogin();"/>
           <button id="refreshTree" label="&refreshTree.label;"
-                  oncommand="Accounts.fillAbTree();"/>
+                  oncommand="com.gContactSync.Accounts.fillAbTree();"/>
           <button id="resetAll"    label="&resetAll.label;"
                   oncommand="GAbManager.resetAllSyncedABs(true);"/>
         </hbox>
@@ -70,9 +70,9 @@
           <hbox>
             <label control="Username" value="&Username.label;"/>
             <label id="link-label"    value="&NewUsername.label;"
-                   onclick="Accounts.newUsername();"/>
+                   onclick="com.gContactSync.Accounts.newUsername();"/>
           </hbox>
-          <menulist id="Username" oncommand="Accounts.restoreGroups();">
+          <menulist id="Username" oncommand="com.gContactSync.Accounts.restoreGroups();">
             <menupopup id="UsernamePopup">
               <menuitem value="None" label="&NoUsername.label;"/>
             </menupopup>
@@ -90,11 +90,11 @@
                 <menuitem class="default" value="friends"    label="&Friends.label;"/>
               </menupopup>
             </menulist>
-            <button id="GetGroups" oncommand="Accounts.getAllGroups();" label="&GetGroups.label;"/>
+            <button id="GetGroups" oncommand="com.gContactSync.Accounts.getAllGroups();" label="&GetGroups.label;"/>
           </hbox>
         </groupbox>
         <checkbox id="showAdvanced" label="&showAdvanced.label;"
-                  oncommand="Accounts.showAdvancedSettings(this.checked);"/>
+                  oncommand="com.gContactSync.Accounts.showAdvancedSettings(this.checked);"/>
         <spacer height="5px"/>
         <groupbox id="advancedGroupBox">
           <label control="Plugin" value="&Plugin.label;" collapsed="true"/>
@@ -109,7 +109,7 @@
           <hbox>
             <label control="SyncDirection"  value="&SyncDirection.label;"/>
             <label id="link-label"    value="&DirectionHelp.label;"
-                  onclick="Accounts.directionPopup();"/>
+                  onclick="com.gContactSync.Accounts.directionPopup();"/>
           </hbox>
           <menulist id="SyncDirection">
             <menupopup id="SyncDirectionPopup">
@@ -123,9 +123,9 @@
         </groupbox>
         <spacer height="5px"/>
         <hbox id="acctButtons">
-          <button id="deleteAB" label="&deleteAB.label;" oncommand="Accounts.deleteSelectedAB();"/>
-          <button id="removeLogin" label="&removeLogin.label;" oncommand="Accounts.removeSyncSettings();"/>
-          <button id="saveChanges" label="&saveChanges.label;" oncommand="Accounts.saveSelectedAccount();"/>
+          <button id="deleteAB" label="&deleteAB.label;" oncommand="com.gContactSync.Accounts.deleteSelectedAB();"/>
+          <button id="removeLogin" label="&removeLogin.label;" oncommand="com.gContactSync.Accounts.removeSyncSettings();"/>
+          <button id="saveChanges" label="&saveChanges.label;" oncommand="com.gContactSync.Accounts.saveSelectedAccount();"/>
         </hbox>
       </vbox>
     </hbox>

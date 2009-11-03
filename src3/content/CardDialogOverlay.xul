@@ -48,6 +48,7 @@
   <script src="Pref.js"/>
   <script src="Preferences.js"/>
   <script src="GElement.js"/>
+  <script src="Namespace.js"/>
   <script src="gdata.js"/>
   <script src="Logger.js"/>
   <script src="CardDialogOverlay.js"/>

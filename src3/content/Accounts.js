@@ -38,16 +38,16 @@ if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
 window.addEventListener("load", function optionsLoadListener(e) {
-  Accounts.initDialog();
+  com.gContactSync.Accounts.initDialog();
  }, false);
 
 /**
- * Accounts
+ * com.gContactSync.Accounts
  * The JavaScript variables and functions that handle different gContactSync
  * accounts allowing each synchronized address book to have its own preferences.
  * @class
  */
-var Accounts = {
+com.gContactSync.Accounts = {
   // The column index of the address book name
   // change this if adding a column before the AB name
   mAbNameIndex:  0,
@@ -113,12 +113,12 @@ var Accounts = {
     // a new sync
     httpReq.mOnSuccess = ["LoginManager.addAuthToken('" + username.value +
                           "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
-                          "Accounts.selectedAbChange();"];
+                          "com.gContactSync.Accounts.selectedAbChange();"];
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError   = ["alert(StringBundle.getStr('authErr'));",
                           "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
                           "httpReq.status, httpReq.responseText);",
-                          "Accounts.newUsername();"];
+                          "com.gContactSync.Accounts.newUsername();"];
     // if the user is offline, alert them and quit
     httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
                           "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
@@ -323,7 +323,7 @@ var Accounts = {
     // TODO - there should be a way to change the allowed dir types...
     var abs    = GAbManager.getAllAddressBooks(2);
     for (var i in abs)
-      Accounts.addToTree(newTreeChildren, abs[i]);
+      this.addToTree(newTreeChildren, abs[i]);
     return true;
   },
   /**
@@ -357,6 +357,7 @@ var Accounts = {
    * Deletes the selected address book
    */
   deleteSelectedAB: function Accounts_deleteSelectedAB() {
+    // TODO confirm that the AB isn't the PAB or CAB
     if (!confirm(StringBundle.getStr("deleteAB")))
       return false;
     var ab = this.getSelectedAb();

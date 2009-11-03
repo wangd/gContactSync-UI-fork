@@ -98,7 +98,6 @@ var CardDialogOverlay = {
    */
   init: function CardDialogOverlay_init() {
     Preferences.getSyncPrefs();
-    alert('init');
     // if it isn't finished loading yet wait another 200 ms and try again
     if (!document.getElementById("abTabs")) {
       // if it has tried to load more than 50 times something is wrong, so quit
