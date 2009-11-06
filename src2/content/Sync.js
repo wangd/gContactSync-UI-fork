@@ -342,12 +342,12 @@ var Sync = {
           ContactConverter.makeCard(gContact);
         }
         else if (Preferences.mSyncPrefs.readOnly.value) {
-          LOGGER.LOG(" * The contact is old will be deleted");
-          Sync.mContactsToDelete.push(gContact);
-        }
-        else {
           LOGGER.LOG (" * The contact was deleted in Thunderbird.  " +
                       "Ignoring since read-only mode is on.");
+        }
+        else {
+          LOGGER.LOG(" * The contact is old will be deleted");
+          Sync.mContactsToDelete.push(gContact);
         }
       }
     }
