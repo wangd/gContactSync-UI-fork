@@ -541,6 +541,8 @@ AddressBook.prototype = {
   /**
    * AddressBook.deleteAB
    * Permanently deletes this address book without a confirmation dialog.
+   * This will not allow deleting the PAB or CAB and will show a popup
+   * if there is an attempt to delete one of those ABs.
    */
   deleteAB: function AddressBook_delete() {
     return AbManager.deleteAB(this.mURI);

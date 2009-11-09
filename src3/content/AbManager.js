@@ -467,10 +467,17 @@ var AbManager = {
    * Deletes the Address Book with the given URI.
    * This does NOT provide any confirmation dialog.
    * Note: This will not work in Thunderbird 2 with mailing lists.
+   * This will not allow deleting the PAB or CAB and will show a popup
+   * if there is an attempt to delete one of those ABs.
    */
   deleteAB: function AbManager_deleteAB(aURI) {
     if (!aURI) {
       LOGGER.LOG_ERROR("Invalid URI passed to AbManager.deleteAB");
+      return false;
+    }
+    if (aURI.indexOf("abook.mab") != -1 || aURI.indexOf("history.mab") != -1) {
+      alert(StringBundle.getStr("deletePAB"));
+      LOGGER.LOG_WARNING("Attempt made to delete the PAB or CAB.  URI: " + aURI);
       return false;
     }
     LOGGER.VERBOSE_LOG("Deleting address book with the URI " + aURI);

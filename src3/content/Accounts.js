@@ -357,12 +357,15 @@ com.gContactSync.Accounts = {
    * Deletes the selected address book
    */
   deleteSelectedAB: function Accounts_deleteSelectedAB() {
-    // TODO confirm that the AB isn't the PAB or CAB
+    var ab = this.getSelectedAb();
+    if (!ab) {
+      // TODO this needs an error message (please select an AB first)
+      return ab;
+    }
+    // TODO check if PAB or CAB
     if (!confirm(StringBundle.getStr("deleteAB")))
       return false;
-    var ab = this.getSelectedAb();
-    if (!ab)
-      return ab;
+    // This function also checks that the AB isn't the PAB or CAB
     ab.deleteAB();
     this.fillAbTree();
     return true;
