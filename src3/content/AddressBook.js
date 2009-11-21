@@ -51,7 +51,7 @@ function AddressBook(aDirectory) {
   if (!this.isDirectoryValid(this.mDirectory))
     throw "Invalid directory supplied to the AddressBook constructor" +
           "\nCalled by: " + this.caller +
-          StringBundle.getStr("pleaseReport");
+          com.gContactSync.StringBundle.getStr("pleaseReport");
   // get the directory's URI
   if (this.mDirectory.URI)
     this.mURI = this.mDirectory.URI;
@@ -78,7 +78,7 @@ AddressBook.prototype = {
       return this.mDirectory.addCard(aCard); // then add it and return the MDBCard
     }
     catch(e) {
-      LOGGER.LOG_ERROR("Unable to add card to the directory with URI: " +
+      com.gContactSync.LOGGER.LOG_ERROR("Unable to add card to the directory with URI: " +
                        this.URI, e);
     }
     return null;
@@ -122,7 +122,7 @@ AddressBook.prototype = {
    */
   getAllLists: function AddressBook_getAllLists(skipGetCards) {
     // same in Thunderbird 2 and 3
-    LOGGER.VERBOSE_LOG("Searching for mailing lists:");
+    com.gContactSync.LOGGER.VERBOSE_LOG("Searching for mailing lists:");
     var iter = this.mDirectory.childNodes;
     var obj = {};
     var list, id, data;
@@ -131,7 +131,7 @@ AddressBook.prototype = {
       if (data instanceof Components.interfaces.nsIAbDirectory && data.isMailList) {
         list    = this.newListObj(data, this, skipGetCards);
         obj.push(list);
-        LOGGER.VERBOSE_LOG(" * " + list.getName() + " - " + id);
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * " + list.getName() + " - " + id);
       }
     }
     return obj;
@@ -240,7 +240,7 @@ AddressBook.prototype = {
     var list = aList && aList.mList ? aList.mList : aList;
     if (!list || !(list instanceof Components.interfaces.nsIAbDirectory) || !list.isMailList) {
       throw "Invalid list: " + aList + " sent to the '" + aMethodName +
-            "' method" +  StringBundle.getStr("pleaseReport");
+            "' method" +  com.gContactSync.StringBundle.getStr("pleaseReport");
     }
   },
   /**
@@ -253,7 +253,7 @@ AddressBook.prototype = {
   checkDirectory: function AddressBook_checkDirectory(aDirectory, aMethodName) {
     if (!this.isDirectoryValid(aDirectory))
       throw "Invalid Directory: " + aDirectory + " sent to the '" + aMethodName
-            + "' method" +  StringBundle.getStr("pleaseReport");
+            + "' method" +  com.gContactSync.StringBundle.getStr("pleaseReport");
   },
   /**
    * AddressBook.checkDirectory
@@ -395,7 +395,7 @@ AddressBook.prototype = {
    */
   getStringPref: function AddressBook_getStringPref(aName, aDefaultValue) {
     var id = this.getPrefId();
-    //LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
+    //com.gContactSync.LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
     /* The code below is commented out for backward compatibility with TB 2,
      * which crashes if you set a custom pref for a directory.  It is a somewhat
      * sloppy workaround that, instead of using preferences from the directory's
@@ -408,7 +408,7 @@ AddressBook.prototype = {
     if (this.mDirectory.getStringValue) {
       try {
         var value = this.mDirectory.getStringValue(aName, aDefaultValue);
-        LOGGER.VERBOSE_LOG("-Found the value: " + value);
+        com.gContactSync.LOGGER.VERBOSE_LOG("-Found the value: " + value);
         return value;
       } catch (e) { return 0; }
       return null;
@@ -421,7 +421,7 @@ AddressBook.prototype = {
                              .getBranch(id)
                              .QueryInterface(Components.interfaces.nsIPrefBranch2);
       var value = branch.getCharPref(aName);
-      //LOGGER.VERBOSE_LOG("-Found the value: " + value);
+      //com.gContactSync.LOGGER.VERBOSE_LOG("-Found the value: " + value);
       return value;
     }
     // an error is expected if the value isn't present
@@ -438,7 +438,7 @@ AddressBook.prototype = {
    */
   setStringPref: function AddressBook_setStringPref(aName, aValue) {
     var id = this.getPrefId();
-    LOGGER.VERBOSE_LOG("Setting pref named: " + aName + " to value: " + aValue +
+    com.gContactSync.LOGGER.VERBOSE_LOG("Setting pref named: " + aName + " to value: " + aValue +
                        " to the branch: " + id);
     /* The code below is commented out for backward compatibility with TB 2,
      * which crashes if you set a custom pref for a directory.  It is a somewhat
@@ -452,15 +452,15 @@ AddressBook.prototype = {
     if (this.mDirectory.setStringValue) {
       try {
         this.mDirectory.setStringValue(aName, aValue);
-      } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+      } catch (e) { com.gContactSync.LOGGER.LOG_WARNING("Error while setting directory pref", e); }
       return;
     }*/
     if (!id) {
-      LOGGER.VERBOSE_LOG("Invalid ID");
+      com.gContactSync.LOGGER.VERBOSE_LOG("Invalid ID");
       return;
     }
     if (!aName || aName == "") {
-      LOGGER.VERBOSE_LOG("Invalid name");
+      com.gContactSync.LOGGER.VERBOSE_LOG("Invalid name");
       return;
     }
     try {
@@ -469,7 +469,7 @@ AddressBook.prototype = {
                              .getBranch(id)
                              .QueryInterface(Components.interfaces.nsIPrefBranch2);
       branch.setCharPref(aName, aValue);
-    } catch(e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+    } catch(e) { com.gContactSync.LOGGER.LOG_WARNING("Error while setting directory pref", e); }
   },
 
   /**

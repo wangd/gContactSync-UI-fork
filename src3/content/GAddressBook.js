@@ -85,20 +85,20 @@ GAddressBook.prototype.prefPrefix = "gContactSync";
  * if any.
  */
 GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
-  LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':")
+  com.gContactSync.LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':")
   for (var i in this.mPrefs) {
     var val = this.getStringPref(this.prefPrefix + i);
     // getStringPref returns 0 iff the pref doesn't exist
     // if the pref doesn't exist, then use the global gContactSync pref
     // this behavior is mostly for backwards compatibility
     if (val === 0) {
-      var pref = Preferences.mSyncPrefs[i];
+      var pref = com.gContactSync.Preferences.mSyncPrefs[i];
       val = pref ? new String(pref.value) : "";
     }
-    LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
     this.mPrefs[i] = val;
   }
-  LOGGER.VERBOSE_LOG("\n");
+  com.gContactSync.LOGGER.VERBOSE_LOG("\n");
 };
 
 /**
@@ -109,7 +109,7 @@ GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
  * @param aValue {string} The value to set the preference to.
  */
 GAddressBook.prototype.savePref = function GAddressBook_savePref(aName, aValue) {
-  LOGGER.VERBOSE_LOG(" * Setting pref '" + aName + "' to value '" + aValue + "'");
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting pref '" + aName + "' to value '" + aValue + "'");
   this.setStringPref(this.prefPrefix + aName, aValue);
   this.mPrefs[aName] = aValue;
 };
@@ -179,21 +179,21 @@ GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername
   *   - Setting the last sync date to 0
   */
 GAddressBook.prototype.reset = function GAddressBook_reset() {
-  LOGGER.LOG("Resetting the " + this.getName() + " directory.");
+  com.gContactSync.LOGGER.LOG("Resetting the " + this.getName() + " directory.");
   try {
     var lists = this.getAllLists(true);
   } catch (e) {}
-  LOGGER.VERBOSE_LOG(" * Deleting all lists");
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all lists");
   for (var i in lists) {
-    LOGGER.VERBOSE_LOG("  - Deleting list " + lists[i].getName());
+    com.gContactSync.LOGGER.VERBOSE_LOG("  - Deleting list " + lists[i].getName());
     lists[i].delete();
   }
-  LOGGER.VERBOSE_LOG(" * Finished deleting lists");
-  LOGGER.VERBOSE_LOG(" * Deleting all contacts");
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished deleting lists");
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all contacts");
   this.deleteCards(this.getAllCards());
-  LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
   this.setLastSyncDate(0);
-  LOGGER.LOG("Finished resetting the directory.");
+  com.gContactSync.LOGGER.LOG("Finished resetting the directory.");
 };
 
 /**
@@ -225,7 +225,7 @@ GAddressBook.prototype.newListObj = function GAddressBook_newListObj(aList, aPar
  */
 GAddressBook.prototype.getAllLists = function GAddressBook_getAllLists(skipGetCards) {
   // same in Thunderbird 2 and 3
-  LOGGER.VERBOSE_LOG("Searching for mailing lists:");
+  com.gContactSync.LOGGER.VERBOSE_LOG("Searching for mailing lists:");
   var iter = this.mDirectory.childNodes;
   var obj = {};
   var list, id, data;
@@ -235,7 +235,7 @@ GAddressBook.prototype.getAllLists = function GAddressBook_getAllLists(skipGetCa
       list    = this.newListObj(data, this, skipGetCards);
       id      = list.getGroupID();
       obj[id] = list;
-      LOGGER.VERBOSE_LOG(" * " + list.getName() + " - " + id);
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * " + list.getName() + " - " + id);
     }
   }
   return obj;

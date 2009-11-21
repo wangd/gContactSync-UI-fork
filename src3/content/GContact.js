@@ -90,7 +90,7 @@ GContact.prototype = {
     for (var i = 0, length = this.mElementsToRemove.length; i < length; i++) {
       try { this.xml.removeChild(this.mElementsToRemove[i]); }
       catch (e) {
-        LOGGER.LOG_WARNING("Error while removing element: " + e + "\n" +
+        com.gContactSync.LOGGER.LOG_WARNING("Error while removing element: " + e + "\n" +
                            this.mElementsToRemove[i]);
       }
     }
@@ -118,7 +118,7 @@ GContact.prototype = {
       }
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Unable to get the name or e-mail address of a contact", e);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to get the name or e-mail address of a contact", e);
     }
     return contactName;
   },
@@ -167,9 +167,9 @@ GContact.prototype = {
             return null;
           case gdata.contacts.types.TYPED_WITH_ATTR:
             if (!aElement.attribute)
-              LOGGER.LOG_WARNING("Error - invalid element passed to the " +
+              com.gContactSync.LOGGER.LOG_WARNING("Error - invalid element passed to the " +
                                  "getElementValue method." +
-                                 StringBundle.getStr("pleaseReport"));
+                                 com.gContactSync.StringBundle.getStr("pleaseReport"));
             else {
               if (aElement.tagName == "im")
                 type = arr[i].getAttribute("protocol");
@@ -188,9 +188,9 @@ GContact.prototype = {
               return new com.gContactSync.Property(arr[i].childNodes[0].nodeValue);
             return null;
           default:
-            LOGGER.LOG_WARNING("Error - invalid contact type passed to the " +
+            com.gContactSync.LOGGER.LOG_WARNING("Error - invalid contact type passed to the " +
                                "getElementValue method." +
-                               StringBundle.getStr("pleaseReport"));
+                               com.gContactSync.StringBundle.getStr("pleaseReport"));
             return null;
         }
       }
@@ -313,7 +313,7 @@ GContact.prototype = {
     // TODO how will this work w/ multiple addresses...
     this.getElementValue(aElement, (aIndex ? aIndex : 0), aType);
     var thisElem = this.mCurrentElement;
-    LOGGER.VERBOSE_LOG("  - Setting address..." + address + " " + aValue + " " + aType + " " + thisElem);
+    com.gContactSync.LOGGER.VERBOSE_LOG("  - Setting address..." + address + " " + aValue + " " + aType + " " + thisElem);
     if (thisElem && address) {
       // if there is an existing value that should be updated, do so
       if (aValue)
@@ -367,7 +367,7 @@ GContact.prototype = {
     // if the current value is already good, check the type and return
     if (value == aValue) {
       if (value && property.type != aType) {
-        LOGGER.VERBOSE_LOG("Value is already good, changing type to: " + aType);
+        com.gContactSync.LOGGER.VERBOSE_LOG("Value is already good, changing type to: " + aType);
         if (aElement.tagName == "im")
           this.mCurrentElement.setAttribute("protocol", gdata.contacts.rel + "#" + aType);
         else if (aElement.tagName == "relation") {
@@ -382,7 +382,7 @@ GContact.prototype = {
           this.mCurrentElement.setAttribute("rel", gdata.contacts.rel + "#" + aType);
       }
       else if (value)
-        LOGGER.VERBOSE_LOG("   - value " + value + " and type " + property.type + " are good");
+        com.gContactSync.LOGGER.VERBOSE_LOG("   - value " + value + " and type " + property.type + " are good");
       return null;
     }
     // organization tags are special cases
@@ -403,8 +403,8 @@ GContact.prototype = {
             this.mCurrentElement.childNodes[0].nodeValue = aValue;
           else {
             if (!aType) {
-              LOGGER.LOG_WARNING("Invalid aType supplied to the 'setElementValue' "
-                                 + "method." + StringBundle.getStr("pleaseReport"));
+              com.gContactSync.LOGGER.LOG_WARNING("Invalid aType supplied to the 'setElementValue' "
+                                 + "method." + com.gContactSync.StringBundle.getStr("pleaseReport"));
               return null;
             }
             var elem = this.mCurrentElement ? this.mCurrentElement :
@@ -447,7 +447,7 @@ GContact.prototype = {
             // make sure the value at least has two -s
             // valid formats: YYYY-M-D and --M-D
             if (aValue.split("-").length < 3) {
-              LOGGER.LOG_WARNING("Detected an invalid birthday: " + aValue);
+              com.gContactSync.LOGGER.LOG_WARNING("Detected an invalid birthday: " + aValue);
               return null;
             }
             var elem = this.mCurrentElement ? this.mCurrentElement:
@@ -473,8 +473,8 @@ GContact.prototype = {
           }
           break;
         default:
-          LOGGER.LOG_WARNING("Invalid aType parameter sent to the setElementValue"
-                             + "method" + StringBundle.getStr("pleaseReport"));
+          com.gContactSync.LOGGER.LOG_WARNING("Invalid aType parameter sent to the setElementValue"
+                             + "method" + com.gContactSync.StringBundle.getStr("pleaseReport"));
           return null;
       }
     }
@@ -487,7 +487,7 @@ GContact.prototype = {
    */
   getLastModifiedDate: function GContact_getLastModifiedDate() {
     try {
-      if (Preferences.mSyncPrefs.writeOnly.value) {
+      if (com.gContactSync.Preferences.mSyncPrefs.writeOnly.value) {
         return 0;
       }
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
@@ -501,7 +501,7 @@ GContact.prototype = {
       return  parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
     }
     return 0;
   },
@@ -538,7 +538,7 @@ GContact.prototype = {
   setExtendedProperty: function GContact_setExtendedProperty(aName, aValue) {
     if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
         "extendedProperty").length >= 10) {
-      LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
+      com.gContactSync.LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
       return null;
     }
     if (aValue && aValue != "") {
@@ -579,10 +579,10 @@ GContact.prototype = {
         return this.getElementValue(gdata.contacts[aName], aIndex, aType);
       // if the name of the value to get is something else, throw an error
       else
-        LOGGER.LOG_WARNING("Unable to getValue for " + aName);
+        com.gContactSync.LOGGER.LOG_WARNING("Unable to getValue for " + aName);
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Error in GContact.getValue:\n" + e);
+      com.gContactSync.LOGGER.LOG_WARNING("Error in GContact.getValue:\n" + e);
     }
     return null;
   },
@@ -600,19 +600,19 @@ GContact.prototype = {
       if (aValue == "")
         aValue = null;
       if (aType == "Home" || aType == "Work" || aType == "Other") {
-        LOGGER.LOG_WARNING("Found and fixed an invalid type: " + aType);
+        com.gContactSync.LOGGER.LOG_WARNING("Found and fixed an invalid type: " + aType);
         aType = aType.toLowerCase();
       }
-      LOGGER.VERBOSE_LOG("   - " + aName + " - " + aIndex + " - " + aType + " - " + aValue);
+      com.gContactSync.LOGGER.VERBOSE_LOG("   - " + aName + " - " + aIndex + " - " + aType + " - " + aValue);
       if (gdata.contacts[aName] && aName != "groupMembershipInfo")
         return this.setElementValue(gdata.contacts[aName],
                                     aIndex, aType, aValue);
       // if the name of the value to get is something else, throw an error
       else
-        LOGGER.LOG_WARNING("Unable to setValue for " + aName + " - " + aValue);
+        com.gContactSync.LOGGER.LOG_WARNING("Unable to setValue for " + aName + " - " + aValue);
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Error in GContact.setValue:\n" + e);
+      com.gContactSync.LOGGER.LOG_WARNING("Error in GContact.setValue:\n" + e);
     }
     return null;
   },
@@ -633,10 +633,10 @@ GContact.prototype = {
       if (group)
         groups[id] = group;
       else {
-        if (Preferences.mSyncPrefs.myContacts)
+        if (com.gContactSync.Preferences.mSyncPrefs.myContacts)
           groups[id] = true;
         else
-          LOGGER.LOG_WARNING("Unable to find group: " + id);
+          com.gContactSync.LOGGER.LOG_WARNING("Unable to find group: " + id);
       }
     }
     // return the object with the groups this contact belongs to
@@ -656,7 +656,7 @@ GContact.prototype = {
         this.xml.removeChild(arr[i]);
       }
       catch(e) {
-        LOGGER.LOG_WARNING("Error while trying to clear group: " + arr[i], e);
+        com.gContactSync.LOGGER.LOG_WARNING("Error while trying to clear group: " + arr[i], e);
       }
     }
     this.mGroups = {};
@@ -676,7 +676,7 @@ GContact.prototype = {
       var id = aGroups[i];
       // if the ID isn't valid log a warning and go to the next ID
       if (!id || !id.indexOf || id.indexOf("www.google.com/m8/feeds/groups") == -1) {
-        LOGGER.LOG_WARNING("Invalid id in aGroups: " + id);
+        com.gContactSync.LOGGER.LOG_WARNING("Invalid id in aGroups: " + id);
         continue;
       }
       this.addToGroup(id);
@@ -690,7 +690,7 @@ GContact.prototype = {
    */
   removeFromGroup: function GContact_removeFromGroup(aGroup) {
     if (!aGroup) {
-      LOGGER.LOG_WARNING("Attempt to remove a contact from a non-existant group");
+      com.gContactSync.LOGGER.LOG_WARNING("Attempt to remove a contact from a non-existant group");
       return null;
     }
     try {
@@ -698,7 +698,7 @@ GContact.prototype = {
       return true;
     }
     catch (e) {
-      LOGGER.LOG_WARNING("Error while trying to remove a contact from a group: " + e);
+      com.gContactSync.LOGGER.LOG_WARNING("Error while trying to remove a contact from a group: " + e);
     }
     return null;
   },
@@ -710,7 +710,7 @@ GContact.prototype = {
    */
   addToGroup: function GContact_addToGroup(aGroupURL) {
     if (!aGroupURL) {
-      LOGGER.LOG_WARNING("Attempt to add a contact to a non-existant group");
+      com.gContactSync.LOGGER.LOG_WARNING("Attempt to add a contact to a non-existant group");
       return null;
     }
     try {
@@ -723,7 +723,7 @@ GContact.prototype = {
       return true;
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Error while trying to add a contact to a group: " + e);
+      com.gContactSync.LOGGER.LOG_WARNING("Error while trying to add a contact to a group: " + e);
     }
     return null;
   },
@@ -787,14 +787,14 @@ GContact.prototype = {
     return null;
   },
   writePhoto: function GContact_writePhoto(aAuthToken) {
-    LOGGER.VERBOSE_LOG(" * Checking for a contact photo");
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Checking for a contact photo");
     if (!aAuthToken) {
-      LOGGER.LOG_WARNING("No auth token passed to GContact.writePhoto");
+      com.gContactSync.LOGGER.LOG_WARNING("No auth token passed to GContact.writePhoto");
       return null;
     }
     var info = this.getPhotoInfo();
     if (!info) {
-      LOGGER.VERBOSE_LOG(" * This contact does not have a photo");
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * This contact does not have a photo");
       return null;
     }
     var ios = Components.classes["@mozilla.org/network/io-service;1"]
@@ -806,7 +806,7 @@ GContact.prototype = {
     var istream = ch.open();
     // quit if the request failed
     if (!ch.requestSucceeded) {
-      LOGGER.LOG_WARNING("The request to retrive the photo returned with a status ",
+      com.gContactSync.LOGGER.LOG_WARNING("The request to retrive the photo returned with a status ",
                          ch.responseStatus);
       return null;
     }
@@ -821,7 +821,7 @@ GContact.prototype = {
 
     // Get the photo file
     file.append(this.getID() + ".png");
-    LOGGER.VERBOSE_LOG(" * Writing the photo to " + file.path);
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Writing the photo to " + file.path);
 
     var output = Components.classes["@mozilla.org/network/file-output-stream;1"]
                            .createInstance(Components.interfaces.nsIFileOutputStream);
@@ -845,7 +845,7 @@ GContact.prototype = {
         fstream.finish();
     else
         fstream.close();
-    LOGGER.VERBOSE_LOG(" * Finished writing the photo");
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished writing the photo");
     return file;
   }
 };

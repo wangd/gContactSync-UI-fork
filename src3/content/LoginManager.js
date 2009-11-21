@@ -146,7 +146,7 @@ var LoginManager = {
         this.mNumAuthTokens--;
       }
       catch (e) {
-        alert(StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
+        alert(com.gContactSync.StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
       }
     }
     // Thunderbird 3, Seamonkey 2
@@ -166,12 +166,12 @@ var LoginManager = {
             return;
           }
           catch (e) {
-            alert(StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
+            alert(com.gContactSync.StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
           }
         }
       }
       // Could not find the login...
-      alert(StringBundle.getStr("removeLoginFailure"));
+      alert(com.gContactSync.StringBundle.getStr("removeLoginFailure"));
     }
   },
   /**

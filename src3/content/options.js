@@ -53,7 +53,7 @@ com.gContactSync.Options = {
    * login tree.
    */
   init: function Options_init() {
-    Preferences.getSyncPrefs();
+    com.gContactSync.Preferences.getSyncPrefs();
     //document.getElementById("cMyContacts").addEventListener("change", myContactsChange, false);
     // if this is the full preferences dialog add a few event listeners
     if (document.getElementById("syncExtended")) {

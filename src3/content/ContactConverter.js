@@ -188,7 +188,7 @@ var ContactConverter = {
       if (arr[i].tbName.indexOf("URL") != -1 || arr[i].tbName == "GoogleID")
         continue;
       var obj = arr[i];
-      LOGGER.VERBOSE_LOG(" * " + obj.tbName);
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * " + obj.tbName);
       var value = this.checkValue(GAbManager.getCardValue(aCard, obj.tbName));
       // for the type, get the type from the card, or use its default
       var type = GAbManager.getCardValue(aCard, obj.tbName + "Type");
@@ -200,7 +200,7 @@ var ContactConverter = {
         value = null;
         type = null;
       }
-      LOGGER.VERBOSE_LOG("   - " + value + " type: " + type);
+      com.gContactSync.LOGGER.VERBOSE_LOG("   - " + value + " type: " + type);
       aContact.setValue(obj.elementName, obj.index, type, value);
     }
     // Birthday can be either YYYY-M-D or --M-D for no year.
@@ -221,12 +221,12 @@ var ContactConverter = {
         birthYear = "0" + birthYear;
       birthdayVal = birthYear + "-" + birthMonth + "-" + birthDay;
     }
-    LOGGER.VERBOSE_LOG(" * Birthday: " + birthdayVal);
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Birthday: " + birthdayVal);
     aContact.setValue("birthday", 0, null, birthdayVal);
       
     // set the extended properties
     aContact.removeExtendedProperties();
-    arr = Preferences.mExtendedProperties;
+    arr = com.gContactSync.Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
       var value = this.checkValue(GAbManager.getCardValue(aCard, arr[i]));
       aContact.setExtendedProperty(arr[i], value);
@@ -263,7 +263,7 @@ var ContactConverter = {
   makeCard: function ContactConverter_makeCard(aContact, aCard) {
     if (!aContact)
       throw "Invalid aXml parameter supplied to the 'makeCard' method" +
-            StringBundle.getStr("pleaseReport");
+            com.gContactSync.com.gContactSync.StringBundle.getStr("pleaseReport");
     if (!this.mInitialized)
       this.init();
     var ab = Sync.mCurrentAb;
@@ -276,10 +276,10 @@ var ContactConverter = {
     // get the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
       var obj = arr[i];
-      LOGGER.VERBOSE_LOG(obj.tbName);
+      com.gContactSync.LOGGER.VERBOSE_LOG(obj.tbName);
       var property = aContact.getValue(obj.elementName, obj.index, obj.type);
       property = property ? property : new Property("", "");
-      LOGGER.VERBOSE_LOG(property.value + " - " + property.type);
+      com.gContactSync.LOGGER.VERBOSE_LOG(property.value + " - " + property.type);
       // Thunderbird has problems with contacts who do not have an e-mail addr
       // and are in Mailing Lists.  To avoid problems, use a dummy e-mail addr
       // that is hidden from the user
@@ -293,7 +293,7 @@ var ContactConverter = {
         ab.setCardValue(card, obj.tbName + "Type", property.type);
     }
     // get the extended properties
-    arr = Preferences.mExtendedProperties;
+    arr = com.gContactSync.Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
       var value = aContact.getExtendedProperty(arr[i]);
       value = value ? value.value : null;
@@ -330,7 +330,7 @@ var ContactConverter = {
         // then take the last and set it as the last name
         first = nameArr.shift();
         last  = nameArr.join(" ");
-        LOGGER.VERBOSE_LOG("FirstName\n" + first + "\nLastName\n" + last);
+        com.gContactSync.LOGGER.VERBOSE_LOG("FirstName\n" + first + "\nLastName\n" + last);
         ab.setCardValue(card, "FirstName", first);
         ab.setCardValue(card, "LastName", last);
       }
@@ -343,7 +343,7 @@ var ContactConverter = {
     var day   = null;
     // If it has a birthday...
     if (bday && bday.value) {
-      LOGGER.VERBOSE_LOG(" * Found a birthday value of " + bday.value);
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * Found a birthday value of " + bday.value);
       // If it consists of all three date elements: YYYY-M-D
       if (bday.value.indexOf("--") == -1) {
         var arr = bday.value.split("-");
@@ -357,9 +357,9 @@ var ContactConverter = {
         month = arr[0];
         day   = arr[1];
       }
-      LOGGER.VERBOSE_LOG("  - Year:  " +  year);
-      LOGGER.VERBOSE_LOG("  - Month: " +  month);
-      LOGGER.VERBOSE_LOG("  - Day:   " +  day);
+      com.gContactSync.LOGGER.VERBOSE_LOG("  - Year:  " +  year);
+      com.gContactSync.LOGGER.VERBOSE_LOG("  - Month: " +  month);
+      com.gContactSync.LOGGER.VERBOSE_LOG("  - Day:   " +  day);
     }
     ab.setCardValue(card, "BirthYear",  year);
     ab.setCardValue(card, "BirthMonth", month);

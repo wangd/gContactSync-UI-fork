@@ -97,7 +97,7 @@
           src="chrome://gcontactsync/content/LoginManager.js"/>
 
   <stringbundleset id="stringbundleset">
-    <stringbundle id="otherStringBundle"
+    <stringbundle id="gContactSyncStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
 

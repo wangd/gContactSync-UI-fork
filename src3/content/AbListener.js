@@ -96,7 +96,7 @@ com.gContactSync.AbListener = {
           dir.updateCard(aItem);
         }
         catch(e) {
-          LOGGER.LOG_WARNING("Error updating card after being removed: " + 
+          com.gContactSync.LOGGER.LOG_WARNING("Error updating card after being removed: " + 
                              aItem + " " + uri + " " + now, e);
         }
       }
@@ -119,7 +119,7 @@ com.gContactSync.AbListener = {
           return aDirectory.getDirUri();
      } 
     } catch(e) { error = e; }
-    LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory,
+    com.gContactSync.LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory,
                        error);
     return "";
   },

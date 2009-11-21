@@ -197,10 +197,10 @@ MailList.prototype = {
         }
       }
       catch (e) {
-        LOGGER.LOG_ERROR("A mailing list is not working:", e);
-        if (confirm(StringBundle.getStr("resetConfirm"))) {
+        com.gContactSync.LOGGER.LOG_ERROR("A mailing list is not working:", e);
+        if (confirm(com.gContactSync.StringBundle.getStr("resetConfirm"))) {
           this.mParent.reset();
-          alert(StringBundle.getStr("pleaseRestart"));
+          alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
         }
         // Throw an error to stop the sync
         throw "A mailing list is not working correctly";
@@ -221,7 +221,7 @@ MailList.prototype = {
         // TODO find a way to distinguish between the usual errors and the
         // broken list errors
         // error is expected when finished
-        LOGGER.VERBOSE_LOG("This error is expected:\n" + e);
+        com.gContactSync.LOGGER.VERBOSE_LOG("This error is expected:\n" + e);
       }
     }
     return this.mCards;
@@ -258,7 +258,7 @@ MailList.prototype = {
       }
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Error while deleting cards from a mailing list", e);
+      com.gContactSync.LOGGER.LOG_WARNING("Error while deleting cards from a mailing list", e);
     }
     this.mCards = this.getAllCards();
   },
@@ -286,6 +286,6 @@ MailList.prototype = {
       else
         this.mList.editMailListToDatabase(this.getURI(), null);
     }
-    catch(e) { LOGGER.LOG_WARNING("Unable to update mail list", e);}
+    catch(e) { com.gContactSync.LOGGER.LOG_WARNING("Unable to update mail list", e);}
   }
 };

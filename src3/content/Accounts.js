@@ -67,14 +67,14 @@ com.gContactSync.Accounts = {
    */
   initDialog:  function Accounts_initDialog() {
     try {
-      Preferences.getSyncPrefs();
+      com.gContactSync.Preferences.getSyncPrefs();
       this.fillAbTree();
       this.fillUsernames();
       this.showAdvancedSettings(document.getElementById("showAdvanced").checked);
       this.selectedAbChange();
     }
     catch (e) {
-      LOGGER.LOG_WARNING("Error in Accounts.initDialog", e);
+      com.gContactSync.LOGGER.LOG_WARNING("Error in Accounts.initDialog", e);
       // TODO remove the alert
       alert(e);
     }
@@ -90,13 +90,13 @@ com.gContactSync.Accounts = {
     var username = {};
     var password = {};
     // opens a username/password prompt
-    var ok = prompt(window, StringBundle.getStr("loginTitle"),
-                    StringBundle.getStr("loginText"), username, password, null,
+    var ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
+                    com.gContactSync.StringBundle.getStr("loginText"), username, password, null,
                     {value: false});
     if (!ok)
       return false;
     if (LoginManager.getAuthToken(username.value)) { // the username already exists
-      alert(StringBundle.getStr("usernameExists"));
+      alert(com.gContactSync.StringBundle.getStr("usernameExists"));
       return false;
     }
     // This is a primitive way of validating an e-mail address, but Google takes
@@ -104,7 +104,7 @@ com.gContactSync.Accounts = {
     // username, but returns an error when trying to do anything w/ that token
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
-      alert(StringBundle.getStr("invalidEmail"));
+      alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
       return addLogin();
     }
     var body    = gdata.makeAuthBody(username.value, password.value);
@@ -115,13 +115,13 @@ com.gContactSync.Accounts = {
                           "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
                           "com.gContactSync.Accounts.selectedAbChange();"];
     // if it fails, alert the user and prompt them to try again
-    httpReq.mOnError   = ["alert(StringBundle.getStr('authErr'));",
-                          "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
+    httpReq.mOnError   = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
+                          "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
                           "httpReq.status, httpReq.responseText);",
                           "com.gContactSync.Accounts.newUsername();"];
     // if the user is offline, alert them and quit
-    httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
-                          "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
+    httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
+                          "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));"];
     httpReq.send();
     return true;
   },
@@ -187,7 +187,7 @@ com.gContactSync.Accounts = {
       ab.reset();
     this.fillUsernames();
     this.selectedAbChange();
-    alert(StringBundle.getStr("finishedAcctSave"));
+    alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
     return true;
   },
   /**
@@ -281,7 +281,7 @@ com.gContactSync.Accounts = {
     var tokens = LoginManager.getAuthTokens();
     var item;
     var index = -1;
-    usernameElem.appendItem(StringBundle.getStr("noAccount"), "none");
+    usernameElem.appendItem(com.gContactSync.StringBundle.getStr("noAccount"), "none");
     // Add a menuitem for each account with an auth token
     for (var username in tokens) {
       item = usernameElem.appendItem(username, username);
@@ -343,7 +343,7 @@ com.gContactSync.Accounts = {
     aAB.getPrefs();
 
     addressbook.setAttribute("label", aAB.getName());
-    synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : StringBundle.getStr("noAccount"));
+    synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : com.gContactSync.StringBundle.getStr("noAccount"));
   
     treerow.appendChild(addressbook);
     treerow.appendChild(synced);
@@ -363,7 +363,7 @@ com.gContactSync.Accounts = {
       return ab;
     }
     // TODO check if PAB or CAB
-    if (!confirm(StringBundle.getStr("deleteAB")))
+    if (!confirm(com.gContactSync.StringBundle.getStr("deleteAB")))
       return false;
     // This function also checks that the AB isn't the PAB or CAB
     ab.deleteAB();
@@ -375,7 +375,7 @@ com.gContactSync.Accounts = {
    * Removes the selected account's username and auth token from the login manager.
    */
   removeSyncSettings: function Accounts_removeSelectedLogin() {  
-    if (confirm(StringBundle.getStr("removeSyncSettings"))) {
+    if (confirm(com.gContactSync.StringBundle.getStr("removeSyncSettings"))) {
       // TODO FIXME
       alert("Sorry, function not complete");
       return;
@@ -397,7 +397,7 @@ com.gContactSync.Accounts = {
    * preference.
    */
   directionPopup: function Accounts_directionPopup() {
-    alert(StringBundle.getStr("directionPopup")); 
+    alert(com.gContactSync.StringBundle.getStr("directionPopup")); 
   },
   /**
    * Accounts.restoreGroups
@@ -422,16 +422,16 @@ com.gContactSync.Accounts = {
       return false;
     var token = LoginManager.getAuthTokens()[usernameElem.value];
     if (!token) {
-      LOGGER.LOG_WARNING("Unable to find the token for username " + usernameElem.value);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to find the token for username " + usernameElem.value);
       return false;
     }
-    LOGGER.VERBOSE_LOG("Fetching groups for username: " + usernameElem.value);
+    com.gContactSync.LOGGER.VERBOSE_LOG("Fetching groups for username: " + usernameElem.value);
     var httpReq = new GHttpRequest("getGroups", token, null,
                                    null, usernameElem.value);
-    httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
+    httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
                           "Accounts.addGroups(httpReq.responseXML, '"
                           + usernameElem.value + "');"],
-    httpReq.mOnError   = ["LOGGER.LOG_ERROR(httpReq.responseText);"];
+    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);"];
     httpReq.mOnOffline = [];
     httpReq.send();
     return true;
@@ -451,14 +451,14 @@ com.gContactSync.Accounts = {
       return false;
     var arr = aAtom.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "entry");
     var group, title;
-    LOGGER.VERBOSE_LOG("Adding groups from username: " + aUsername);
+    com.gContactSync.LOGGER.VERBOSE_LOG("Adding groups from username: " + aUsername);
     for (var i = 0; i < arr.length; i++) {
       group = new Group(arr[i]);
       title = group.getTitle();
-      LOGGER.VERBOSE_LOG(" * " + title);
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * " + title);
       // don't add system groups again
       if (!title || group.isSystemGroup()) {
-        LOGGER.VERBOSE_LOG("    - Skipping system group");
+        com.gContactSync.LOGGER.VERBOSE_LOG("    - Skipping system group");
         continue;
       }
       menulistElem.appendItem(title, title);

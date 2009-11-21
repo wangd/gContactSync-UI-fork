@@ -38,12 +38,10 @@ if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
 // when the window is loaded wait 200 ms and try to add the tab
-window.addEventListener("load", function CardDialogOverlay_loadListener(e) {
-  CardDialogOverlay.init();
+window.addEventListener("load", function gCS_CardDialogOverlay_loadListener(e) {
+  com.gContactSync.CardDialogOverlay.init();
 }, false);
-// the original method CheckAndSetCardValues
-var originalCheckAndSetCardValues;
-var gAttributes = {
+com.gContactSync.gAttributes = {
   "ThirdEmail":           {}, 
   "FourthEmail":          {},
   "TalkScreenName":       {},
@@ -87,7 +85,7 @@ var gAttributes = {
  * is necessary because the tab box doesn't have an ID.
  * @class
  */
-var CardDialogOverlay = {
+com.gContactSync.CardDialogOverlay = {
   mNamespace:  "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
   mLoadNumber: 0,
   mDisabled:   false,
@@ -97,13 +95,13 @@ var CardDialogOverlay = {
    * loaded.
    */
   init: function CardDialogOverlay_init() {
-    Preferences.getSyncPrefs();
+    com.gContactSync.Preferences.getSyncPrefs();
     // if it isn't finished loading yet wait another 200 ms and try again
     if (!document.getElementById("abTabs")) {
       // if it has tried to load more than 50 times something is wrong, so quit
-      if (CardDialogOverlay.mLoadNumber < 50)
-        setTimeout(CardDialogOverlay.init, 200);
-      CardDialogOverlay.mLoadNumber++;
+      if (com.gContactSync.CardDialogOverlay.mLoadNumber < 50)
+        setTimeout(com.gContactSync.CardDialogOverlay.init, 200);
+      com.gContactSync.CardDialogOverlay.mLoadNumber++;
       return;
     }
 
@@ -117,10 +115,10 @@ var CardDialogOverlay = {
     // some contacts are read-only so extra attributes should be disabled for
     // those cards (see Mozdev Bug 20169)
     try {
-      CardDialogOverlay.mDisabled = document.getElementById("PreferMailFormatPopup").disabled;
+      com.gContactSync.CardDialogOverlay.mDisabled = document.getElementById("PreferMailFormatPopup").disabled;
     } catch (e) {
       alert("Error while determining if contact is read-only: " + e);
-      CardDialogOverlay.mDisabled = true;
+      com.gContactSync.CardDialogOverlay.mDisabled = true;
     }
     // add the email type drop down menus
     try {
@@ -179,27 +177,27 @@ var CardDialogOverlay = {
         newDialog = true;
         workLabel = work.previousSibling;
       }
-      workLabel.value = StringBundle.getStr("first");
+      workLabel.value = com.gContactSync.StringBundle.getStr("first");
       workLabel.setAttribute("accesskey", "");
       var home = document.getElementById("HomePhone");
       var homeLabel = newDialog ? home.previousSibling
                                 : home.parentNode.previousSibling;
-      homeLabel.value = StringBundle.getStr("second");
+      homeLabel.value = com.gContactSync.StringBundle.getStr("second");
       homeLabel.setAttribute("accesskey", "");
       var fax = document.getElementById("FaxNumber");
       var faxLabel = newDialog ? fax.previousSibling
                                : fax.parentNode.previousSibling;
-      faxLabel.value = StringBundle.getStr("third");
+      faxLabel.value = com.gContactSync.StringBundle.getStr("third");
       faxLabel.setAttribute("accesskey", "");
       var mobile = document.getElementById("CellularNumber");
       var mobileLabel = newDialog ? mobile.previousSibling
                                   : mobile.parentNode.previousSibling;
-      mobileLabel.value = StringBundle.getStr("fourth");
+      mobileLabel.value = com.gContactSync.StringBundle.getStr("fourth");
       mobileLabel.setAttribute("accesskey", "");
       pager = document.getElementById("PagerNumber");
       var pagerLabel = newDialog ? pager.previousSibling
                                  : pager.parentNode.previousSibling;
-      pagerLabel.value = StringBundle.getStr("fifth");
+      pagerLabel.value = com.gContactSync.StringBundle.getStr("fifth");
       pagerLabel.setAttribute("accesskey", "");
     }
     catch(e) {
@@ -241,7 +239,7 @@ var CardDialogOverlay = {
     var tabs = document.getElementById("abTabs");
     try {
       // setup the new screenname/e-mail address/phone numbers tab
-      var myTab = document.createElementNS(CardDialogOverlay.mNamespace, "tab");
+      var myTab = document.createElementNS(com.gContactSync.CardDialogOverlay.mNamespace, "tab");
       myTab.setAttribute("label", "gContactSync");
       myTab.setAttribute("id", "gContactSyncTab");
       // add the new tab to the dialog
@@ -261,11 +259,11 @@ var CardDialogOverlay = {
           elem.setAttribute("width", "150px");
         }
         // add the sixth and seventh numbers below 1 - 5
-        var sixthNum = setupNumBox("HomeFaxNumber", StringBundle.getStr("sixth"));
+        var sixthNum = setupNumBox("HomeFaxNumber", com.gContactSync.StringBundle.getStr("sixth"));
         pager.parentNode.parentNode.appendChild(sixthNum);
         addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax");
         var seventhNum = setupNumBox("OtherNumber",
-                                     StringBundle.getStr("seventh"));
+                                     com.gContactSync.StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
         addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other");
         
@@ -278,11 +276,11 @@ var CardDialogOverlay = {
             relationTypes.push(i);
           for (var i = 0; i < 4; i++) {
             var relationBox = document.getElementById("Relation" + i + "Box");
-            addMenuItems(relationBox, relationTypes, "Relation" + i + "Type", "", StringBundle.getStr("relationWidth"));
+            addMenuItems(relationBox, relationTypes, "Relation" + i + "Type", "", com.gContactSync.StringBundle.getStr("relationWidth"));
           }
         }
         catch (e) {
-          LOGGER.LOG_WARNING("Could not add the relation fields.", e);
+          com.gContactSync.LOGGER.LOG_WARNING("Could not add the relation fields.", e);
         }
         /*
         var nameWidth = "width: 30ch;";
@@ -323,7 +321,7 @@ var CardDialogOverlay = {
     // if this is a read-only card, make added elements disabled
     // the menulists are already taken care of
     // TODO update CardDialogOverlay...
-    if (CardDialogOverlay.mDisabled) {
+    if (com.gContactSync.CardDialogOverlay.mDisabled) {
       document.getElementById("ThirdEmail").readOnly       = true;
       document.getElementById("FourthEmail").readOnly      = true;
       document.getElementById("TalkScreenName").readOnly   = true;
@@ -337,7 +335,7 @@ var CardDialogOverlay = {
     }
 
     // override the check and set card values function
-    originalCheckAndSetCardValues = CheckAndSetCardValues;
+    com.gContactSync.originalCheckAndSetCardValues = CheckAndSetCardValues;
     CheckAndSetCardValues = myCheckAndSetCardValues;
     // get the extra card values
     myGetCardValues(gEditCard.card, document);
@@ -357,7 +355,7 @@ function setupNumBox(aID, aLabel) {
   var textbox = document.createElement("textbox");
   textbox.setAttribute("id", aID);
   textbox.setAttribute("class", "PhoneEditWidth");
-  if (CardDialogOverlay.mDisabled)
+  if (com.gContactSync.CardDialogOverlay.mDisabled)
     textbox.setAttribute("readonly", true);
   else if (textbox.hasAttribute("readonly"))
     textbox.removeAttribute("readonly");
@@ -388,7 +386,7 @@ function addMenuItems(aBox, aArray, aID, aValue, aWidth) {
   if (index != -1) {
     elem = document.createElement("menuitem");
     elem.setAttribute("value", aValue);
-    elem.setAttribute("label", StringBundle.getStr(aValue ? aValue : "blank"));
+    elem.setAttribute("label", com.gContactSync.StringBundle.getStr(aValue ? aValue : "blank"));
     aArray[index] = null;
     menuPopup.appendChild(elem);
   }
@@ -400,7 +398,7 @@ function addMenuItems(aBox, aArray, aID, aValue, aWidth) {
     }
     elem = document.createElement("menuitem");
     elem.setAttribute("value", aArray[i]);
-    elem.setAttribute("label", StringBundle.getStr(aArray[i]));
+    elem.setAttribute("label", com.gContactSync.StringBundle.getStr(aArray[i]));
     menuPopup.appendChild(elem);
   }
   menuList.setAttribute("sizetopopup", "always");
@@ -412,7 +410,7 @@ function addMenuItems(aBox, aArray, aID, aValue, aWidth) {
   // add the popup to the menu list
   menuList.appendChild(menuPopup);
   // disable the menu list if this card is read-only
-  menuList.setAttribute("disabled", CardDialogOverlay.mDisabled);
+  menuList.setAttribute("disabled", com.gContactSync.CardDialogOverlay.mDisabled);
   // add the menu list to the box
   aBox.appendChild(menuList);
 }
@@ -426,7 +424,7 @@ function addMenuItems(aBox, aArray, aID, aValue, aWidth) {
 function myGetCardValues(aCard, aDoc) {
   // iterate through all the added type elements and get the card's value for
   // each one of them to set as the value for the element
-  for (var attr in gAttributes) {
+  for (var attr in com.gContactSync.gAttributes) {
     try {
       var elem = aDoc.getElementById(attr);
       // if the element exists, set its value as the card's value
@@ -471,7 +469,7 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   };
   // iterate through all the added attributes and types and set the card's value
   // for each one of them
-  for (var attr in gAttributes) {
+  for (var attr in com.gContactSync.gAttributes) {
     try {
       // if the element exists, set the card's value as its value
       var elem = aDoc.getElementById(attr);
@@ -497,5 +495,6 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   if (!primEmailElem.value)
     primEmailElem.value = com.gContactSync.makeDummyEmail(aCard);
   // call the original and return its return value
-  return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
+  // FIXME this needs to apply w/ arguments in case the function changes
+  return com.gContactSync.originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }

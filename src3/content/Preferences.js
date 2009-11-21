@@ -42,7 +42,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * Stores information on Preferences related to gContactSync.
  * @class
  */
-var Preferences = {
+com.gContactSync.Preferences = {
   // the preferences service
   mService: Components.classes["@mozilla.org/preferences-service;1"]
                       .getService(Components.interfaces.nsIPrefService),
@@ -102,7 +102,7 @@ var Preferences = {
   getPref: function Preferences_getPref(aBranch, aName, aType) {
     if (!aBranch)
       throw "Invalid aBranch parameter supplied to the getPref method" +
-            StringBundle.getStr("pleaseReport");
+            com.gContactSync.StringBundle.getStr("pleaseReport");
     switch (aType) {
       case this.mTypes.INT:
         return aBranch.getIntPref(aName);
@@ -112,7 +112,7 @@ var Preferences = {
         return aBranch.getCharPref(aName);
       default:
         throw "Invalid aType parameter supplied to the getPref method" +
-              StringBundle.getStr("pleaseReport");
+              com.gContactSync.StringBundle.getStr("pleaseReport");
     }
   },
   /**
@@ -126,7 +126,7 @@ var Preferences = {
   setPref: function Preferences_setPref(aBranch, aName, aType, aValue) {
     if (!aBranch)
       throw "Invalid aBranch parameter supplied to the setPref method" +
-            StringBundle.getStr("pleaseReport");
+            com.gContactSync.StringBundle.getStr("pleaseReport");
     switch (aType) {
       case this.mTypes.INT:
         return aBranch.setIntPref(aName, aValue);
@@ -136,7 +136,7 @@ var Preferences = {
         return aBranch.setCharPref(aName, aValue);
       default:
         throw "Invalid aType parameter supplied to the setPref method" +
-              StringBundle.getStr("pleaseReport");
+              com.gContactSync.StringBundle.getStr("pleaseReport");
     }
   },
   /**
@@ -157,11 +157,11 @@ var Preferences = {
                      this.mSyncPrefs[i].type, this.mSyncPrefs[i].defaultValue);
       }
       if (i == "verboseLog") {
-        LOGGER.VERBOSE_LOG("\n***Loading Preferences***");
+        com.gContactSync.LOGGER.VERBOSE_LOG("\n***Loading Preferences***");
       }
-      LOGGER.VERBOSE_LOG(" * " + i + ": " + this.mSyncPrefs[i].value);
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * " + i + ": " + this.mSyncPrefs[i].value);
     }
-    LOGGER.VERBOSE_LOG("***Finished Loading Preferences***\n");
+    com.gContactSync.LOGGER.VERBOSE_LOG("***Finished Loading Preferences***\n");
     // only add these extended properties if the pref to sync them is true
     this.mExtendedProperties = [];
     if (this.mSyncPrefs.syncExtended.value)

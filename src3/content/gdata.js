@@ -89,7 +89,7 @@ var gdata = {
     if (start >= end)
       return "";
     var address = decodeURIComponent(aId.substring(start, end));
-    LOGGER.VERBOSE_LOG("found address: " + address + " from ID: " + aId);
+    com.gContactSync.LOGGER.VERBOSE_LOG("found address: " + address + " from ID: " + aId);
     return address;
   },
   // The namespaces used

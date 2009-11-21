@@ -43,15 +43,15 @@ if (!com.gContactSync) com.gContactSync = {};
  * @constructor
  * @class
  */
-function HttpRequest() {
+com.gContactSync.HttpRequest = function gCS_HttpRequest() {
   if (window.XMLHttpRequest)
     this.mHttpRequest = new XMLHttpRequest();
   if (!this.mHttpRequest)
     throw "Error - could not create an XMLHttpRequest" +
-          StringBundle.getStr("pleaseReport");
+          com.gContactSync.StringBundle.getStr("pleaseReport");
 }
 
-HttpRequest.prototype = {
+com.gContactSync.HttpRequest.prototype = {
   // content types
   CONTENT_TYPES: {
     URL_ENC: "application/x-www-form-urlencoded", 
@@ -100,25 +100,25 @@ HttpRequest.prototype = {
    */
   send: function HttpRequest_send() {
     // log the basic info for debugging purposes
-    LOGGER.VERBOSE_LOG("HTTP Request being formed");
-    LOGGER.VERBOSE_LOG(" * Caller is: " + this.send.caller.name);
-    LOGGER.VERBOSE_LOG(" * URL: " + this.mUrl);
-    LOGGER.VERBOSE_LOG(" * Type: " + this.mType);
-    LOGGER.VERBOSE_LOG(" * Content-Type: " + this.mContentType);
+    com.gContactSync.LOGGER.VERBOSE_LOG("HTTP Request being formed");
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Caller is: " + this.send.caller.name);
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * URL: " + this.mUrl);
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Type: " + this.mType);
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Content-Type: " + this.mContentType);
     
     this.mHttpRequest.open(this.mType, this.mUrl, true); // open the request
 
     // set the header
     this.addHeaderItem("Content-Type", this.mContentType);
-    LOGGER.VERBOSE_LOG(" * Setting up the header: ");
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting up the header: ");
 
     for (var i = 0; i < this.mHeaderLabels.length; i++) {
-       LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] + " " + this.mHeaderValues[i]);
+       com.gContactSync.LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] + " " + this.mHeaderValues[i]);
        this.mHttpRequest.setRequestHeader(this.mHeaderLabels[i],
                                           this.mHeaderValues[i]);
     }
     this.mHttpRequest.send(this.mBody); // send the request
-    LOGGER.VERBOSE_LOG(" * Request Sent");
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Request Sent");
     var httpReq   = this.mHttpRequest;
     var onSuccess = this.mOnSuccess ? this.mOnSuccess: [];
     var onOffline = this.mOnOffline ? this.mOnOffline: [];
@@ -133,9 +133,9 @@ HttpRequest.prototype = {
         // this may be called after the address book window is closed
         // if the window is closed there will be an exception thrown as
         // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
-          LOGGER.VERBOSE_LOG(" * The request has finished with status: " +
+          com.gContactSync.LOGGER.VERBOSE_LOG(" * The request has finished with status: " +
                              httpReq.status + "/" + httpReq.statusText);
-          LOGGER.VERBOSE_LOG(" * Headers:\n" + httpReq.getAllResponseHeaders() + "\n");
+          com.gContactSync.LOGGER.VERBOSE_LOG(" * Headers:\n" + httpReq.getAllResponseHeaders() + "\n");
           
           switch (httpReq.status) { 
             case 0: // the user is offline
@@ -153,9 +153,9 @@ HttpRequest.prototype = {
             default: // other status
               commands = onFail;
           }
-          LOGGER.VERBOSE_LOG(" * Evaluating commands");
+          com.gContactSync.LOGGER.VERBOSE_LOG(" * Evaluating commands");
           for (var i in commands) {
-            LOGGER.VERBOSE_LOG("   o " + commands[i]);
+            com.gContactSync.LOGGER.VERBOSE_LOG("   o " + commands[i]);
             eval(commands[i]);
           }
       } // end of readyState

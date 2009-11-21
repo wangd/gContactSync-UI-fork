@@ -277,7 +277,7 @@
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Preferences.js"/>
   <stringbundleset id="stringbundleset">
-    <stringbundle id="otherStringBundle"
+    <stringbundle id="gContactSyncStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
 </prefwindow>

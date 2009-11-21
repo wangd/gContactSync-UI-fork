@@ -41,7 +41,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * A simple, class that logs messages.
  * @class
  */
-var LOGGER = {
+com.gContactSync.LOGGER = {
   mErrorCount:   0,
   mWarningCount: 0,
   /**
@@ -62,7 +62,7 @@ var LOGGER = {
    * @param aMessage The message to log.
    */
   VERBOSE_LOG: function LOGGER_VERBOSE_LOG(aMessage) {
-    if (Preferences.mSyncPrefs.verboseLog.value)
+    if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       this.LOG(aMessage);
   },
   /**
@@ -75,7 +75,7 @@ var LOGGER = {
     var str = "***ERROR: " + aMessage;
     if (aError)
       str += "\nError Message:\n" + aError;
-    str += StringBundle.getStr("pleaseReport");
+    str += com.gContactSync.StringBundle.getStr("pleaseReport");
     this.LOG(str);
     this.mErrorCount++;
   },
@@ -89,7 +89,7 @@ var LOGGER = {
     var str = "***WARNING: " + aWarningMessage;
     if (aError)
       str += "\nError Message:\n" + aError;
-    //str += "\n" + StringBundle.getStr("pleaseReport");
+    //str += "\n" + com.gContactSync.StringBundle.getStr("pleaseReport");
     this.LOG(str);
     this.mWarningCount++;
   }

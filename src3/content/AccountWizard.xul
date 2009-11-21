@@ -51,7 +51,7 @@
   <wizardpage id="start" label="&startPage.label;">
   </wizardpage>
   <stringbundleset id="stringbundleset">
-    <stringbundle id="otherStringBundle"
+    <stringbundle id="gContactSyncStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
 </wizard>

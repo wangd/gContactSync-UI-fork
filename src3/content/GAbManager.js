@@ -58,18 +58,18 @@ var GAbManager = AbManager;
  */
 GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedABs(showConfirm) {
   if (showConfirm) {
-    if (!confirm(StringBundle.getStr("confirmReset"))) {
+    if (!confirm(com.gContactSync.StringBundle.getStr("confirmReset"))) {
       return false;
     }
   }
 
-  LOGGER.LOG("Resetting all synchronized directories.");
+  com.gContactSync.LOGGER.LOG("Resetting all synchronized directories.");
   var abs = GAbManager.getSyncedAddressBooks(true);
   for (var i in abs) {
     abs[i].ab.reset();
   }
   
-  LOGGER.LOG("Finished resetting all synchronized directories.");
-  alert(StringBundle.getStr("pleaseRestart"));
+  com.gContactSync.LOGGER.LOG("Finished resetting all synchronized directories.");
+  alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
   return true;
 }

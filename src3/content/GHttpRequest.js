@@ -58,7 +58,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * @extends HttpRequest
  */
 function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
-  HttpRequest.call(this);  // call the superclass' constructor
+  com.gContactSync.HttpRequest.call(this);  // call the superclass' constructor
   this.mBody = aBody;
   // all urls in gdata use SSL.  If a URL is supplied, make sure it uses SSL
   if (aUrl && aUrl.indexOf("https://") < 0)
@@ -79,7 +79,7 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
     case "GETALL":
     case "getAll":
       this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = gdata.contacts.GET_ALL_URL + Preferences.mSyncPrefs
+      this.mUrl         = gdata.contacts.GET_ALL_URL + com.gContactSync.Preferences.mSyncPrefs
                                                                   .maxContacts.value;
       this.mType        = gdata.contacts.requestTypes.GET_ALL;
       this.addHeaderItem("Authorization", aAuth);
@@ -87,7 +87,7 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
     case "getFromGroup":
       this.mContentType = this.CONTENT_TYPES.ATOM;
       this.mUrl         = gdata.contacts.GET_ALL_URL
-                          + Preferences.mSyncPrefs.maxContacts.value
+                          + com.gContactSync.Preferences.mSyncPrefs.maxContacts.value
                           + "&group=" + encodeURIComponent(aOther);
       this.mType        = gdata.contacts.requestTypes.GET_ALL;
       this.addHeaderItem("Authorization", aAuth);
@@ -140,7 +140,7 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
     default:
       // if the input doesn't match one of the above throw an error
       throw "Invalid aType parameter supplied to the GHttpRequest constructor" +
-            StringBundle.getStr("pleaseReport");
+            com.gContactSync.StringBundle.getStr("pleaseReport");
   }
   // use version 3 of the contacts api
   this.addHeaderItem("GData-Version", "3");
@@ -152,7 +152,7 @@ function GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
     this.mUrl = this.mUrl.replace("default", encodeURIComponent(this.fixUsername(aUsername)));
 }
 
-GHttpRequest.prototype = new HttpRequest(); // get the superclass' prototype
+GHttpRequest.prototype = new com.gContactSync.HttpRequest(); // get the superclass' prototype
 
 /**
  * GHttpRequest.fixUsername
@@ -188,17 +188,17 @@ GHttpRequest.prototype.fixUsername = function GHttpRequest_fixUsername(aUsername
  *  - Restart the sync
  */
 com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
-  LOGGER.LOG("***Found an expired token***");
+  com.gContactSync.LOGGER.LOG("***Found an expired token***");
   // If there is a synchronization in process
   if (!Sync.mSynced) {
     // Get the current username
     var username = Sync.mCurrentUsername;
     // Remove the auth token if it wasn't already
     if (LoginManager.mAuthTokens[username]) {
-      LOGGER.VERBOSE_LOG(" * Removing old auth token");
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * Removing old auth token");
       LoginManager.removeAuthToken(username);
     }
-    alert(StringBundle.getStr("tokenExpiredMsg"));
+    alert(com.gContactSync.StringBundle.getStr("tokenExpiredMsg"));
     // Prompt for the username and password
     var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                              .getService(Components.interfaces.nsIPromptService)
@@ -207,14 +207,14 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
     var username = { value: username };
     var password = {};
     
-    LOGGER.VERBOSE_LOG( " * Showing a username/password prompt");
+    com.gContactSync.LOGGER.VERBOSE_LOG( " * Showing a username/password prompt");
     // opens a username/password prompt
-    var ok = prompt(window, StringBundle.getStr("loginTitle"),
-                    StringBundle.getStr("loginText"), username, password, null,
+    var ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
+                    com.gContactSync.StringBundle.getStr("loginText"), username, password, null,
                     {value: false});
     if (!ok) {
-      LOGGER.VERBOSE_LOG(" * User canceled the prompt");
-      Sync.finish(StringBundle.getStr("tokenExpired"), false);
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * User canceled the prompt");
+      Sync.finish(com.gContactSync.StringBundle.getStr("tokenExpired"), false);
       return false;
     }
     // This is a primitive way of validating an e-mail address, but Google takes
@@ -222,35 +222,35 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
     // username, but returns an error when trying to do anything w/ that token
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
-      alert(StringBundle.getStr("invalidEmail"));
+      alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
       return com.gContactSync.handle401();
     }
     var body    = gdata.makeAuthBody(username.value, password.value);
     var httpReq = new GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText));",
+    httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText));",
                           "com.gContactSync.finish401('" + username.value +
                           "', httpReq.responseText.split(\"\\n\")[2]);"];
     // if it fails, alert the user and prompt them to try again
-    httpReq.mOnError   = ["alert(StringBundle.getStr('authErr'));",
-                          "LOGGER.LOG_ERROR('Authentication Error - ' + " + 
+    httpReq.mOnError   = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
+                          "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
                           "httpReq.status, httpReq.responseText);",
                           "com.gContactSync.handle401();"];
     // if the user is offline, alert them and quit
-    httpReq.mOnOffline = ["alert(StringBundle.getStr('offlineErr'));",
-                          "LOGGER.LOG_ERROR(StringBundle.getStr('offlineErr'));"];
+    httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
+                          "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));"];
     httpReq.send();
   }
 }
 
 com.gContactSync.finish401 = function gCS_finish401(aUsername, aAuthToken) {
-  LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername + " - " + aAuthToken);
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername + " - " + aAuthToken);
   if (aUsername && aAuthToken) {
     var token = 'GoogleLogin ' + aAuthToken;
     LoginManager.addAuthToken(aUsername, token);
     Sync.mCurrentAuthToken = token;
-    if (Preferences.mSyncPrefs.syncGroups.value || Preferences.mSyncPrefs.myContacts)
+    if (com.gContactSync.Preferences.mSyncPrefs.syncGroups.value || com.gContactSync.Preferences.mSyncPrefs.myContacts)
       Sync.getGroups();
     else
       Sync.getContacts();

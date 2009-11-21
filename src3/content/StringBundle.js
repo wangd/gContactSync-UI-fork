@@ -37,37 +37,41 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function optionsLoadListener(e) {
-  StringBundle.init();
- }, false);
-
-
 /**
- * StringBundle
+ * com.gContactSync.StringBundle
  * Contains all of the string bundles included in gContactSync and provides
  * a method (getStr) to find a string by looking in every bundle.
  * NOTE:  This requires that string bundles have unique names for strings.
  * NOTE:  Must be initialized when the window is loaded.
  * @class
  */
-var StringBundle = {
-  mBundles: {},
+com.gContactSync.StringBundle = {
+  mBundles:     {},
+  mInitialized: false,
   /**
-   * StringBundle.init
+   * com.gContactSync.StringBundle.init
    * Initializes the string bundle.
-   * This must be called before getStr.
    */
   init: function StringBundle_init() {
-    this.mBundles.mStrings = document.getElementById("otherStringBundle");
+    if (this.mInitialized)
+      return true;
+    this.mBundles.mStrings = document.getElementById("gContactSyncStringBundle");
+    if (!this.mBundles.mStrings) {
+      var err = "Error - com.gContactSync.StringBundle could not be initialized\n";
+      alert(err);
+      throw err;
+    }
+    this.mInitialized = true;
+    return true;
   },
   /**
-   * StringBundle.getStr
+   * com.gContactSync.StringBundle.getStr
    * Searches every string bundle until a string is found with the given name.
    * @param aName The name of the string to search for.
    */
   getStr: function StringBundle_getStr(aName) {
-    // initialize this object, if necessary
-    if (!this.mBundles.mStrings)
+    // initialize the string bundle if it wasn't already done
+    if (!this.mInitialized)
       this.init();
     for (var i in this.mBundles) {
       try {

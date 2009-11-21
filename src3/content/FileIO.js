@@ -66,22 +66,22 @@ com.gContactSync.FileIO = {
       try { directory.create("1", parseInt("755", 8)); } catch(e) {}
       // if it still doesn't exist let the user know, then quit
       if (!directory.exists()) {
-        alert(StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
+        alert(com.gContactSync.StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
         throw "Error - could not create the following directory: " + directory.path;
       }
     }
     if (!directory.isDirectory()) {
-      alert(StringBundle.getStr("isNotDir") + "\n" + directory.path);
+      alert(com.gContactSync.StringBundle.getStr("isNotDir") + "\n" + directory.path);
       throw "Error - " + directory.path + " is not a directory.";
     }
     if (!directory.isWritable()) {
-      alert(StringBundle.getStr("notWritable") + "\n" + directory.path);
+      alert(com.gContactSync.StringBundle.getStr("notWritable") + "\n" + directory.path);
       throw "Error - Cannot write to the following directory: " + directory.path;
     }
     this.mLogFile = directory;
     this.mLogFile.append(this.fileNames.LOG_FILE);
     if (this.mLogFile.exists && !this.mLogFile.isWritable) {
-      alert(StringBundle.getStr("logNotWritable") + "\n" + this.mLogFile.path);
+      alert(com.gContactSync.StringBundle.getStr("logNotWritable") + "\n" + this.mLogFile.path);
       throw "Error - cannot write to the log file: " + this.mLogFile.path;
     }
   },
@@ -133,7 +133,7 @@ com.gContactSync.FileIO = {
       return lines;
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Unable to read from file: " + aFile, e);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to read from file: " + aFile, e);
       return [];
     }
   },
@@ -158,7 +158,7 @@ com.gContactSync.FileIO = {
       return true;
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Unable to write '" + aData + "' to file: " + aFile, e);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to write '" + aData + "' to file: " + aFile, e);
     }
     return false;
   },
@@ -185,7 +185,7 @@ com.gContactSync.FileIO = {
       return true;
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Unable to append '" + aData + "' to file: " + aFile, e);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to append '" + aData + "' to file: " + aFile, e);
     }
     return false;
   },
@@ -199,6 +199,6 @@ com.gContactSync.FileIO = {
   checkFile: function FileIO_checkFile(aFile) {
     if (!aFile || !aFile instanceof Components.interfaces.nsIFile || (aFile.exists() && !aFile.isFile()))
       throw "Invalid File: " + aFile + " sent to the '" + this.checkFile.caller
-            + "' method" + StringBundle.getStr("pleaseReport");
+            + "' method" + com.gContactSync.StringBundle.getStr("pleaseReport");
   }
 };

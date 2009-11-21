@@ -115,7 +115,7 @@ Group.prototype = {
                                                  "systemGroup")[0];
       var id = elem ? elem.getAttribute("id") : null;
       if (id) {
-        this.mTitle = StringBundle.getStr(id);
+        this.mTitle = com.gContactSync.StringBundle.getStr(id);
         if (this.mTitle)
           return this.mTitle;
       }
@@ -198,7 +198,7 @@ Group.prototype = {
       return  parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Unable to get last modified date from a group:\n" + e);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to get last modified date from a group:\n" + e);
     }
     return 0;
   },
@@ -213,7 +213,7 @@ Group.prototype = {
   setExtendedProperty: function Group_setExtendedProperty(aName, aValue) {
     if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
         "extendedProperty").length >= 10) {
-      LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
+      com.gContactSync.LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
       return;
     }
     if (aValue && aValue != "") {

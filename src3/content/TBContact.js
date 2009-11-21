@@ -75,7 +75,7 @@ TBContact.prototype = {
       throw "Error - invalid attribute sent to TBContact_getValue";
     if (aAttribute == "LastModifiedDate" && this.mAddressBook &&
         this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly == "true") {
-      LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
       return 0;
     }
     return GAbManager.getCardValue(this.mContact, aAttribute);
@@ -104,7 +104,7 @@ TBContact.prototype = {
    */
   update: function TBContact_update() {
     if (!this.mAddressBook) {
-      LOGGER.LOG_WARNING("Warning - TBContact.update called w/o a directory");
+      com.gContactSync.LOGGER.LOG_WARNING("Warning - TBContact.update called w/o a directory");
       return false;
     }
     return this.mAddressBook.updateCard(this.mContact);
@@ -115,7 +115,7 @@ TBContact.prototype = {
    */
   remove: function TBContact_remove() {
     if (!this.mAddressBook) {
-      LOGGER.LOG_WARNING("Warning - TBContact.remove called w/o a directory");
+      com.gContactSync.LOGGER.LOG_WARNING("Warning - TBContact.remove called w/o a directory");
       return false;
     }
     return this.mAddressBook.deleteCards([this.mContact]);

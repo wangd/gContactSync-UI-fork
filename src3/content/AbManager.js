@@ -180,7 +180,7 @@ var AbManager = {
     if (!card || (!(card instanceof Components.interfaces.nsIAbCard) &&
                   !(Components.interfaces.nsIAbMDBCard && card instanceof Components.interfaces.nsIAbMDBCard))) {
       throw "Invalid card: " + aCard + "passed to the '" + aMethodName +
-            "' method." + StringBundle.getStr("pleaseReport");
+            "' method." + com.gContactSync.StringBundle.getStr("pleaseReport");
     }
   },
   /**
@@ -200,11 +200,11 @@ var AbManager = {
       var value;
       if (this.isRegularAttribute(aAttrName))
         try { return aCard.getCardValue(aAttrName); }
-        catch (e) { LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
+        catch (e) { com.gContactSync.LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
       else if (Components.interfaces.nsIAbMDBCard && aCard instanceof Components.interfaces.nsIAbMDBCard)
         return this.getMDBCardValue(aCard, aAttrName);
       else
-        LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
+        com.gContactSync.LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
                            + aCard);
     }
     return null;
@@ -271,7 +271,7 @@ var AbManager = {
     // make sure the last modified date is in milliseconds since 1/1/1970 UTC
     // and not in microseconds
     if (aAttrName == "LastModifiedDate" && parseInt(aValue) > 2147483647) {
-      LOGGER.LOG_WARNING("Had to adjust last modified date from " + aValue);
+      com.gContactSync.LOGGER.LOG_WARNING("Had to adjust last modified date from " + aValue);
       aValue = aValue/1000;
     }
     if (this.mBug413260) { // if the patch for Bug 413260 is applied
@@ -299,7 +299,7 @@ var AbManager = {
           if (aValue == "")
             aValue = 0;
           aCard.lastModifiedDate = aValue;
-        } catch(e) { LOGGER.LOG_WARNING("Invalid lastModifiedDate"); }
+        } catch(e) { com.gContactSync.LOGGER.LOG_WARNING("Invalid lastModifiedDate"); }
       else if (aAttrName == "AllowRemoteContent") {
         // AllowRemoteContent may be 1/0 if the patch or true/false otherwise
         var value = aValue == "1" || (aValue != "0" && aValue);
@@ -325,11 +325,11 @@ var AbManager = {
       }
       else if (this.isRegularAttribute(aAttrName))
         try { aCard.setCardValue(aAttrName, aValue); }
-        catch (e) { LOGGER.LOG_WARNING("Error in setCardValue: " + e); }
+        catch (e) { com.gContactSync.LOGGER.LOG_WARNING("Error in setCardValue: " + e); }
      else if (Components.interfaces.nsIAbMDBCard && aCard instanceof Components.interfaces.nsIAbMDBCard)
         this.setMDBCardValue(aCard, aAttrName, aValue);
      else
-       LOGGER.LOG_WARNING("Couldn't set the value " + aAttrName + " of the card "
+       com.gContactSync.LOGGER.LOG_WARNING("Couldn't set the value " + aAttrName + " of the card "
                           + aCard);
     }
   },
@@ -347,7 +347,7 @@ var AbManager = {
       return true;
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
+      com.gContactSync.LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
                          "\n" + aValue);
     }
     return false;
@@ -365,7 +365,7 @@ var AbManager = {
       return aCard.getStringAttribute(aAttrName);
     }
     catch(e) {
-      LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
+      com.gContactSync.LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
     }
     return null;
   },
@@ -377,8 +377,8 @@ var AbManager = {
    */
   getAbByURI: function AbManager_getAbByURI(aURI) {
     if (!aURI) {
-      LOGGER.LOG_WARNING("Invalid aURI supplied to the 'getAbByURI' method" +
-                         StringBundle.getStr("pleaseReport"));
+      com.gContactSync.LOGGER.LOG_WARNING("Invalid aURI supplied to the 'getAbByURI' method" +
+                         com.gContactSync.StringBundle.getStr("pleaseReport"));
       return null;
     }
     try {
@@ -398,7 +398,7 @@ var AbManager = {
         return null;
       return dir;
     }
-    catch(e) { LOGGER.LOG_ERROR("Error in getAbByURI", e); }
+    catch(e) { com.gContactSync.LOGGER.LOG_ERROR("Error in getAbByURI", e); }
     return null;
   },
   /**
@@ -413,7 +413,7 @@ var AbManager = {
   getAbByName: function AbManager_getAbByName(aDirName, aDontMakeAb) {
     if (!aDirName || aDirName.length == 0)
       throw "Invalid aDirName passed to the 'getAbByName' method." +
-            StringBundle.getStr("pleaseReport");
+            com.gContactSync.StringBundle.getStr("pleaseReport");
     var iter, data;
     if (this.mVersion == 3) { // TB 3
       var abManager = Components.classes["@mozilla.org/abmanager;1"]
@@ -472,21 +472,21 @@ var AbManager = {
    */
   deleteAB: function AbManager_deleteAB(aURI) {
     if (!aURI) {
-      LOGGER.LOG_ERROR("Invalid URI passed to AbManager.deleteAB");
+      com.gContactSync.LOGGER.LOG_ERROR("Invalid URI passed to AbManager.deleteAB");
       return false;
     }
     if (aURI.indexOf("abook.mab") != -1 || aURI.indexOf("history.mab") != -1) {
-      alert(StringBundle.getStr("deletePAB"));
-      LOGGER.LOG_WARNING("Attempt made to delete the PAB or CAB.  URI: " + aURI);
+      alert(com.gContactSync.StringBundle.getStr("deletePAB"));
+      com.gContactSync.LOGGER.LOG_WARNING("Attempt made to delete the PAB or CAB.  URI: " + aURI);
       return false;
     }
-    LOGGER.VERBOSE_LOG("Deleting address book with the URI " + aURI);
+    com.gContactSync.LOGGER.VERBOSE_LOG("Deleting address book with the URI " + aURI);
     // In TB 3 just use the AbManager to delete the AB
     if (this.mVersion == 3) {
       var abManager = Components.classes["@mozilla.org/abmanager;1"]
                                 .getService(Components.interfaces.nsIAbManager);
       if (!abManager) {
-        LOGGER.LOG_ERROR("Unable to get the AB Manager service");
+        com.gContactSync.LOGGER.LOG_ERROR("Unable to get the AB Manager service");
         return false;
       }
       abManager.deleteAddressBook(aURI);
@@ -497,7 +497,7 @@ var AbManager = {
       var parentArray = Components.classes["@mozilla.org/supports-array;1"]
                                   .createInstance(Components.interfaces.nsISupportsArray);
       if (!parentArray) {
-        LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
+        com.gContactSync.LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
         return false;
       }
       var parentId  = "moz-abdirectory://";
@@ -508,13 +508,13 @@ var AbManager = {
       var resourceArray = Components.classes["@mozilla.org/supports-array;1"]
                                     .createInstance(Components.interfaces.nsISupportsArray);
       if (!resourceArray) {
-        LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
+        com.gContactSync.LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
         return false;
       }
       var selectedABResource = GetDirectoryFromURI(aURI)
                                     .QueryInterface(Components.interfaces.nsIRDFResource);
       if (!selectedABResource) {
-        LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
+        com.gContactSync.LOGGER.LOG_ERROR("Unable to get an nsISupportsArray");
         return false;
       }
       resourceArray.AppendElement(selectedABResource);
@@ -522,7 +522,7 @@ var AbManager = {
       // Get the directory tree
       var dirTree = GetDirTree();
       if (!dirTree) {
-        LOGGER.LOG_ERROR("Unable to get the directory tree");
+        com.gContactSync.LOGGER.LOG_ERROR("Unable to get the directory tree");
         return false;
       }
 

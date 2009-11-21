@@ -163,7 +163,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
         catch (e) {
           // ignore the error if the card wasn't an MDB card, otherwise log it
           if (isMDBCard)
-            LOGGER.LOG_WARNING("Error while getting extra card attributes.", e);
+            com.gContactSync.LOGGER.LOG_WARNING("Error while getting extra card attributes.", e);
         }
         // delete the card if the user chose to move it (rather than copy it)
         if (actionIsMoving)
@@ -172,7 +172,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
           needToRefresh = true;
           var contact   = new TBContact(card);
           if (!contact.getValue("PrimaryEmail")) {
-            LOGGER.VERBOSE_LOG("Forcing dummy email");
+            com.gContactSync.LOGGER.VERBOSE_LOG("Forcing dummy email");
             // force a dummy e-mail address
             var dummyEmail = com.gContactSync.makeDummyEmail(contact, true);
             contact.setValue("PrimaryEmail", dummyEmail, false);
@@ -188,14 +188,14 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
                 newCard.setStringAttribute(attributes[k], value);
               }
             }
-          } catch (e) { LOGGER.LOG_WARNING("Error while copying card", e); }
+          } catch (e) { com.gContactSync.LOGGER.LOG_WARNING("Error while copying card", e); }
         }
         try {
           var now = (new Date).getTime()/1000;
           // now set the new card's last modified date and update it
           ab.setCardValue(newCard, "LastModifiedDate", now);
           ab.updateCard(newCard);
-        } catch (e) { LOGGER.LOG_WARNING('copy card error: ' + e); }
+        } catch (e) { com.gContactSync.LOGGER.LOG_WARNING('copy card error: ' + e); }
       }
     }
     var cardsTransferredText;

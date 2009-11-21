@@ -67,7 +67,7 @@ com.gContactSync.serialize = function gCS_serialize(aXML) {
     return XML(str).toXMLString();
   }
   catch(e) {
-    LOGGER.LOG_WARNING("Error while serializing the following XML: " + aXML,e );
+    com.gContactSync.LOGGER.LOG_WARNING("Error while serializing the following XML: " + aXML,e );
   }
   return "";
 }
@@ -84,7 +84,7 @@ com.gContactSync.serialize = function gCS_serialize(aXML) {
 com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
   // if verbose logging is disabled, don't replace >< with >\n< because it only
   // wastes time
-  if (Preferences.mSyncPrefs.verboseLog.value) {
+  if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value) {
     var arr = aString.split("><");
     aString = arr.join(">\n<");
   }
@@ -116,12 +116,12 @@ com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
  */
 com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePref) {
   if (!aContact) throw "Invalid contact sent to makeDummyEmail";
-  if (!ignorePref && !Preferences.mSyncPrefs.dummyEmail.value) {
-    LOGGER.VERBOSE_LOG(" * Not setting dummy e-mail");
+  if (!ignorePref && !com.gContactSync.Preferences.mSyncPrefs.dummyEmail.value) {
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Not setting dummy e-mail");
     return "";
   }
-  var prefix = StringBundle.getStr("dummy1");
-  var suffix = StringBundle.getStr("dummy2");
+  var prefix = com.gContactSync.StringBundle.getStr("dummy1");
+  var suffix = com.gContactSync.StringBundle.getStr("dummy2");
   var id = null;
   // GContact and TBContact may not be defined
   try {
@@ -167,7 +167,7 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
  */
 com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
   return aEmail && aEmail.indexOf && 
-        aEmail.indexOf(StringBundle.getStr("dummy2")) != -1;
+        aEmail.indexOf(com.gContactSync.StringBundle.getStr("dummy2")) != -1;
 }
 
 /**
