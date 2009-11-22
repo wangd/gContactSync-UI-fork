@@ -157,24 +157,21 @@ com.gContactSync.gdata = {
      */
     init: function gdata_contacts_init() {
       var GElement             = com.gContactSync.GElement;
-      var untyped              = com.gContactSync.gdata.contacts.types.UNTYPED;
-      var typedWithChild       = com.gContactSync.gdata.contacts.types.TYPED_WITH_CHILD;
-      var typedWithAttr        = com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR;
-      var parentTyped          = com.gContactSync.gdata.contacts.types.PARENT_TYPED;
+      var untyped              = this.types.UNTYPED;
+      var typedWithChild       = this.types.TYPED_WITH_CHILD;
+      var typedWithAttr        = this.types.TYPED_WITH_ATTR;
+      var parentTyped          = this.types.PARENT_TYPED;
       var gd                   = com.gContactSync.gdata.namespaces.GD;
       var atom                 = com.gContactSync.gdata.namespaces.ATOM;
       var gcontact             = com.gContactSync.gdata.namespaces.GCONTACT;
       this.postalAddress       = new GElement(typedWithChild, "postalAddress",
-                                             gd, ["work", "home", "other"]);
-      this.phoneNumber         = new GElement(typedWithChild, "phoneNumber",
-                                             gd, ["work", "home", "mobile",
-                                             "pager", "other", "home_fax",
-                                             "work_fax"]);
+                                             gd, this.POSTAL_ADDRESS_TYPES);
+      this.phoneNumber         = new GElement(typedWithChild, "phoneNumber", gd,
+                                              this.PHONE_TYPES);
       this.email               = new GElement(typedWithAttr, "email", gd,
-                                             ["home", "work", "other"], "address");
+                                              this.EMAIL_TYPES);
       this.im                  = new GElement(typedWithAttr, "im", gd,
-                                              ["JABBER", "YAHOO", "AIM", "GOOGLE_TALK", "MSN", "ICQ"],
-                                              "address");
+                                              this.IM_TYPES);
       this.id                  = new GElement(untyped, "id", atom);
       this.updated             = new GElement(untyped, "updated", atom);
       this.title               = new GElement(untyped, "title", atom);
@@ -211,6 +208,20 @@ com.gContactSync.gdata = {
     },
     WEBSITE_TYPES: [
       "home-page", "blog", "profile", "home", "work", "other", "ftp"
+    ],
+    PHONE_TYPES: [
+      "work", "home", "work_fax", "mobile", "pager", "home_fax", "assistant",
+      "callback", "car", "company_main", "fax", "isdn", "main", "other_fax",
+      "radio", "telex", "tty_tdd", "work_mobile", "work_pager", "other"
+    ],
+    IM_TYPES: [
+      "AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER", "SKYPE", "QQ"
+    ],
+    EMAIL_TYPES: [
+      "other", "home", "work"
+    ],
+    POSTAL_ADDRESS_TYPES: [
+      "home", "work", "other"
     ],
     ORG_TAGS: {
       orgDepartment:     "1",
