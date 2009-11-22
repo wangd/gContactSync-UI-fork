@@ -40,8 +40,7 @@
  * address books, and edit contacts.
  * @class
  */
-var GAbManager = AbManager;
-
+com.gContactSync.GAbManager = com.gContactSync.AbManager;
 
 /**
  * GAbManager.resetAllSyncedABs
@@ -56,7 +55,7 @@ var GAbManager = AbManager;
  * @param showConfirm {boolean} Show a confirmation dialog first and quit if
  * the user presses Cancel.
  */
-GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedABs(showConfirm) {
+com.gContactSync.GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedABs(showConfirm) {
   if (showConfirm) {
     if (!confirm(com.gContactSync.StringBundle.getStr("confirmReset"))) {
       return false;
@@ -64,10 +63,9 @@ GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedABs(showConfirm) {
   }
 
   com.gContactSync.LOGGER.LOG("Resetting all synchronized directories.");
-  var abs = GAbManager.getSyncedAddressBooks(true);
-  for (var i in abs) {
+  var abs = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
+  for (var i in abs)
     abs[i].ab.reset();
-  }
   
   com.gContactSync.LOGGER.LOG("Finished resetting all synchronized directories.");
   alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));

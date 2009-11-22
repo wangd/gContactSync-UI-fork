@@ -37,8 +37,8 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function optionsLoadListener(e) {
-  gdata.contacts.init();
+window.addEventListener("load", function gdataLoadListener(e) {
+  com.gContactSync.gdata.contacts.init();
  }, false);
 
 /**
@@ -48,7 +48,7 @@ window.addEventListener("load", function optionsLoadListener(e) {
  * http://code.google.com/apis/contacts/
  * @class
  */
-var gdata = {
+com.gContactSync.gdata = {
   AUTH_URL:              "https://www.google.com/accounts/ClientLogin",
   AUTH_REQUEST_TYPE:     "POST",
   AUTH_SUB_SESSION_URL:  "https://www.google.com/accounts/AuthSubSessionToken",
@@ -155,59 +155,56 @@ var gdata = {
      */
     init: function gdata_contacts_init() {
       var GElement             = com.gContactSync.GElement;
-      var untyped              = gdata.contacts.types.UNTYPED;
-      var typedWithChild       = gdata.contacts.types.TYPED_WITH_CHILD;
-      var typedWithAttr        = gdata.contacts.types.TYPED_WITH_ATTR;
+      var untyped              = com.gContactSync.gdata.contacts.types.UNTYPED;
+      var typedWithChild       = com.gContactSync.gdata.contacts.types.TYPED_WITH_CHILD;
+      var typedWithAttr        = com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR;
+      var gd                   = com.gContactSync.gdata.namespaces.GD;
+      var atom                 = com.gContactSync.gdata.namespaces.ATOM;
+      var gcontact             = com.gContactSync.gdata.namespaces.GCONTACT;
       this.postalAddress       = new GElement(typedWithChild, "postalAddress",
-                                             gdata.namespaces.GD, ["work", "home",
-                                             "other"]);
+                                             gd, ["work", "home", "other"]);
       this.phoneNumber         = new GElement(typedWithChild, "phoneNumber",
-                                             gdata.namespaces.GD, ["work", "home",
-                                             "mobile", "pager", "other", "home_fax",
+                                             gd, ["work", "home", "mobile",
+                                             "pager", "other", "home_fax",
                                              "work_fax"]);
-      this.email               = new GElement(typedWithAttr, "email", gdata.namespaces.GD,
+      this.email               = new GElement(typedWithAttr, "email", gd,
                                              ["home", "work", "other"], "address");
-      this.im                  = new GElement(typedWithAttr, "im", gdata.namespaces.GD,
+      this.im                  = new GElement(typedWithAttr, "im", gd,
                                               ["JABBER", "YAHOO", "AIM", "GOOGLE_TALK", "MSN", "ICQ"],
                                               "address");
-      this.id                  = new GElement(untyped, "id", gdata.namespaces.ATOM);
-      this.updated             = new GElement(untyped, "updated", gdata.namespaces.ATOM);
-      this.title               = new GElement(untyped, "title", gdata.namespaces.ATOM);
-      this.fullName            = new GElement(untyped, "fullName", gdata.namespaces.GD);
-      this.givenName           = new GElement(untyped, "givenName", gdata.namespaces.GD);
-      this.familyName          = new GElement(untyped, "familyName", gdata.namespaces.GD);
-      this.additionalName      = new GElement(untyped, "additionalName", gdata.namespaces.GD);
-      this.namePrefix          = new GElement(untyped, "namePrefix", gdata.namespaces.GD);
-      this.nameSuffix          = new GElement(untyped, "nameSuffix", gdata.namespaces.GD);
-      this.notes               = new GElement(untyped, "content", gdata.namespaces.ATOM);
-      this.orgName             = new GElement(untyped, "orgName", gdata.namespaces.GD);
-      this.orgTitle            = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
-      this.orgJobDescription   = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
-      this.orgDepartment       = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
-      this.orgSymbol           = new GElement(untyped, "orgTitle", gdata.namespaces.GD);
-      this.birthday            = new GElement(untyped, "birthday", gdata.namespaces.GCONTACT);
+      this.id                  = new GElement(untyped, "id", atom);
+      this.updated             = new GElement(untyped, "updated", atom);
+      this.title               = new GElement(untyped, "title", atom);
+      this.fullName            = new GElement(untyped, "fullName", gd);
+      this.givenName           = new GElement(untyped, "givenName", gd);
+      this.familyName          = new GElement(untyped, "familyName", gd);
+      this.additionalName      = new GElement(untyped, "additionalName", gd);
+      this.namePrefix          = new GElement(untyped, "namePrefix", gd);
+      this.nameSuffix          = new GElement(untyped, "nameSuffix", gd);
+      this.notes               = new GElement(untyped, "content", atom);
+      this.orgName             = new GElement(untyped, "orgName", gd);
+      this.orgTitle            = new GElement(untyped, "orgTitle", gd);
+      this.orgJobDescription   = new GElement(untyped, "orgTitle", gd);
+      this.orgDepartment       = new GElement(untyped, "orgTitle", gd);
+      this.orgSymbol           = new GElement(untyped, "orgTitle", gd);
+      this.birthday            = new GElement(untyped, "birthday", gcontact);
       this.organization        = new GElement(typedWithAttr, "organization",
-                                              gdata.namespaces.GD, ["other"]);
+                                              gd, ["other"]);
       this.groupMembershipInfo = new GElement(untyped, "groupMembershipInfo",
-                                              gdata.namespaces.GCONTACT);
+                                              gcontact);
       this.relation            = new GElement(typedWithChild, "relation",
-                                              gdata.namespaces.GCONTACT,
+                                              gcontact,
                                               this.RELATION_TYPES);
       this.nickname            = new GElement(untyped, "nickname",
-                                              gdata.namespaces.GCONTACT);
+                                              gcontact);
       this.website             = new GElement(typedWithAttr, "website",
-                                              gdata.namespaces.GCONTACT,
+                                              gcontact,
                                               this.WEBSITE_TYPES, "href");
-      this.street              = new GElement(untyped, "street",
-                                              gdata.namespaces.GD),
-      this.city                = new GElement(untyped, "city",
-                                              gdata.namespaces.GD),
-      this.region              = new GElement(untyped, "region",
-                                              gdata.namespaces.GD),
-      this.postcode            = new GElement(untyped, "postcode",
-                                              gdata.namespaces.GD),
-      this.country             = new GElement(untyped, "country",
-                                              gdata.namespaces.GD)
+      this.street              = new GElement(untyped, "street", gd),
+      this.city                = new GElement(untyped, "city", gd),
+      this.region              = new GElement(untyped, "region", gd),
+      this.postcode            = new GElement(untyped, "postcode", gd),
+      this.country             = new GElement(untyped, "country", gd)
     },
     WEBSITE_TYPES: [
       "home-page", "blog", "profile", "home", "work", "other", "ftp"
@@ -284,7 +281,7 @@ var gdata = {
      */
     getNumberOfContacts: function gdata_contacts_getNumberOfContacts(aAtom) {
       return aAtom.getElementsByTagNameNS("totalResults",
-                                          gdata.namespaces.OPEN_SEARCH.url);
+                                          com.gContactSync.gdata.namespaces.OPEN_SEARCH.url);
     }
   },
   /**
@@ -292,8 +289,8 @@ var gdata = {
    * Returns true if there is at least one auth token.
    */ 
   isAuthValid: function gdata_isAuthValid() {
-    if (LoginManager.mNumAuthTokens == 0)
-      LoginManager.getAuthTokens();
-    return LoginManager.mNumAuthTokens > 0;
+    if (com.gContactSync.LoginManager.mNumAuthTokens == 0)
+      com.gContactSync.LoginManager.getAuthTokens();
+    return com.gContactSync.LoginManager.mNumAuthTokens > 0;
   }
 };

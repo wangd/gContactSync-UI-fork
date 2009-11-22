@@ -56,12 +56,12 @@
           <treechildren id="loginTreeChildren"/>
         </tree>
         <hbox id="globalButtons">
-          <button id="addLogin"    label="&addLogin.label;"
-                  oncommand="addLogin();"/>
+          <button id="addAB"    label="&addAB.label;"
+                  oncommand="com.gContactSync.Accounts.newAddressBook();"/>
           <button id="refreshTree" label="&refreshTree.label;"
                   oncommand="com.gContactSync.Accounts.fillAbTree();"/>
           <button id="resetAll"    label="&resetAll.label;"
-                  oncommand="GAbManager.resetAllSyncedABs(true);"/>
+                  oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
         </hbox>
       </vbox>
       <vbox>
@@ -70,7 +70,7 @@
           <hbox>
             <label control="Username" value="&Username.label;"/>
             <label id="link-label"    value="&NewUsername.label;"
-                   onclick="com.gContactSync.Accounts.newUsername();"/>
+                   oncommand="com.gContactSync.Accounts.newUsername();"/>
           </hbox>
           <menulist id="Username" oncommand="com.gContactSync.Accounts.restoreGroups();">
             <menupopup id="UsernamePopup">
@@ -109,7 +109,7 @@
           <hbox>
             <label control="SyncDirection"  value="&SyncDirection.label;"/>
             <label id="link-label"    value="&DirectionHelp.label;"
-                  onclick="com.gContactSync.Accounts.directionPopup();"/>
+                  oncommand="com.gContactSync.Accounts.directionPopup();"/>
           </hbox>
           <menulist id="SyncDirection">
             <menupopup id="SyncDirectionPopup">

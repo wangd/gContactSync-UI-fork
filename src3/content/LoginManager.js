@@ -43,7 +43,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * Does NOT store the password and username.
  * @class
  */
-var LoginManager = {
+com.gContactSync.LoginManager = {
   mHostname:      "chrome://gContactSync",
   mSubmitURL:     "User Auth Token",
   mHttpRealm:     null,
@@ -72,7 +72,7 @@ var LoginManager = {
     else if ("@mozilla.org/login-manager;1" in Components.classes) {
       var loginManager =  Components.classes["@mozilla.org/login-manager;1"]
                                     .getService(Components.interfaces.nsILoginManager);
-      var nsLoginInfo  = new CC("@mozilla.org/login-manager/loginInfo;1",
+      var nsLoginInfo  = new Components.Constructors("@mozilla.org/login-manager/loginInfo;1",
                                 Components.interfaces.nsILoginInfo, "init");
       var extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
                                          this.mHttpRealm, aUsername, aToken,

@@ -37,7 +37,7 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function optionsLoadListener(e) {
+window.addEventListener("load", function AccountsLoadListener(e) {
   com.gContactSync.Accounts.initDialog();
  }, false);
 
@@ -95,7 +95,7 @@ com.gContactSync.Accounts = {
                     {value: false});
     if (!ok)
       return false;
-    if (LoginManager.getAuthToken(username.value)) { // the username already exists
+    if (com.gContactSync.LoginManager.getAuthToken(username.value)) { // the username already exists
       alert(com.gContactSync.StringBundle.getStr("usernameExists"));
       return false;
     }
@@ -105,13 +105,13 @@ com.gContactSync.Accounts = {
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
       alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
-      return addLogin();
+      return this.newUsername();
     }
-    var body    = gdata.makeAuthBody(username.value, password.value);
-    var httpReq = new GHttpRequest("authenticate", null, null, body);
+    var body    = com.gContactSync.gdata.makeAuthBody(username.value, password.value);
+    var httpReq = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["LoginManager.addAuthToken('" + username.value +
+    httpReq.mOnSuccess = ["com.gContactSync.LoginManager.addAuthToken('" + username.value +
                           "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
                           "com.gContactSync.Accounts.selectedAbChange();"];
     // if it fails, alert the user and prompt them to try again
@@ -140,18 +140,20 @@ com.gContactSync.Accounts = {
     this.enablePreferences(true);
     var abName = tree.view.getCellText(tree.currentIndex,
                                        tree.columns.getColumnAt(this.mAbNameIndex));
-    var ab = GAbManager.getAbByName(abName);
+    var ab = com.gContactSync.GAbManager.getAbByName(abName);
     if (!ab)
       return false;
-    return new GAddressBook(ab);    
+    return new com.gContactSync.GAddressBook(ab);    
   },
   /**
    * Accounts.newAddressBook
    * Create a new address book.
    */
   newAddressBook: function Accounts_newAddressBook() {
-    // TODO fill in
-    alert("Sorry, this feature is not complete");
+    var name = prompt(com.gContactSync.StringBundle.getStr("newABPrompt"));
+    if (!name)
+      return false;
+    return AbManager.getAbByName(name);
   },
   /**
    * Accounts.saveSelectedAccount
@@ -241,13 +243,13 @@ com.gContactSync.Accounts = {
     // The myContacts pref (enable sync w/ one group) has priority
     // If that is checked an the myContactsName is pref sync just that group
     // Otherwise sync all or no groups based on the syncGroups pref
-    var group        = ab.mPrefs.myContacts
-                         ? (ab.mPrefs.myContactsName
-                            ? ab.mPrefs.myContactsName
-                            : "false")
-                         : (ab.mPrefs.syncGroups != "false"
-                            ? "All"
-                            : "false");
+    var group = ab.mPrefs.myContacts
+                ? (ab.mPrefs.myContactsName
+                  ? ab.mPrefs.myContactsName
+                  : "false")
+                : (ab.mPrefs.syncGroups != "false"
+                  ? "All"
+                  : "false");
     com.gContactSync.selectMenuItem(groupElem, group, true);
     // Sync Direction
     var direction = ab.mPrefs.readOnly == "true"
@@ -278,7 +280,7 @@ com.gContactSync.Accounts = {
     // Remove all existing logins from the menulist
     usernameElem.removeAllItems();
 
-    var tokens = LoginManager.getAuthTokens();
+    var tokens = com.gContactSync.LoginManager.getAuthTokens();
     var item;
     var index = -1;
     usernameElem.appendItem(com.gContactSync.StringBundle.getStr("noAccount"), "none");
@@ -317,11 +319,11 @@ com.gContactSync.Accounts = {
     var newTreeChildren = document.createElement("treechildren");
     newTreeChildren.setAttribute("id", "loginTreeChildren");
     tree.appendChild(newTreeChildren);
-  
+
     // Get all Personal/Mork DB Address Books (type == 2,
     // see mailnews/addrbook/src/nsDirPrefs.h)
     // TODO - there should be a way to change the allowed dir types...
-    var abs    = GAbManager.getAllAddressBooks(2);
+    var abs    = com.gContactSync.GAbManager.getAllAddressBooks(2);
     for (var i in abs)
       this.addToTree(newTreeChildren, abs[i]);
     return true;
@@ -333,7 +335,7 @@ com.gContactSync.Accounts = {
    * @param aAB           {GAddressBook} The GAddressBook to add.
    */
   addToTree: function Accounts_addToTree(aTreeChildren, aAB) {
-    if (!aAB || !aAB instanceof GAddressBook)
+    if (!aAB || !aAB instanceof com.gContactSync.GAddressBook)
       throw "Error - Invalid AB passed to addToTree";
     var treeitem    = document.createElement("treeitem");
     var treerow     = document.createElement("treerow");
@@ -344,7 +346,7 @@ com.gContactSync.Accounts = {
 
     addressbook.setAttribute("label", aAB.getName());
     synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : com.gContactSync.StringBundle.getStr("noAccount"));
-  
+
     treerow.appendChild(addressbook);
     treerow.appendChild(synced);
     treeitem.appendChild(treerow);
@@ -380,7 +382,7 @@ com.gContactSync.Accounts = {
       alert("Sorry, function not complete");
       return;
       // remove the saved prefs from the address books
-      var abs   = GAbManager.getSyncedAddressBooks();
+      var abs   = com.gContactSync.GAbManager.getSyncedAddressBooks();
       var abObj = abs[cellText];
       if (abObj) {
         for (var j in abObj) {
@@ -420,13 +422,13 @@ com.gContactSync.Accounts = {
     this.restoreGroups();
     if (usernameElem.value == "none" || !usernameElem.value)
       return false;
-    var token = LoginManager.getAuthTokens()[usernameElem.value];
+    var token = com.gContactSync.LoginManager.getAuthTokens()[usernameElem.value];
     if (!token) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to find the token for username " + usernameElem.value);
       return false;
     }
     com.gContactSync.LOGGER.VERBOSE_LOG("Fetching groups for username: " + usernameElem.value);
-    var httpReq = new GHttpRequest("getGroups", token, null,
+    var httpReq = new com.gContactSync.GHttpRequest("getGroups", token, null,
                                    null, usernameElem.value);
     httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
                           "Accounts.addGroups(httpReq.responseXML, '"
@@ -449,11 +451,11 @@ com.gContactSync.Accounts = {
       return false;
     if (usernameElem.value == "none" || usernameElem.value != aUsername)
       return false;
-    var arr = aAtom.getElementsByTagNameNS(gdata.namespaces.ATOM.url, "entry");
+    var arr = aAtom.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.ATOM.url, "entry");
     var group, title;
     com.gContactSync.LOGGER.VERBOSE_LOG("Adding groups from username: " + aUsername);
     for (var i = 0; i < arr.length; i++) {
-      group = new Group(arr[i]);
+      group = new com.gContactSync.Group(arr[i]);
       title = group.getTitle();
       com.gContactSync.LOGGER.VERBOSE_LOG(" * " + title);
       // don't add system groups again

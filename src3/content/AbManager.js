@@ -43,7 +43,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * address books, and edit cards.
  * @class
  */
-var AbManager = {
+com.gContactSync.AbManager = {
   mVersion:   Components.classes["@mozilla.org/abmanager;1"] ? 3 : 2,
   mBug413260: Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                         .createInstance(Components.interfaces.nsIAbCard)
@@ -94,7 +94,7 @@ var AbManager = {
       data = iter.getNext();
       if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion == 3 ||
           data instanceof Components.interfaces.nsIAbMDBDirectory)) {
-        ab = new GAddressBook(data);
+        ab = new com.gContactSync.GAddressBook(data);
         dirType = ab.getDirType();
         // If no dir type was passed or the type matches then add it to abs
         if (this.mVersion < 3 || aDirType === undefined || dirType == aDirType)
@@ -136,7 +136,7 @@ var AbManager = {
       data = iter.getNext();
       if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion == 3 ||
           data instanceof Components.interfaces.nsIAbMDBDirectory)) {
-        var ab = new GAddressBook(data);
+        var ab = new com.gContactSync.GAddressBook(data);
         var username = ab.mPrefs.Username;
         if (username) {
           if (!this.mAddressBooks[username])
@@ -428,7 +428,7 @@ var AbManager = {
                           .QueryInterface(Components.interfaces.nsIAbDirectory);
       iter = dir.childNodes;
     }
-    while(iter.hasMoreElements()) {
+    while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Components.interfaces.nsIAbDirectory)
         if (data.dirName == aDirName)
@@ -451,11 +451,11 @@ var AbManager = {
       dir.createNewDirectory(properties);
       iter = dir.childNodes;
     }
-    while(iter.hasMoreElements()) {
+    while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Components.interfaces.nsIAbDirectory)
         if (data.dirName == aDirName) {
-          var ab = new GAddressBook(data);
+          var ab = new com.gContactSync.GAddressBook(data);
           ab.setLastSyncDate(0);
           return data;
         }

@@ -57,7 +57,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
   if (!dragSession)
     return;
   // get the attributes added by this extension
-  var attributes = ContactConverter.getExtraSyncAttributes();
+  var attributes = com.gContactSync.ContactConverter.getExtraSyncAttributes();
   var attributesLen = attributes.length;
 
   var trans = Components.classes["@mozilla.org/widget/transferable;1"]
@@ -70,7 +70,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
   var srcURI         = GetSelectedDirectory();
   var toDirectory    = GetDirectoryFromURI(targetURI);
   var srcDirectory   = GetDirectoryFromURI(srcURI);
-  var ab             = new GAddressBook(toDirectory);
+  var ab             = new com.gContactSync.GAddressBook(toDirectory);
   // iterate through each dropped item from the session
   for (var i = 0, dropItems = dragSession.numDropItems; i < dropItems; i++) {
     dragSession.getData(trans, i);
@@ -170,7 +170,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
           com.gContactSync.deleteCard(srcDirectory, card);
         if (toDirectory.isMailList) {
           needToRefresh = true;
-          var contact   = new TBContact(card);
+          var contact   = new com.gContactSync.TBContact(card);
           if (!contact.getValue("PrimaryEmail")) {
             com.gContactSync.LOGGER.VERBOSE_LOG("Forcing dummy email");
             // force a dummy e-mail address

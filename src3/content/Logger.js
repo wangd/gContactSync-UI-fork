@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -38,7 +38,7 @@ if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * A simple, class that logs messages.
+ * A simple class that logs messages.
  * @class
  */
 com.gContactSync.LOGGER = {
@@ -54,7 +54,8 @@ com.gContactSync.LOGGER = {
   LOG: function LOGGER_LOG(aMessage) {
     if (!aMessage)
       return;
-    com.gContactSync.FileIO.appendToFile(com.gContactSync.FileIO.mLogFile, aMessage + "\n");
+    com.gContactSync.FileIO.appendToFile(com.gContactSync.FileIO.mLogFile,
+                                         aMessage + "\n");
   },
   /**
    * Logger.VERBOSE_LOG

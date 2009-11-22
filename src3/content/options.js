@@ -59,7 +59,7 @@ com.gContactSync.Options = {
     if (document.getElementById("syncExtended")) {
       document.getElementById("syncExtended")
               .addEventListener("change", com.gContactSync.Options.enableExtended, false);
-      enableExtended();
+      com.gContactSync.Options.enableExtended();
       document.getElementById("autoSync")
               .addEventListener("change", com.gContactSync.Options.enableDelays, false);
       enableDelays();

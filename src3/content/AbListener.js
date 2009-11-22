@@ -78,7 +78,7 @@ com.gContactSync.AbListener = {
     aParentDir.QueryInterface(Components.interfaces.nsIAbDirectory);
 
     // if a contact was removed and there is not an ongoing synchronization
-    if (aItem instanceof Components.interfaces.nsIAbCard && Sync.mSynced) {
+    if (aItem instanceof Components.interfaces.nsIAbCard && com.gContactSync.Sync.mSynced) {
       // if a contact was removed from just a amiling list, update the contact's
       // last modified date in the parent address book
       if (aParentDir.isMailList) {
@@ -90,7 +90,7 @@ com.gContactSync.AbListener = {
           uri = uri.substring(0, uri.lastIndexOf("/"));
           // the parent of aParentDir (aParentDir is a mailing list, dir is the
           // directory in which aParentDir is stored)
-          var dir = new GAddressBook(AbManager.getAbByURI(uri));
+          var dir = new com.gContactSync.GAddressBook(com.gContactSync.AbManager.getAbByURI(uri));
           // set the last modified date and update the card
           dir.setCardValue(aItem, "LastModifiedDate", now);
           dir.updateCard(aItem);

@@ -45,7 +45,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * @constructor
  * @class
  */
-function AddressBook(aDirectory) {
+com.gContactSync.AddressBook = function gCS_AddressBook(aDirectory) {
   this.mDirectory = aDirectory;
   // make sure the directory is valid
   if (!this.isDirectoryValid(this.mDirectory))
@@ -61,7 +61,7 @@ function AddressBook(aDirectory) {
   }
 }
 
-AddressBook.prototype = {
+com.gContactSync.AddressBook.prototype = {
   mURI:         {}, // the uniform resource identifier of the directory
   mCards:       [], // the cards within this address book
   mCardsUpdate: false, // set to true when mCards should be updated
@@ -72,7 +72,7 @@ AddressBook.prototype = {
    * @return An MDB
    */
   addCard: function AddressBook_addCard(aCard) {
-    AbManager.checkCard(aCard); // check the card's validity first
+    com.gContactSync.AbManager.checkCard(aCard); // check the card's validity first
     try {
       this.mCards.push(aCard);
       return this.mDirectory.addCard(aCard); // then add it and return the MDBCard
@@ -92,7 +92,7 @@ AddressBook.prototype = {
     this.mCards = [];
     var iter = this.mDirectory.childCards;
     var data;
-    if (AbManager.mVersion == 3) { // TB 3
+    if (com.gContactSync.AbManager.mVersion == 3) { // TB 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof Components.interfaces.nsIAbCard && !data.isMailList)
@@ -194,11 +194,11 @@ AddressBook.prototype = {
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
     var arr;
-    if (AbManager.mVersion == 3) { // TB 3
+    if (com.gContactSync.AbManager.mVersion == 3) { // TB 3
       arr = Components.classes["@mozilla.org/array;1"]
                       .createInstance(Components.interfaces.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
-        AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
+        com.gContactSync.AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
         arr.appendElement(aCards[i], false);
       }
     }
@@ -206,7 +206,7 @@ AddressBook.prototype = {
       arr =  Components.classes["@mozilla.org/supports-array;1"]
                        .createInstance(Components.interfaces.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
-        AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
+        com.gContactSync.AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
         arr.AppendElement(aCards[i], false);
       }
     }
@@ -221,7 +221,7 @@ AddressBook.prototype = {
    * @param aCard The card to update.
    */
   updateCard: function AddressBook_updateCard(aCard) {
-    AbManager.checkCard(aCard);
+    com.gContactSync.AbManager.checkCard(aCard);
     this.mCardsUpdate = true;
     if (this.mDirectory && this.mDirectory.modifyCard)
       this.mDirectory.modifyCard(aCard);
@@ -262,7 +262,7 @@ AddressBook.prototype = {
    */
   isDirectoryValid: function AddressBook_isDirectoryValid(aDirectory) {
     return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory 
-          && aDirectory.dirName != "" && (AbManager.mVersion == 3 || 
+          && aDirectory.dirName != "" && (com.gContactSync.AbManager.mVersion == 3 || 
           aDirectory instanceof Components.interfaces.nsIAbMDBDirectory);
   },
   /**
@@ -273,7 +273,7 @@ AddressBook.prototype = {
    * @param aAttrName The name of the attribute to get.
    */
    getCardValue: function AddressBook_getCardValue(aCard, aAttrName) {
-     return AbManager.getCardValue(aCard, aAttrName);
+     return com.gContactSync.AbManager.getCardValue(aCard, aAttrName);
    },
   /**
    * AddressBook.getCardValue
@@ -284,7 +284,7 @@ AddressBook.prototype = {
    * @param aValue    The value to set for the attribute.
    */
    setCardValue: function AddressBook_setCardValue(aCard, aAttrName, aValue) {
-     return AbManager.setCardValue(aCard, aAttrName, aValue);
+     return com.gContactSync.AbManager.setCardValue(aCard, aAttrName, aValue);
    },
   /**
    * AddressBook.hasAddress
@@ -296,7 +296,7 @@ AddressBook.prototype = {
    *         given type.
    */
   hasAddress: function AddressBook_hasAddress(aCard, aPrefix) {
-    AbManager.checkCard(aCard);
+    com.gContactSync.AbManager.checkCard(aCard);
     return this.getCardValue(aCard, aPrefix + "Address") || 
            this.getCardValue(aCard, aPrefix + "Address2") ||
            this.getCardValue(aCard, aPrefix + "City") ||
@@ -342,25 +342,25 @@ AddressBook.prototype = {
    *         display name, primary, and second emails are the same.
    */
   hasCard: function AddressBook_hasCard(aCard) {
-    AbManager.checkCard(aCard);
+    com.gContactSync.AbManager.checkCard(aCard);
     if (this.mCardsUpdate)
       this.getAllCards();
     var card, aCardID;
     for (var i = 0, length = this.mCards.length; i < length; i++) {
       card = this.mCards[i];
-      aCardID = AbManager.getCardValue(aCard, "GoogleID");
+      aCardID = com.gContactSync.AbManager.getCardValue(aCard, "GoogleID");
       // if it is an old card (has id) compare IDs
       if (aCardID) {
-        if (aCardID == AbManager.getCardValue(card, "GoogleID"))
+        if (aCardID == com.gContactSync.AbManager.getCardValue(card, "GoogleID"))
           return card;
       }
       // else check that display name, primary and second email are equal
-      else if (AbManager.getCardValue(aCard, "DisplayName") ==
-                                      AbManager.getCardValue(card,"DisplayName")
-              && AbManager.getCardValue(aCard, "PrimaryEmail") ==
-                                        AbManager.getCardValue(card, "PrimaryEmail")
-              && AbManager.getCardValue(aCard, "SecondEmail") ==
-                                        AbManager.getCardValue(card, "SecondEmail"))
+      else if (com.gContactSync.AbManager.getCardValue(aCard, "DisplayName") ==
+                                      com.gContactSync.AbManager.getCardValue(card,"DisplayName")
+              && com.gContactSync.AbManager.getCardValue(aCard, "PrimaryEmail") ==
+                                        com.gContactSync.AbManager.getCardValue(card, "PrimaryEmail")
+              && com.gContactSync.AbManager.getCardValue(aCard, "SecondEmail") ==
+                                        com.gContactSync.AbManager.getCardValue(card, "SecondEmail"))
         return card;
     }
     return null;
@@ -489,14 +489,14 @@ AddressBook.prototype = {
   setName: function AddressBook_setName(aName) {
     // make sure it isn't being set to the PAB or CAB name and make sure that
     // this isn't the PAB or CAB
-    var pab = AbManager.getAbByURI("moz-abmdbdirectory://abook.mab");
-    var cab = AbManager.getAbByURI("moz-abmdbdirectory://history.mab");
+    var pab = com.gContactSync.AbManager.getAbByURI("moz-abmdbdirectory://abook.mab");
+    var cab = com.gContactSync.AbManager.getAbByURI("moz-abmdbdirectory://history.mab");
     if (aName == pab.dirName || aName == cab.dirName)
       throw "Error - cannot rename a directory to the PAB or CAB's name";
     if (this.getName() == pab.dirName || this.getName() == cab.dirName)
       throw "Error - cannot rename the PAB or CAB";
     // in TB 3, it is as simple as changing a property of the directory
-    if (AbManager.mVersion == 3)
+    if (com.gContactSync.AbManager.mVersion == 3)
       this.mDirectory.dirName = aName;
     // in TB 2 a few extra steps are necessary...
     else {
@@ -536,7 +536,7 @@ AddressBook.prototype = {
    * representing the new list.
    */
   newListObj: function AddressBook_newListObj(aList, aParentDirectory, aNew) {
-    return new MailList(aList, aParentDirectory, aNew);
+    return new com.gContactSync.MailList(aList, aParentDirectory, aNew);
   },
   /**
    * AddressBook.deleteAB
@@ -545,6 +545,6 @@ AddressBook.prototype = {
    * if there is an attempt to delete one of those ABs.
    */
   deleteAB: function AddressBook_delete() {
-    return AbManager.deleteAB(this.mURI);
+    return com.gContactSync.AbManager.deleteAB(this.mURI);
   }
 }

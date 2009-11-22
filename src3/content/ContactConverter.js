@@ -37,8 +37,8 @@
 if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function optionsLoadListener(e) {
-  ContactConverter.init();
+window.addEventListener("load", function ContactConverterLoadListener(e) {
+  com.gContactSync.ContactConverter.init();
  }, false);
 
 
@@ -53,7 +53,7 @@ window.addEventListener("load", function optionsLoadListener(e) {
  * default type for those textboxes.
  * @class
  */
-var ContactConverter = {
+com.gContactSync.ContactConverter = {
   // two namespaces
   GD:            {},
   ATOM:          {},
@@ -78,8 +78,8 @@ var ContactConverter = {
    * objects and the two namespaces most commonly used by this object.
    */
   init: function ContactConverter_init() {
-    this.GD = gdata.namespaces.GD;
-    this.ATOM = gdata.namespaces.ATOM;
+    this.GD = com.gContactSync.gdata.namespaces.GD;
+    this.ATOM = com.gContactSync.gdata.namespaces.ATOM;
     // ConverterElement(aElement, aTbName, aIndex, aType)
     // This array stores info on what tags in Google's feed sync with which
     // properties in Thunderbird.  gdata.contacts has info on these tags
@@ -175,11 +175,11 @@ var ContactConverter = {
   cardToAtomXML: function ContactConverter_cardToAtomXML(aCard, aContact) {
     var isNew = !aContact;
     if (!aContact)
-      aContact = new GContact();
+      aContact = new com.gContactSync.GContact();
     if (!this.mInitialized)
       this.init();
-    var ab = Sync.mCurrentAb;
-    GAbManager.checkCard(aCard, "cardToAtomXML");
+    var ab = com.gContactSync.Sync.mCurrentAb;
+    com.gContactSync.GAbManager.checkCard(aCard, "cardToAtomXML");
     this.mCurrentCard = aCard;
     var arr = this.mConverterArr;
     // set the regular properties from the array mConverterArr
@@ -189,9 +189,9 @@ var ContactConverter = {
         continue;
       var obj = arr[i];
       com.gContactSync.LOGGER.VERBOSE_LOG(" * " + obj.tbName);
-      var value = this.checkValue(GAbManager.getCardValue(aCard, obj.tbName));
+      var value = this.checkValue(com.gContactSync.GAbManager.getCardValue(aCard, obj.tbName));
       // for the type, get the type from the card, or use its default
-      var type = GAbManager.getCardValue(aCard, obj.tbName + "Type");
+      var type = com.gContactSync.GAbManager.getCardValue(aCard, obj.tbName + "Type");
       if (!type || type == "")
         type = obj.type;
       // see the dummy e-mail note below
@@ -205,15 +205,15 @@ var ContactConverter = {
     }
     // Birthday can be either YYYY-M-D or --M-D for no year.
     // TB can have all three, just a day/month, or just a year through the UI
-    var birthDay    = GAbManager.getCardValue(aCard, "BirthDay");
+    var birthDay    = com.gContactSync.GAbManager.getCardValue(aCard, "BirthDay");
     var birthMonth  = isNaN(parseInt(birthDay, 10))
                         ? null
-                        : GAbManager.getCardValue(aCard, "BirthMonth");
+                        : com.gContactSync.GAbManager.getCardValue(aCard, "BirthMonth");
     var birthdayVal = null;
     // if the contact has a birth month (and birth day) add it to the contact
     // from Google
     if (birthMonth && !isNaN(parseInt(birthMonth, 10))) {
-      var birthYear = GAbManager.getCardValue(aCard, "BirthYear");
+      var birthYear = com.gContactSync.GAbManager.getCardValue(aCard, "BirthYear");
       if (!birthYear || isNaN(parseInt(birthYear, 10)))
         birthYear = "-";
       birthYear = new String(birthYear);
@@ -228,21 +228,21 @@ var ContactConverter = {
     aContact.removeExtendedProperties();
     arr = com.gContactSync.Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
-      var value = this.checkValue(GAbManager.getCardValue(aCard, arr[i]));
+      var value = this.checkValue(com.gContactSync.GAbManager.getCardValue(aCard, arr[i]));
       aContact.setExtendedProperty(arr[i], value);
     }
     // If the myContacts pref is set and this contact is new then add the
     // myContactsName group
     if (ab.mPrefs.myContacts) {
-      if (isNew && Sync.mContactsUrl) {
-        aContact.setGroups([Sync.mContactsUrl]);
+      if (isNew && com.gContactSync.Sync.mContactsUrl) {
+        aContact.setGroups([com.gContactSync.Sync.mContactsUrl]);
       }
     }
     else if (ab.mPrefs.syncGroups) {
       // set the groups
       var groups = [];
-      for (var i in Sync.mLists) {
-        var list = Sync.mLists[i];
+      for (var i in com.gContactSync.Sync.mLists) {
+        var list = com.gContactSync.Sync.mLists[i];
         if (list.hasCard(aCard))
           groups.push(i);
       }
@@ -263,10 +263,10 @@ var ContactConverter = {
   makeCard: function ContactConverter_makeCard(aContact, aCard) {
     if (!aContact)
       throw "Invalid aXml parameter supplied to the 'makeCard' method" +
-            com.gContactSync.com.gContactSync.StringBundle.getStr("pleaseReport");
+            com.gContactSync.StringBundle.getStr("pleaseReport");
     if (!this.mInitialized)
       this.init();
-    var ab = Sync.mCurrentAb;
+    var ab = com.gContactSync.Sync.mCurrentAb;
     var card;
     if (aCard)
       card = aCard;
@@ -278,7 +278,7 @@ var ContactConverter = {
       var obj = arr[i];
       com.gContactSync.LOGGER.VERBOSE_LOG(obj.tbName);
       var property = aContact.getValue(obj.elementName, obj.index, obj.type);
-      property = property ? property : new Property("", "");
+      property = property ? property : new com.gContactSync.Property("", "");
       com.gContactSync.LOGGER.VERBOSE_LOG(property.value + " - " + property.type);
       // Thunderbird has problems with contacts who do not have an e-mail addr
       // and are in Mailing Lists.  To avoid problems, use a dummy e-mail addr
@@ -337,7 +337,7 @@ var ContactConverter = {
     }
     
     // Get the birthday info
-    var bday = aContact.getValue("birthday", 0, gdata.contacts.types.UNTYPED);
+    var bday = aContact.getValue("birthday", 0, com.gContactSync.gdata.contacts.types.UNTYPED);
     var year  = null;
     var month = null;
     var day   = null;
@@ -368,7 +368,7 @@ var ContactConverter = {
     if (ab.mPrefs.getPhotos) {
       var info = aContact.getPhotoInfo();
       if (info) {
-        var file = aContact.writePhoto(Sync.mCurrentAuthToken);
+        var file = aContact.writePhoto(com.gContactSync.Sync.mCurrentAuthToken);
         if (file) {
           ab.setCardValue(card, "PhotoName", file.leafName);
           ab.setCardValue(card, "PhotoType", "file");
@@ -382,7 +382,7 @@ var ContactConverter = {
     if (ab.mPrefs.syncGroups && !ab.mPrefs.myContacts) {
       // get the groups after updating the card
       var groups = aContact.getValue("groupMembershipInfo");
-      var lists = Sync.mLists;
+      var lists = com.gContactSync.Sync.mLists;
       for (var i in lists) {
         var group = groups[i];
         var list = lists[i];

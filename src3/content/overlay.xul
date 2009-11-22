@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - Josh Geenen <gcontactsync@pirules.org>.
-   - Portions created by the Initial Developer are Copyright (C) 2008
+   - Portions created by the Initial Developer are Copyright (C) 2008-2009
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -104,7 +104,7 @@
   <!-- Add some text to the status bar -->
   <statusbar id="status-bar" class="chromeclass-status">
     <statusbarpanel id="statusText2"
-                    onclick="Overlay.showLog();"
+                    onclick="com.gContactSync.Overlay.showLog();"
                     label="&initialStatus.label;"
                     tooltip="&status.tooltip;"/>
   </statusbar>
@@ -114,7 +114,7 @@
   <toolbarbutton id="button-sync"
                  label="&sync.label;"
                  tooltiptext="&sync.tooltip;"
-                 oncommand="Sync.begin()"
+                 oncommand="com.gContactSync.Sync.begin()"
                  class="gContactSync-Button toolbarbutton-1 chromeclass-toolbar-additional"
                  />
 </overlay>

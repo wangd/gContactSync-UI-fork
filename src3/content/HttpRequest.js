@@ -113,7 +113,8 @@ com.gContactSync.HttpRequest.prototype = {
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting up the header: ");
 
     for (var i = 0; i < this.mHeaderLabels.length; i++) {
-       com.gContactSync.LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] + " " + this.mHeaderValues[i]);
+       com.gContactSync.LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] + " "
+                                           + this.mHeaderValues[i]);
        this.mHttpRequest.setRequestHeader(this.mHeaderLabels[i],
                                           this.mHeaderValues[i]);
     }
@@ -135,7 +136,8 @@ com.gContactSync.HttpRequest.prototype = {
         // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
           com.gContactSync.LOGGER.VERBOSE_LOG(" * The request has finished with status: " +
                              httpReq.status + "/" + httpReq.statusText);
-          com.gContactSync.LOGGER.VERBOSE_LOG(" * Headers:\n" + httpReq.getAllResponseHeaders() + "\n");
+          com.gContactSync.LOGGER.VERBOSE_LOG(" * Headers:\n"
+                                              + httpReq.getAllResponseHeaders() + "\n");
           
           switch (httpReq.status) { 
             case 0: // the user is offline

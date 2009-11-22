@@ -241,9 +241,12 @@
       </vbox>
     </groupbox>
   </prefpane>
-  <!-- TODO: Remove unnecessary scripts -->
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/synonyms.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Logger.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/FileIO.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/LoginManager.js"/>
   <script type="application/x-javascript"
@@ -263,9 +266,9 @@
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/GAbManager.js"/>
   <script type="application/x-javascript"
-          src="chrome://gcontactsync/content/FileIO.js"/>
+          src="chrome://gcontactsync/content/Namespace.js"/>
   <script type="application/x-javascript"
-          src="chrome://gcontactsync/content/Logger.js"/>
+          src="chrome://gcontactsync/content/GElement.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/gdata.js"/>
   <script type="application/x-javascript"

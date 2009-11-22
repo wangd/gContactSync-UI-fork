@@ -43,13 +43,13 @@ if (!com.gContactSync) com.gContactSync = {};
  * @class
  * @constructor
  */
-function Group(aXml, aTitle) {
+com.gContactSync.Group = function gCS_Group(aXml, aTitle) {
   if (!aXml) {
     if (!aTitle)
       throw "Error - No title or XML passed to the Group constructor";
-    var atom     = gdata.namespaces.ATOM;
-    var gd       = gdata.namespaces.GD;
-    var gcontact = gdata.namespaces.GCONTACT;
+    var atom     = com.gContactSync.gdata.namespaces.ATOM;
+    var gd       = com.gContactSync.gdata.namespaces.GD;
+    var gcontact = com.gContactSync.gdata.namespaces.GCONTACT;
     var xml      = document.createElementNS(atom.url, atom.prefix + "entry");
     var category = document.createElementNS(atom.url, atom.prefix + "category");
     category.setAttribute("scheme", gd.url + "/#kind");
@@ -67,7 +67,8 @@ function Group(aXml, aTitle) {
     this.mTitle = this.getTitle();
   }
 }
-Group.prototype = {
+
+com.gContactSync.Group.prototype = {
   /**
    * Group.setTitle
    * Sets the title of this Group.
@@ -77,7 +78,7 @@ Group.prototype = {
     if (!aTitle)
       throw "Error - invalid title passed to Group.setTitle";
 
-    var atom  = gdata.namespaces.ATOM;
+    var atom  = com.gContactSync.gdata.namespaces.ATOM;
     var title = this.xml.getElementsByTagNameNS(atom.url, "title")[0];
     if (title && title.value && title.value.indexOf("System Group") != -1)
       return; // cannot rename system groups
@@ -111,7 +112,7 @@ Group.prototype = {
     // system group's ID (Contact, Coworker, Family, or Friend) and return the
     // localized version of that group
     if (this.isSystemGroup()) {
-      var elem = this.xml.getElementsByTagNameNS(gdata.namespaces.GCONTACT.url,
+      var elem = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GCONTACT.url,
                                                  "systemGroup")[0];
       var id = elem ? elem.getAttribute("id") : null;
       if (id) {
@@ -120,7 +121,7 @@ Group.prototype = {
           return this.mTitle;
       }
     }
-    var atom  = gdata.namespaces.ATOM;
+    var atom  = com.gContactSync.gdata.namespaces.ATOM;
     var title = this.xml.getElementsByTagNameNS(atom.url, "title")[0];
     if (title && title.childNodes[0]) {
       this.mTitle = title.childNodes[0].nodeValue
@@ -137,10 +138,10 @@ Group.prototype = {
    * @return the URL used to edit this Group.
    */
   getEditURL: function Group_getEditURL() {
-    var atom = gdata.namespaces.ATOM;
+    var atom = com.gContactSync.gdata.namespaces.ATOM;
     var arr  = this.xml.getElementsByTagNameNS(atom.url, "link");
     for (var i = 0, length = arr.length; i < length; i++)
-      if (arr[i].getAttribute("rel") == gdata.contacts.links.EditURL)
+      if (arr[i].getAttribute("rel") == com.gContactSync.gdata.contacts.links.EditURL)
         return arr[i].getAttribute("href");
     return null;
   },
@@ -150,7 +151,7 @@ Group.prototype = {
    * @return The ID of this Group.
    */
   getID: function Group_getID() {
-    var atom = gdata.namespaces.ATOM;
+    var atom = com.gContactSync.gdata.namespaces.ATOM;
     var id   = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
     if (id && id.childNodes[0])
       return id.childNodes[0].nodeValue;
@@ -161,7 +162,7 @@ Group.prototype = {
    * Removes all of the extended properties from this Group.
    */
   removeExtendedProperties: function Group_removeExtendedProperties() {
-    var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
+    var arr = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url, "extendedProperty");
     for (var i = arr.length - 1; i > -1 ; i--)
       this.xml.removeChild(arr[i]);
   },
@@ -173,7 +174,7 @@ Group.prototype = {
    * @return The value of an extended property whose name is the value of aName.
    */
   getExtendedProperty: function Group_getExtendedProperty(aName) {
-    var arr = this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url, "extendedProperty");
+    var arr = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url, "extendedProperty");
     for (var i = 0, length = arr.length; i < length; i++)
       if (arr[i].getAttribute("name") == aName)
         return arr[i].getAttribute("value");
@@ -211,13 +212,13 @@ Group.prototype = {
    * @param aValue The value of the property.
    */
   setExtendedProperty: function Group_setExtendedProperty(aName, aValue) {
-    if (this.xml.getElementsByTagNameNS(gdata.namespaces.GD.url,
+    if (this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url,
         "extendedProperty").length >= 10) {
       com.gContactSync.LOGGER.LOG_WARNING("Attempt to add too many properties aborted");
       return;
     }
     if (aValue && aValue != "") {
-      var property = document.createElementNS(gdata.namespaces.GD.url,
+      var property = document.createElementNS(com.gContactSync.gdata.namespaces.GD.url,
                                               "extendedProperty");
       property.setAttribute("name", aName);
       property.setAttribute("value", aValue);
@@ -234,7 +235,7 @@ Group.prototype = {
    *  - Friends
    */
   isSystemGroup: function Group_isSystemGroup() {
-    var nodes = this.xml.getElementsByTagNameNS(gdata.namespaces.GCONTACT.url,
+    var nodes = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GCONTACT.url,
                                                 "systemGroup");
     return nodes && nodes.length > 0;
   },
@@ -243,7 +244,7 @@ Group.prototype = {
    * Returns the id of the gContact:systemGroup tag, if any.
    */
   getSystemId: function Group_getSystemId() {
-    var nodes = this.xml.getElementsByTagNameNS(gdata.namespaces.GCONTACT.url,
+    var nodes = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GCONTACT.url,
                                                 "systemGroup");
     if (!nodes || !nodes.length || !nodes[0]) return null;
     return nodes[0].getAttribute("id");

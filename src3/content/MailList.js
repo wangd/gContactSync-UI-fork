@@ -54,9 +54,10 @@ if (!com.gContactSync) com.gContactSync = {};
  * @constructor
  * @class
  */
-function MailList(aList, aParentDirectory, aNew) {
+com.gContactSync.MailList = function gCS_MailList(aList, aParentDirectory, aNew) {
   if (!aParentDirectory ||
-    !(aParentDirectory instanceof AddressBook || aParentDirectory instanceof GAddressBook))
+    !(aParentDirectory instanceof com.gContactSync.AddressBook ||
+        aParentDirectory instanceof com.gContactSync.GAddressBook))
     throw "Error - invalid address book supplied to the MailList Constructor";
   this.mParent = aParentDirectory;
   this.mParent.checkList(aList, "MailList constructor");
@@ -67,7 +68,7 @@ function MailList(aList, aParentDirectory, aNew) {
     this.getAllCards();
 }
 
-MailList.prototype = {
+com.gContactSync.MailList.prototype = {
   mCards:       [],
   mCardsUpdate: false,
   /**
@@ -98,25 +99,25 @@ MailList.prototype = {
    *         display name, primary, and second emails are the same.
    */
   hasCard: function MailList_hasCard(aCard) {
-    AbManager.checkCard(aCard);
+    com.gContactSync.AbManager.checkCard(aCard);
     // get all of the cards in this list again, if necessary
     if (this.mCardsUpdate || this.mCards.length == 0)
       this.getAllCards();
     for (var i = 0, length = this.mCards.length; i < length; i++) {
       var card = this.mCards[i];
-      var aCardID = AbManager.getCardValue(aCard, "GoogleID");
+      var aCardID = com.gContactSync.AbManager.getCardValue(aCard, "GoogleID");
       // if it is an old card (has id) compare IDs
       if (aCardID) {
-        if (aCardID == AbManager.getCardValue(card, "GoogleID"))
+        if (aCardID == com.gContactSync.AbManager.getCardValue(card, "GoogleID"))
           return card;
       }
       // else check that display name, primary and second email are equal
-      else if (AbManager.getCardValue(aCard, "DisplayName") ==
-                                      AbManager.getCardValue(card,"DisplayName")
-              && AbManager.getCardValue(aCard, "PrimaryEmail") ==
-                                        AbManager.getCardValue(card, "PrimaryEmail")
-              && AbManager.getCardValue(aCard, "SecondEmail") ==
-                                        AbManager.getCardValue(card, "SecondEmail"))
+      else if (com.gContactSync.AbManager.getCardValue(aCard, "DisplayName") ==
+                                      com.gContactSync.AbManager.getCardValue(card,"DisplayName")
+              && com.gContactSync.AbManager.getCardValue(aCard, "PrimaryEmail") ==
+                                        com.gContactSync.AbManager.getCardValue(card, "PrimaryEmail")
+              && com.gContactSync.AbManager.getCardValue(aCard, "SecondEmail") ==
+                                        com.gContactSync.AbManager.getCardValue(card, "SecondEmail"))
         return card;
     }
     return null;
@@ -162,7 +163,7 @@ MailList.prototype = {
    * @return A real card (MDB card prior to 413260).
    */
   addCard: function MailList_addCard(aCard) {
-    AbManager.checkCard(aCard);
+    com.gContactSync.AbManager.checkCard(aCard);
     var realCard = this.mList.addCard(aCard);
     this.mCards.push(realCard);
     return realCard;
@@ -188,7 +189,7 @@ MailList.prototype = {
     this.mCards = [];
     var iter = this.mList.childCards;
     var data;
-    if (AbManager.mVersion == 3) { // TB 3
+    if (com.gContactSync.AbManager.mVersion == 3) { // TB 3
       try {
         while (iter.hasMoreElements()) {
           data = iter.getNext();
@@ -235,11 +236,11 @@ MailList.prototype = {
     if (!(aCards && aCards.length && aCards.length > 0))
       return;
     var arr;
-    if (AbManager.mVersion == 3) { // TB 3
+    if (com.gContactSync.AbManager.mVersion == 3) { // TB 3
       arr = Components.classes["@mozilla.org/array;1"]
                       .createInstance(Components.interfaces.nsIMutableArray);
       for (var i = 0; i < aCards.length; i++) {
-        AbManager.checkCard(aCards[i]);
+        com.gContactSync.AbManager.checkCard(aCards[i]);
         arr.appendElement(aCards[i], false);
       }
     }
@@ -247,7 +248,7 @@ MailList.prototype = {
       arr =  Components.classes["@mozilla.org/supports-array;1"]
                        .createInstance(Components.interfaces.nsISupportsArray);
       for (var i = 0; i < aCards.length; i++) {
-        AbManager.checkCard(aCards[i]);
+        com.gContactSync.AbManager.checkCard(aCards[i]);
         arr.AppendElement(aCards[i], false);
       }
     }
@@ -281,7 +282,7 @@ MailList.prototype = {
    */
   update: function MailList_update() {
     try {
-      if (AbManager.mVersion == 3)
+      if (com.gContactSync.AbManager.mVersion == 3)
         this.mList.editMailListToDatabase(null);
       else
         this.mList.editMailListToDatabase(this.getURI(), null);

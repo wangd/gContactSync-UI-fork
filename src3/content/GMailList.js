@@ -38,8 +38,8 @@ if (!com) var com = {};
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * MailList
- * MailList is an abstraction of a mailing list that facilitates getting the
+ * GMailList
+ * GMailList is an abstraction of a mailing list that facilitates getting the
  * cards contained within the actual list as well as accessing and modifying the
  * list and its properties.
  *
@@ -54,9 +54,9 @@ if (!com.gContactSync) com.gContactSync = {};
  * @constructor
  * @class
  */
-function GMailList(aList, aParentDirectory, aNew) {
+com.gContactSync.GMailList = function gCS_GMailList(aList, aParentDirectory, aNew) {
   // Make a new MailList object and copy everything over
-  var list = new MailList(aList, aParentDirectory, aNew);
+  var list = new com.gContactSync.MailList(aList, aParentDirectory, aNew);
   for (var i in list) {
     if (!this[i])
       this[i] = list[i];
@@ -64,7 +64,7 @@ function GMailList(aList, aParentDirectory, aNew) {
   this.mListObj = list;
 }
 
-GMailList.prototype = {
+com.gContactSync.GMailList.prototype = {
   /**
    * GMailList.getGroupID
    * Gets and returns the ID of the group in Google with which this Mail List

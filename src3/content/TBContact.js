@@ -40,7 +40,7 @@ if (!com.gContactSync) com.gContactSync = {};
 /**
  * TBContact
  * Makes a new TBContact object that has functions to get and set various values
- * for a contact independently of the version of Thunderbird (using GAbManager).
+ * for a contact independently of the version of Thunderbird (using com.gContactSync.GAbManager).
  * Optionally takes the parent directory and is able to update the card in that
  * directory.
  * 
@@ -49,16 +49,16 @@ if (!com.gContactSync) com.gContactSync = {};
  * @class
  * @constructor
  */
-function TBContact(aContact, aDirectory) {
-  GAbManager.checkCard(aContact, "TBContact constructor");
-  //if (!aDirectory instanceof AddressBook) {
+com.gContactSync.TBContact = function gCS_TBContact(aContact, aDirectory) {
+  com.gContactSync.GAbManager.checkCard(aContact, "TBContact constructor");
+  //if (!aDirectory instanceof com.gContactSync.AddressBook) {
   //  throw "Error - invalid directory sent to the TBContact constructor";
   //}
   this.mAddressBook = aDirectory;
   this.mContact     = aContact;
 }
 
-TBContact.prototype = {
+com.gContactSync.TBContact.prototype = {
   /**
    * TBContact.getValue
    * Returns the value of the requested property of this contact.
@@ -72,13 +72,13 @@ TBContact.prototype = {
    */
   getValue: function TBContact_getValue(aAttribute) {
     if (!aAttribute)
-      throw "Error - invalid attribute sent to TBContact_getValue";
+      throw "Error - invalid attribute sent to TBContact.getValue";
     if (aAttribute == "LastModifiedDate" && this.mAddressBook &&
         this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly == "true") {
       com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
       return 0;
     }
-    return GAbManager.getCardValue(this.mContact, aAttribute);
+    return com.gContactSync.GAbManager.getCardValue(this.mContact, aAttribute);
   },
   /**
    * TBContact.setValue
@@ -92,7 +92,7 @@ TBContact.prototype = {
    *                   the value of the attribute.
    */
   setValue: function TBContact_setValue(aAttribute, aValue, aUpdate) {
-    GAbManager.setCardValue(this.mContact, aAttribute, aValue);
+    com.gContactSync.GAbManager.setCardValue(this.mContact, aAttribute, aValue);
     if (aUpdate) {
       return this.update();
     }

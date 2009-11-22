@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -46,12 +46,10 @@ if (!com.gContactSync) com.gContactSync = {};
  * user to login.
  */
 // initialize everything after the Address Book window loads
-window.addEventListener("load", function eventListener(e) {
-        Overlay.initialize();
+window.addEventListener("load", function overlayLoadListener(e) {
+    com.gContactSync.Overlay.initialize();
 }, false);
-var originalOnLoadCardView;
-var originalDisplayCardViewPane;
-var originalSetAbView;
+
 /**
  * Overlay
  * Checks if the authentication token is present and valid.  If so, it starts
@@ -59,7 +57,7 @@ var originalSetAbView;
  * login window.
  * @class
  */
-var Overlay = {
+com.gContactSync.Overlay = {
   mLastVersion: "0",
   /**
    * Special links for various IM protocols
@@ -88,7 +86,7 @@ var Overlay = {
 
     // Find the last version of gContactSync and set the pref to the current
     this.mLastVersion = com.gContactSync.Preferences.mSyncPrefs.lastVersion.value;
-    //alert(LoginManager.getAllEmailAccts(/@/).join('\n'));
+    //alert(com.gContactSync.LoginManager.getAllEmailAccts(/@/).join('\n'));
 
     com.gContactSync.Preferences.setPref(com.gContactSync.Preferences.mSyncBranch,
                         com.gContactSync.Preferences.mSyncPrefs.lastVersion.label,
@@ -104,12 +102,12 @@ var Overlay = {
     com.gContactSync.LOGGER.LOG(" * Last version was: " + this.mLastVersion);
     com.gContactSync.LOGGER.LOG(" * User Agent:       " + navigator.userAgent + "\n");
 
-    originalOnLoadCardView = OnLoadCardView;
+    com.gContactSync.originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
     //if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
-      //Overlay.setupButton();    // insert the Sync button
+      //this.setupButton();    // insert the Sync button
     if (com.gContactSync.Preferences.mSyncPrefs.enableMenu.value)
-      Overlay.setupMenu();      // add a shortcut menu
+      this.setupMenu();      // add a shortcut menu
     // add the extra attributes as tree columns to show and
     this.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver
@@ -117,17 +115,17 @@ var Overlay = {
     if (com.gContactSync.Preferences.mSyncPrefs.overrideCopy.value)
       abDirTreeObserver.onDrop = com.gContactSync.myOnDrop;
     // override the display card view pane
-    originalDisplayCardViewPane = DisplayCardViewPane;
+    com.gContactSync.originalDisplayCardViewPane = DisplayCardViewPane;
     DisplayCardViewPane = this.myDisplayCardViewPane;
     // Add a reset menuitem to the directory tree context menu
     if (com.gContactSync.Preferences.mSyncPrefs.addReset.value)
       this.addResetContext();
     // override the ab results tree function
-    //originalSetAbView = SetAbView;
-    //SetAbView = this.mySetAbView;
+    //com.gContactSync.originalSetAbView = SetAbView;
+    //SetAbView = com.gContactSync.SetAbView;
     com.gContactSync.AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
-    window.addEventListener("unload", function unloadListener(e) { Overlay.unload(); }, false);
+    window.addEventListener("unload", function unloadListener(e) { com.gContactSync.Overlay.unload(); }, false);
     // Fix the style for description elements accidentally set in the
     // Duplicate Contacts Manager extension
     // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
@@ -145,7 +143,7 @@ var Overlay = {
     com.gContactSync.AbListener.remove();
   },
   /**
-   * ContactConverter.addTreeCols
+   * Overlay.addTreeCols
    * Adds treecol elements to the address book results tree that shows cards in
    * the currently selected directory.  These treecols allow the user to show
    * and sort by extra attributes that are added by this extension.  This will
@@ -180,7 +178,7 @@ var Overlay = {
     if (!this.mBug413260 || !com.gContactSync.Preferences.mSyncPrefs.newColLabels.value)
       return;
     // get the added attributes
-    var ids = ContactConverter.getExtraSyncAttributes(false);
+    var ids = com.gContactSync.ContactConverter.getExtraSyncAttributes(false);
     var id, splitter, treeCol;
     // iterate through every added attribute and add a treecol for it unless
     // it is a postal address
@@ -238,63 +236,63 @@ var Overlay = {
       syncMenuItem.setAttribute("id", "syncMenuItem");
       syncMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("syncMenu"));
       syncMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("syncMenuKey"));
-      syncMenuItem.setAttribute("oncommand", "Sync.begin();");
+      syncMenuItem.setAttribute("oncommand", "com.gContactSync.Sync.begin();");
       syncMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var acctMenuItem = document.createElement("menuitem");
       acctMenuItem.setAttribute("id", "acctMenuItem");
       acctMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("acctMenu"));
       acctMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("acctMenuKey"));
-      acctMenuItem.setAttribute("oncommand", "Overlay.openAccounts();");
+      acctMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openAccounts();");
       acctMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var prefMenuItem = document.createElement("menuitem");
       prefMenuItem.setAttribute("id", "prefMenuItem");
       prefMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("prefMenu"));
       prefMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("prefMenuKey"));
-      prefMenuItem.setAttribute("oncommand", "Overlay.openPreferences();");
+      prefMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openPreferences();");
       prefMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var forumMenuItem = document.createElement("menuitem");
       forumMenuItem.setAttribute("id", "forumMenuItem");
       forumMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("forumMenu"));
       forumMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("forumMenuKey"));
-      forumMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.forumURL');");
+      forumMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.forumURL');");
       forumMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var wikiMenuItem = document.createElement("menuitem");
       wikiMenuItem.setAttribute("id", "wikiMenuItem");
       wikiMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("wikiMenu"));
       wikiMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("wikiMenuKey"));
-      wikiMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.wikiURL');");
+      wikiMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.wikiURL');");
       wikiMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var faqMenuItem = document.createElement("menuitem");
       faqMenuItem.setAttribute("id", "faqMenuItem");
       faqMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("faqMenu"));
       faqMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("faqMenuKey"));
-      faqMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.faqURL');");
+      faqMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.faqURL');");
       faqMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var errorMenuItem = document.createElement("menuitem");
       errorMenuItem.setAttribute("id", "errorMenuItem");
       errorMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("errorMenu"));
       errorMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("errorMenuKey"));
-      errorMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.errorURL');");
+      errorMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.errorURL');");
       errorMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var logMenuItem = document.createElement("menuitem");
       logMenuItem.setAttribute("id", "logMenuItem");
       logMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("logMenu"));
       logMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("logMenuKey"));
-      logMenuItem.setAttribute("oncommand", "Overlay.showLog();");
+      logMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.showLog();");
       logMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var gcMenuItem = document.createElement("menuitem");
       gcMenuItem.setAttribute("id", "gcMenuItem");
       gcMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("gcMenu"));
       gcMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("gcMenuKey"));
-      gcMenuItem.setAttribute("oncommand", "Overlay.openURL('extensions.gContactSync.googleContactsURL');");
+      gcMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.googleContactsURL');");
       gcMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       menupopup.appendChild(syncMenuItem);
@@ -343,7 +341,7 @@ var Overlay = {
                           " chromeclass-toolbar-additional");
       button.setAttribute("id", "button-sync");
       button.setAttribute("label", com.gContactSync.StringBundle.getStr("syncButton"));
-      button.setAttribute("oncommand", "Sync.begin();");
+      button.setAttribute("oncommand", "com.gContactSync.Sync.begin();");
       button.setAttribute("tooltiptext", com.gContactSync.StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
 
@@ -416,17 +414,17 @@ var Overlay = {
    * @param firstLogin 
    */
   checkAuthentication: function Overlay_checkAuthentication() {
-    if (gdata.isAuthValid()) {
+    if (com.gContactSync.gdata.isAuthValid()) {
       if (this.mUsername) {
         com.gContactSync.Preferences.getSyncPrefs();
         var name = com.gContactSync.Preferences.mSyncPrefs.addressBookName.value;
-        var ab   = new GAddressBook(GAbManager.getAbByName(name));
+        var ab   = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByName(name));
         ab.setUsername(this.mUsername);
         ab.setLastSyncDate(0);
-        Sync.begin();
+        com.gContactSync.Sync.begin();
       }
       else
-        Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.initialDelay.value);  
+        com.gContactSync.Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.initialDelay.value);  
       return;
     }
     this.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
@@ -459,17 +457,17 @@ var Overlay = {
       return this.promptLogin();
     }
     
-    var body     = gdata.makeAuthBody(username.value, password.value);
-    var httpReq  = new GHttpRequest("authenticate", null, null, body);
+    var body     = com.gContactSync.gdata.makeAuthBody(username.value, password.value);
+    var httpReq  = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["Overlay.login('" + username.value +
+    httpReq.mOnSuccess = ["com.gContactSync.Overlay.login('" + username.value +
                           "', httpReq.responseText.split(\"\\n\")[2]);"];
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
                         "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
                         "httpReq.status, httpReq.responseText);",
-                        "Overlay.promptLogin();"];
+                        "com.gContactSync.Overlay.promptLogin();"];
     // if the user is offline, alert them and quit
     httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
                           "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));"];
@@ -483,7 +481,7 @@ var Overlay = {
    * @param aAuthToken The authentication token to store.
    */
   login: function Overlay_login(aUsername, aAuthToken) {
-    LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
+    com.gContactSync.LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
     this.setStatusBarText(com.gContactSync.StringBundle.getStr("initialSetup"));
     var setup = window.open("chrome://gcontactsync/content/FirstLogin.xul",
                             "SetupWindow",
@@ -492,7 +490,7 @@ var Overlay = {
     // when the setup window loads, set its onunload property to begin a sync
     setup.onload = function onloadListener() {
       setup.onunload = function onunloadListener() {
-        Overlay.checkAuthentication();
+        com.gContactSync.Overlay.checkAuthentication();
       };
     };
   },
@@ -547,7 +545,7 @@ var Overlay = {
   // NOTE - this function can break search and more if not overridden properly
   mySetAbView: function Overlay_mySetAbView(aURI, aSearchView, aSortCol, aSortDir) {
     // call the original
-    originalSetAbView(aURI, aSearchView, aSortCol, aSortDir);
+    com.gContactSync.originalSetAbView.apply(this, arguments);
     // TODO fix this
     /*
     var children =  gAbResultsTree.getElementsByAttribute("ondraggesture", "nsDragAndDrop.startDrag(event, abResultsPaneObserver);");
@@ -573,14 +571,15 @@ var Overlay = {
    * Links the third and fourth e-mail address as well as the "other" address.
    * Should be set to override the DisplayCardViewPane function in
    * abCardViewOverlay.js.  Requires that the original function should be set as
-   * the originalDisplayCardViewPane variable.
+   * the com.gContactSync.originalDisplayCardViewPane variable.
    * @param aCard The card being viewed.
    */
   myDisplayCardViewPane: function Overlay_myDisplayCardViewPane(aCard) {
-    originalDisplayCardViewPane.apply(this, arguments); // call the original first
+    // call the original first
+    com.gContactSync.originalDisplayCardViewPane.apply(this, arguments);
     if (aCard.isMailList) {
       // collapse all the attributes added
-      Overlay.hideNodes(ContactConverter.getExtraSyncAttributes());
+      com.gContactSync.Overlay.hideNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes());
       try {
         // then collapse the e-mail boxes
         cvData.cvThirdEmailBox.collapsed = true;
@@ -589,8 +588,8 @@ var Overlay = {
       return; // and quit, nothing was added for mail lists
     }
     try {
-      Overlay.showNodes(ContactConverter.getExtraSyncAttributes());
-      var primaryEmail = GAbManager.getCardValue(aCard,
+      com.gContactSync.Overlay.showNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes());
+      var primaryEmail = com.gContactSync.GAbManager.getCardValue(aCard,
                                                  com.gContactSync.dummyEmailName);
       // if the primary e-mail address is the dummy address, hide it
       if (com.gContactSync.isDummyEmail(primaryEmail)) {
@@ -611,8 +610,8 @@ var Overlay = {
       // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
       // JabberScreenName, YahooScreenName, ICQScreenName)
       var visible     = !cvData.cvbContact.getAttribute("collapsed");
-      var thirdEmail  = GAbManager.getCardValue(aCard, "ThirdEmail");
-      var fourthEmail = GAbManager.getCardValue(aCard, "FourthEmail");
+      var thirdEmail  = com.gContactSync.GAbManager.getCardValue(aCard, "ThirdEmail");
+      var fourthEmail = com.gContactSync.GAbManager.getCardValue(aCard, "FourthEmail");
       visible = HandleLink(cvData.cvThirdEmail, com.gContactSync.StringBundle.getStr("ThirdEmail"),
                            thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
                            thirdEmail) || visible;
@@ -623,7 +622,7 @@ var Overlay = {
                            fourthEmail, cvData.cvFourthEmailBox, "mailto:" +
                            fourthEmail) || visible;
     
-      visible = Overlay.getVisible(aCard, ["TalkScreenName", "JabberScreenName",
+      visible = com.gContactSync.Overlay.getVisible(aCard, ["TalkScreenName", "JabberScreenName",
                                            "YahooScreenName", "MSNScreenName",
                                            "ICQScreenName"], visible, true);
       cvSetVisible(cvData.cvhContact, visible);
@@ -631,7 +630,7 @@ var Overlay = {
       // Other section (relations)
       var visible = !cvData.cvhOther.getAttribute("collapsed");
       // Relation fields
-      visible = Overlay.getVisible(aCard, ["Relation0", "Relation1", "Relation2",
+      visible = com.gContactSync.Overlay.getVisible(aCard, ["Relation0", "Relation1", "Relation2",
                                            "Relation3"], visible, true);
       cvSetVisible(cvData.cvhOther, visible);
       cvSetVisible(cvData.cvbOther, visible);
@@ -645,7 +644,7 @@ var Overlay = {
       cvData.cvPagerNumber = cvData.cvPhPager;
       // then set the value and labels for the new and old phone nodes
       var visible = !cvData.cvhPhone.getAttribute("collapsed");
-      visible = Overlay.getVisible(aCard, ["WorkPhone", "HomePhone", "FaxNumber",
+      visible = com.gContactSync.Overlay.getVisible(aCard, ["WorkPhone", "HomePhone", "FaxNumber",
                                            "CellularNumber", "PagerNumber",
                                            "OtherNumber", "HomeFaxNumber"],
                                    visible, true);
@@ -713,9 +712,9 @@ var Overlay = {
     // return true if the card has the current attribute
     for (var i = 0; i < aArray.length; i++) {
       var attr = aArray[i];
-      var value = GAbManager.getCardValue(aCard, attr);
+      var value = com.gContactSync.GAbManager.getCardValue(aCard, attr);
       // get the name of the string to find in the bundle
-      var label = aUseTypeLabel ? GAbManager.getCardValue(aCard, attr + "Type")
+      var label = aUseTypeLabel ? com.gContactSync.GAbManager.getCardValue(aCard, attr + "Type")
                                 : attr;
       // get the actual string
       // if the label is null (ie aUseTypeLabel was true, but there wasn't a type)
@@ -743,20 +742,20 @@ var Overlay = {
    * loaded.
    */
   myOnLoadCardView: function Overlay_myOnLoadCardView() {
-    if (!originalOnLoadCardView){
+    if (!com.gContactSync.originalOnLoadCardView){
       return;
     }
-    originalOnLoadCardView.apply(this, arguments);
+    com.gContactSync.originalOnLoadCardView.apply(this, arguments);
 
     // add the <description> elements
     var vbox = document.getElementById("cvbContact");
     // setup the third and fourth e-mail addresses
     var xhtml = "http://www.w3.org/1999/xhtml";
-    cvData.cvThirdEmailBox = Overlay.makeDescElement("ThirdEmailBox", "CardViewLink");
+    cvData.cvThirdEmailBox = com.gContactSync.Overlay.makeDescElement("ThirdEmailBox", "CardViewLink");
     cvData.cvThirdEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvThirdEmail.setAttribute("id", "ThirdEmail");
     cvData.cvThirdEmailBox.appendChild(cvData.cvThirdEmail);
-    cvData.cvFourthEmailBox = Overlay.makeDescElement("FourthEmailBox", "CardViewLink");
+    cvData.cvFourthEmailBox = com.gContactSync.Overlay.makeDescElement("FourthEmailBox", "CardViewLink");
     cvData.cvFourthEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvFourthEmail.setAttribute("id", "FourthEmail");
     cvData.cvFourthEmailBox.appendChild(cvData.cvFourthEmail);
@@ -765,23 +764,23 @@ var Overlay = {
     
     // the screennames
     if (com.gContactSync.Preferences.mSyncPrefs.enableImUrls.value) {
-      cvData.cvTalkScreenNameBox  = Overlay.makeDescElement("TalkScreenNameBox", "CardViewLink");
+      cvData.cvTalkScreenNameBox  = com.gContactSync.Overlay.makeDescElement("TalkScreenNameBox", "CardViewLink");
       cvData.cvTalkScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvTalkScreenName.setAttribute("id", "TalkScreenName");
       cvData.cvTalkScreenNameBox.appendChild(cvData.cvTalkScreenName);
-      cvData.cvICQScreenNameBox   = Overlay.makeDescElement("ICQScreenNameBox", "CardViewLink");
+      cvData.cvICQScreenNameBox   = com.gContactSync.Overlay.makeDescElement("ICQScreenNameBox", "CardViewLink");
       cvData.cvICQScreenName      = document.createElementNS(xhtml, "html:a");
       cvData.cvICQScreenName.setAttribute("id", "ICQScreenName");    
       cvData.cvICQScreenNameBox.appendChild(cvData.cvICQScreenName);
-      cvData.cvYahooScreenNameBox  = Overlay.makeDescElement("YahooScreenNameBox", "CardViewLink");
+      cvData.cvYahooScreenNameBox  = com.gContactSync.Overlay.makeDescElement("YahooScreenNameBox", "CardViewLink");
       cvData.cvYahooScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvYahooScreenName.setAttribute("id", "YahooScreenName");    
       cvData.cvYahooScreenNameBox.appendChild(cvData.cvYahooScreenName);
-      cvData.cvMSNScreenNameBox    = Overlay.makeDescElement("MSNScreenNameBox", "CardViewLink");
+      cvData.cvMSNScreenNameBox    = com.gContactSync.Overlay.makeDescElement("MSNScreenNameBox", "CardViewLink");
       cvData.cvMSNScreenName       = document.createElementNS(xhtml, "html:a");
       cvData.cvMSNScreenName.setAttribute("id", "MSNScreenName");    
       cvData.cvMSNScreenNameBox.appendChild(cvData.cvMSNScreenName);
-      cvData.cvJabberScreenNameBox = Overlay.makeDescElement("JabberScreenNameBox", "CardViewLink");
+      cvData.cvJabberScreenNameBox = com.gContactSync.Overlay.makeDescElement("JabberScreenNameBox", "CardViewLink");
       cvData.cvJabberScreenName    = document.createElementNS(xhtml, "html:a");
       cvData.cvJabberScreenName.setAttribute("id", "JabberScreenName");
       cvData.cvJabberScreenNameBox.appendChild(cvData.cvJabberScreenName);
@@ -793,11 +792,11 @@ var Overlay = {
       vbox.appendChild(cvData.cvJabberScreenNameBox);
     }
     else {
-      cvData.cvTalkScreenName   = Overlay.makeDescElement("TalkScreenName",   "CardViewText");
-      cvData.cvICQScreenName    = Overlay.makeDescElement("ICQScreenName",    "CardViewText");
-      cvData.cvYahooScreenName  = Overlay.makeDescElement("YahooScreenName",  "CardViewText");
-      cvData.cvMSNScreenName    = Overlay.makeDescElement("MSNScreenName",    "CardViewText");
-      cvData.cvJabberScreenName = Overlay.makeDescElement("JabberScreenName", "CardViewText");
+      cvData.cvTalkScreenName   = com.gContactSync.Overlay.makeDescElement("TalkScreenName",   "CardViewText");
+      cvData.cvICQScreenName    = com.gContactSync.Overlay.makeDescElement("ICQScreenName",    "CardViewText");
+      cvData.cvYahooScreenName  = com.gContactSync.Overlay.makeDescElement("YahooScreenName",  "CardViewText");
+      cvData.cvMSNScreenName    = com.gContactSync.Overlay.makeDescElement("MSNScreenName",    "CardViewText");
+      cvData.cvJabberScreenName = com.gContactSync.Overlay.makeDescElement("JabberScreenName", "CardViewText");
       vbox.appendChild(cvData.cvTalkScreenName);
       vbox.appendChild(cvData.cvICQScreenName);
       vbox.appendChild(cvData.cvMSNScreenName);
@@ -806,8 +805,8 @@ var Overlay = {
     }
 
     // Work section
-    cvData.cvJobDescription = Overlay.makeDescElement("JobDescription", "CardViewText");
-    cvData.cvCompanySymbol  = Overlay.makeDescElement("CompanySymbol",  "CardViewText");
+    cvData.cvJobDescription = com.gContactSync.Overlay.makeDescElement("JobDescription", "CardViewText");
+    cvData.cvCompanySymbol  = com.gContactSync.Overlay.makeDescElement("CompanySymbol",  "CardViewText");
     vbox = document.getElementById("cvbWork");
     // Add the job description after the job title
     vbox.insertBefore(cvData.cvJobDescription, cvData.cvJobTitle.nextSibling);
@@ -821,13 +820,13 @@ var Overlay = {
     otherVbox.setAttribute("flex", "1");
     // Relation fields)
     for (var i = 0; i < 4; i++) {
-      cvData["cvRelation" + i] = Overlay.makeDescElement("Relation" + i, "CardViewText");
+      cvData["cvRelation" + i] = com.gContactSync.Overlay.makeDescElement("Relation" + i, "CardViewText");
       otherVbox.appendChild(cvData["cvRelation" + i]);
     }
 
     // Other Number and HomeFaxNumber
-    cvData.cvOtherNumber = Overlay.makeDescElement("OtherNumber", "CardViewText");
-    cvData.cvHomeFaxNumber = Overlay.makeDescElement("HomeFaxNumber", "CardViewText");
+    cvData.cvOtherNumber = com.gContactSync.Overlay.makeDescElement("OtherNumber", "CardViewText");
+    cvData.cvHomeFaxNumber = com.gContactSync.Overlay.makeDescElement("HomeFaxNumber", "CardViewText");
     vbox = document.getElementById("cvbPhone");
     vbox.appendChild(cvData.cvHomeFaxNumber);
     vbox.appendChild(cvData.cvOtherNumber);
@@ -908,7 +907,7 @@ var Overlay = {
     item.id  = "dirTreeContext-reset";
     item.setAttribute("label",     com.gContactSync.StringBundle.getStr("reset"));
     item.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("resetKey"));
-    item.setAttribute("oncommand", "Overlay.resetSelectedAB()");
+    item.setAttribute("oncommand", "com.gContactSync.Overlay.resetSelectedAB()");
     document.getElementById("dirTreeContext").appendChild(item);
   },
   /**
@@ -919,7 +918,7 @@ var Overlay = {
   resetSelectedAB: function Overlay_resetSelectedAB() {
     var dirTree  = document.getElementById("dirTree");
     var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
-    var ab = new GAddressBook(GAbManager.getAbByURI(selected.Value), true);
+    var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByURI(selected.Value), true);
     var restartStr = com.gContactSync.StringBundle.getStr("pleaseRestart");
     if (confirm(com.gContactSync.StringBundle.getStr("resetConfirm2"))) {
       ab.reset();

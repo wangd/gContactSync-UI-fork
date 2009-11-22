@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -78,11 +78,11 @@ com.gContactSync.FileIO = {
       alert(com.gContactSync.StringBundle.getStr("notWritable") + "\n" + directory.path);
       throw "Error - Cannot write to the following directory: " + directory.path;
     }
-    this.mLogFile = directory;
-    this.mLogFile.append(this.fileNames.LOG_FILE);
-    if (this.mLogFile.exists && !this.mLogFile.isWritable) {
-      alert(com.gContactSync.StringBundle.getStr("logNotWritable") + "\n" + this.mLogFile.path);
-      throw "Error - cannot write to the log file: " + this.mLogFile.path;
+    com.gContactSync.FileIO.mLogFile = directory;
+    com.gContactSync.FileIO.mLogFile.append(this.fileNames.LOG_FILE);
+    if (com.gContactSync.FileIO.mLogFile.exists && !com.gContactSync.FileIO.mLogFile.isWritable) {
+      alert(com.gContactSync.StringBundle.getStr("logNotWritable") + "\n" + com.gContactSync.FileIO.mLogFile.path);
+      throw "Error - cannot write to the log file: " + com.gContactSync.FileIO.mLogFile.path;
     }
   },
   /**
@@ -133,7 +133,7 @@ com.gContactSync.FileIO = {
       return lines;
     }
     catch(e) {
-      com.gContactSync.LOGGER.LOG_WARNING("Unable to read from file: " + aFile, e);
+      throw "Unable to read from file: " + aFile + "\n" + e;
       return [];
     }
   },
@@ -158,7 +158,7 @@ com.gContactSync.FileIO = {
       return true;
     }
     catch(e) {
-      com.gContactSync.LOGGER.LOG_WARNING("Unable to write '" + aData + "' to file: " + aFile, e);
+      throw "Unable to write '" + aData + "' to file: " + aFile + "\n" + e;
     }
     return false;
   },
@@ -185,7 +185,7 @@ com.gContactSync.FileIO = {
       return true;
     }
     catch(e) {
-      com.gContactSync.LOGGER.LOG_WARNING("Unable to append '" + aData + "' to file: " + aFile, e);
+      throw "Unable to append '" + aData + "' to file: " + aFile + "\n" + e;
     }
     return false;
   },

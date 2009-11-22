@@ -125,30 +125,30 @@ com.gContactSync.CardDialogOverlay = {
       // TODO move to gdata
       var arr = ["other", "home", "work"];
       var primaryEmailBox = document.getElementById("PrimaryEmail").parentNode;
-      addMenuItems(primaryEmailBox, arr, "PrimaryEmailType", "other");
+      this.addMenuItems(primaryEmailBox, arr, "PrimaryEmailType", "other");
       var secondEmailBox = document.getElementById("SecondEmail").parentNode;
-      addMenuItems(secondEmailBox, arr, "SecondEmailType", "other");
+      this.addMenuItems(secondEmailBox, arr, "SecondEmailType", "other");
       var thirdEmailBox = document.getElementById("ThirdEmail").parentNode;
-      addMenuItems(thirdEmailBox, arr, "ThirdEmailType", "other");
+      this.addMenuItems(thirdEmailBox, arr, "ThirdEmailType", "other");
       var fourthEmailBox = document.getElementById("FourthEmail").parentNode;
-      addMenuItems(fourthEmailBox, arr, "FourthEmailType", "other");
+      this.addMenuItems(fourthEmailBox, arr, "FourthEmailType", "other");
     } catch(e) { alert("Unable to setup email types: " + e); }
     try {
       // TODO move to gdata
       // add drop down menus for screen name protocols
       var arr = ["AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER", "SKYPE", "QQ"];
       var aimBox = document.getElementById("ScreenName").parentNode;
-      addMenuItems(aimBox, arr, "_AimScreenNameType", "AIM");
+      this.addMenuItems(aimBox, arr, "_AimScreenNameType", "AIM");
       var talkBox = document.getElementById("TalkScreenName").parentNode;
-      addMenuItems(talkBox, arr, "TalkScreenNameType", "GOOGLE_TALK");
+      this.addMenuItems(talkBox, arr, "TalkScreenNameType", "GOOGLE_TALK");
       var icqBox = document.getElementById("ICQScreenName").parentNode;
-      addMenuItems(icqBox, arr, "ICQScreenNameType", "ICQ");
+      this.addMenuItems(icqBox, arr, "ICQScreenNameType", "ICQ");
       var yahooBox = document.getElementById("YahooScreenName").parentNode;
-      addMenuItems(yahooBox, arr, "YahooScreenNameType", "YAHOO");
+      this.addMenuItems(yahooBox, arr, "YahooScreenNameType", "YAHOO");
       var msnBox = document.getElementById("MSNScreenName").parentNode;
-      addMenuItems(msnBox, arr, "MSNScreenNameType", "MSN");
+      this.addMenuItems(msnBox, arr, "MSNScreenNameType", "MSN");
       var jabberBox = document.getElementById("JabberScreenName").parentNode;
-      addMenuItems(jabberBox, arr, "JabberScreenNameType", "JABBER");
+      this.addMenuItems(jabberBox, arr, "JabberScreenNameType", "JABBER");
     }
     catch(e) {
       alert("Unable to setup screen name protocol menus\n" + e);
@@ -211,30 +211,30 @@ com.gContactSync.CardDialogOverlay = {
     try {
       // setup the types for the phone numbers
       var workBox = work.parentNode;
-      addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work");
+      this.addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work");
       var homeBox = home.parentNode;
-      addMenuItems(homeBox, phoneTypes, "HomePhoneType", "home");
+      this.addMenuItems(homeBox, phoneTypes, "HomePhoneType", "home");
       var faxBox = fax.parentNode;
-      addMenuItems(faxBox, phoneTypes, "FaxNumberType", "work_fax");
+      this.addMenuItems(faxBox, phoneTypes, "FaxNumberType", "work_fax");
       var mobileBox = mobile.parentNode;
-      addMenuItems(mobileBox, phoneTypes, "CellularNumberType", "mobile");
+      this.addMenuItems(mobileBox, phoneTypes, "CellularNumberType", "mobile");
       var pagerBox = pager.parentNode;
-      addMenuItems(pagerBox, phoneTypes, "PagerNumberType", "pager");
+      this.addMenuItems(pagerBox, phoneTypes, "PagerNumberType", "pager");
       var homeFaxBox = document.getElementById("HomeFaxNumber").parentNode;
-      addMenuItems(homeFaxBox, phoneTypes, "HomeFaxNumberType", "home_fax");
+      this.addMenuItems(homeFaxBox, phoneTypes, "HomeFaxNumberType", "home_fax");
       var otherNumberBox = document.getElementById("OtherNumber").parentNode;
-      addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other");
+      this.addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other");
     }
     catch(e) {
       alert("Unable to setup phone number types\n" + e);
     }
     
     // Add the website types
-    var arr = gdata.contacts.WEBSITE_TYPES;
+    var arr = com.gContactSync.gdata.contacts.WEBSITE_TYPES;
     var site1Box = document.getElementById("WebPage1").parentNode;
-    addMenuItems(site1Box, arr, "WebPage1Type", "work");
+    this.addMenuItems(site1Box, arr, "WebPage1Type", "work");
     var site2Box = document.getElementById("WebPage2").parentNode;
-    addMenuItems(site2Box, arr, "WebPage2Type", "home");
+    this.addMenuItems(site2Box, arr, "WebPage2Type", "home");
     
     var tabs = document.getElementById("abTabs");
     try {
@@ -259,24 +259,24 @@ com.gContactSync.CardDialogOverlay = {
           elem.setAttribute("width", "150px");
         }
         // add the sixth and seventh numbers below 1 - 5
-        var sixthNum = setupNumBox("HomeFaxNumber", com.gContactSync.StringBundle.getStr("sixth"));
+        var sixthNum = this.setupNumBox("HomeFaxNumber", com.gContactSync.StringBundle.getStr("sixth"));
         pager.parentNode.parentNode.appendChild(sixthNum);
-        addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax");
-        var seventhNum = setupNumBox("OtherNumber",
+        this.addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax");
+        var seventhNum = this.setupNumBox("OtherNumber",
                                      com.gContactSync.StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
-        addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other");
+        this.addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other");
         
         // Add the relation fields
         try {
           document.getElementById("relationFields").removeAttribute("hidden");
           var relationTypes = [""];
           // copy the relation types over
-          for (var i in gdata.contacts.RELATION_TYPES)
+          for (var i in com.gContactSync.gdata.contacts.RELATION_TYPES)
             relationTypes.push(i);
           for (var i = 0; i < 4; i++) {
             var relationBox = document.getElementById("Relation" + i + "Box");
-            addMenuItems(relationBox, relationTypes, "Relation" + i + "Type", "", com.gContactSync.StringBundle.getStr("relationWidth"));
+            this.addMenuItems(relationBox, relationTypes, "Relation" + i + "Type", "", com.gContactSync.StringBundle.getStr("relationWidth"));
           }
         }
         catch (e) {
@@ -335,166 +335,169 @@ com.gContactSync.CardDialogOverlay = {
     }
 
     // override the check and set card values function
-    com.gContactSync.originalCheckAndSetCardValues = CheckAndSetCardValues;
-    CheckAndSetCardValues = myCheckAndSetCardValues;
+    com.gContactSync.originalCheckAndSetCardValues = this.CheckAndSetCardValues;
+    CheckAndSetCardValues = com.gContactSync.CheckAndSetCardValues;
     // get the extra card values
-    myGetCardValues(gEditCard.card, document);
+    this.GetCardValues(gEditCard.card, document);
+  },
+  /**
+   * Sets the attributes added by this extension as the value in the textbox or
+   * drop down menu in aDoc whose ID is identical to the attribute's name.
+   * Calls the original CheckAndSetCardValues function when finished.
+   * @param aCard  The card to set the values for.
+   * @param aDoc   The document.
+   * @param aCheck Unused, but passed to the original method.
+   */
+  CheckAndSetCardValues: function CardDialogOverlay_CheckAndSetCardValues(aCard, aDoc, aCheck) {
+    // make sure the required data is present (abCardOverlay.js)
+    if (!CheckCardRequiredDataPresence(aDoc)) {
+      return false;
+    }
+    var existingTypes = {
+      "WorkPhoneType":      {},
+      "HomePhoneType":      {},
+      "FaxNumberType":      {},
+      "CellularNumberType": {},
+      "PagerNumberType":    {}
+    };
+    // iterate through all the added attributes and types and set the card's value
+    // for each one of them
+    for (var attr in com.gContactSync.gAttributes) {
+      try {
+        // if the element exists, set the card's value as its value
+        var elem = aDoc.getElementById(attr);
+        if (elem) {
+          var value = elem.value;
+          if (aCard.setProperty) // post Bug 413260
+            aCard.setProperty(attr, value);
+          else { // pre Bug 413260
+            // if it is a number type, use setCardValue
+            if (existingTypes[attr])
+              aCard.setCardValue(attr, value);
+            else
+              aCard.setStringAttribute(attr, value);
+          }
+        }
+      } catch(e) { alert("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e); }
+    }
+    if (!aCard.getProperty)
+      aCard.editCardToDatabase(gEditCard.abURI);
+    // ensure that every contact edited through this dialog has at least a dummy
+    // e-mail address
+    var primEmailElem = aDoc.getElementById("PrimaryEmail");
+    if (!primEmailElem.value)
+      primEmailElem.value = com.gContactSync.makeDummyEmail(aCard);
+    // call the original and return its return value
+    // FIXME this needs to apply w/ arguments in case the function changes
+    return com.gContactSync.originalCheckAndSetCardValues(aCard, aDoc, aCheck);
+  },
+  /**
+   * A method that gets all of the attributes added by this extension and sets
+   * the value of the textbox or drop down menu in aDoc whose ID is identical to
+   * the attribute's name.
+   * @param aCard The card to get the values from.
+   * @param aDoc  The document.
+   */
+  GetCardValues: function CardDialogOverlay_GetCardValues(aCard, aDoc) {
+    // iterate through all the added type elements and get the card's value for
+    // each one of them to set as the value for the element
+    for (var attr in com.gContactSync.gAttributes) {
+      try {
+        var elem = aDoc.getElementById(attr);
+        // if the element exists, set its value as the card's value
+        if (elem) {
+          var value;
+          if (aCard.getProperty) // post Bug 413260
+            value = aCard.getProperty(attr, null);
+          else // pre Bug 413260
+            value = aCard.getStringAttribute(attr);
+          // set the element's value if attr isn't a type OR it is a type and
+          // the card's value for the attribute isn't null or blank
+          if (attr.indexOf("Type") == -1 || (value && value != "")) {
+            elem.value = value;
+          }
+        }
+      } catch(e) { alert("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
+    }
+  
+    if (com.gContactSync.isDummyEmail(aDoc.getElementById("PrimaryEmail").value))
+      aDoc.getElementById("PrimaryEmail").value = null;
+  },
+  /**
+   * addMenuItems
+   * Sets up a type menu list element with a menuitem for each string in the
+   * array.
+   * @param aBox   The box element to which this menu list is added.
+   * @param aArray The array of values to set for the menuitems.  There must be a
+   *               a string in the string bundle with the same name as the value.
+   * @param aID    The ID for this menu list, which should be the name of the
+   *               attribute with Type added to the end, such as WorkNumberType
+   * @param aValue The default value to set for this list.
+   * @param aWidth The maximum width, if any.
+   */
+  addMenuItems: function CardDialogOverlay_addMenuItems(aBox, aArray, aID, aValue, aWidth) {
+    var menuList = document.createElement("menulist");
+    menuList.setAttribute("id", aID);
+    var menuPopup = document.createElement("menupopup");
+    // put the default value first in the menupopup, if possible
+    var index = aArray.indexOf(aValue);
+    var elem;
+    if (index != -1) {
+      elem = document.createElement("menuitem");
+      elem.setAttribute("value", aValue);
+      elem.setAttribute("label", com.gContactSync.StringBundle.getStr(aValue ? aValue : "blank"));
+      aArray[index] = null;
+      menuPopup.appendChild(elem);
+    }
+    // then add the other values
+    for (var i = 0; i < aArray.length; i++) {
+      if (!aArray[i]) { // if this element is null it was the default value
+        aArray[i] = aValue; // so restore its value and skip adding it again
+        continue;
+      }
+      elem = document.createElement("menuitem");
+      elem.setAttribute("value", aArray[i]);
+      elem.setAttribute("label", com.gContactSync.StringBundle.getStr(aArray[i]));
+      menuPopup.appendChild(elem);
+    }
+    menuList.setAttribute("sizetopopup", "always");
+    if (aWidth) {
+      menuList.setAttribute("width", aWidth);
+      menuList.style.width = aWidth;
+      menuList.style.maxWidth = aWidth;
+    }
+    // add the popup to the menu list
+    menuList.appendChild(menuPopup);
+    // disable the menu list if this card is read-only
+    menuList.setAttribute("disabled", com.gContactSync.CardDialogOverlay.mDisabled);
+    // add the menu list to the box
+    aBox.appendChild(menuList);
+  },
+  /**
+   * CardDialogOverlay.setupNumBox
+   * Adds an hbox containing a label and textbox for a phone number.
+   * @param aID    The ID for the textbox.
+   * @param aLabel The text for the textbox's label.
+   */
+  setupNumBox: function CardDialogOverlay_setupNumBox(aID, aLabel) {
+    var box = document.createElement("hbox");
+    box.setAttribute("align", "center");
+    var spacer = document.createElement("spacer");
+    spacer.setAttribute("flex", 1);
+    box.appendChild(spacer);
+    var label = document.createElement("label");
+    label.setAttribute("control", aID);
+    label.setAttribute("value", aLabel);
+    box.appendChild(label);
+    var textbox = document.createElement("textbox");
+    textbox.setAttribute("id", aID);
+    textbox.setAttribute("class", "PhoneEditWidth");
+    if (com.gContactSync.CardDialogOverlay.mDisabled)
+      textbox.setAttribute("readonly", true);
+    else if (textbox.hasAttribute("readonly"))
+      textbox.removeAttribute("readonly");
+    textbox.setAttribute("width", "150px");
+    box.appendChild(textbox);
+    return box;
   }
 };
-
-function setupNumBox(aID, aLabel) {
-  var box = document.createElement("hbox");
-  box.setAttribute("align", "center");
-  var spacer = document.createElement("spacer");
-  spacer.setAttribute("flex", 1);
-  box.appendChild(spacer);
-  var label = document.createElement("label");
-  label.setAttribute("control", aID);
-  label.setAttribute("value", aLabel);
-  box.appendChild(label);
-  var textbox = document.createElement("textbox");
-  textbox.setAttribute("id", aID);
-  textbox.setAttribute("class", "PhoneEditWidth");
-  if (com.gContactSync.CardDialogOverlay.mDisabled)
-    textbox.setAttribute("readonly", true);
-  else if (textbox.hasAttribute("readonly"))
-    textbox.removeAttribute("readonly");
-  textbox.setAttribute("width", "150px");
-  box.appendChild(textbox);
-  return box;
-}
-
-/**
- * addMenuItems
- * Sets up a type menu list element with a menuitem for each string in the
- * array.
- * @param aBox   The box element to which this menu list is added.
- * @param aArray The array of values to set for the menuitems.  There must be a
- *               a string in the string bundle with the same name as the value.
- * @param aID    The ID for this menu list, which should be the name of the
- *               attribute with Type added to the end, such as WorkNumberType
- * @param aValue The default value to set for this list.
- * @param aWidth The maximum width, if any.
- */
-function addMenuItems(aBox, aArray, aID, aValue, aWidth) {
-  var menuList = document.createElement("menulist");
-  menuList.setAttribute("id", aID);
-  var menuPopup = document.createElement("menupopup");
-  // put the default value first in the menupopup, if possible
-  var index = aArray.indexOf(aValue);
-  var elem;
-  if (index != -1) {
-    elem = document.createElement("menuitem");
-    elem.setAttribute("value", aValue);
-    elem.setAttribute("label", com.gContactSync.StringBundle.getStr(aValue ? aValue : "blank"));
-    aArray[index] = null;
-    menuPopup.appendChild(elem);
-  }
-  // then add the other values
-  for (var i = 0; i < aArray.length; i++) {
-    if (!aArray[i]) { // if this element is null it was the default value
-      aArray[i] = aValue; // so restore its value and skip adding it again
-      continue;
-    }
-    elem = document.createElement("menuitem");
-    elem.setAttribute("value", aArray[i]);
-    elem.setAttribute("label", com.gContactSync.StringBundle.getStr(aArray[i]));
-    menuPopup.appendChild(elem);
-  }
-  menuList.setAttribute("sizetopopup", "always");
-  if (aWidth) {
-    menuList.setAttribute("width", aWidth);
-    menuList.style.width = aWidth;
-    menuList.style.maxWidth = aWidth;
-  }
-  // add the popup to the menu list
-  menuList.appendChild(menuPopup);
-  // disable the menu list if this card is read-only
-  menuList.setAttribute("disabled", com.gContactSync.CardDialogOverlay.mDisabled);
-  // add the menu list to the box
-  aBox.appendChild(menuList);
-}
-/**
- * A method that gets all of the attributes added by this extension and sets
- * the value of the textbox or drop down menu in aDoc whose ID is identical to
- * the attribute's name.
- * @param aCard The card to get the values from.
- * @param aDoc  The document.
- */
-function myGetCardValues(aCard, aDoc) {
-  // iterate through all the added type elements and get the card's value for
-  // each one of them to set as the value for the element
-  for (var attr in com.gContactSync.gAttributes) {
-    try {
-      var elem = aDoc.getElementById(attr);
-      // if the element exists, set its value as the card's value
-      if (elem) {
-        var value;
-        if (aCard.getProperty) // post Bug 413260
-          value = aCard.getProperty(attr, null);
-        else // pre Bug 413260
-          value = aCard.getStringAttribute(attr);
-        // set the element's value if attr isn't a type OR it is a type and
-        // the card's value for the attribute isn't null or blank
-        if (attr.indexOf("Type") == -1 || (value && value != "")) {
-          elem.value = value;
-        }
-      }
-    } catch(e) { alert("Error in myGetCardValues: " + attr + "\n" + e); }
-  }
-
-  if (com.gContactSync.isDummyEmail(aDoc.getElementById("PrimaryEmail").value)) {
-    aDoc.getElementById("PrimaryEmail").value = null;
-  }
-}
-/**
- * Sets the attributes added by this extension as the value in the textbox or
- * drop down menu in aDoc whose ID is identical to the attribute's name.
- * Calls the original CheckAndSetCardValues function when finished.
- * @param aCard  The card to set the values for.
- * @param aDoc   The document.
- * @param aCheck Unused, but passed to the original method.
- */
-function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
-  // make sure the required data is present (abCardOverlay.js)
-  if (!CheckCardRequiredDataPresence(aDoc)) {
-    return false;
-  }
-  var existingTypes = {
-    "WorkPhoneType":      {},
-    "HomePhoneType":      {},
-    "FaxNumberType":      {},
-    "CellularNumberType": {},
-    "PagerNumberType":    {}
-  };
-  // iterate through all the added attributes and types and set the card's value
-  // for each one of them
-  for (var attr in com.gContactSync.gAttributes) {
-    try {
-      // if the element exists, set the card's value as its value
-      var elem = aDoc.getElementById(attr);
-      if (elem) {
-        var value = elem.value;
-        if (aCard.setProperty) // post Bug 413260
-          aCard.setProperty(attr, value);
-        else { // pre Bug 413260
-          // if it is a number type, use setCardValue
-          if (existingTypes[attr])
-            aCard.setCardValue(attr, value);
-          else
-            aCard.setStringAttribute(attr, value);
-        }
-      }
-    } catch(e) { alert("Error in myCheckAndSetCardValues: " + attr + "\n" + e); }
-  }
-  if (!aCard.getProperty)
-    aCard.editCardToDatabase(gEditCard.abURI);
-  // ensure that every contact edited through this dialog has at least a dummy
-  // e-mail address
-  var primEmailElem = aDoc.getElementById("PrimaryEmail");
-  if (!primEmailElem.value)
-    primEmailElem.value = com.gContactSync.makeDummyEmail(aCard);
-  // call the original and return its return value
-  // FIXME this needs to apply w/ arguments in case the function changes
-  return com.gContactSync.originalCheckAndSetCardValues(aCard, aDoc, aCheck);
-}
