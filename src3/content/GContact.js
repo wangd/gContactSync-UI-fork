@@ -822,6 +822,8 @@ com.gContactSync.GContact.prototype = {
    * Fetches and saves a local copy of this contact's photo, if present.
    * NOTE: Portions of this code are from Thunderbird written by me (Josh Geenen)
    * See https://bugzilla.mozilla.org/show_bug.cgi?id=119459
+   * NOTE 2: This method sets a timeout before the image stream is written to
+   * the disk but still returns an nsIFile where the image will be written.
    * @param aAuthToken {string} The authentication token for the account to
    *                            which this contact belongs.
    */
@@ -836,20 +838,7 @@ com.gContactSync.GContact.prototype = {
       com.gContactSync.LOGGER.VERBOSE_LOG(" * This contact does not have a photo");
       return null;
     }
-    var ios = Components.classes["@mozilla.org/network/io-service;1"]
-                        .getService(Components.interfaces.nsIIOService);
-    var ch = ios.newChannel(info.url, null, null);
-    ch.QueryInterface(Components.interfaces.nsIHttpChannel);
-    ch.setRequestHeader("Authorization", aAuthToken, false);
-    // TODO use existing functions, if possible, after 119459 lands
-    var istream = ch.open();
-    // quit if the request failed
-    if (!ch.requestSucceeded) {
-      com.gContactSync.LOGGER.LOG_WARNING("The request to retrive the photo returned with a status ",
-                         ch.responseStatus);
-      return null;
-    }
-    // Get profile directory
+    // Get the profile directory
     var file = Components.classes["@mozilla.org/file/directory_service;1"]
                          .getService(Components.interfaces.nsIProperties)
                          .get("ProfD", Components.interfaces.nsIFile);
@@ -857,9 +846,29 @@ com.gContactSync.GContact.prototype = {
     file.append("Photos");
     if (!file.exists() || !file.isDirectory())
       file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+    var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                        .getService(Components.interfaces.nsIIOService);
+    var ch = ios.newChannel(info.url, null, null);
+    ch.QueryInterface(Components.interfaces.nsIHttpChannel);
+    ch.setRequestHeader("Authorization", aAuthToken, false);
+    var istream = ch.open();
+    // quit if the request failed
+    if (!ch.requestSucceeded) {
+      com.gContactSync.LOGGER.LOG_WARNING("The request to retrive the photo returned with a status ",
+                         ch.responseStatus);
+      return null;
+    }
 
-    // Get the photo file
-    file.append(this.getID() + ".png");
+    // Create a name for the photo with the contact's ID and the photo extension
+    var filename = this.getID();
+    try {
+      var ext = findPhotoExt(ch);
+      filename = filename + (ext ? "." + ext : "");
+    }
+    catch (e) {
+      com.gContactSync.LOGGER.LOG_WARNING("Couldn't find an extension for the photo");
+    }
+    file.append(filename);
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Writing the photo to " + file.path);
 
     var output = Components.classes["@mozilla.org/network/file-output-stream;1"]
@@ -872,7 +881,21 @@ com.gContactSync.GContact.prototype = {
                            .createInstance(Components.interfaces.nsIBufferedOutputStream);
     fstream.init(file, 0x04 | 0x08 | 0x20, 0600, 0); // write, create, truncate
     buffer.init(fstream, 8192);
-
+    // A sleep is required here to allow istream time to get all the bytes ready
+    // to be read (the number returned by istream.available)
+    setTimeout(this.finishWritePhoto, 500, istream, fstream, buffer, this.getID());
+    return file;
+  },
+  /**
+   * GContact.finishWritePhoto
+   * Finishes writting the buffered output stream to the file from the input stream.
+   * @param istream The input stream
+   * @param fstream {nsIFileOutputStream} The file output stream
+   * @param buffer {nsIBufferedOutputStream} The buffered output stream that
+   *                                         has already been initialized.
+   * @param name   {string} The filename of the photo (used for logging)
+   */
+  finishWritePhoto: function GContact_finishWritePhoto(istream, fstream, buffer, name) {
     buffer.writeFrom(istream, istream.available());
 
     // Close the output streams
@@ -884,7 +907,6 @@ com.gContactSync.GContact.prototype = {
         fstream.finish();
     else
         fstream.close();
-    com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished writing the photo");
-    return file;
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished writing the photo " + name);
   }
 };

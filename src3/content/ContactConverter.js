@@ -370,9 +370,14 @@ com.gContactSync.ContactConverter = {
       if (info) {
         var file = aContact.writePhoto(com.gContactSync.Sync.mCurrentAuthToken);
         if (file) {
+          com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
           ab.setCardValue(card, "PhotoName", file.leafName);
           ab.setCardValue(card, "PhotoType", "file");
-          ab.setCardValue(card, "PhotoURI",  info.url);
+          ab.setCardValue(card, "PhotoURI",
+                          Components.classes["@mozilla.org/network/io-service;1"]
+                                    .getService(Components.interfaces.nsIIOService)
+                                    .newFileURI(file)
+                                    .spec);
           ab.setCardValue(card, "PhotoEtag", info.etag);
         }
       }

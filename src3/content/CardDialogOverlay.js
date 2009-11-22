@@ -392,8 +392,6 @@ com.gContactSync.CardDialogOverlay = {
    * @param aDoc  The document.
    */
   GetCardValues: function CardDialogOverlay_GetCardValues(aCard, aDoc) {
-    alert(aCard.getProperty("PhotoType", null));
-    alert(aCard.getProperty("PhotoName", null));
     // iterate through all the added type elements and get the card's value for
     // each one of them to set as the value for the element
     for (var attr in com.gContactSync.gAttributes) {
