@@ -144,7 +144,9 @@ com.gContactSync.gdata = {
       TYPED_WITH_CHILD: 0,
       // has a type and the value is stored in an attribute
       TYPED_WITH_ATTR: 1,
-      UNTYPED: 2
+      UNTYPED: 2,
+      // The type is stored in the element's parent
+      PARENT_TYPED: 3
     },
     rel: "http://schemas.google.com/g/2005",
     /**
@@ -158,6 +160,7 @@ com.gContactSync.gdata = {
       var untyped              = com.gContactSync.gdata.contacts.types.UNTYPED;
       var typedWithChild       = com.gContactSync.gdata.contacts.types.TYPED_WITH_CHILD;
       var typedWithAttr        = com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR;
+      var parentTyped          = com.gContactSync.gdata.contacts.types.PARENT_TYPED;
       var gd                   = com.gContactSync.gdata.namespaces.GD;
       var atom                 = com.gContactSync.gdata.namespaces.ATOM;
       var gcontact             = com.gContactSync.gdata.namespaces.GCONTACT;
@@ -184,9 +187,9 @@ com.gContactSync.gdata = {
       this.notes               = new GElement(untyped, "content", atom);
       this.orgName             = new GElement(untyped, "orgName", gd);
       this.orgTitle            = new GElement(untyped, "orgTitle", gd);
-      this.orgJobDescription   = new GElement(untyped, "orgTitle", gd);
-      this.orgDepartment       = new GElement(untyped, "orgTitle", gd);
-      this.orgSymbol           = new GElement(untyped, "orgTitle", gd);
+      this.orgJobDescription   = new GElement(untyped, "orgJobDescription", gd);
+      this.orgDepartment       = new GElement(untyped, "orgDepartment", gd);
+      this.orgSymbol           = new GElement(untyped, "orgSymbol", gd);
       this.birthday            = new GElement(untyped, "birthday", gcontact);
       this.organization        = new GElement(typedWithAttr, "organization",
                                               gd, ["other"]);

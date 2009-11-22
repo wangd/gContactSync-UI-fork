@@ -182,6 +182,7 @@ com.gContactSync.GContact.prototype = {
               return new com.gContactSync.Property(arr[i].getAttribute(aElement.attribute), type);
             }
           case com.gContactSync.gdata.contacts.types.UNTYPED:
+          case com.gContactSync.gdata.contacts.types.PARENT_TYPED:
             if (aElement.tagName == "birthday")
               return new com.gContactSync.Property(arr[i].getAttribute("when"));
             if (arr[i].childNodes[0])
@@ -291,7 +292,7 @@ com.gContactSync.GContact.prototype = {
    * GContact.setAddress
    * Google's contacts schema puts several components of an address into a
    * separate element, so this function handles those attributes separately.
-   * @param aElement The GElement object with a valid gd:name tag name
+   * @param aElement The GElement object with a valid gd:structuredPostalAddress tag name
    * @param aValue   The value to set.  Null if the XML Element should be
    *                 removed.
    * @param aType    The 'type' of address (home, work, or other)
@@ -316,8 +317,21 @@ com.gContactSync.GContact.prototype = {
     com.gContactSync.LOGGER.VERBOSE_LOG("  - Setting address..." + address + " " + aValue + " " + aType + " " + thisElem);
     if (thisElem && address) {
       // if there is an existing value that should be updated, do so
-      if (aValue)
+      if (aValue) {
+        // If a formatted address exists and we are updating the postal address
+        // then remove the old formatted address so Google can update it based on
+        // the new structured data
+        // http://groups.google.com/group/google-contacts-api/browse_thread/thread/ea623b18efb16963?hl=en&pli=1
+        for (var i = 0; i < thisElem.parentNode.childNodes.length; i++) {
+          var node = thisElem.parentNode.childNodes[i];
+          if (node && node.tagName == "gd:formattedAddress") {
+            com.gContactSync.LOGGER.VERBOSE_LOG("Removing formatted address: " + node.childNodes[0].nodeValue);
+            thisElem.parentNode.removeChild(node);
+            break;
+          }
+        }
         this.mCurrentElement.childNodes[0].nodeValue = aValue;
+      }
       // else the element should be removed
       else {
         address.removeChild(thisElem);
@@ -329,7 +343,7 @@ com.gContactSync.GContact.prototype = {
     }
     if (!aValue)
       return true;
-    // if it gets here, the node must be added, so add <name> if necessary
+    // if it gets here, the node must be added, so add <structuredPostalAddress> if necessary
     if (!address) {
       address = document.createElementNS(com.gContactSync.gdata.namespaces.GD.url,
                                               "structuredPostalAddress");
@@ -443,6 +457,7 @@ com.gContactSync.GContact.prototype = {
           }
           break;
         case com.gContactSync.gdata.contacts.types.UNTYPED:
+        case com.gContactSync.gdata.contacts.types.PARENT_TYPED:
           if (aElement.tagName == "birthday") {
             // make sure the value at least has two -s
             // valid formats: YYYY-M-D and --M-D
@@ -738,6 +753,9 @@ com.gContactSync.GContact.prototype = {
   isMatch: function GContact_isMatch(aElement, aXmlElem, aType, aDontSkip) {
     if (aElement.contactType == com.gContactSync.gdata.contacts.types.UNTYPED)
       return true;
+    // if the parent contains the type then set aElement = aElement.parentNode
+    if (aElement.contactType == com.gContactSync.gdata.contacts.types.PARENT_TYPED)
+      aElement = aElement.parentNode;
     switch (aElement.tagName) {
       case "email":
       case "phoneNumber":
