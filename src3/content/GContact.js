@@ -359,8 +359,6 @@ com.gContactSync.GContact.prototype = {
     address.appendChild(elem);    
     return true;
   },  
-  
-  
   /**
    * GContact.setElementValue
    * Sets the value of the specified element.
@@ -755,9 +753,9 @@ com.gContactSync.GContact.prototype = {
   isMatch: function GContact_isMatch(aElement, aXmlElem, aType, aDontSkip) {
     if (aElement.contactType == com.gContactSync.gdata.contacts.types.UNTYPED)
       return true;
-    // if the parent contains the type then set aElement = aElement.parentNode
+    // if the parent contains the type then get the XML element's parent
     if (aElement.contactType == com.gContactSync.gdata.contacts.types.PARENT_TYPED)
-      aElement = aElement.parentNode;
+      aXmlElem = aXmlElem.parentNode;
     switch (aElement.tagName) {
       case "email":
       case "phoneNumber":

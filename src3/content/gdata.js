@@ -203,11 +203,11 @@ com.gContactSync.gdata = {
       this.website             = new GElement(typedWithAttr, "website",
                                               gcontact,
                                               this.WEBSITE_TYPES, "href");
-      this.street              = new GElement(untyped, "street", gd),
-      this.city                = new GElement(untyped, "city", gd),
-      this.region              = new GElement(untyped, "region", gd),
-      this.postcode            = new GElement(untyped, "postcode", gd),
-      this.country             = new GElement(untyped, "country", gd)
+      this.street              = new GElement(parentTyped, "street",   gd),
+      this.city                = new GElement(parentTyped, "city",     gd),
+      this.region              = new GElement(parentTyped, "region",   gd),
+      this.postcode            = new GElement(parentTyped, "postcode", gd),
+      this.country             = new GElement(parentTyped, "country",  gd)
     },
     WEBSITE_TYPES: [
       "home-page", "blog", "profile", "home", "work", "other", "ftp"
