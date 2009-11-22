@@ -122,33 +122,31 @@ com.gContactSync.CardDialogOverlay = {
     }
     // add the email type drop down menus
     try {
-      // TODO move to gdata
-      var arr = ["other", "home", "work"];
+      var emailTypes = com.gContactSync.gdata.contacts.EMAIL_TYPES;
       var primaryEmailBox = document.getElementById("PrimaryEmail").parentNode;
-      this.addMenuItems(primaryEmailBox, arr, "PrimaryEmailType", "other");
+      this.addMenuItems(primaryEmailBox, emailTypes, "PrimaryEmailType", "other");
       var secondEmailBox = document.getElementById("SecondEmail").parentNode;
-      this.addMenuItems(secondEmailBox, arr, "SecondEmailType", "other");
+      this.addMenuItems(secondEmailBox, emailTypes, "SecondEmailType", "other");
       var thirdEmailBox = document.getElementById("ThirdEmail").parentNode;
-      this.addMenuItems(thirdEmailBox, arr, "ThirdEmailType", "other");
+      this.addMenuItems(thirdEmailBox, emailTypes, "ThirdEmailType", "other");
       var fourthEmailBox = document.getElementById("FourthEmail").parentNode;
-      this.addMenuItems(fourthEmailBox, arr, "FourthEmailType", "other");
+      this.addMenuItems(fourthEmailBox, emailTypes, "FourthEmailType", "other");
     } catch(e) { alert("Unable to setup email types: " + e); }
     try {
-      // TODO move to gdata
       // add drop down menus for screen name protocols
-      var arr = ["AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER", "SKYPE", "QQ"];
+      var imTypes = com.gContactSync.gdata.contacts.IM_TYPES;
       var aimBox = document.getElementById("ScreenName").parentNode;
-      this.addMenuItems(aimBox, arr, "_AimScreenNameType", "AIM");
+      this.addMenuItems(aimBox, imTypes, "_AimScreenNameType", "AIM");
       var talkBox = document.getElementById("TalkScreenName").parentNode;
-      this.addMenuItems(talkBox, arr, "TalkScreenNameType", "GOOGLE_TALK");
+      this.addMenuItems(talkBox, imTypes, "TalkScreenNameType", "GOOGLE_TALK");
       var icqBox = document.getElementById("ICQScreenName").parentNode;
-      this.addMenuItems(icqBox, arr, "ICQScreenNameType", "ICQ");
+      this.addMenuItems(icqBox, imTypes, "ICQScreenNameType", "ICQ");
       var yahooBox = document.getElementById("YahooScreenName").parentNode;
-      this.addMenuItems(yahooBox, arr, "YahooScreenNameType", "YAHOO");
+      this.addMenuItems(yahooBox, imTypes, "YahooScreenNameType", "YAHOO");
       var msnBox = document.getElementById("MSNScreenName").parentNode;
-      this.addMenuItems(msnBox, arr, "MSNScreenNameType", "MSN");
+      this.addMenuItems(msnBox, imTypes, "MSNScreenNameType", "MSN");
       var jabberBox = document.getElementById("JabberScreenName").parentNode;
-      this.addMenuItems(jabberBox, arr, "JabberScreenNameType", "JABBER");
+      this.addMenuItems(jabberBox, imTypes, "JabberScreenNameType", "JABBER");
     }
     catch(e) {
       alert("Unable to setup screen name protocol menus\n" + e);
@@ -203,11 +201,7 @@ com.gContactSync.CardDialogOverlay = {
     catch(e) {
       alert("Unable to replace phone labels and remove access keys\n" + e);
     }
-    // TODO this really should be in gdata
-    var phoneTypes = ["work", "home", "work_fax", "mobile", "pager", "home_fax",
-                      "assistant", "callback", "car", "company_main", "fax",
-                      "isdn", "main", "other_fax", "radio", "telex", "tty_tdd",
-                      "work_mobile", "work_pager", "other"];
+    var phoneTypes = com.gContactSync.gdata.contacts.PHONE_TYPES;
     try {
       // setup the types for the phone numbers
       var workBox = work.parentNode;
@@ -230,11 +224,11 @@ com.gContactSync.CardDialogOverlay = {
     }
     
     // Add the website types
-    var arr = com.gContactSync.gdata.contacts.WEBSITE_TYPES;
+    var websiteTypes = com.gContactSync.gdata.contacts.WEBSITE_TYPES;
     var site1Box = document.getElementById("WebPage1").parentNode;
-    this.addMenuItems(site1Box, arr, "WebPage1Type", "work");
+    this.addMenuItems(site1Box, websiteTypes, "WebPage1Type", "work");
     var site2Box = document.getElementById("WebPage2").parentNode;
-    this.addMenuItems(site2Box, arr, "WebPage2Type", "home");
+    this.addMenuItems(site2Box, websiteTypes, "WebPage2Type", "home");
     
     var tabs = document.getElementById("abTabs");
     try {
@@ -398,6 +392,8 @@ com.gContactSync.CardDialogOverlay = {
    * @param aDoc  The document.
    */
   GetCardValues: function CardDialogOverlay_GetCardValues(aCard, aDoc) {
+    alert(aCard.getProperty("PhotoType", null));
+    alert(aCard.getProperty("PhotoName", null));
     // iterate through all the added type elements and get the card's value for
     // each one of them to set as the value for the element
     for (var attr in com.gContactSync.gAttributes) {
