@@ -361,10 +361,15 @@ com.gContactSync.Accounts = {
   deleteSelectedAB: function Accounts_deleteSelectedAB() {
     var ab = this.getSelectedAb();
     if (!ab) {
-      // TODO this needs an error message (please select an AB first)
+      alert(com.gContactSync.StringBundle.getStr("noABSelected"));
       return ab;
     }
-    // TODO check if PAB or CAB
+    // Make sure sure the user doesn't try to delete the CAB or PAB
+    var uri = ab.mURI;
+    if (!uri || uri.indexOf("abook.mab") != -1 || uri.indexOf("history.mab") != -1) {
+      alert(com.gContactSync.StringBundle.getStr("deletePAB"));
+      return false;
+    }
     if (!confirm(com.gContactSync.StringBundle.getStr("deleteAB")))
       return false;
     // This function also checks that the AB isn't the PAB or CAB
