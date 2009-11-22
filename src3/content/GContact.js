@@ -158,10 +158,11 @@ com.gContactSync.GContact.prototype = {
         switch (aElement.contactType) {
           case com.gContactSync.gdata.contacts.types.TYPED_WITH_CHILD:
             if (arr[i].childNodes[0]) {
-              type = arr[i].getAttribute("rel")
-                           .substring(type.indexOf("#") + 1);
+              type = arr[i].getAttribute("rel");
               if (!type)
                 type = arr[i].getAttribute("label");
+              if (type)
+                type = type.substring(type.indexOf("#") + 1);
               return new com.gContactSync.Property(arr[i].childNodes[0].nodeValue, type);
             }
             return null;
@@ -579,7 +580,8 @@ com.gContactSync.GContact.prototype = {
    *         If aName is groupMembership info, returns an array of the group IDs
    */
   getValue: function GContact_getValue(aName, aIndex, aType) {
-    try {
+    // TODO uncomment
+    //try {
       // if the value to obtain is a link, get the value for the link
       if (com.gContactSync.gdata.contacts.links[aName]) {
         var arr = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.ATOM.url, "link");
@@ -595,10 +597,10 @@ com.gContactSync.GContact.prototype = {
       // if the name of the value to get is something else, throw an error
       else
         com.gContactSync.LOGGER.LOG_WARNING("Unable to getValue for " + aName);
-    }
-    catch(e) {
-      com.gContactSync.LOGGER.LOG_WARNING("Error in GContact.getValue:\n" + e);
-    }
+    //}
+    //catch(e) {
+    //  com.gContactSync.LOGGER.LOG_WARNING("Error in GContact.getValue:\n" + e);
+    //}
     return null;
   },
   /**
