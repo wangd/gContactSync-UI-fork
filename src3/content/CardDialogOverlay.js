@@ -335,8 +335,8 @@ com.gContactSync.CardDialogOverlay = {
     }
 
     // override the check and set card values function
-    com.gContactSync.originalCheckAndSetCardValues = this.CheckAndSetCardValues;
-    CheckAndSetCardValues = com.gContactSync.CheckAndSetCardValues;
+    com.gContactSync.originalCheckAndSetCardValues = CheckAndSetCardValues;
+    CheckAndSetCardValues = com.gContactSync.CardDialogOverlay.CheckAndSetCardValues;
     // get the extra card values
     this.GetCardValues(gEditCard.card, document);
   },
@@ -388,8 +388,7 @@ com.gContactSync.CardDialogOverlay = {
     if (!primEmailElem.value)
       primEmailElem.value = com.gContactSync.makeDummyEmail(aCard);
     // call the original and return its return value
-    // FIXME this needs to apply w/ arguments in case the function changes
-    return com.gContactSync.originalCheckAndSetCardValues(aCard, aDoc, aCheck);
+    return com.gContactSync.originalCheckAndSetCardValues.apply(this, arguments);
   },
   /**
    * A method that gets all of the attributes added by this extension and sets
