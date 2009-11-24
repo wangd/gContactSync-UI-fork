@@ -169,9 +169,9 @@ com.gContactSync.gdata = {
       this.phoneNumber         = new GElement(typedWithChild, "phoneNumber", gd,
                                               this.PHONE_TYPES);
       this.email               = new GElement(typedWithAttr, "email", gd,
-                                              this.EMAIL_TYPES);
+                                              this.EMAIL_TYPES, "address");
       this.im                  = new GElement(typedWithAttr, "im", gd,
-                                              this.IM_TYPES);
+                                              this.IM_TYPES, "address");
       this.id                  = new GElement(untyped, "id", atom);
       this.updated             = new GElement(untyped, "updated", atom);
       this.title               = new GElement(untyped, "title", atom);
