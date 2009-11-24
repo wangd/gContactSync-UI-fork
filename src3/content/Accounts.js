@@ -153,7 +153,9 @@ com.gContactSync.Accounts = {
     var name = prompt(com.gContactSync.StringBundle.getStr("newABPrompt"));
     if (!name)
       return false;
-    return AbManager.getAbByName(name);
+    var ab = com.gContactSync.AbManager.getAbByName(name);
+    this.fillAbTree();
+    return ab;
   },
   /**
    * Accounts.saveSelectedAccount

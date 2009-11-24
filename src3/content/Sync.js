@@ -274,7 +274,7 @@ com.gContactSync.Sync = {
       if (!id) {
         if (ab.mPrefs.readOnly == "true") {
           com.gContactSync.LOGGER.LOG(" * The contact is new. " +
-                     "Ignoring since read-only mode is on.");
+                                      "Ignoring since read-only mode is on.");
         }
         else {
           com.gContactSync.LOGGER.LOG(" * This contact is new and will be added to Google.");
@@ -286,8 +286,9 @@ com.gContactSync.Sync = {
         gContact   = gContacts[id];
         // remove it from gContacts
         gContacts[id]  = null;
+        // note that this returns 0 if readOnly is set
         var tbCardDate = tbContact.getValue("LastModifiedDate");
-        var gCardDate  = gContact.lastModified;
+        var gCardDate  = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 0;
         // 4 options
         // if both were updated
         com.gContactSync.LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
@@ -296,14 +297,15 @@ com.gContactSync.Sync = {
         // preference and updates Google if it's true, or Thunderbird if false
         if (gCardDate > lastSync && tbCardDate > lastSync/1000) {
           com.gContactSync.LOGGER.LOG(bothChanged);
-          if (com.gContactSync.Sync.mCurrentAb.mPrefs.updateGoogleInConflicts == "true") {
+          if (ab.mPrefs.writeOnly  == "true" || ab.mPrefs.updateGoogleInConflicts == "true") {
             com.gContactSync.LOGGER.LOG(bothGoogle);
             var toUpdate = {};
             toUpdate.gContact = gContact;
             toUpdate.abCard   = tbContact.mContact; // TODO update to use TBContact
             com.gContactSync.Sync.mContactsToUpdate.push(toUpdate);
           }
-          else { // update thunderbird
+          // update Thunderbird if writeOnly is off and updateGoogle is off
+          else {
             com.gContactSync.LOGGER.LOG(bothTB);
             com.gContactSync.ContactConverter.makeCard(gContact, tbContact.mContact); // TODO update to use TBContact
           }
@@ -311,13 +313,13 @@ com.gContactSync.Sync = {
         // if the contact from google is newer update the TB card
         else if (gCardDate > lastSync) {
           com.gContactSync.LOGGER.LOG(" * The contact from Google is newer...Updating the" +
-                     " contact from Thunderbird");
+                                      " contact from Thunderbird");
           com.gContactSync.ContactConverter.makeCard(gContact, tbContact.mContact); // TODO update to use TBContact
         }
         // if the TB card is newer update Google
         else if (tbCardDate > lastSync/1000) {
           com.gContactSync.LOGGER.LOG(" * The contact from Thunderbird is newer...Updating the" +
-                     " contact from Google");
+                                      " contact from Google");
           var toUpdate = {};
           toUpdate.gContact = gContact;
           toUpdate.abCard   = tbContact.mContact; // TODO update to use TBContact
@@ -337,11 +339,12 @@ com.gContactSync.Sync = {
       }
     }
     // STEP 3: Check for old Google contacts to delete and new contacts to add to TB
+    com.gContactSync.LOGGER.LOG("**Looking for unmatched Google contacts**");
     for (var id in gContacts) {
       var gContact = gContacts[id];
       if (gContact) {
         com.gContactSync.LOGGER.LOG(gContact.getName());
-        var gCardDate = gContact.lastModified;
+        var gCardDate = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 0;
         if (gCardDate > lastSync) {
           com.gContactSync.LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
           com.gContactSync.ContactConverter.makeCard(gContact);
@@ -352,7 +355,7 @@ com.gContactSync.Sync = {
         }
         else {
           com.gContactSync.LOGGER.LOG (" * The contact was deleted in Thunderbird.  " +
-                      "Ignoring since read-only mode is on.");
+                                       "Ignoring since read-only mode is on.");
         }
       }
     }
@@ -363,14 +366,16 @@ com.gContactSync.Sync = {
     // delete contacts from Google
     com.gContactSync.Sync.processDeleteQueue();
   },
-  
   /**
    * Deletes all contacts from Google included in the mContactsToDelete
    * array one at a time to avoid timing conflicts. Calls com.gContactSync.Sync.processAddQueue()
    * when finished.
    */
   processDeleteQueue: function Sync_processDeleteQueue() {
-    if (!com.gContactSync.Sync.mContactsToDelete || com.gContactSync.Sync.mContactsToDelete.length == 0) {
+    var ab = com.gContactSync.Sync.mCurrentAb;
+    if (!com.gContactSync.Sync.mContactsToDelete
+        || com.gContactSync.Sync.mContactsToDelete.length == 0
+        || ab.mPrefs.readOnly == "true") {
       com.gContactSync.LOGGER.LOG("***Adding contacts to Google***");
       com.gContactSync.Sync.processAddQueue();
       return;
@@ -378,19 +383,21 @@ com.gContactSync.Sync = {
     // TODO if com.gContactSync.Sync.mContactsUrl is set should the contact just be removed from
     // that group or completely removed?
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("deleting") + " " +
-                             com.gContactSync.Sync.mContactsToDelete.length + " " +
-                             com.gContactSync.StringBundle.getStr("remaining"));
+                                              com.gContactSync.Sync.mContactsToDelete.length + " " +
+                                              com.gContactSync.StringBundle.getStr("remaining"));
     var contact = com.gContactSync.Sync.mContactsToDelete.shift();
     var editURL = contact.getValue("EditURL").value;
     com.gContactSync.LOGGER.LOG(" * " + contact.getName() + "  -  " + editURL);
 
-    var httpReq = new com.gContactSync.GHttpRequest("delete", com.gContactSync.Sync.mCurrentAuthToken, editURL,
-                                   null, com.gContactSync.Sync.mCurrentUsername);
+    var httpReq = new com.gContactSync.GHttpRequest("delete",
+                                                    com.gContactSync.Sync.mCurrentAuthToken,
+                                                    editURL, null,
+                                                    com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.mOnSuccess = ["com.gContactSync.Sync.processDeleteQueue();"];
-    httpReq.mOnError = ["com.gContactSync.LOGGER.LOG_ERROR('Error while deleting contact', " +
+    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while deleting contact', " +
                           "httpReq.responseText);",
-                        "com.gContactSync.Sync.processDeleteQueue();"];
+                          "com.gContactSync.Sync.processDeleteQueue();"];
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
     httpReq.send();
   },
@@ -400,15 +407,18 @@ com.gContactSync.Sync = {
    * com.gContactSync.Sync.processUpdateQueue() when finished.
    */
   processAddQueue: function Sync_processAddQueue() {
+    var ab = com.gContactSync.Sync.mCurrentAb;
     // if all contacts were added then update all necessary contacts
-    if (!com.gContactSync.Sync.mContactsToAdd || com.gContactSync.Sync.mContactsToAdd.length == 0) {
+    if (!com.gContactSync.Sync.mContactsToAdd
+        || com.gContactSync.Sync.mContactsToAdd.length == 0
+        || ab.mPrefs.readOnly == "true") {
       com.gContactSync.LOGGER.LOG("***Updating contacts from Google***");
       com.gContactSync.Sync.processUpdateQueue();
       return;
     }
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("adding") + " " +
-                             com.gContactSync.Sync.mContactsToAdd.length + " " +
-                             com.gContactSync.StringBundle.getStr("remaining"));
+                                              com.gContactSync.Sync.mContactsToAdd.length + " " +
+                                              com.gContactSync.StringBundle.getStr("remaining"));
     var cardToAdd = com.gContactSync.Sync.mContactsToAdd.shift();
     com.gContactSync.LOGGER.LOG("\n" + cardToAdd.displayName);
     // get the XML representation of the card
@@ -417,8 +427,11 @@ com.gContactSync.Sync = {
     var string = com.gContactSync.serialize(xml);
     if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       com.gContactSync.LOGGER.LOG(" * XML of contact being added:\n" + string + "\n");
-    var httpReq = new com.gContactSync.GHttpRequest("add", com.gContactSync.Sync.mCurrentAuthToken, null,
-                                   string, com.gContactSync.Sync.mCurrentUsername);
+    var httpReq = new com.gContactSync.GHttpRequest("add",
+                                                    com.gContactSync.Sync.mCurrentAuthToken,
+                                                    null,
+                                                    string,
+                                                    com.gContactSync.Sync.mCurrentUsername);
     /* When the contact is successfully created:
      *  1. Get the card from which the contact was made
      *  2. Set the card's GoogleID attribute to match the new contact's ID
@@ -444,16 +457,19 @@ com.gContactSync.Sync = {
    * a time to avoid timing conflicts.  Calls com.gContactSync.Sync.syncNextUser() when done
    */
   processUpdateQueue: function Sync_processUpdateQueue() {
-    if (!com.gContactSync.Sync.mContactsToUpdate || com.gContactSync.Sync.mContactsToUpdate.length == 0) {
+    var ab = com.gContactSync.Sync.mCurrentAb;
+    if (!com.gContactSync.Sync.mContactsToUpdate
+        || com.gContactSync.Sync.mContactsToUpdate.length == 0
+        || ab.mPrefs.readOnly == "true") {
       com.gContactSync.Sync.syncNextUser();
       return;
     }
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("updating") + " " +
-                             com.gContactSync.Sync.mContactsToUpdate.length + " " +
-                             com.gContactSync.StringBundle.getStr("remaining"));
-    var obj = com.gContactSync.Sync.mContactsToUpdate.shift();
+                                              com.gContactSync.Sync.mContactsToUpdate.length + " " +
+                                              com.gContactSync.StringBundle.getStr("remaining"));
+    var obj      = com.gContactSync.Sync.mContactsToUpdate.shift();
     var gContact = obj.gContact;
-    var abCard = obj.abCard;
+    var abCard   = obj.abCard;
 
     var editURL = gContact.getValue("EditURL").value;
     com.gContactSync.LOGGER.LOG("\nUpdating " + gContact.getName());
@@ -462,8 +478,11 @@ com.gContactSync.Sync = {
     var string = com.gContactSync.serialize(xml);
     if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       com.gContactSync.LOGGER.LOG(" * XML of contact being updated:\n" + string + "\n");
-    var httpReq = new com.gContactSync.GHttpRequest("update", com.gContactSync.Sync.mCurrentAuthToken, editURL,
-                                   string, com.gContactSync.Sync.mCurrentUsername);
+    var httpReq = new com.gContactSync.GHttpRequest("update",
+                                                    com.gContactSync.Sync.mCurrentAuthToken,
+                                                    editURL,
+                                                    string,
+                                                    com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.mOnSuccess = ["com.gContactSync.Sync.processUpdateQueue();"];
     httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while updating contact', " +
@@ -519,12 +538,14 @@ com.gContactSync.Sync = {
                   // In the future system groups will be localized, so this
                   // must be ignored.
                   if (group.isSystemGroup()) {
-                    list.setName(title);
+                    // If write-only is on then ignore the name change
+                    if (ab.mPrefs.writeOnly != "true")
+                      list.setName(title);
                     com.gContactSync.LOGGER.LOG_WARNING("  - A system group was renamed in Thunderbird");
                   }
                   else if (ab.mPrefs.readOnly == "true") {
                     com.gContactSync.LOGGER.LOG(" - The mailing list's name has changed.  " +
-                               "Ignoring since read-only mode is on.");
+                                                "Ignoring since read-only mode is on.");
                   }
                   else {
                     com.gContactSync.LOGGER.LOG("  - Going to rename the group to " + listName);
@@ -536,7 +557,7 @@ com.gContactSync.Sync = {
               else {
                 if (ab.mPrefs.readOnly == "true") {
                   com.gContactSync.LOGGER.LOG(" - A mailing list was deleted.  " +
-                             "Ignoring since read-only mode is on.");
+                                              "Ignoring since read-only mode is on.");
                 }
                 else {
                   // System groups cannot be deleted.
@@ -566,17 +587,27 @@ com.gContactSync.Sync = {
                 com.gContactSync.LOGGER.LOG("  - Matched with mailing list " + listName);
                 // if the name changed, update the mail list's name
                 if (list.getName() != title) {
-                  com.gContactSync.LOGGER.LOG("  - The group's name changed, updating the list");
-                  list.setName(title);
-                  list.update();
+                  if (ab.mPrefs.writeOnly == "true") {
+                    com.gContactSync.LOGGER.VERBOSE_LOG(" - The group was renamed, but write-only mode was enabled");
+                  }
+                  else {
+                    com.gContactSync.LOGGER.LOG("  - The group's name changed, updating the list");
+                    list.setName(title);
+                    list.update();
+                  }
                 }
                 list.matched = true;
               }
               else { // the group is new
-                // make a new mailing list with the same name
-                com.gContactSync.LOGGER.LOG("  - The group is new");
-                var list = ab.addList(title, id);
-                com.gContactSync.LOGGER.VERBOSE_LOG("  - List added to address book");
+                if (ab.mPrefs.writeOnly == "true") {
+                  com.gContactSync.LOGGER.VERBOSE_LOG(" - The group is new, but write-only mode was enabled");
+                }
+                else {
+                  // make a new mailing list with the same name
+                  com.gContactSync.LOGGER.LOG("  - The group is new");
+                  var list = ab.addList(title, id);
+                  com.gContactSync.LOGGER.VERBOSE_LOG("  - List added to address book");
+                }
               }
             }
           }
@@ -603,10 +634,15 @@ com.gContactSync.Sync = {
             }
             // if it is old, delete it
             else {
-              com.gContactSync.LOGGER.LOG("-Found an old list named " + list.getName());
-              com.gContactSync.LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
-              com.gContactSync.LOGGER.LOG(" * It will be deleted from Thunderbird");
-              list.delete();
+                com.gContactSync.LOGGER.LOG("-Found an old list named " + list.getName());
+                com.gContactSync.LOGGER.VERBOSE_LOG(" * The URI is: " + list.getURI());
+                if (ab.mPrefs.writeOnly == "true") {
+                  com.gContactSync.LOGGER.VERBOSE_LOG(" * Write-only mode was enabled so no action will be taken");
+                }
+                else {
+                  com.gContactSync.LOGGER.LOG(" * It will be deleted from Thunderbird");
+                  list.delete();
+                }
             }
           }
         }
@@ -656,19 +692,23 @@ com.gContactSync.Sync = {
    * issues.  Calls com.gContactSync.Sync.addGroups() when finished.
    */
   deleteGroups: function Sync_deleteGroups() {
-    if (com.gContactSync.Sync.mGroupsToDelete.length == 0) {
+    var ab = com.gContactSync.Sync.mCurrentAb;
+    if (com.gContactSync.Sync.mGroupsToDelete.length == 0
+        || ab.mPrefs.readOnly == "true") {
       com.gContactSync.LOGGER.LOG("***Adding new groups to Google***");
       com.gContactSync.Sync.addGroups();
       return;
     }
     var group = com.gContactSync.Sync.mGroupsToDelete.shift();
     com.gContactSync.LOGGER.LOG("-Deleting group: " + group.getTitle());
-    var httpReq = new com.gContactSync.GHttpRequest("delete", com.gContactSync.Sync.mCurrentAuthToken,
-                                   group.getEditURL(), null,
-                                   com.gContactSync.Sync.mCurrentUsername);
+    var httpReq = new com.gContactSync.GHttpRequest("delete",
+                                                    com.gContactSync.Sync.mCurrentAuthToken,
+                                                    group.getEditURL(),
+                                                    null,
+                                                    com.gContactSync.Sync.mCurrentUsername);
     httpReq.mOnSuccess = ["com.gContactSync.Sync.deleteGroups();"];
     httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while deleting group', " +
-                                            "httpReq.responseText);",
+                          "httpReq.responseText);",
                           "com.gContactSync.Sync.deleteGroups();"];
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
     httpReq.addHeaderItem("If-Match", "*");
@@ -681,7 +721,9 @@ com.gContactSync.Sync = {
    * creation of a group.
    */
   addGroups: function Sync_addGroups() {
-    if (com.gContactSync.Sync.mGroupsToAdd.length == 0) {
+    var ab = com.gContactSync.Sync.mCurrentAb;
+    if (com.gContactSync.Sync.mGroupsToAdd.length == 0
+        || ab.mPrefs.readOnly == "true") {
       com.gContactSync.LOGGER.LOG("***Updating groups from Google***");
       com.gContactSync.Sync.updateGroups();
       return;
@@ -692,11 +734,14 @@ com.gContactSync.Sync = {
     var body = com.gContactSync.serialize(group.xml);
     if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       com.gContactSync.LOGGER.VERBOSE_LOG(" * XML feed of new group:\n" + body);
-    var httpReq = new com.gContactSync.GHttpRequest("addGroup", com.gContactSync.Sync.mCurrentAuthToken, null,
-                                   body, com.gContactSync.Sync.mCurrentUsername);
+    var httpReq = new com.gContactSync.GHttpRequest("addGroup",
+                                                    com.gContactSync.Sync.mCurrentAuthToken,
+                                                    null,
+                                                    body,
+                                                    com.gContactSync.Sync.mCurrentUsername);
     httpReq.mOnCreated = ["com.gContactSync.Sync.addGroups2(httpReq);"];
     httpReq.mOnError =   ["com.gContactSync.LOGGER.LOG_ERROR('Error while adding group', " +
-                                            "httpReq.responseText);",
+                          "httpReq.responseText);",
                           "com.gContactSync.Sync.mGroupsToAddURI.shift()",
                           "com.gContactSync.Sync.addGroups();"];
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
@@ -727,7 +772,9 @@ com.gContactSync.Sync = {
    * and calls com.gContactSync.Sync.getContacts() when finished.
    */
   updateGroups: function Sync_updateGroups() {
-    if (com.gContactSync.Sync.mGroupsToUpdate.length == 0) {
+    var ab = com.gContactSync.Sync.mCurrentAb;
+    if (com.gContactSync.Sync.mGroupsToUpdate.length == 0
+        || ab.mPrefs.readOnly == "true") {
       com.gContactSync.Sync.getContacts();
       return;
     }
@@ -736,8 +783,11 @@ com.gContactSync.Sync = {
     var body = com.gContactSync.serialize(group.xml);
     if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       com.gContactSync.LOGGER.VERBOSE_LOG(" * XML feed of group: " + body);
-    var httpReq = new com.gContactSync.GHttpRequest("update", com.gContactSync.Sync.mCurrentAuthToken, group.getEditURL(),
-                                   body, com.gContactSync.Sync.mCurrentUsername);
+    var httpReq = new com.gContactSync.GHttpRequest("update",
+                                                    com.gContactSync.Sync.mCurrentAuthToken,
+                                                    group.getEditURL(),
+                                                    body,
+                                                    com.gContactSync.Sync.mCurrentUsername);
     httpReq.mOnSuccess = ["com.gContactSync.Sync.updateGroups();"];
     httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);",
                           "com.gContactSync.Sync.updateGroups();"];
@@ -755,7 +805,8 @@ com.gContactSync.Sync = {
   schedule: function Sync_schedule(aDelay) {
     // only schedule a sync if the delay is greater than 0, a sync is not
     // already scheduled, and autosyncing is enabled
-    if (aDelay && com.gContactSync.Sync.mSynced && !com.gContactSync.Sync.mSyncScheduled && aDelay > 0 &&
+    if (aDelay && com.gContactSync.Sync.mSynced &&
+        !com.gContactSync.Sync.mSyncScheduled && aDelay > 0 &&
         com.gContactSync.Preferences.mSyncPrefs.autoSync.value) {
       com.gContactSync.Sync.mSyncScheduled = true;
       com.gContactSync.LOGGER.VERBOSE_LOG("Next sync in: " + aDelay + " milliseconds");

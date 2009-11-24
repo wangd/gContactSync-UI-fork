@@ -34,7 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 /**
- * GContact
  * Makes a new GContact object that has functions to get and set various values
  * for a Google Contact's Atom/XML representation.  If the parameter aXml is not
  * supplied, this constructor will make a new contact.
@@ -67,7 +66,6 @@ com.gContactSync.GContact.prototype = {
   mCurrentElement:   null,
   mGroups:           {},
   /**
-   * GContact.checkIMAddress
    * Checks for an invalid IM address as explained here:
    * http://pi3141.wordpress.com/2008/07/30/update-2/
    */
@@ -82,7 +80,6 @@ com.gContactSync.GContact.prototype = {
     }
   },
   /**
-   * GContact.removeElements
    * Removes all elements in the mElementsToRemoveArray, if possible, from this
    * contact.
    */
@@ -97,7 +94,6 @@ com.gContactSync.GContact.prototype = {
     this.mElementsToRemove = [];
   },
   /**
-   * GContact.getContactName
    * Gets the name and e-mail address of a contact from it's Atom
    * representation.
    */
@@ -123,7 +119,6 @@ com.gContactSync.GContact.prototype = {
     return contactName;
   },
   /**
-   * GContact.getElementValue
    * Returns the value of an element with a type where the value is in the
    * value of the child node.
    * @param aElement The GElement object with information about the value to get.
@@ -200,7 +195,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.setOrg
    * Google's contacts schema puts the organization name and job title in a
    * separate element, so this function handles those two attributes separately.
    * @param aElement The GElement object with a valid org tag name (orgDepartment,
@@ -245,7 +239,6 @@ com.gContactSync.GContact.prototype = {
     return true;
   },
   /**
-   * GContact.setName
    * Google's contacts schema puts several components of a name into a
    * separate element, so this function handles those attributes separately.
    * @param aElement The GElement object with a valid gd:name tag name
@@ -290,7 +283,6 @@ com.gContactSync.GContact.prototype = {
     return true;
   },
   /**
-   * GContact.setAddress
    * Google's contacts schema puts several components of an address into a
    * separate element, so this function handles those attributes separately.
    * @param aElement The GElement object with a valid gd:structuredPostalAddress tag name
@@ -360,7 +352,6 @@ com.gContactSync.GContact.prototype = {
     return true;
   },  
   /**
-   * GContact.setElementValue
    * Sets the value of the specified element.
    * NOTE: removeElements MUST be called after all elements are set
    * @param aElement The GElement object with information about the value to get.
@@ -495,7 +486,6 @@ com.gContactSync.GContact.prototype = {
     return true;
   },
   /**
-   * GContact.getLastModifiedDate
    * Gets the last modified date from an contacts's XML feed in milliseconds from 1970
    * @return The last modified date of the entry in milliseconds from 1970
    */
@@ -520,7 +510,6 @@ com.gContactSync.GContact.prototype = {
     return 0;
   },
   /**
-   * GContact.removeExtendedProperties
    * Removes all extended properties from this contact.
    */
   removeExtendedProperties: function GContact_removeExtendedProperties() {
@@ -529,7 +518,6 @@ com.gContactSync.GContact.prototype = {
       this.xml.removeChild(arr[i]);
   },
   /**
-   * GContact.getExtendedProperty
    * Returns the value of the extended property with a matching name attribute.
    * @param aName The name of the extended property to return
    * @return A Property object with the value of the extended property with the
@@ -543,7 +531,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.setExtendedProperty
    * Sets an extended property with the given name and value if there are less
    * than 10 existing.  Logs a warning if there are already 10 or more.
    * @param aName  The name of the property.
@@ -566,7 +553,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.getValue
    * Returns the value of the XML Element with the supplied tag name at the
    * given index of the given type (home, work, other, etc.)
    * @param aName  The tag name of the value to get.  See gdata for valid tag
@@ -602,7 +588,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.setValue
    * Sets the value with the name aName to the value aValue based on the type
    * and index.
    * @param aName  The tag name of the value to set.
@@ -632,7 +617,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.getGroups
    * Returns an array of the names of the groups to which this contact belongs.
    */
   getGroups: function GContact_getGroups() {
@@ -658,7 +642,6 @@ com.gContactSync.GContact.prototype = {
     return groups;
   },
   /**
-   * GContact.clearGroups
    * Removes all groups from this contact.
    */
   clearGroups: function GContact_clearGroups() {
@@ -677,7 +660,6 @@ com.gContactSync.GContact.prototype = {
     this.mGroups = {};
   },
   /**
-   * GContact.setGroups
    * Sets the groups of that this contact is in based on the array of IDs.
    * @param aGroups An array of the IDs of the groups to which the contact
    *                should belong.
@@ -699,7 +681,6 @@ com.gContactSync.GContact.prototype = {
     return true;
   },
   /**
-   * GContact.removeFromGroup
    * Removes the contact from the given group element.
    * @param aGroup The group from which the contact should be removed.
    */
@@ -718,7 +699,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.addToGroup
    * Adds the contact to the given, existing, group.
    * @param aGroupURL The URL of an existing group to which the contact will be
    *                  added.
@@ -743,7 +723,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.isMatch
    * Returns true if the given XML Element is a match for the GElement object
    * and the type (ie home, work, other, etc.)
    * @param aElement The GElement object (@see GElement.js)
@@ -778,7 +757,6 @@ com.gContactSync.GContact.prototype = {
     return str == aType; // return true if the end is equal to aType
   },
   /**
-   * GContact.getID
    * Returns the last portion of this contact's ID
    */
   getID: function GContact_getID() {
@@ -787,7 +765,6 @@ com.gContactSync.GContact.prototype = {
     return val.substr(index + 1);
   },
   /**
-   * GContact.getPhotoInfo
    * Returns an object with information about this contact's photo.
    * @return An object containing the following properties:
    *  - url - The URL of the contact's photo
@@ -818,7 +795,6 @@ com.gContactSync.GContact.prototype = {
     return null;
   },
   /**
-   * GContact.writePhoto
    * Fetches and saves a local copy of this contact's photo, if present.
    * NOTE: Portions of this code are from Thunderbird written by me (Josh Geenen)
    * See https://bugzilla.mozilla.org/show_bug.cgi?id=119459
@@ -887,7 +863,6 @@ com.gContactSync.GContact.prototype = {
     return file;
   },
   /**
-   * GContact.finishWritePhoto
    * Finishes writting the buffered output stream to the file from the input stream.
    * @param istream The input stream
    * @param fstream {nsIFileOutputStream} The file output stream
