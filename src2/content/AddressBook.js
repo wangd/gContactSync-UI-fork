@@ -86,16 +86,16 @@ AddressBook.prototype = {
    */
   getAllCards: function AddressBook_getAllCards() {
     this.mCards = [];
-    var iter = this.mDirectory.childCards;
+    var iter = this.mDirectory.childCards || this.mDirectory.childNodes;
     var data;
-    if (AbManager.mVersion == 3) { // TB 3
+    if (iter.hasMoreElements) { // Thunderbird 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof nsIAbCard && !data.isMailList)
           this.mCards.push(data);
       }
     }
-    else { // TB 2
+    else if (iter.first) { // TB 2
       // use nsIEnumerator...
       try {
         iter.first();
@@ -106,6 +106,10 @@ AddressBook.prototype = {
           iter.next();
         } while (Components.lastResult == 0);
       } catch(e) {} // error is expected when finished   
+    }
+    else {
+      com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
+      throw "Couldn't find an address book's contacts";
     }
     return this.mCards;
   },

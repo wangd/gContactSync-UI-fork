@@ -172,9 +172,9 @@ MailList.prototype = {
     // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
     // properly, but it shouldn't be caught or the sync won't function properly
     this.mCards = [];
-    var iter = this.mList.childCards;
+    var iter = this.mList.childCards || this.mList.childNodes;
     var data;
-    if (AbManager.mVersion == 3) { // TB 3
+    if (iter.hasMoreElements) { // Thunderbird 3
       try {
         while (iter.hasMoreElements()) {
           data = iter.getNext();
@@ -192,7 +192,7 @@ MailList.prototype = {
         throw "A mailing list is not working correctly";
       }
     }
-    else { // TB 2
+    else if (iter.first) { // TB 2
       // use nsIEnumerator...
       try {
         iter.first();
@@ -209,6 +209,10 @@ MailList.prototype = {
         // error is expected when finished
         LOGGER.VERBOSE_LOG("This error is expected:\n" + e);
       }
+    }
+    else {
+      com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
+      throw "Couldn't find an address book's contacts";
     }
     return this.mCards;
   },

@@ -96,7 +96,7 @@ function myOnDrop(row, orientation) {
         // workaround for a mailnews bug, get the childCards enumerator to
         // update the mIsMailingList variable in the directory
         // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
-        toDirectory.childCards;
+        toDirectory.childCards || toDirectory.childNodes;
       }
     }
     else {
@@ -107,7 +107,7 @@ function myOnDrop(row, orientation) {
         // workaround for a mailnews bug, get the childCards enumerator to
         // update the mIsMailingList variable in the directory
         // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
-        toDirectory.childCards;
+        toDirectory.childCards || toDirectory.childNodes;
         needToRefresh = true;
       }
     }
