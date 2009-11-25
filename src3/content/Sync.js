@@ -145,6 +145,8 @@ com.gContactSync.Sync = {
           com.gContactSync.Sync.syncNextUser();
           return;
         }
+        // fix the username before authenticating
+        username.value = com.gContactSync.fixUsername(username.value);
         var body    = com.gContactSync.gdata.makeAuthBody(username.value, password.value);
         var httpReq = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
         // if it succeeds and Google returns the auth token, store it and then start

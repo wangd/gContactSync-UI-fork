@@ -203,3 +203,27 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
   aMenuList.selectedIndex = aMenuList.menupopup.childNodes.length - 1;
   return true;
 }
+
+/**
+ * com.gContactSync.fixUsername
+ * Attempts a few basic fixes for 'broken' usernames.
+ * In the past, gContactSync didn't check that a username included the domain
+ * which would pass authentication and then fail to do anything else.
+ * It also didn't make sure there were no spaces in a username which would
+ * also pass authentication and break for everything else.
+ * See Bug 21567
+ *
+ * @param aUsername {string} The username to fix.
+ *
+ * @return A username with a domain and no spaces.
+ */
+com.gContactSync.fixUsername = function gCS_fixUsername(aUsername) {
+  if (!aUsername)
+    return null;
+  if (aUsername.indexOf("@") == -1)
+    aUsername += "@gmail.com";
+  aUsername = aUsername.replace(/ /g, "");
+  aUsername = aUsername.replace(/\t/g, "");
+  return aUsername;
+}
+

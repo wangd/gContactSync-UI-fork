@@ -152,32 +152,10 @@ com.gContactSync.GHttpRequest = function gCS_GHttpRequest(aType, aAuth, aUrl, aB
     throw "Error - no URL was found for the HTTP Request";
   if (aUsername && this.mUrl)
     this.mUrl = this.mUrl.replace("default",
-                                  encodeURIComponent(this.fixUsername(aUsername)));
+                                  encodeURIComponent(com.gContactSync.fixUsername(aUsername)));
 }
 // get the superclass' prototype
 com.gContactSync.GHttpRequest.prototype = new com.gContactSync.HttpRequest();
-
-/**
- * GHttpRequest.fixUsername
- * Attempts a few basic fixes for 'broken' usernames.
- * In the past, gContactSync didn't check that a username included the domain
- * which would pass authentication and then fail to do anything else.
- * It also didn't make sure there were no spaces in a username which would
- * also pass authentication and break for everything else.
- * See Bug 21567
- *
- * @param aUsername {string} The username to fix.
- *
- * @return A username with a domain and no spaces.
- */
-com.gContactSync.GHttpRequest.prototype.fixUsername = function GHttpRequest_fixUsername(aUsername) {
-  if (!aUsername)
-    return null;
-  if (aUsername.indexOf("@") == -1)
-    aUsername += "@gmail.com";
-  aUsername = aUsername.replace(/ /g, "");
-  return aUsername;
-}
 
 /**
  * com.gContactSync.handle401
@@ -228,6 +206,8 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
       alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
       return com.gContactSync.handle401();
     }
+    // fix the username before authenticating
+    username.value = com.gContactSync.fixUsername(username.value);
     var body    = com.gContactSync.gdata.makeAuthBody(username.value, password.value);
     var httpReq = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start

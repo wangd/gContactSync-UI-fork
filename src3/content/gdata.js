@@ -69,6 +69,8 @@ com.gContactSync.gdata = {
   makeAuthBody: function gdata_makeAuthBody(aEmail, aPassword) {
     // NOTE: leave accountType as HOSTED_OR_GOOGLE or Google Apps for your
     // domain accounts won't work
+    // fix the username (remove whitespace)
+    aEmail = com.gContactSync.fixUsername(aEmail);
     return "accountType=HOSTED_OR_GOOGLE&Email=" + encodeURIComponent(aEmail) +
            "&Passwd=" + encodeURIComponent(aPassword) +
            "&service=cp&source=Josh-gContactSync-0-3";
