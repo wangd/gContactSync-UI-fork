@@ -72,7 +72,7 @@ com.gContactSync.LoginManager = {
     else if ("@mozilla.org/login-manager;1" in Components.classes) {
       var loginManager =  Components.classes["@mozilla.org/login-manager;1"]
                                     .getService(Components.interfaces.nsILoginManager);
-      var nsLoginInfo  = new Components.Constructors("@mozilla.org/login-manager/loginInfo;1",
+      var nsLoginInfo  = new Components.Constructor("@mozilla.org/login-manager/loginInfo;1",
                                 Components.interfaces.nsILoginInfo, "init");
       var extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
                                          this.mHttpRealm, aUsername, aToken,

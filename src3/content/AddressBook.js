@@ -180,9 +180,9 @@ com.gContactSync.AddressBook.prototype = {
       throw "Error - aNickName sent to addList is invalid";
     var list          = Components.classes["@mozilla.org/addressbook/directoryproperty;1"]
                                   .createInstance(Components.interfaces.nsIAbDirectory);
+    list.isMailList   = true;
     list.dirName      = aName;
     list.listNickName = aNickName;
-    list.isMailList   = true;
     this.mDirectory.addMailList(list);
     // list can't be QI'd to an MDBDirectory, so the new list has to be found...
     var realList  = this.getListByNickName(aNickName);

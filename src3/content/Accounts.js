@@ -113,7 +113,8 @@ com.gContactSync.Accounts = {
     // a new sync
     httpReq.mOnSuccess = ["com.gContactSync.LoginManager.addAuthToken('" + username.value +
                           "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
-                          "com.gContactSync.Accounts.selectedAbChange();"];
+                          "com.gContactSync.Accounts.selectedAbChange();",
+                          "com.gContactSync.Accounts.fillUsernames();"];
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError   = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
                           "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 

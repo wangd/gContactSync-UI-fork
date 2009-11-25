@@ -111,13 +111,59 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mCurrentAb        = obj.ab;
     com.gContactSync.Sync.mCurrentAuthToken = com.gContactSync.LoginManager.getAuthTokens()[com.gContactSync.Sync.mCurrentUsername];
     com.gContactSync.Sync.mContactsUrl      = null;
+    // If an authentication token cannot be found for this username then
+    // offer to let the user login with that account
     if (!com.gContactSync.Sync.mCurrentAuthToken) {
-      // TODO Bug 21936
-      com.gContactSync.LOGGER.LOG_WARNING("Unable to find the auth token for: " + com.gContactSync.Sync.mCurrentUsername);
-      alert(com.gContactSync.StringBundle.getStr("noTokenFound") + ": " + com.gContactSync.Sync.mCurrentUsername +
-            "\n" + com.gContactSync.StringBundle.getStr("ab") + ": " + com.gContactSync.Sync.mCurrentAb.getName());
-      com.gContactSync.Sync.mCurrentAb = null;
-      com.gContactSync.Sync.syncNextUser();
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to find the auth token for: "
+                                          + com.gContactSync.Sync.mCurrentUsername);
+      if (confirm(com.gContactSync.StringBundle.getStr("noTokenFound")
+                  + ": " + com.gContactSync.Sync.mCurrentUsername
+                  + "\n" + com.gContactSync.StringBundle.getStr("ab")
+                  + ": " + com.gContactSync.Sync.mCurrentAb.getName())) {
+        // Now let the user login
+        var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                 .getService(Components.interfaces.nsIPromptService)
+                                 .promptUsernameAndPassword;
+        var username = {value: com.gContactSync.Sync.mCurrentUsername};
+        var password = {};
+        // opens a username/password prompt
+        var ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
+                        com.gContactSync.StringBundle.getStr("loginText"), username, password, null,
+                        {value: false});
+        if (!ok) {
+          com.gContactSync.Sync.syncNextUser();
+          return;
+        }
+        // Decrement the index so Sync.syncNextUser runs on this AB again
+        com.gContactSync.Sync.mIndex--;
+        // This is a primitive way of validating an e-mail address, but Google takes
+        // care of the rest.  It seems to allow getting an auth token w/ only the
+        // username, but returns an error when trying to do anything w/ that token
+        // so this makes sure it is a full e-mail address.
+        if (username.value.indexOf("@") < 1) {
+          alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
+          com.gContactSync.Sync.syncNextUser();
+          return;
+        }
+        var body    = com.gContactSync.gdata.makeAuthBody(username.value, password.value);
+        var httpReq = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
+        // if it succeeds and Google returns the auth token, store it and then start
+        // a new sync
+        httpReq.mOnSuccess = ["com.gContactSync.LoginManager.addAuthToken('" + username.value +
+                              "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
+                              "com.gContactSync.Sync.syncNextUser();"];
+        // if it fails, alert the user and prompt them to try again
+        httpReq.mOnError   = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
+                              "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
+                              "httpReq.status, httpReq.responseText);",
+                              "com.gContactSync.Sync.syncNextUser();"];
+        // if the user is offline, alert them and quit
+        httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
+                              "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));"];
+        httpReq.send();
+      }
+      else
+        com.gContactSync.Sync.syncNextUser();
       return;
     }
     com.gContactSync.LOGGER.VERBOSE_LOG("Found Address Book with name: " +
