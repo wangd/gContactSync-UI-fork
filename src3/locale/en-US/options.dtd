@@ -11,6 +11,8 @@
 <!ENTITY syncBehavior.label "Sync Behavior">
 <!ENTITY removeOldAddresses.label "Remove the old Thunderbird addresses after converting to the new format">
 <!ENTITY parseNames.label "Parse names from Google contacts into First and Last names.">
+<!ENTITY other.label "Other">
+<!ENTITY chromeTime.value "'Unresponsive Script' warning delay time (0 to disable)">
 
 <!ENTITY interface.tab "Interface">
 <!ENTITY logging.label "Logging">

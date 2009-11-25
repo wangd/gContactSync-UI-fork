@@ -64,6 +64,9 @@
       <preference id="verboseLog"
                   name="extensions.gContactSync.verboseLog"
                   type="bool"/>
+      <preference id="max_chrome_script_run_time"
+                  name="dom.max_chrome_script_run_time"
+                  type="int"/>
     </preferences>
     <groupbox flex="1">
       <label href="http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences"
@@ -99,6 +102,25 @@
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
       </groupbox>
+    </groupbox>
+    <groupbox>
+      <caption label="&other.label;"/>
+      <vbox align="center">
+        <grid flex="1">
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="chromeTimeBox" value="&chromeTime.value;"/>
+            </row>
+            <row align="center">
+              <textbox preference="max_chrome_script_run_time" id="chromeTimeBox" maxlength="5" maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+      </vbox>
     </groupbox>
   </prefpane>
   <prefpane id="pane_interface" index="interface" label="&interface.tab;">

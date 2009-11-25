@@ -62,7 +62,7 @@ com.gContactSync.Options = {
       com.gContactSync.Options.enableExtended();
       document.getElementById("autoSync")
               .addEventListener("change", com.gContactSync.Options.enableDelays, false);
-      enableDelays();
+      com.gContactSync.Options.enableDelays();
     }
   },
   /**
