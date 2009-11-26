@@ -125,16 +125,13 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
   var id = null;
   // GContact and TBContact may not be defined
   try {
-    if (aContact instanceof com.gContactSync.GContact) {
+    if (aContact instanceof com.gContactSync.GContact)
       id = aContact.getID();
-    }
     // otherwise it is from Thunderbird, so try to get the Google ID, if any
-    else if (aContact instanceof com.gContactSync.TBContact) {
+    else if (aContact instanceof com.gContactSync.TBContact)
       id = aContact.getValue("GoogleID");
-    }
-    else {
+    else
       id = com.gContactSync.AbManager.getCardValue(aContact, "GoogleID");
-    }
   } catch(e) {
     try {
       // try getting the card's value
@@ -147,6 +144,8 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
   }
 
   if (id) {
+    // take just the ID and not the whole URL
+    id = id.replace(/\/*.*\//, "");
     return prefix + id + suffix;
   }
   // if there is no ID make a random number
@@ -179,7 +178,7 @@ com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
  * @param aMenuList {menulist} The menu list element to search.
  * @param aValue    {string}   The value to find in a menuitem.  This can be
  *                             either the 'value' or 'label' attribute of the
- *                             matched item.
+ *                             matched item.  Case insensitive.
  * @param aCreate   {boolean}  Set as true to create and select a new menuitem
  *                             if a match cannot be found.
  */
@@ -188,10 +187,13 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
     throw "Invalid parameter sent to selectMenuItem";
 
   var arr = aMenuList.menupopup.childNodes;
+  // convert the value to lowercase
+  aValue = aValue.toLowerCase();
   var item;
   for (var i = 0; i < arr.length; i++) {
     item = arr[i];
-    if (item.getAttribute("value") == aValue || item.getAttribute("label") == aValue) {
+    if (item.getAttribute("value").toLowerCase() == aValue
+        || item.getAttribute("label").toLowerCase() == aValue) {
       aMenuList.selectedIndex = i;
       return true;
     }

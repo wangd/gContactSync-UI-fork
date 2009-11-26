@@ -134,7 +134,7 @@ com.gContactSync.GHttpRequest = function gCS_GHttpRequest(aType, aAuth, aUrl, aB
       this.mContentType = this.CONTENT_TYPES.URL_ENC;
       this.mUrl         = aUrl;
       this.mType        = "POST"; // for firewalls that block DELETE
-      this.addContentOverride(gdata.contacts.requestTypes.DELETE);
+      this.addContentOverride(com.gContactSync.gdata.contacts.requestTypes.DELETE);
       this.addHeaderItem("Content-length", 0); // required or there will be an error
       this.addHeaderItem("Authorization", aAuth);
       break;

@@ -159,11 +159,19 @@ com.gContactSync.MailList.prototype = {
   /**
    * MailList.addCard
    * Adds a card to this mailing list without checking if it already exists.
+   * NOTE: If the contact does not have a primary e-mail address then this
+   * method will add a fake one.
    * @param aCard The card to add to this mailing list.
    * @return A real card (MDB card prior to 413260).
    */
   addCard: function MailList_addCard(aCard) {
     com.gContactSync.AbManager.checkCard(aCard);
+    var ab = this.mParent;
+    // add a dummy e-mail address if necessary and ignore the pref
+    if (!ab.getCardValue(aCard, "PrimaryEmail")) {
+      ab.setCardValue(aCard, "PrimaryEmail", com.gContactSync.makeDummyEmail(aCard, true));
+      ab.updateCard(aCard);
+    }
     var realCard = this.mList.addCard(aCard);
     this.mCards.push(realCard);
     return realCard;

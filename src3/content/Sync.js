@@ -697,7 +697,7 @@ com.gContactSync.Sync = {
       }
       else {
         var groupName = ab.mPrefs.myContactsName.toLowerCase();
-        com.gContactSync.LOGGER.LOG("Only synchronizing the " + groupName + " group.");
+        com.gContactSync.LOGGER.LOG("Only synchronizing the '" + groupName + "' group.");
         var group, id, sysId, title;
         var foundGroup = false;
         for (var i = 0; i < arr.length; i++) {
@@ -709,15 +709,18 @@ com.gContactSync.Sync = {
             // system group then this method won't work because system gruoups
             // are first.
             id    = group.getID();
-            sysId = group.getSystemId().toLowerCase();
+            sysId = group.getSystemId();
+            sysId = sysId ? sysId.toLowerCase() : "";
             title = group.getTitle().toLowerCase();
-            com.gContactSync.LOGGER.VERBOSE_LOG("  - Found a group named " + title + " - ID: " + id);
+            com.gContactSync.LOGGER.VERBOSE_LOG("  - Found a group named '"
+                                                + title + "' with ID '"
+                                                + id + "'");
             if (sysId == groupName || title == groupName) {
               foundGroup = true;
               break;
             }
           }
-          catch (e) {}
+          catch (e) {alert(e);}
         }
         if (foundGroup) {
           com.gContactSync.LOGGER.LOG(" * Found the group to synchronize: " + id);

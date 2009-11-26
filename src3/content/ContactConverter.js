@@ -384,7 +384,7 @@ com.gContactSync.ContactConverter = {
     }
 
     ab.updateCard(card);
-    if (ab.mPrefs.syncGroups && !ab.mPrefs.myContacts) {
+    if (ab.mPrefs.syncGroups == "true" && ab.mPrefs.myContacts != "true") {
       // get the groups after updating the card
       var groups = aContact.getValue("groupMembershipInfo");
       var lists = com.gContactSync.Sync.mLists;

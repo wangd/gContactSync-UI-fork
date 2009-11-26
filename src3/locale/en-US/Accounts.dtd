@@ -5,9 +5,9 @@
 <!ENTITY abSynced.label       "Google Account">
 
 <!-- Global buttons -->
-<!ENTITY addAB.label       "New Address Book">
+<!ENTITY addAB.label          "New Address Book">
 <!ENTITY refreshTree.label    "Refresh">
-<!ENTITY resetAll.label       "Reset All Accounts">
+<!ENTITY resetAll.label       "Reset All Synced ABs">
 
 <!-- Account labels and options -->
 

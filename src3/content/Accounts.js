@@ -441,7 +441,7 @@ com.gContactSync.Accounts = {
     var httpReq = new com.gContactSync.GHttpRequest("getGroups", token, null,
                                    null, usernameElem.value);
     httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
-                          "Accounts.addGroups(httpReq.responseXML, '"
+                          "com.gContactSync.Accounts.addGroups(httpReq.responseXML, '"
                           + usernameElem.value + "');"],
     httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);"];
     httpReq.mOnOffline = [];
