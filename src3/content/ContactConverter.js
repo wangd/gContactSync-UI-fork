@@ -233,12 +233,12 @@ com.gContactSync.ContactConverter = {
     }
     // If the myContacts pref is set and this contact is new then add the
     // myContactsName group
-    if (ab.mPrefs.myContacts) {
+    if (ab.mPrefs.myContacts == "true") {
       if (isNew && com.gContactSync.Sync.mContactsUrl) {
         aContact.setGroups([com.gContactSync.Sync.mContactsUrl]);
       }
     }
-    else if (ab.mPrefs.syncGroups) {
+    else if (ab.mPrefs.syncGroups == "true") {
       // set the groups
       var groups = [];
       for (var i in com.gContactSync.Sync.mLists) {
@@ -301,7 +301,7 @@ com.gContactSync.ContactConverter = {
     }
     
     // parse the DisplayName into FirstName and LastName
-    if (ab.mPrefs.parseNames) {
+    if (ab.mPrefs.parseNames == "true") {
       var name  = ab.getCardValue(card, "DisplayName");
       var first = ab.getCardValue(card, "FirstName");
       var last  = ab.getCardValue(card, "LastName");
@@ -365,7 +365,7 @@ com.gContactSync.ContactConverter = {
     ab.setCardValue(card, "BirthMonth", month);
     ab.setCardValue(card, "BirthDay",   day);    
 
-    if (ab.mPrefs.getPhotos) {
+    if (ab.mPrefs.getPhotos == "true") {
       var info = aContact.getPhotoInfo();
       if (info) {
         var file = aContact.writePhoto(com.gContactSync.Sync.mCurrentAuthToken);
