@@ -92,7 +92,7 @@ com.gContactSync.MailList.prototype = {
    * Returns the card in this mail list, if any, with the same (not-null)
    * value for the GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
-   * @param aCard The card being searched for.
+   * @param aCard {nsIAbCard} The card being searched for.
    * @returns The card in this list, if any, with the same, and non-null value
    *         for its GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.

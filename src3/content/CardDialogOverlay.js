@@ -91,7 +91,7 @@ com.gContactSync.gAttributes = {
  * @class
  */
 com.gContactSync.CardDialogOverlay = {
-  /** The XUL namespace 8/
+  /** The XUL namespace */
   mNamespace:  "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
   /** The number of times an attempt was made to initialize the dialog */
   mLoadNumber: 0,

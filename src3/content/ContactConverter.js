@@ -57,13 +57,18 @@ false);
  * @class
  */
 com.gContactSync.ContactConverter = {
-  // two namespaces
+  /** The GD Namespace */
   GD:            {},
+  /** The ATOM/XML Namespace */
   ATOM:          {},
+  /** The current TBContact being converted into a GContact */
   mCurrentCard:  {},
+  /** An array of ContactConverter objects */
   mConverterArr: [],
-  // extra attributes added by this extension.  Doesn't include GoogleID or any
-  // of the URLs.  Should be obtained w/ ContactConverter.getExtraSyncAttributes
+  /**
+   * Extra attributes added by this extension.  Doesn't include GoogleID or any
+   * of the URLs.  Should be obtained w/ ContactConverter.getExtraSyncAttributes
+   */
   mAddedAttributes: [
     "HomeFaxNumber", "OtherNumber", "ThirdEmail", "FourthEmail",
     "TalkScreenName", "ICQScreenName", "YahooScreenName", "MSNScreenName", 
@@ -169,8 +174,8 @@ com.gContactSync.ContactConverter = {
   /**
    * Updates or creates a GContact object's Atom/XML representation using its 
    * complementary Address Book card.
-   * @param aCard    {nsIAbCard} The address book card used to update the Atom
-   *                             feed.
+   * @param aCard    {TBContact} The address book card used to update the Atom
+   *                             feed.  Must be in an address book.
    * @param aContact {GContact} Optional. The GContact object with the Atom/XML
    *                            representation of the contact, if it exists.  If
    *                            not supplied, a contact and feed will be created.
@@ -182,8 +187,15 @@ com.gContactSync.ContactConverter = {
       aContact = new com.gContactSync.GContact();
     if (!this.mInitialized)
       this.init();
-    var ab = com.gContactSync.Sync.mCurrentAb;
-    com.gContactSync.GAbManager.checkCard(aCard, "cardToAtomXML");
+    if (!(aCard instanceof com.gContactSync.TBContact)) {
+      throw "Invalid TBContact sent to ContactConverter.cardToAtomXML from "
+            + this.caller;
+    }
+    var ab = aCard.mAddressBook;
+    if (!(ab instanceof com.gContactSync.AddressBook)) {
+      throw "Invalid TBContact (no mAddressBook) sent to "
+            + "ContactConverter.cardToAtomXML from " + this.caller;
+    }
     this.mCurrentCard = aCard;
     var arr = this.mConverterArr;
     // set the regular properties from the array mConverterArr
@@ -193,9 +205,9 @@ com.gContactSync.ContactConverter = {
         continue;
       var obj = arr[i];
       com.gContactSync.LOGGER.VERBOSE_LOG(" * " + obj.tbName);
-      var value = this.checkValue(com.gContactSync.GAbManager.getCardValue(aCard, obj.tbName));
+      var value = this.checkValue(aCard.getValue(obj.tbName));
       // for the type, get the type from the card, or use its default
-      var type = com.gContactSync.GAbManager.getCardValue(aCard, obj.tbName + "Type");
+      var type = aCard.getValue(obj.tbName + "Type");
       if (!type || type == "")
         type = obj.type;
       // see the dummy e-mail note below
@@ -209,15 +221,15 @@ com.gContactSync.ContactConverter = {
     }
     // Birthday can be either YYYY-M-D or --M-D for no year.
     // TB can have all three, just a day/month, or just a year through the UI
-    var birthDay    = com.gContactSync.GAbManager.getCardValue(aCard, "BirthDay");
+    var birthDay    = aCard.getCardValue("BirthDay");
     var birthMonth  = isNaN(parseInt(birthDay, 10))
                         ? null
-                        : com.gContactSync.GAbManager.getCardValue(aCard, "BirthMonth");
+                        : aCard.getValue("BirthMonth");
     var birthdayVal = null;
     // if the contact has a birth month (and birth day) add it to the contact
     // from Google
     if (birthMonth && !isNaN(parseInt(birthMonth, 10))) {
-      var birthYear = com.gContactSync.GAbManager.getCardValue(aCard, "BirthYear");
+      var birthYear = aCard.getValue("BirthYear");
       if (!birthYear || isNaN(parseInt(birthYear, 10)))
         birthYear = "-";
       birthYear = new String(birthYear);
@@ -232,7 +244,7 @@ com.gContactSync.ContactConverter = {
     aContact.removeExtendedProperties();
     arr = com.gContactSync.Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
-      var value = this.checkValue(com.gContactSync.GAbManager.getCardValue(aCard, arr[i]));
+      var value = this.checkValue(aCard.getValue(arr[i]));
       aContact.setExtendedProperty(arr[i], value);
     }
     // If the myContacts pref is set and this contact is new then add the
@@ -247,7 +259,7 @@ com.gContactSync.ContactConverter = {
       var groups = [];
       for (var i in com.gContactSync.Sync.mLists) {
         var list = com.gContactSync.Sync.mLists[i];
-        if (list.hasCard(aCard))
+        if (list.hasCard(aCard.mContact))
           groups.push(i);
       }
       aContact.setGroups(groups);
@@ -260,23 +272,26 @@ com.gContactSync.ContactConverter = {
    * Converts an GContact's Atom/XML representation of a contact to
    * Thunderbird's address book card format.
    * @param aContact {GContact} A GContact object with the contact to convert.
-   * @param aCard {nsIAbCard} Optional.  An existing card that can be QI'd to
-   *                          Components.interfaces.nsIAbMDBCard if this is
-   *                          before 413260 landed.
-   * @returns An nsIAbCard of the contact.
+   * @param aCard {TBContact}   An existing card that can be QI'd to
+   *                            Components.interfaces.nsIAbMDBCard if this is
+   *                            before 413260 landed.
+   * @returns {TBContact} The updated TBContact.
    */
   makeCard: function ContactConverter_makeCard(aContact, aCard) {
     if (!aContact)
-      throw "Invalid aXml parameter supplied to the 'makeCard' method" +
+      throw "Invalid aContact parameter supplied to the 'makeCard' method" +
             com.gContactSync.StringBundle.getStr("pleaseReport");
     if (!this.mInitialized)
       this.init();
-    var ab = com.gContactSync.Sync.mCurrentAb;
-    var card;
-    if (aCard)
-      card = aCard;
-    else
-      card = ab.addCard(ab.makeCard());
+    if (!(aCard instanceof com.gContactSync.TBContact)) {
+      throw "Invalid TBContact sent to ContactConverter.makeCard from "
+            + this.caller;
+    }
+    var ab = aCard.mAddressBook;
+    if (!(ab instanceof com.gContactSync.AddressBook)) {
+      throw "Invalid TBContact (no mAddressBook) sent to "
+            + "ContactConverter.cardToAtomXML from " + this.caller;
+    }
     var arr = this.mConverterArr;
     // get the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
@@ -292,24 +307,24 @@ com.gContactSync.ContactConverter = {
         property.value = com.gContactSync.makeDummyEmail(aContact);
         property.type  = "home";
       }
-      ab.setCardValue(card, obj.tbName, property.value);
+      aCard.setValue(obj.tbName, property.value);
       // set the type, if it is an attribute with a type
       if (property.type)
-        ab.setCardValue(card, obj.tbName + "Type", property.type);
+        aCard.setValue(obj.tbName + "Type", property.type);
     }
     // get the extended properties
     arr = com.gContactSync.Preferences.mExtendedProperties;
     for (var i = 0, length = arr.length; i < length; i++) {
       var value = aContact.getExtendedProperty(arr[i]);
       value = value ? value.value : null;
-      ab.setCardValue(card, arr[i], value);
+      aCard.setValue(arr[i], value);
     }
     
     // parse the DisplayName into FirstName and LastName
     if (ab.mPrefs.parseNames == "true") {
-      var name  = ab.getCardValue(card, "DisplayName");
-      var first = ab.getCardValue(card, "FirstName");
-      var last  = ab.getCardValue(card, "LastName");
+      var name  = aCard.getValue("DisplayName");
+      var first = aCard.getValue("FirstName");
+      var last  = aCard.getValue("LastName");
       // only parse if the contact has a name and there isn't already a first
       // or last name set
       if (name && !first && !last) {
@@ -323,7 +338,7 @@ com.gContactSync.ContactConverter = {
             nameArr.push(tmpArr[1]);
             nameArr.push(tmpArr[0]);
             // now fix the DisplayName
-            ab.setCardValue(card, "DisplayName", tmpArr[1] + " " + tmpArr[0]);
+            aCard.setValue("DisplayName", tmpArr[1] + " " + tmpArr[0]);
           }
           // Otherwise assume it is <first> <last>
           else
@@ -336,8 +351,8 @@ com.gContactSync.ContactConverter = {
         first = nameArr.shift();
         last  = nameArr.join(" ");
         com.gContactSync.LOGGER.VERBOSE_LOG("FirstName\n" + first + "\nLastName\n" + last);
-        ab.setCardValue(card, "FirstName", first);
-        ab.setCardValue(card, "LastName", last);
+        aCard.setValue("FirstName", first);
+        aCard.setValue("LastName", last);
       }
     }
     
@@ -366,9 +381,9 @@ com.gContactSync.ContactConverter = {
       com.gContactSync.LOGGER.VERBOSE_LOG("  - Month: " +  month);
       com.gContactSync.LOGGER.VERBOSE_LOG("  - Day:   " +  day);
     }
-    ab.setCardValue(card, "BirthYear",  year);
-    ab.setCardValue(card, "BirthMonth", month);
-    ab.setCardValue(card, "BirthDay",   day);    
+    aCard.setValue("BirthYear",  year);
+    aCard.setValue("BirthMonth", month);
+    aCard.setValue("BirthDay",   day);    
 
     if (ab.mPrefs.getPhotos == "true") {
       var info = aContact.getPhotoInfo();
@@ -376,19 +391,19 @@ com.gContactSync.ContactConverter = {
         var file = aContact.writePhoto(com.gContactSync.Sync.mCurrentAuthToken);
         if (file) {
           com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
-          ab.setCardValue(card, "PhotoName", file.leafName);
-          ab.setCardValue(card, "PhotoType", "file");
-          ab.setCardValue(card, "PhotoURI",
+          aCard.setValue("PhotoName", file.leafName);
+          aCard.setValue("PhotoType", "file");
+          aCard.setValue("PhotoURI",
                           Components.classes["@mozilla.org/network/io-service;1"]
                                     .getService(Components.interfaces.nsIIOService)
                                     .newFileURI(file)
                                     .spec);
-          ab.setCardValue(card, "PhotoEtag", info.etag);
+          aCard.setValue("PhotoEtag", info.etag);
         }
       }
     }
 
-    ab.updateCard(card);
+    ab.updateCard(aCard.mContact);
     if (ab.mPrefs.syncGroups == "true" && ab.mPrefs.myContacts != "true") {
       // get the groups after updating the card
       var groups = aContact.getValue("groupMembershipInfo");
@@ -397,17 +412,17 @@ com.gContactSync.ContactConverter = {
         var group = groups[i];
         var list = lists[i];
         // delete the card from the list, if necessary
-        if (list.hasCard(card)) {
+        if (list.hasCard(aCard.mContact)) {
           if (!group)
-            list.deleteCards([card]);
+            list.deleteCards([aCard.mContact]);
           // if the 'list' is a directory, update the card there, too
           // this isn't necessary if the list is a mail list
           else if (list.updateCard)
-            list.updateCard(card);
+            list.updateCard(aCard.mContact);
         }
         // add the card to the list, if necessary
         else if (group)
-          list.addCard(card);
+          list.addCard(aCard.mContact);
       }
     }
   },

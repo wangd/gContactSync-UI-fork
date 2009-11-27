@@ -339,7 +339,7 @@ com.gContactSync.Sync = {
         }
         else {
           com.gContactSync.LOGGER.LOG(" * This contact is new and will be added to Google.");
-          com.gContactSync.Sync.mContactsToAdd.push(tbContact.mContact); // TODO convert the array to use TBContacts
+          com.gContactSync.Sync.mContactsToAdd.push(tbContact);
         }
       }
       // if there is a matching Google Contact
@@ -362,20 +362,20 @@ com.gContactSync.Sync = {
             com.gContactSync.LOGGER.LOG(bothGoogle);
             var toUpdate = {};
             toUpdate.gContact = gContact;
-            toUpdate.abCard   = tbContact.mContact; // TODO update to use TBContact
+            toUpdate.abCard   = tbContact;
             com.gContactSync.Sync.mContactsToUpdate.push(toUpdate);
           }
           // update Thunderbird if writeOnly is off and updateGoogle is off
           else {
             com.gContactSync.LOGGER.LOG(bothTB);
-            com.gContactSync.ContactConverter.makeCard(gContact, tbContact.mContact); // TODO update to use TBContact
+            com.gContactSync.ContactConverter.makeCard(gContact, tbContact);
           }
         }
         // if the contact from google is newer update the TB card
         else if (gCardDate > lastSync) {
           com.gContactSync.LOGGER.LOG(" * The contact from Google is newer...Updating the" +
                                       " contact from Thunderbird");
-          com.gContactSync.ContactConverter.makeCard(gContact, tbContact.mContact); // TODO update to use TBContact
+          com.gContactSync.ContactConverter.makeCard(gContact, tbContact);
         }
         // if the TB card is newer update Google
         else if (tbCardDate > lastSync/1000) {
@@ -383,7 +383,7 @@ com.gContactSync.Sync = {
                                       " contact from Google");
           var toUpdate = {};
           toUpdate.gContact = gContact;
-          toUpdate.abCard   = tbContact.mContact; // TODO update to use TBContact
+          toUpdate.abCard   = tbContact;
           com.gContactSync.Sync.mContactsToUpdate.push(toUpdate);
         }
         // otherwise nothing needs to be done
@@ -391,13 +391,11 @@ com.gContactSync.Sync = {
           com.gContactSync.LOGGER.LOG(" * Neither contact has changed");
       }
       // if there isn't a match, but the card is new, add it to Google
-      else if (tbContact.getValue("LastModifiedDate") > lastSync/1000) {
-        com.gContactSync.Sync.mContactsToAdd.push(tbContact.mContact); // TODO convert the array to use TBContacts
-      }
+      else if (tbContact.getValue("LastModifiedDate") > lastSync/1000)
+        com.gContactSync.Sync.mContactsToAdd.push(tbContact);
       // otherwise, delete the contact from the address book
-      else {
-        cardsToDelete.push(tbContact.mContact); // TODO update to use TBContact
-      }
+      else
+        cardsToDelete.push(tbContact.mContact);
     }
     // STEP 3: Check for old Google contacts to delete and new contacts to add to TB
     com.gContactSync.LOGGER.LOG("**Looking for unmatched Google contacts**");
@@ -408,7 +406,8 @@ com.gContactSync.Sync = {
         var gCardDate = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 0;
         if (gCardDate > lastSync) {
           com.gContactSync.LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
-          com.gContactSync.ContactConverter.makeCard(gContact);
+          var newCard = new com.gContactSync.TBContact(ab.addCard(ab.makeCard()), ab);
+          com.gContactSync.ContactConverter.makeCard(gContact, newCard);
         }
         else if (ab.mPrefs.readOnly != "true") {
           com.gContactSync.LOGGER.LOG(" * The contact is old will be deleted");
@@ -481,10 +480,10 @@ com.gContactSync.Sync = {
                                               com.gContactSync.Sync.mContactsToAdd.length + " " +
                                               com.gContactSync.StringBundle.getStr("remaining"));
     var cardToAdd = com.gContactSync.Sync.mContactsToAdd.shift();
-    com.gContactSync.LOGGER.LOG("\n" + cardToAdd.displayName);
+    com.gContactSync.LOGGER.LOG("\n" + cardToAdd.getName());
     // get the XML representation of the card
     // NOTE: cardToAtomXML adds the contact to the current group, if any
-    var xml = com.gContactSync.ContactConverter.cardToAtomXML(cardToAdd).xml;
+    var xml    = com.gContactSync.ContactConverter.cardToAtomXML(cardToAdd).xml;
     var string = com.gContactSync.serialize(xml);
     if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       com.gContactSync.LOGGER.LOG(" * XML of contact being added:\n" + string + "\n");
@@ -500,11 +499,11 @@ com.gContactSync.Sync = {
      *  4. Call this method again
      */
     var onCreated = [
-      "var ab = com.gContactSync.Sync.mCurrentAb",
+      "var ab   = com.gContactSync.Sync.mCurrentAb",
       "var card = com.gContactSync.ContactConverter.mCurrentCard;",
-      "ab.setCardValue(card, 'GoogleID', httpReq.responseXML.getElementsByTagNameNS"
+      "card.setValue('GoogleID', httpReq.responseXML.getElementsByTagNameNS"
       + "(com.gContactSync.gdata.namespaces.ATOM.url, 'id')[0].childNodes[0].nodeValue);",
-      "ab.updateCard(card);",
+      "ab.updateCard(card.mContact);",
       "com.gContactSync.Sync.processAddQueue();"];
     httpReq.mOnCreated = onCreated;
     httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while adding contact', " +
