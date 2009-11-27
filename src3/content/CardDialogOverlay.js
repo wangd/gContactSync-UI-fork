@@ -160,7 +160,7 @@ com.gContactSync.CardDialogOverlay = {
     }
     var pager;
     try {
-      //swap pager and mobile phone textboxes and values
+      // swap pager and mobile phone textboxes and values
       pager = document.getElementById("PagerNumber");
       pager.setAttribute("id", "tmp");
       var pagerValue = pager.value;

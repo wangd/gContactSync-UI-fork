@@ -76,14 +76,14 @@ com.gContactSync.MailList.prototype = {
   /**
    * Sets the name of this list. The update method must be called in order for
    * the change to become permanent.
-   * @param aName The new name for the list.
+   * @param aName {string} The new name for the list.
    */
   setName: function MailList_setName(aName) {
     this.mList.dirName = aName;
   },
   /**
    * Returns the name of this list.
-   * @returns The name of this list.
+   * @returns {string} The name of this list.
    */
   getName: function MailList_getName() {
     return this.mList.dirName;
@@ -93,9 +93,10 @@ com.gContactSync.MailList.prototype = {
    * value for the GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
    * @param aCard {nsIAbCard} The card being searched for.
-   * @returns The card in this list, if any, with the same, and non-null value
-   *         for its GoogleID attribute, or, if the GoogleID is null, if the
-   *         display name, primary, and second emails are the same.
+   * @returns {nsIAbCard} The card in this list, if any, with the same, and
+   *                      non-null value for its GoogleID attribute, or, if the
+   *                      GoogleID is null, if the display name, primary, and
+   *                      second emails are the same.
    */
   hasCard: function MailList_hasCard(aCard) {
     com.gContactSync.AbManager.checkCard(aCard);
@@ -124,14 +125,14 @@ com.gContactSync.MailList.prototype = {
   /**
    * Sets the nick name for this mailing list.  The update method must be
    * called in order for the change to become permanent.
-   * @param aNickName The new nick name for this mailing list.
+   * @param aNickName {string} The new nick name for this mailing list.
    */
   setNickName: function MailList_setNickName(aNickName) {
     this.mList.listNickName = aNickName;
   },
   /**
    * Returns the nick name of this mailing list.
-   * @returns The nick name of this mailing list.
+   * @returns {string} The nick name of this mailing list.
    */
   getNickName: function MailList_getNickName() {
     return this.mList.listNickName;
@@ -139,14 +140,14 @@ com.gContactSync.MailList.prototype = {
   /**
    * Sets the description for this mailing list.  The update method must be
    * called in order for the change to become permanent.
-   * @param aDescription The new description for this mailing list.
+   * @param aDescription {string} The new description for this mailing list.
    */
   setDescription: function MailList_setDescription(aDescription) {
     this.mList.description = aDescription;
   },
   /**
    * Returns the description of this mailing list.
-   * @returns The description of this mailing list.
+   * @returns {string} The description of this mailing list.
    */
   getDescription: function MailList_getDescription() {
     return this.mList.description;
@@ -155,8 +156,8 @@ com.gContactSync.MailList.prototype = {
    * Adds a card to this mailing list without checking if it already exists.
    * NOTE: If the contact does not have a primary e-mail address then this
    * method will add a fake one.
-   * @param aCard The card to add to this mailing list.
-   * @returns A real card (MDB card prior to 413260).
+   * @param aCard {nsIAbCard} The card to add to this mailing list.
+   * @returns {nsIAbMDBCard} A real card (MDB card prior to 413260).
    */
   addCard: function MailList_addCard(aCard) {
     com.gContactSync.AbManager.checkCard(aCard);
@@ -173,7 +174,7 @@ com.gContactSync.MailList.prototype = {
   },
   /**
    * Returns the uniform resource identifier (URI) for this mailing list.
-   * @returns The URI of this list.
+   * @returns {string} The URI of this list.
    */
   getURI: function MailList_getURI() {
     if (this.mList.URI)
@@ -182,7 +183,7 @@ com.gContactSync.MailList.prototype = {
   },
   /**
    * Returns an array of all of the cards in this mailing list.
-   * @returns An array containing all of the cards in this mailing list.
+   * @returns {array} An array containing all of the cards in this mailing list.
    */
   getAllCards: function MailList_getAllCards() {
     // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
@@ -233,7 +234,7 @@ com.gContactSync.MailList.prototype = {
   },
   /**
    * Deletes all of the cards in the array of cards from this list.
-   * @param aCards The array of cards to delete from this mailing list.
+   * @param aCards {array} The array of cards to delete from this mailing list.
    */
   deleteCards: function MailList_deleteCards(aCards) {
     if (!(aCards && aCards.length && aCards.length > 0))
