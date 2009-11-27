@@ -104,6 +104,8 @@ function makeDummyEmail(aContact, ignorePref) {
   }
 
   if (id) {
+    // take just the ID and not the whole URL
+    id = id.replace(/\/*.*\//, "");
     return prefix + id + suffix;
   }
   // if there is no ID make a random number
