@@ -144,11 +144,19 @@ MailList.prototype = {
   /**
    * MailList.addCard
    * Adds a card to this mailing list without checking if it already exists.
+   * NOTE: If the contact does not have a primary e-mail address then this
+   * method will add a fake one.
    * @param aCard The card to add to this mailing list.
    * @return A real card (MDB card prior to 413260).
    */
   addCard: function MailList_addCard(aCard) {
     AbManager.checkCard(aCard);
+    var ab = this.mParent;
+    // add a dummy e-mail address if necessary and ignore the pref
+    if (!ab.getCardValue(aCard, "PrimaryEmail")) {
+      ab.setCardValue(aCard, "PrimaryEmail", com.gContactSync.makeDummyEmail(aCard, true));
+      ab.updateCard(aCard);
+    }
     var realCard = this.mList.addCard(aCard);
     this.mCards.push(realCard);
     return realCard;
@@ -172,9 +180,9 @@ MailList.prototype = {
     // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
     // properly, but it shouldn't be caught or the sync won't function properly
     this.mCards = [];
-    var iter = this.mList.childCards || this.mList.childNodes;
+    var iter = this.mList.childCards;
     var data;
-    if (iter.hasMoreElements) { // Thunderbird 3
+    if (iter instanceof Components.interfaces.nsISimpleEnumerator) { // Thunderbird 3
       try {
         while (iter.hasMoreElements()) {
           data = iter.getNext();
@@ -192,7 +200,7 @@ MailList.prototype = {
         throw "A mailing list is not working correctly";
       }
     }
-    else if (iter.first) { // TB 2
+    else if (iter instanceof Components.interfaces.nsIEnumerator) { // TB 2
       // use nsIEnumerator...
       try {
         iter.first();

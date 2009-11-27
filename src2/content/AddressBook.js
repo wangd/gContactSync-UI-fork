@@ -88,14 +88,14 @@ AddressBook.prototype = {
     this.mCards = [];
     var iter = this.mDirectory.childCards || this.mDirectory.childNodes;
     var data;
-    if (iter.hasMoreElements) { // Thunderbird 3
+    if (iter instanceof Components.interfaces.nsISimpleEnumerator) { // Thunderbird 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof nsIAbCard && !data.isMailList)
           this.mCards.push(data);
       }
     }
-    else if (iter.first) { // TB 2
+    else if (iter instanceof Components.interfaces.nsIEnumerator) { // TB 2
       // use nsIEnumerator...
       try {
         iter.first();
