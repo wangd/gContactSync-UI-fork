@@ -37,20 +37,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * myOnDrop
  * Meant to override the code in the onDrop method of abDirTreeObserver (an
  * instance of nsIXULTreeBuilderObserver), which is called when the user drops
  * one or more cards.  The code is a modified version of onDrop found in
  * mailnews/addrbook/resources/abDragDrop.js
  * It's purpose is to copy over extra attributes that this extension adds to
- * address book cards.
+ * address book cards and to work around bugs.
  *
  * @param row          The row
- * @param orientation  An integer specifying on/after/before the given row
+ * @param orientation  {int} An integer specifying on/after/before the given row
  */
 com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
   var dragSession = dragService.getCurrentSession();
@@ -221,10 +221,11 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
   }
 }
 /**
- * com.gContactSync.deleteCard
  * Deletes the given card from the given directory.
- * @param aDirectory The directory from which the card is deleted.
- * @param aCard      The card that is deleted from the directory.
+ * @param aDirectory {nsIAbDirectory} The directory from which the card is
+ *                                    deleted.
+ * @param aCard      {nsIAbCard}      The card that is deleted from the
+ *                                    directory.
  */
 com.gContactSync.deleteCard = function gCS_deleteCard(aDirectory, aCard) {
   if (!aCard || !aDirectory)
@@ -243,4 +244,4 @@ com.gContactSync.deleteCard = function gCS_deleteCard(aDirectory, aCard) {
     arr.AppendElement(aCard, false);
   }
   aDirectory.deleteCards(arr);
-}
+};

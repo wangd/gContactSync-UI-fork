@@ -34,12 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * Group
  * A class for storing and editing the XML feed for a Group in Google Contacts.
+ * @param aXml {XML Element} The XML representation of the group.
+ *                           If not supplied then a new group is created.
+ * @param aTitle {string}    The title for the group, if new.
  * @class
  * @constructor
  */
@@ -70,7 +73,6 @@ com.gContactSync.Group = function gCS_Group(aXml, aTitle) {
 
 com.gContactSync.Group.prototype = {
   /**
-   * Group.setTitle
    * Sets the title of this Group.
    * @param aTitle The new title for this Group.
    */
@@ -99,11 +101,10 @@ com.gContactSync.Group.prototype = {
     }
   },
   /**
-   * Group.getTitle
    * Returns the title of this Group.  If this is a system group, which is NOT
    * translated through the API, then this method will return a localized name
    * for this group.
-   * @return the title of this Group.
+   * @returns {string} The title of this Group.
    */
   getTitle: function Group_getTitle() {
     if (this.mTitle)
@@ -133,9 +134,8 @@ com.gContactSync.Group.prototype = {
     return null;
   },
   /**
-   * Group.getEditURL
    * Returns the URL used to edit this Group.
-   * @return the URL used to edit this Group.
+   * @returns {string} the URL used to edit this Group.
    */
   getEditURL: function Group_getEditURL() {
     var atom = com.gContactSync.gdata.namespaces.ATOM;
@@ -146,9 +146,8 @@ com.gContactSync.Group.prototype = {
     return null;
   },
   /**
-   * Group.getID
    * Retrieves and returns the ID of this Group.
-   * @return The ID of this Group.
+   * @returns {string} The ID of this Group.
    */
   getID: function Group_getID() {
     var atom = com.gContactSync.gdata.namespaces.ATOM;
@@ -158,7 +157,6 @@ com.gContactSync.Group.prototype = {
     return null;
   },
   /**
-   * Group.removeExtendedProperties
    * Removes all of the extended properties from this Group.
    */
   removeExtendedProperties: function Group_removeExtendedProperties() {
@@ -167,11 +165,10 @@ com.gContactSync.Group.prototype = {
       this.xml.removeChild(arr[i]);
   },
   /**
-   * Group.getExtendedProperty
    * Returns the extended property of this group's XML whose value for the
    * name attribute matches aName, if any.
-   * @param aName The value of the name attribute to find.
-   * @return The value of an extended property whose name is the value of aName.
+   * @param aName {string} The value of the name attribute to find.
+   * @returns {string} The value of an extended property whose name is the value of aName.
    */
   getExtendedProperty: function Group_getExtendedProperty(aName) {
     var arr = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url, "extendedProperty");
@@ -181,10 +178,10 @@ com.gContactSync.Group.prototype = {
     return null;
   },
   /**
-   * Group.getLastModifiedDate
    * Gets the last modified date from the group's XML feed in milliseconds since
    * 1970
-   * @return The last modified date of the group in milliseconds since 1970
+   * @returns {int} The last modified date of the group in milliseconds since
+   *               1970.
    */
   getLastModifiedDate: function Group_getLastModifiedDate() {
     try {
@@ -196,7 +193,7 @@ com.gContactSync.Group.prototype = {
       var mins      = sModified.substring(14,16);
       var sec       = sModified.substring(17,19);
       var ms        = sModified.substring(20,23);
-      return  parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
+      return parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
     }
     catch(e) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to get last modified date from a group:\n" + e);
@@ -204,12 +201,11 @@ com.gContactSync.Group.prototype = {
     return 0;
   },
   /**
-   * Group.setExtendedProperty
    * Sets an extended property with the given name and value if there are less
    * than 10 existing.  Logs a warning if there are already 10 or more and does
    * not add the property.
-   * @param aName  The name of the property.
-   * @param aValue The value of the property.
+   * @param aName  {string} The name of the property.
+   * @param aValue {string} The value of the property.
    */
   setExtendedProperty: function Group_setExtendedProperty(aName, aValue) {
     if (this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url,
@@ -226,13 +222,13 @@ com.gContactSync.Group.prototype = {
     }
   },
   /**
-   * Group.isSystemGroup
    * Returns true if this group is one of Google's system groups.
    * These currently are:
    *  - My Contacts
    *  - Coworkers
    *  - Family
    *  - Friends
+   * @returns {boolean} True if this group is a system group.
    */
   isSystemGroup: function Group_isSystemGroup() {
     var nodes = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GCONTACT.url,
@@ -240,8 +236,8 @@ com.gContactSync.Group.prototype = {
     return nodes && nodes.length > 0;
   },
   /**
-   * Group.getSystemId
-   * Returns the id of the gContact:systemGroup tag, if any.
+   * Returns the ID of the gContact:systemGroup tag, if any.
+   * @returns {string} The ID of the system group, if any.
    */
   getSystemId: function Group_getSystemId() {
     var nodes = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GCONTACT.url,

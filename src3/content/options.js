@@ -34,21 +34,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function optionsLoadListener(e) {
-  com.gContactSync.Options.init();
-  window.sizeToContent();
- }, false);
+window.addEventListener("load",
+  /** Initializes the Options class when the window has finished loading */
+  function gCS_OptionsLoadListener(e) {
+    com.gContactSync.Options.init();
+    window.sizeToContent();
+  },
+false);
 
 /**
- * com.gContactSync.Options
  * Provides helper functions for the Preferences dialog.
  */
 com.gContactSync.Options = {
   /**
-   * Options.init
    * Initializes the string bundle, FileIO and Preferences scripts and fills the
    * login tree.
    */
@@ -66,7 +68,6 @@ com.gContactSync.Options = {
     }
   },
   /**
-   * Options.enableExtended
    * Enables or disables the extended property textboxes based on the state of
    * the syncExtended checkbox.
    */
@@ -87,7 +88,6 @@ com.gContactSync.Options = {
     return true;
   },
   /**
-   * Options.enableDelays
    * Enables or disables the delay textboxes based on the auto sync checkbox.
    */
   enableDelays: function Options_enableDelays() {
@@ -101,4 +101,4 @@ com.gContactSync.Options = {
       initialElem.disabled  = !disableElem.value;
     return true;
   }
-}
+};

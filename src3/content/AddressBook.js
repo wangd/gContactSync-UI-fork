@@ -33,15 +33,15 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
-if (!com) var com = {};
+
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * AddressBook
  * A class for a Thunderbird Address Book with methods to add, modify, obtain, 
  * and delete cards.
- * @param aDirectory The actual directory.
+ * @param aDirectory {nsIAbDirectory} The actual directory.
  * @constructor
  * @class
  */
@@ -62,14 +62,16 @@ com.gContactSync.AddressBook = function gCS_AddressBook(aDirectory) {
 }
 
 com.gContactSync.AddressBook.prototype = {
-  mURI:         {}, // the uniform resource identifier of the directory
-  mCards:       [], // the cards within this address book
-  mCardsUpdate: false, // set to true when mCards should be updated
+  /** The Uniform Resource Identifier (URI) of the directory */
+  mURI:         {},
+  /** The cards within this address book */
+  mCards:       [],
+  /** set to true when mCards should be updated */
+  mCardsUpdate: false,
   /**
-   * AddressBook.addCard
    * Adds the card to this address book and returns the added card.
-   * @param aCard The card to add.
-   * @return An MDB
+   * @param aCard {nsIAbCard} The card to add.
+   * @returns {nsIAbMDBCard} An MDB card
    */
   addCard: function AddressBook_addCard(aCard) {
     com.gContactSync.AbManager.checkCard(aCard); // check the card's validity first
@@ -84,22 +86,21 @@ com.gContactSync.AddressBook.prototype = {
     return null;
   },
   /**
-   * AddressBook.getAllCards
    * Returns an array of all of the cards in this Address Book.
-   * @return  An array of the nsIAbCards in this Address Book.
+   * @returns  An array of the nsIAbCards in this Address Book.
    */
   getAllCards: function AddressBook_getAllCards() {
     this.mCards = [];
-    var iter = this.mDirectory.childCards || this.mDirectory.childNodes;
+    var iter = this.mDirectory.childCards;
     var data;
-    if (iter.hasMoreElements) { // Thunderbird 3
+    if (iter instanceof Components.interfaces.nsISimpleEnumerator) { // Thunderbird 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof Components.interfaces.nsIAbCard && !data.isMailList)
           this.mCards.push(data);
       }
     }
-    else if (iter.first) { // TB 2
+    else if (iter instanceof Components.interfaces.nsIEnumerator) { // TB 2
       // use nsIEnumerator...
       try {
         iter.first();
@@ -109,7 +110,11 @@ com.gContactSync.AddressBook.prototype = {
             this.mCards.push(data);
           iter.next();
         } while (Components.lastResult == 0);
-      } catch(e) {com.gContactSync.LOGGER.VERBOSE_LOG("(This error is expected): " + e);} // error is expected when finished   
+      // An error is expected when finished
+      }
+      catch(e) {
+        com.gContactSync.LOGGER.VERBOSE_LOG("(This error is expected): " + e);
+      }
     }
     else {
       com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
@@ -118,11 +123,10 @@ com.gContactSync.AddressBook.prototype = {
     return this.mCards;
   },
   /**
-   * AddressBook.getAllLists
    * Returns an an object containing MailList objects whose attribute name is
    * the name of the mail list.
-   * @param skipGetCards True to skip getting the cards of each list.
-   * @return An object containing MailList objects.
+   * @param skipGetCards {boolean} True to skip getting the cards of each list.
+   * @returns An object containing MailList objects.
    */
   getAllLists: function AddressBook_getAllLists(skipGetCards) {
     // same in Thunderbird 2 and 3
@@ -141,13 +145,12 @@ com.gContactSync.AddressBook.prototype = {
     return obj;
   },
   /**
-   * AddressBook.getListByDesc
    * Finds and returns the first Mail List that matches the given nickname in
    * this address book.
-   * @param aNickName The nickname to search for.  If null then this
-   *                  function returns nothing.
-   * @return A new MailList object containing a list that matches the
-   *         nickname or nothing if the list wasn't found.
+   * @param aNickName {string} The nickname to search for.  If null then this
+   *                           function returns nothing.
+   * @returns {MailList} A new MailList object containing a list that matches the
+   *                    nickname or nothing if the list wasn't found.
    */
   getListByNickName: function AddressBook_getListByNickName(aNickName) {
     if (!aNickName)
@@ -165,13 +168,12 @@ com.gContactSync.AddressBook.prototype = {
     return null;
   },
   /**
-   * AddressBook.addList
    * Creates a new mail list, adds it to the address book, and returns a
    * MailList object containing the list.
-   * @param aName     The new name for the mail list.
-   * @param aNickName The nickname for the mail list.
-   * @return A new MailList object containing the newly-made Mail List with the
-   *         given name and nickname.
+   * @param aName     {string} The new name for the mail list.
+   * @param aNickName {string} The nickname for the mail list.
+   * @returns {MailList} A new MailList object containing the newly-made List
+   *                    with the given name and nickname.
    */
   addList: function AddressBook_addList(aName, aNickName) {
     if (!aName)
@@ -189,10 +191,9 @@ com.gContactSync.AddressBook.prototype = {
     return realList;
   },
   /**
-   * AddressBook.deleteCards
-   * Deletes the nsIAbCard from the nsIAbDirectory Address Book.  If the card
-   * isn't in the book nothing will happen
-   * @param aCard   The card to delete from the directory
+   * Deletes the nsIAbCards from the nsIAbDirectory Address Book.  If the cards
+   * aren't in the book nothing will happen.
+   * @param aCard {array} The cards to delete from the directory
    */
   deleteCards: function AddressBook_deleteCards(aCards) {
     if (!(aCards && aCards.length && aCards.length > 0))
@@ -220,8 +221,7 @@ com.gContactSync.AddressBook.prototype = {
     }
   },
   /**
-   * AddressBook.updateCard
-   * Updates a card in this address book.
+   * Updates a card (commits changes) in this address book.
    * @param aCard The card to update.
    */
   updateCard: function AddressBook_updateCard(aCard) {
@@ -233,11 +233,10 @@ com.gContactSync.AddressBook.prototype = {
       aCard.editCardToDatabase(this.URI);
   },
   /**
-   * AddressBook.checkList
    * Checks the validity of a mailing list and throws an error if it is invalid.
-   * @param aCard        An object that should be a mailing list
-   * @param aMethodName  The name of the method calling checkList (used when
-   *                     throwing the error)
+   * @param aCard        {nsIAbDirectory} An object that should be a mailing list.
+   * @param aMethodName  {string} The name of the method calling checkList (used
+   *                              when throwing the error)
    */
   checkList: function AddressBook_checkList(aList, aMethodName) {
     // if it is a MailList object, get it's actual list
@@ -248,11 +247,10 @@ com.gContactSync.AddressBook.prototype = {
     }
   },
   /**
-   * AddressBook.checkDirectory
    * Checks the validity of a directory and throws an error if it is invalid.
-   * @param aDirectory The directory to check.
-   * @param aMethodName  The name of the method calling checkDirectory (used when
-   *                     throwing the error)
+   * @param aDirectory  {nsIAbDirectory} The directory to check.
+   * @param aMethodName {strong} The name of the method calling checkDirectory
+   *                             (used when throwing the error)
    */
   checkDirectory: function AddressBook_checkDirectory(aDirectory, aMethodName) {
     if (!this.isDirectoryValid(aDirectory))
@@ -260,9 +258,8 @@ com.gContactSync.AddressBook.prototype = {
             + "' method" +  com.gContactSync.StringBundle.getStr("pleaseReport");
   },
   /**
-   * AddressBook.checkDirectory
    * Checks the validity of a directory and returns false if it is invalid.
-   * @param aDirectory The directory to check.
+   * @param aDirectory {nsIAbDirectory} The directory to check.
    */
   isDirectoryValid: function AddressBook_isDirectoryValid(aDirectory) {
     return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory 
@@ -270,34 +267,31 @@ com.gContactSync.AddressBook.prototype = {
           aDirectory instanceof Components.interfaces.nsIAbMDBDirectory);
   },
   /**
-   * AddressBook.getCardValue
    * Returns the value of the specifiec property in the given card, or throws an
    * error if it is not present or blank.
-   * @param aCard     The card to get the value from.
-   * @param aAttrName The name of the attribute to get.
+   * @param aCard     {nsIAbCard} The card to get the value from.
+   * @param aAttrName {string}    The name of the attribute to get.
    */
    getCardValue: function AddressBook_getCardValue(aCard, aAttrName) {
      return com.gContactSync.AbManager.getCardValue(aCard, aAttrName);
    },
   /**
-   * AddressBook.getCardValue
    * Sets the value of the specifiec property in the given card but does not
    * update the card in the database.
-   * @param aCard     The card to get the value from.
-   * @param aAttrName The name of the attribute to set.
-   * @param aValue    The value to set for the attribute.
+   * @param aCard     {nsIAbCard} The card to get the value from.
+   * @param aAttrName {string}    The name of the attribute to set.
+   * @param aValue    {string}    The value to set for the attribute.
    */
    setCardValue: function AddressBook_setCardValue(aCard, aAttrName, aValue) {
      return com.gContactSync.AbManager.setCardValue(aCard, aAttrName, aValue);
    },
   /**
-   * AddressBook.hasAddress
    * Returns true if the given card has at least one address-related property
    * for the given type.
-   * @param aCard    The card to check.
-   * @param aPrefix  The prefix/type (Home or Work).
-   * @return True if aCard has at least one address-related property of the
-   *         given type.
+   * @param aCard    {nsIAbCard} The card to check.
+   * @param aPrefix  {string} The prefix/type (Home or Work).
+   * @returns {boolean} True if aCard has at least one address-related property
+   *                   of the given type.
    */
   hasAddress: function AddressBook_hasAddress(aCard, aPrefix) {
     com.gContactSync.AbManager.checkCard(aCard);
@@ -309,22 +303,20 @@ com.gContactSync.AddressBook.prototype = {
            this.getCardValue(aCard, aPrefix + "Country");
   },
   /**
-   * AddressBook.makeCard
    * Creates and returns a new address book card.
-   * @return A new instantiation of nsIAbCard.
+   * @returns {nsIAbCard} A new instantiation of nsIAbCard.
    */
   makeCard: function AddressBook_makeCard() {
     return Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                      .createInstance(Components.interfaces.nsIAbCard);
   },
   /**
-   * AddressBook.equals
    * Returns true if the directory passed in is the same as the directory
    * stored by this AddressBook object.  Two directories are considered the same
    * if and only if their Uniform Resource Identifiers (URIs) are the same.
    * @param aOtherDir The directory to compare with this object's directory.
-   * @return True if the URI of the passed directory is the same as the URI of
-   *         the directory stored by this object.
+   * @returns {boolean} True if the URI of the passed directory is the same as
+   *                   the URI of the directory stored by this object.
    */
   equals: function AddressBook_equals(aOtherDir) {
     // return false if the directory isn't valid
@@ -336,14 +328,14 @@ com.gContactSync.AddressBook.prototype = {
     return this.mDirectory.getDirUri() == aOtherDir.getDirUri();
   },
   /**
-   * AddressBook.hasCard
    * Returns the card in this directory, if any, with the same (not-null)
    * value for the GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
-   * @param aCard The card being searched for.
-   * @return The card in this list, if any, with the same, and non-null value
-   *         for its GoogleID attribute, or, if the GoogleID is null, if the
-   *         display name, primary, and second emails are the same.
+   * @param aCard {nsIAbCard} The card being searched for.
+   * @returns {nsIAbCard} The card in this list, if any, with the same, and
+   *                     non-null value for its GoogleID attribute, or, if the
+   *                     GoogleID is null, if the display name, primary, and
+   *                     second emails are the same.
    */
   hasCard: function AddressBook_hasCard(aCard) {
     com.gContactSync.AbManager.checkCard(aCard);
@@ -370,32 +362,30 @@ com.gContactSync.AddressBook.prototype = {
     return null;
   },
   /**
-   * AddressBook.setPrefId
    * Sets the preference id for this mailing list.  The update method must be
    * called in order for the change to become permanent.
-   * @param aPrefId The new preference ID for this mailing list.
+   * @param aPrefId {string} The new preference ID for this mailing list.
    */
   setPrefId: function AddressBook_setPrefId(aPrefId) {
     this.mDirectory.dirPrefId = aPrefId;
   },
   /**
-   * AddressBook.getPrefId
    * Returns the preference ID of this directory.
-   * @return The preference ID of this directory.
+   * @returns {string} The preference ID of this directory.
    */
   getPrefId: function AddressBook_getPrefId() {
     return this.mDirectory.dirPrefId;
   },
   /**
-   * AddressBook.getStringPref
    * Gets and returns the string preference, if possible, with the given name.
    * Returns null if this list doesn't have a preference ID or if there was an
    * error getting the preference.
-   * @param aName         The name of the preference to get.
-   * @param aDefaultValue The value to set the preference at if it fails.  Only
-   *                      used in Thunderbird 3.
-   * @return The value of the preference with the given name in the preference
-   *         branch specified by the preference ID, if possible.  Otherwise null.
+   * @param aName         {string} The name of the preference to get.
+   * @param aDefaultValue {string} The value to set the preference at if it
+   *                               fails.  Only used in Thunderbird 3.
+   * @returns {string} The value of the preference with the given name in the
+   *                  preference branch specified by the preference ID, if
+   *                  possible.  Otherwise null.
    */
   getStringPref: function AddressBook_getStringPref(aName, aDefaultValue) {
     var id = this.getPrefId();
@@ -435,10 +425,9 @@ com.gContactSync.AddressBook.prototype = {
     return null;
   },
   /**
-   * AddressBook.setStringPref
-   * Setshe string preference, if possible, with the given name and value.
-   * @param aName  The name of the preference to get.
-   * @param aValue The value to set the preference to.
+   * Sets the string preference, if possible, with the given name and value.
+   * @param aName  {string} The name of the preference to set.
+   * @param aValue {string} The value to which the preference is set.
    */
   setStringPref: function AddressBook_setStringPref(aName, aValue) {
     var id = this.getPrefId();
@@ -477,18 +466,16 @@ com.gContactSync.AddressBook.prototype = {
   },
 
   /**
-   * AddressBook.getName
    * Returns the name of this address book.
-   * @return The name of this address book.
+   * @returns {string} The name of this address book.
    */
   getName: function AddressBook_getName() {
     return this.mDirectory.dirName;
   },
   /**
-   * AddressBook.setName
    * Sets the name of this address book.  Throws an error if the name is set to
    * either the PAB or CAB's name.
-   * @param aName The new name for this directory.
+   * @param aName {string} The new name for this directory.
    */
   setName: function AddressBook_setName(aName) {
     // make sure it isn't being set to the PAB or CAB name and make sure that
@@ -527,26 +514,26 @@ com.gContactSync.AddressBook.prototype = {
     }
   },
   /**
-   * AddressBook.getDirType
    * Returns the directory type of this address book.
    * See mailnews/addrbook/src/nsDirPrefs.h
+   * @returns {integer} The directory type of this address book.
    */
   getDirType: function AddressBook_getDirType() {
     return this.mDirectory.dirType;
   },
   /**
-   * AddressBook.newListObj
    * Creates a new mailing list in this directory and returns a MailList object
    * representing the new list.
+   * @returns {MailList} A new MailList object.
    */
   newListObj: function AddressBook_newListObj(aList, aParentDirectory, aNew) {
     return new com.gContactSync.MailList(aList, aParentDirectory, aNew);
   },
   /**
-   * AddressBook.deleteAB
    * Permanently deletes this address book without a confirmation dialog.
    * This will not allow deleting the PAB or CAB and will show a popup
    * if there is an attempt to delete one of those ABs.
+   * @returns {boolean} True if the AB was deleted.
    */
   deleteAB: function AddressBook_delete() {
     return com.gContactSync.AbManager.deleteAB(this.mURI);

@@ -34,15 +34,18 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function optionsLoadListener(e) {
-  com.gContactSync.FileIO.init();
- }, false);
+window.addEventListener("load",
+  /** Initializes the FileIO class when the window has finished loading */
+  function gCS_FileIOLoadListener(e) {
+    com.gContactSync.FileIO.init();
+  },
+false);
 
 /**
- * FileIO
  * A class for reading, writing, and appending to files with an nsIFile for
  * storing data, authentication info, and logs.
  * @class
@@ -53,7 +56,6 @@ com.gContactSync.FileIO = {
     LOG_FILE: "gcontactsync_log.txt" // stores the log from the last sync
   },
   /**
-   * FileIO.init
    * Initializes the files contained in this class.
    * Also creates the log directory, if necessary.
    */
@@ -86,10 +88,10 @@ com.gContactSync.FileIO = {
     }
   },
   /**
-   * FileIO.getFileInExtDir
    * Gets the the file in the extension's directory with the given name.
-   * @param aName  The name of the file to get.
-   * @return An nsIFile with the given name in the extension's directory.
+   * @param aName {string} The name of the file to get.
+   * @returns {nsIFile} The file with the given name in the extension's
+   *                   directory.
    */
   getFileInExtDir: function FileIO_getFileInExtDir(aName) {
     var MY_ID = "gContactSync@pirules.net";
@@ -98,9 +100,8 @@ com.gContactSync.FileIO = {
     return em.getInstallLocation(MY_ID).getItemFile(MY_ID, aName);
   },
   /**
-   * FileIO.getProfileDirectory
    * Returns an nsIFile of the current profile directory of the application.
-   * @return An nsIFile of the current profile directory of the application.
+   * @returns {nsIFile} The current profile directory of the application.
    */
   getProfileDirectory: function FileIO_getProfileDirectory() {
     return Components.classes["@mozilla.org/file/directory_service;1"]
@@ -108,10 +109,10 @@ com.gContactSync.FileIO = {
                      .get("ProfD", Components.interfaces.nsIFile);
   },
   /**
-   * FileIO.readFile
    * Opens the given file and returns an array of the lines within it.
-   * @param aFile  The nsIFile to read.
-   * @return An array of the lines in the file or [] if there is an error.
+   * @param aFile  {nsIFile} The nsIFile to read.
+   * @returns {array} An array of the lines in the file or [] if there is an
+   *                 error.
    */
   readFile: function FileIO_readFile(aFile) {
     this.checkFile(aFile);
@@ -138,12 +139,11 @@ com.gContactSync.FileIO = {
     }
   },
   /**
-   * FileIO.writeToFile
    * Writes the string data to the nsIFile aFile.
    * NOTE: This will delete any existing text in the file.
-   * @param aFile  The nsIFile to which the string is written.
-   * @param aData  The string of data to write to the file.
-   * @return True if there is no error.
+   * @param aFile  {nsIFile} The nsIFile to which the string is written.
+   * @param aData  {string}  The string of data to write to the file.
+   * @returns {boolean} True if there is no error.
    */
   writeToFile: function FileIO_writeToFile(aFile, aData) {
     this.checkFile(aFile);
@@ -163,11 +163,10 @@ com.gContactSync.FileIO = {
     return false;
   },
   /**
-   * FileIO.appendToFile
    * Appends the string aData to the nsIFile aFile.
-   * @param aFile  The nsIFile to which the string is appended.
-   * @param aData  The string of data to append to the file.
-   * @return True if there is no error.
+   * @param aFile {nsIFile} The nsIFile to which the string is appended.
+   * @param aData {string} The string of data to append to the file.
+   * @returns {boolean} True if there is no error.
    */
   appendToFile: function FileIO_appendToFile(aFile, aData) {
     if (!aData)
@@ -190,11 +189,10 @@ com.gContactSync.FileIO = {
     return false;
   },
   /**
-   * FileIO.checkFile
    * Checks that an argument is not null, is an instance of nsIFile, and that,
    * if it exists, that it is a file (not a directory).
-   * @param aFile    The file to check.
-   * @param aCaller  The name of the calling method.
+   * @param aFile   {nsIFile} The file to check.
+   * @param aCaller {string}  The name of the calling method.
    */
   checkFile: function FileIO_checkFile(aFile) {
     if (!aFile || !aFile instanceof Components.interfaces.nsIFile || (aFile.exists() && !aFile.isFile()))

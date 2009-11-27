@@ -34,32 +34,37 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * Preferences
  * Stores information on Preferences related to gContactSync.
  * @class
  */
 com.gContactSync.Preferences = {
-  // the preferences service
+  /** The preferences service */
   mService: Components.classes["@mozilla.org/preferences-service;1"]
                       .getService(Components.interfaces.nsIPrefService),
-  // the branch used by gContactSync
+  /** The Preferences branch used by gContactSync */
   mSyncBranch: Components.classes["@mozilla.org/preferences-service;1"]
                          .getService(Components.interfaces.nsIPrefService)
                          .getBranch("extensions.gContactSync.")
                         .QueryInterface(Components.interfaces.nsIPrefBranch2),
   mExtendedProperties: [],
-  // different types of preferences (bool, int, and char)
+  /** different types of preferences (bool, int, and char) */
   mTypes: {
+    /** Boolean preference */
     BOOL: "bool",
+    /** Integer preference */
     INT:  "int",
+    /** String preference */
     CHAR: "char"
   },
-  // preferences related to gContactSync
-  // verboseLog is first since it is used when logging preferences
+  /**
+   * Preferences related to gContactSync
+   * verboseLog is first since it is used when logging preferences
+   */
   mSyncPrefs: {
     verboseLog:               new com.gContactSync.Pref("verboseLog",         "bool", true),
     initialDelay:             new com.gContactSync.Pref("initialDelay",       "int",  500),
@@ -93,11 +98,11 @@ com.gContactSync.Preferences = {
     updateGoogleInConflicts:  new com.gContactSync.Pref("updateGoogleInConflicts",  "bool", true)
   },
   /**
-   * Preferences.getPref
    * Gets a preference given its branch, name, and type
-   * @param aBranch   The branch where the preference is stored
-   * @param aName     The name of the preference
-   * @param aType     The type of preference.  Must be in Preferences.mTypes.
+   * @param aBranch   {nsIPrefBranch} The branch where the preference is stored.
+   * @param aName     {string} The name of the preference
+   * @param aType     {string} The type of preference.
+   *                           Must be in Preferences.mTypes.
    */
   getPref: function Preferences_getPref(aBranch, aName, aType) {
     if (!aBranch)
@@ -116,12 +121,12 @@ com.gContactSync.Preferences = {
     }
   },
   /**
-   * Preferences.setPref
    * Sets a preference given its branch, name, type and value.
-   * @param aBranch   The branch where the preference is (to be) stored.
-   * @param aName     The name of the preference.
-   * @param aType     The type of preference.  Must be in Preferences.mTypes.
-   * @param aValue    The value to set the preference at.
+   * @param aBranch   {nsIBranch} The branch where the preference is stored.
+   * @param aName     {string}    The name of the preference.
+   * @param aType     {string}    The type of preference.
+   *                              Must be in Preferences.mTypes.
+   * @param aValue    {string}    The value to set the preference.
    */
   setPref: function Preferences_setPref(aBranch, aName, aType, aValue) {
     if (!aBranch)

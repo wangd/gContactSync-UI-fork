@@ -34,30 +34,32 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
-/**
- * Overlay.js
+/*
  * Contains the Overlay class and a load listener for the Address Book.
  * When the Address Book loads, initializes the string bundle(s), gets the
  * preferences, initializes the FileIO class and member files, and
  * checks for an authentication token.  If there is no auth token it prompts the
  * user to login.
  */
-// initialize everything after the Address Book window loads
-window.addEventListener("load", function overlayLoadListener(e) {
+window.addEventListener("load",
+  /** Initializes the FileIO class when the window has finished loading */
+  function gCS_overlayLoadListener(e) {
     com.gContactSync.Overlay.initialize();
-}, false);
+  },
+false);
 
 /**
- * Overlay
  * Checks if the authentication token is present and valid.  If so, it starts
  * everything up and synchronizes the contacts.  Otherwise it shows the
  * login window.
  * @class
  */
 com.gContactSync.Overlay = {
+  /** The last version of gContactSync */
   mLastVersion: "0",
   /**
    * Special links for various IM protocols
@@ -143,7 +145,6 @@ com.gContactSync.Overlay = {
     com.gContactSync.AbListener.remove();
   },
   /**
-   * Overlay.addTreeCols
    * Adds treecol elements to the address book results tree that shows cards in
    * the currently selected directory.  These treecols allow the user to show
    * and sort by extra attributes that are added by this extension.  This will
@@ -204,11 +205,8 @@ com.gContactSync.Overlay = {
     }
   },
   /**
-   * Overlay.setupMenu
    * Sets up the gContactSync menu in the address book menubar
-   *
-   * @return true  - The menu was created
-   * @return false - The menu could not be added
+   * @returns {boolean} True  - The menu was created
    */
   setupMenu: function Overlay_setupMenu() {
     try {
@@ -314,9 +312,9 @@ com.gContactSync.Overlay = {
     }
   },
   /**
-   * Overlay.setupButton
    * Sets up the Sync button to go between the Write and Delete buttons and adds
    * a separator between Sync and Delete.
+   * @returns {boolean} True if the button was added manually.
    */
   setupButton: function Overlay_setupButton() {
     try {
@@ -408,10 +406,8 @@ com.gContactSync.Overlay = {
     return false;
   },
   /**
-   * Overlay.checkAuthentication
    * Checks to see whether or not there is an authentication token in the login
    * manager.  If so, it begins a sync.  If not, it shows the login prompt.
-   * @param firstLogin 
    */
   checkAuthentication: function Overlay_checkAuthentication() {
     if (com.gContactSync.gdata.isAuthValid()) {
@@ -431,7 +427,6 @@ com.gContactSync.Overlay = {
     this.promptLogin();
   },
   /**
-   * Overlay.promptLogin
    * Prompts the user to enter his or her Google username and password and then
    * gets an authentication token to store and use.
    */
@@ -477,10 +472,9 @@ com.gContactSync.Overlay = {
     return true;
   },
   /**
-   * Overlay.login
    * Stores the given auth token in the login manager and starts the setup
    * window that will begin the first synchronization when closed.
-   * @param aAuthToken The authentication token to store.
+   * @param aAuthToken {string} The authentication token to store.
    */
   login: function Overlay_login(aUsername, aAuthToken) {
     com.gContactSync.LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
@@ -497,23 +491,20 @@ com.gContactSync.Overlay = {
     };
   },
   /**
-   * Overlay.setStatusBarText
    * Sets the text of the status bar to the given value.
-   * @param aText  The text to put on the status bar.
+   * @param aText {string} The text to put on the status bar.
    */
   setStatusBarText: function Overlay_setStatusBarText(aText) {
     document.getElementById("statusText2").label = aText;
   },
   /**
-   * Overlay.getStatusBarText
    * Gets the text of the status bar.
-   * @return The text of the status bar
+   * @returns {string} The text of the status bar
    */
-  getStatusBarText: function Overlay_getStatusBarText(aText) {
+  getStatusBarText: function Overlay_getStatusBarText() {
     return document.getElementById("statusText2").label;
   },
   /**
-   * Overlay.writeTimeToStatusBar
    * Writes the current time to the status bar along with the sync finished
    * string.
    * When the status text is clicked the log file is opened.
@@ -530,7 +521,6 @@ com.gContactSync.Overlay = {
     this.setStatusBarText(text + " " + hours + ":" + minutes + ":" + seconds);
   },
   /**
-   * Overlay.showLog
    * Opens the "view source" window with the log file.
    */
   showLog: function Overlay_showLog() {
@@ -544,6 +534,9 @@ com.gContactSync.Overlay = {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to open the log", e);
     }
   },
+  /**
+   * Modifies the SetAbView function.  Unused
+   */
   // NOTE - this function can break search and more if not overridden properly
   mySetAbView: function Overlay_mySetAbView(aURI, aSearchView, aSortCol, aSortDir) {
     // call the original
@@ -567,14 +560,13 @@ com.gContactSync.Overlay = {
     // now find and hide any dummy e-mail addresses
   },
   /**
-   * Overlay.myDisplayCardViewPane
    * Updates the Card View pane boxes and headers for whether or not they should
    * be visible based on additional attributes added by gContactSync.
    * Links the third and fourth e-mail address as well as the "other" address.
    * Should be set to override the DisplayCardViewPane function in
    * abCardViewOverlay.js.  Requires that the original function should be set as
    * the com.gContactSync.originalDisplayCardViewPane variable.
-   * @param aCard The card being viewed.
+   * @param aCard {nsIAbCard} The card being viewed.
    */
   myDisplayCardViewPane: function Overlay_myDisplayCardViewPane(aCard) {
     // call the original first
@@ -658,12 +650,11 @@ com.gContactSync.Overlay = {
     }
   },
   /**
-   * Overlay.hideNodes
    * Hides all of the nodes based on the array.  The node must be a propery of
    * cvData with the same name as the element in aArray prefixed with a 'cv'.
    * For example, to hide cvData.cvHomeAddress the element would be
    * 'HomeAddress'.
-   * @param aArray An array of names as described above.
+   * @param {array} aArray An array of names as described above.
    */
   hideNodes: function Overlay_hideNodes(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++) {
@@ -678,12 +669,11 @@ com.gContactSync.Overlay = {
     }
   },
   /**
-   * Overlay.showNodes
    * Shows all of the nodes based on the array.  The node must be a propery of
    * cvData with the same name as the element in aArray prefixed with a 'cv'.
    * For example, to show cvData.cvHomeAddress the element would be
    * 'HomeAddress'.
-   * @param aArray An array of names as described above.
+   * @param aArray {array} An array of names as described above.
    */
   showNodes: function Overlay_showNodes(aArray) {
     for (var i = 0, length = aArray.length; i < length; i++) {
@@ -701,13 +691,15 @@ com.gContactSync.Overlay = {
    * A helper method for myDisplayCardViewPane that iterates through an array of
    * attributes and returns true if at least one of them is present in the given
    * card.
-   * @param aCard         The card whose attributes are checked.
-   * @param aArray        The array of attributes to check the for in the card.
-   * @param aVisible      Optional. True if the element was previously visible.
-   * @param aUseTypeLabel Optional.  True if the labels should be determined by
-   *                      the type of the attribute instead of the attribute's
-   *                      name.
-   * @return True if at least one attribute in aArray is present in aCard.
+   * @param aCard         {nsIAbCard} The card whose attributes are checked.
+   * @param aArray        {array}     The array of attributes to check for in
+   *                                  the card.
+   * @param aVisible      {boolean}   Optional. True if the element was
+   *                                  previously visible.
+   * @param aUseTypeLabel {boolean}   Optional.  True if the labels should be
+   *                                  the type of the attribute instead of the
+   *                                  attribute's name.
+   * @returns {boolean} True if at least one attribute in aArray is present in aCard.
    */
   getVisible: function Overlay_getVisible(aCard, aArray, aVisible, aUseTypeLabel) {
     var visible = aVisible;
@@ -738,26 +730,26 @@ com.gContactSync.Overlay = {
     return visible;
   },
   /**
-   * Overlay.myOnLoadCardView
    * Sets up a few nodes and labels in addition to what the OnLoadCardView
    * function does in abCardViewOverlay.js.  Should be run when the Overlay is
    * loaded.
    */
   myOnLoadCardView: function Overlay_myOnLoadCardView() {
-    if (!com.gContactSync.originalOnLoadCardView){
+    if (!com.gContactSync.originalOnLoadCardView)
       return;
-    }
     com.gContactSync.originalOnLoadCardView.apply(this, arguments);
 
     // add the <description> elements
     var vbox = document.getElementById("cvbContact");
     // setup the third and fourth e-mail addresses
     var xhtml = "http://www.w3.org/1999/xhtml";
-    cvData.cvThirdEmailBox = com.gContactSync.Overlay.makeDescElement("ThirdEmailBox", "CardViewLink");
+    cvData.cvThirdEmailBox = com.gContactSync.Overlay.makeDescElement("ThirdEmailBox",
+                                                                      "CardViewLink");
     cvData.cvThirdEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvThirdEmail.setAttribute("id", "ThirdEmail");
     cvData.cvThirdEmailBox.appendChild(cvData.cvThirdEmail);
-    cvData.cvFourthEmailBox = com.gContactSync.Overlay.makeDescElement("FourthEmailBox", "CardViewLink");
+    cvData.cvFourthEmailBox = com.gContactSync.Overlay.makeDescElement("FourthEmailBox",
+                                                                       "CardViewLink");
     cvData.cvFourthEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvFourthEmail.setAttribute("id", "FourthEmail");
     cvData.cvFourthEmailBox.appendChild(cvData.cvFourthEmail);
@@ -766,23 +758,28 @@ com.gContactSync.Overlay = {
     
     // the screennames
     if (com.gContactSync.Preferences.mSyncPrefs.enableImUrls.value) {
-      cvData.cvTalkScreenNameBox  = com.gContactSync.Overlay.makeDescElement("TalkScreenNameBox", "CardViewLink");
+      cvData.cvTalkScreenNameBox  = com.gContactSync.Overlay.makeDescElement("TalkScreenNameBox",
+                                                                             "CardViewLink");
       cvData.cvTalkScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvTalkScreenName.setAttribute("id", "TalkScreenName");
       cvData.cvTalkScreenNameBox.appendChild(cvData.cvTalkScreenName);
-      cvData.cvICQScreenNameBox   = com.gContactSync.Overlay.makeDescElement("ICQScreenNameBox", "CardViewLink");
+      cvData.cvICQScreenNameBox   = com.gContactSync.Overlay.makeDescElement("ICQScreenNameBox",
+                                                                             "CardViewLink");
       cvData.cvICQScreenName      = document.createElementNS(xhtml, "html:a");
       cvData.cvICQScreenName.setAttribute("id", "ICQScreenName");    
       cvData.cvICQScreenNameBox.appendChild(cvData.cvICQScreenName);
-      cvData.cvYahooScreenNameBox  = com.gContactSync.Overlay.makeDescElement("YahooScreenNameBox", "CardViewLink");
+      cvData.cvYahooScreenNameBox  = com.gContactSync.Overlay.makeDescElement("YahooScreenNameBox",
+                                                                              "CardViewLink");
       cvData.cvYahooScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvYahooScreenName.setAttribute("id", "YahooScreenName");    
       cvData.cvYahooScreenNameBox.appendChild(cvData.cvYahooScreenName);
-      cvData.cvMSNScreenNameBox    = com.gContactSync.Overlay.makeDescElement("MSNScreenNameBox", "CardViewLink");
+      cvData.cvMSNScreenNameBox    = com.gContactSync.Overlay.makeDescElement("MSNScreenNameBox",
+                                                                              "CardViewLink");
       cvData.cvMSNScreenName       = document.createElementNS(xhtml, "html:a");
       cvData.cvMSNScreenName.setAttribute("id", "MSNScreenName");    
       cvData.cvMSNScreenNameBox.appendChild(cvData.cvMSNScreenName);
-      cvData.cvJabberScreenNameBox = com.gContactSync.Overlay.makeDescElement("JabberScreenNameBox", "CardViewLink");
+      cvData.cvJabberScreenNameBox = com.gContactSync.Overlay.makeDescElement("JabberScreenNameBox",
+                                                                              "CardViewLink");
       cvData.cvJabberScreenName    = document.createElementNS(xhtml, "html:a");
       cvData.cvJabberScreenName.setAttribute("id", "JabberScreenName");
       cvData.cvJabberScreenNameBox.appendChild(cvData.cvJabberScreenName);
@@ -834,12 +831,12 @@ com.gContactSync.Overlay = {
     vbox.appendChild(cvData.cvOtherNumber);
   },
   /**
-   * Overlay.makeDescElement
    * Makes and returns a <description> element of the given class and with an ID
    * of aName with a prefix of "cv"
-   * @param aName  The ID of the element that will be prefixed with a "cv"
-   * @param aClass The class of the element.
-   * @return A new <description> element.
+   * @param aName  {string} The ID of the element that will be prefixed with a
+   *                        "cv"
+   * @param aClass {string} The class of the element.
+   * @returns {XML} A new <description> element.
    */
   makeDescElement: function Overlay_makeDescElement(aName, aClass) {
     var elem = document.createElement("description");
@@ -848,13 +845,11 @@ com.gContactSync.Overlay = {
     return elem;
   },
   /**
-   * Overlay.openPreferences
    * Opens the Preferences dialog for gContactSync
    */
   openPreferences: function Overlay_openPreferences() {
     var win = window.open("chrome://gcontactsync/content/options.xul", "prefs",
                           "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
-    // when the pref window loads, set its onunload property to get the prefs again
    win.onload = function onloadListener() {
       win.onunload = function onunloadListener() {
         try { com.gContactSync.Preferences.getSyncPrefs(); } catch (e) {}
@@ -862,7 +857,6 @@ com.gContactSync.Overlay = {
     };
   },
   /**
-   * Overlay.openAccounts
    * Opens the Accounts dialog for gContactSync
    */
   openAccounts: function Overlay_openAccounts() {
@@ -870,7 +864,6 @@ com.gContactSync.Overlay = {
                 "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
   },
   /**
-   * openURL
    * Opens the given URL using the openFormattedURL and
    * openFormattedRegionURL functions.
    *
@@ -900,7 +893,6 @@ com.gContactSync.Overlay = {
     return;
   },
   /**
-   * Overlay.addResetContext
    * Adds a 'Reset' menuitem to the Address Book contaxt menu for the list on
    * the left side of the Address Book window.
    */
@@ -913,7 +905,6 @@ com.gContactSync.Overlay = {
     document.getElementById("dirTreeContext").appendChild(item);
   },
   /**
-   * Overlay.resetSelectedAB
    * Resets the currently selected address book after showing a confirmation
    * dialog.
    */
@@ -929,13 +920,12 @@ com.gContactSync.Overlay = {
     }
   },
   /**
-   * Overlay.fixDescriptionStyle
    * Fixes the description style as set (accidentally?) by the
    * Duplicate Contacts Manager extension in duplicateContactsManager.css
    * It appears that the new description style was applied to addressbook.xul
    * on accident when it was meant only for duplicateEntriesWindow.xul
    *
-   * @return true if the description style was removed.
+   * @returns {boolean} true if the description style was removed.
    */
   fixDescriptionStyle: function Overlay_fixDescriptionStyle() {
     // Make sure this is addressbook.xul only

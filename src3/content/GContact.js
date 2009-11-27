@@ -33,6 +33,11 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
  * Makes a new GContact object that has functions to get and set various values
  * for a Google Contact's Atom/XML representation.  If the parameter aXml is not
@@ -62,8 +67,11 @@ com.gContactSync.GContact = function gCS_GContact(aXml) {
   }
 }
 com.gContactSync.GContact.prototype = {
+  /** An array of XML Elements that will be removed */
   mElementsToRemove: [],
+  /** The current element being modified or returned (internal use only) */
   mCurrentElement:   null,
+  /** The groups that this contact is in */
   mGroups:           {},
   /**
    * Checks for an invalid IM address as explained here:
@@ -121,12 +129,13 @@ com.gContactSync.GContact.prototype = {
   /**
    * Returns the value of an element with a type where the value is in the
    * value of the child node.
-   * @param aElement The GElement object with information about the value to get.
-   * @param aIndex   The index of the value (ie 0 for primary email, 1 for
-   *                 second...).  Set to 0 if not supplied.
-   * @param aType    The type, if the element can have types.
-   * @return A new com.gContactSync.Property object with the value of the element, if found.  The
-   *         type of the Property will be aType.
+   * @param aElement {GElement} The GElement object with information about the
+   *                            value to get.
+   * @param aIndex   {int} The index of the value (ie 0 for primary email, 1 for
+   *                       second...).  Set to 0 if not supplied.
+   * @param aType    {string} The type, if the element can have types.
+   * @returns {Property} A new Property object with the value of the element, if
+   *                    found.  The type of the Property will be aType.
    */
   getElementValue: function GContact_getElementValue(aElement, aIndex, aType) {
     if (!aIndex)
@@ -158,7 +167,8 @@ com.gContactSync.GContact.prototype = {
                 type = arr[i].getAttribute("label");
               if (type)
                 type = type.substring(type.indexOf("#") + 1);
-              return new com.gContactSync.Property(arr[i].childNodes[0].nodeValue, type);
+              return new com.gContactSync.Property(arr[i].childNodes[0].nodeValue,
+                                                   type);
             }
             return null;
           case com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR:
@@ -175,7 +185,8 @@ com.gContactSync.GContact.prototype = {
                   type = arr[i].getAttribute("label");
               }
               type = type.substring(type.indexOf("#") + 1);
-              return new com.gContactSync.Property(arr[i].getAttribute(aElement.attribute), type);
+              return new com.gContactSync.Property(arr[i].getAttribute(aElement.attribute),
+                                                   type);
             }
           case com.gContactSync.gdata.contacts.types.UNTYPED:
           case com.gContactSync.gdata.contacts.types.PARENT_TYPED:
@@ -197,10 +208,11 @@ com.gContactSync.GContact.prototype = {
   /**
    * Google's contacts schema puts the organization name and job title in a
    * separate element, so this function handles those two attributes separately.
-   * @param aElement The GElement object with a valid org tag name (orgDepartment,
-   *                 orgJobDescription, orgName, orgSymbol, or orgTitle)
-   * @param aValue   The value to set.  Null if the XML Element should be
-   *                 removed.
+   * @param aElement {GElement} The GElement object with a valid org tag name
+   *                            (orgDepartment, orgJobDescription, orgName,
+   *                             orgSymbol, or orgTitle)
+   * @param aValue  {string}    The value to set.  Null if the XML Element
+   *                            should be removed.
    */
   setOrg: function GContact_setOrg(aElement, aValue) {
     var tagName = aElement ? aElement.tagName : null;
@@ -241,11 +253,11 @@ com.gContactSync.GContact.prototype = {
   /**
    * Google's contacts schema puts several components of a name into a
    * separate element, so this function handles those attributes separately.
-   * @param aElement The GElement object with a valid gd:name tag name
-   *                 (givenName, additionalName, familyName, namePrefix,
-   *                  nameSuffix, or fullName).
-   * @param aValue   The value to set.  Null if the XML Element should be
-   *                 removed.
+   * @param aElement {GElement} The GElement object with a valid gd:name tag
+   *                           (givenName, additionalName, familyName,
+   *                            namePrefix, nameSuffix, or fullName).
+   * @param aValue   {string}  The value to set.  Null if the XML Element should
+   *                           be removed.
    */
   setName: function GContact_setName(aElement, aValue) {
     var tagName = aElement ? aElement.tagName : null;
@@ -285,12 +297,13 @@ com.gContactSync.GContact.prototype = {
   /**
    * Google's contacts schema puts several components of an address into a
    * separate element, so this function handles those attributes separately.
-   * @param aElement The GElement object with a valid gd:structuredPostalAddress tag name
-   * @param aValue   The value to set.  Null if the XML Element should be
-   *                 removed.
-   * @param aType    The 'type' of address (home, work, or other)
-   * @param aIndex   The index of the address (0 for the first, 1 for the
-   *                 second, etc)
+   * @param aElement {GElement} The GElement object with a valid
+   *                            gd:structuredPostalAddress tag name
+   * @param aValue   {string}   The value to set.  Null if the XML Element
+   *                            should be removed.
+   * @param aType    {string}   The 'type' of address (home, work, or other)
+   * @param aIndex   {int}      The index of the address (0 for the first, 1 for
+   *                            the second, etc)
    */
   setAddress: function GContact_setAddress(aElement, aValue, aType, aIndex) {
     var tagName = aElement ? aElement.tagName : null;
@@ -354,11 +367,12 @@ com.gContactSync.GContact.prototype = {
   /**
    * Sets the value of the specified element.
    * NOTE: removeElements MUST be called after all elements are set
-   * @param aElement The GElement object with information about the value to get.
-   * @param aIndex   The index of the value (ie 0 for primary email, 1 for
-   *                 second...).  Set to 0 if not supplied.
-   * @param aType    The type, if the element can have types.
-   * @param aValue   The value to set for the element.
+   * @param aElement {GElement} The GElement object with information about the
+   *                            value to get.
+   * @param aIndex  {int}  The index of the value (ie 0 for primary email, 1 for
+   *                       second...).  Set to 0 if not supplied.
+   * @param aType    {string} The type, if the element can have types.
+   * @param aValue   {string} The value to set for the element.
    */
   setElementValue: function GContact_setElementValue(aElement, aIndex, aType, aValue) {
     // Postal addresses are different...
@@ -486,8 +500,9 @@ com.gContactSync.GContact.prototype = {
     return true;
   },
   /**
-   * Gets the last modified date from an contacts's XML feed in milliseconds from 1970
-   * @return The last modified date of the entry in milliseconds from 1970
+   * Gets the last modified date from an contacts's XML feed in milliseconds
+   * since 1970.
+   * @returns {int} The last modified date of the entry in milliseconds from 1970
    */
   getLastModifiedDate: function GContact_getLastModifiedDate() {
     try {
@@ -519,9 +534,9 @@ com.gContactSync.GContact.prototype = {
   },
   /**
    * Returns the value of the extended property with a matching name attribute.
-   * @param aName The name of the extended property to return
-   * @return A Property object with the value of the extended property with the
-   *        name attribute aName
+   * @param aName {string} The name of the extended property to return.
+   * @returns {Property} A Property object with the value of the extended
+   *                    property with the name attribute aName.
    */
   getExtendedProperty: function GContact_getExtendedProperty(aName) {
     var arr = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url, "extendedProperty");
@@ -533,8 +548,8 @@ com.gContactSync.GContact.prototype = {
   /**
    * Sets an extended property with the given name and value if there are less
    * than 10 existing.  Logs a warning if there are already 10 or more.
-   * @param aName  The name of the property.
-   * @param aValue The value of the property.
+   * @param aName  {string} The name of the property.
+   * @param aValue {string} The value of the property.
    */
   setExtendedProperty: function GContact_setExtendedProperty(aName, aValue) {
     if (this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url,
@@ -555,13 +570,15 @@ com.gContactSync.GContact.prototype = {
   /**
    * Returns the value of the XML Element with the supplied tag name at the
    * given index of the given type (home, work, other, etc.)
-   * @param aName  The tag name of the value to get.  See gdata for valid tag
-                   names.
-   * @param aIndex Optional.  The index, if non-zero, of the value to get.
-   * @param aType  The type of element to get if the tag name has different
-   *               types (home, work, other, etc.).
-   * @return A new com.gContactSync.Property object with the value and type, if applicable.
-   *         If aName is groupMembership info, returns an array of the group IDs
+   * @param aName  {string} The tag name of the value to get.  See gdata for
+                            valid tag names.
+   * @param aIndex {int} Optional.  The index, if non-zero, of the value to get.
+   * @param aType  {string} The type of element to get if the tag name has
+   *                        different types (home, work, other, etc.).
+   * @returns {Property} A new Property object with the value and type, if
+   *                    applicable.
+   *                    If aName is groupMembership info, returns an array of
+   *                    the group IDs
    */
   getValue: function GContact_getValue(aName, aIndex, aType) {
     // TODO uncomment
@@ -590,10 +607,11 @@ com.gContactSync.GContact.prototype = {
   /**
    * Sets the value with the name aName to the value aValue based on the type
    * and index.
-   * @param aName  The tag name of the value to set.
-   * @param aIndex The index of the element whose value is set.
-   * @param aType  The type of the element (home, work, other, etc.).
-   * @param aValue The value to set.  null if the element should be removed.
+   * @param aName  {string} The tag name of the value to set.
+   * @param aIndex {int}    The index of the element whose value is set.
+   * @param aType  {string} The type of the element (home, work, other, etc.).
+   * @param aValue {string} The value to set.  null if the element should be
+   *                        removed.
    */
   setValue: function GContact_setValue(aName, aIndex, aType, aValue) {
     try {
@@ -661,8 +679,8 @@ com.gContactSync.GContact.prototype = {
   },
   /**
    * Sets the groups of that this contact is in based on the array of IDs.
-   * @param aGroups An array of the IDs of the groups to which the contact
-   *                should belong.
+   * @param aGroups {array} An array of the IDs of the groups to which the
+   *                        contact should belong.
    */
   setGroups: function GContact_setGroups(aGroups) {
     this.clearGroups(); // clear existing groups
@@ -682,7 +700,7 @@ com.gContactSync.GContact.prototype = {
   },
   /**
    * Removes the contact from the given group element.
-   * @param aGroup The group from which the contact should be removed.
+   * @param aGroup {Group} The group from which the contact should be removed.
    */
   removeFromGroup: function GContact_removeFromGroup(aGroup) {
     if (!aGroup) {
@@ -700,8 +718,8 @@ com.gContactSync.GContact.prototype = {
   },
   /**
    * Adds the contact to the given, existing, group.
-   * @param aGroupURL The URL of an existing group to which the contact will be
-   *                  added.
+   * @param aGroupURL {string} The URL of an existing group to which the contact
+   *                           will be added.
    */
   addToGroup: function GContact_addToGroup(aGroupURL) {
     if (!aGroupURL) {
@@ -725,9 +743,9 @@ com.gContactSync.GContact.prototype = {
   /**
    * Returns true if the given XML Element is a match for the GElement object
    * and the type (ie home, work, other, etc.)
-   * @param aElement The GElement object (@see GElement.js)
-   * @param aXmlElem The XML Element to check
-   * @param aType    The type (home, work, other, etc.)
+   * @param aElement {GElement}    The GElement object (@see GElement.js)
+   * @param aXmlElem {XML Element} The XML Element to check
+   * @param aType    {string}      The type (home, work, other, etc.)
    */
   isMatch: function GContact_isMatch(aElement, aXmlElem, aType, aDontSkip) {
     if (aElement.contactType == com.gContactSync.gdata.contacts.types.UNTYPED)
@@ -758,6 +776,7 @@ com.gContactSync.GContact.prototype = {
   },
   /**
    * Returns the last portion of this contact's ID
+   * @returns {string} The ID of this contact.
    */
   getID: function GContact_getID() {
     var val   = this.getValue("id").value;
@@ -766,7 +785,7 @@ com.gContactSync.GContact.prototype = {
   },
   /**
    * Returns an object with information about this contact's photo.
-   * @return An object containing the following properties:
+   * @returns An object containing the following properties:
    *  - url - The URL of the contact's photo
    *  - type - The type of photo (ex "image/*")
    *  - etag - The etag of the photo.

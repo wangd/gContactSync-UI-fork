@@ -34,27 +34,29 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * GElement
  * A simple class for storing information about how Google represents a contact
  * in XML.
- * @param aType       The "type" of contact, as found in gdata.types.
- * @param aTagName    The tag name of the element.
- * @param aNamespace  The Namespace object that contains the element.
- * @param aValidTypes The different types allowed, as an array, for example,
- *                    ["home", "work", "other"]
- * @param aAttribute  The attribute, if any, in which the value of the element
- *                    is stored.  If not present, then it is assumed that the
- *                    value is stored as the child node.
+ * @param aType       {string} The "type" of contact, as found in gdata.types.
+ * @param aTagName    {string} The tag name of the element.
+ * @param aNamespace  {Namespace} The Namespace object that contains the
+ *                                element.
+ * @param aValidTypes {array} The different types allowed, as an array, for
+ *                            example, ["home", "work", "other"]
+ * @param aAttribute  {string} The attribute, if any, in which the value of the
+ *                             element is stored.  If not present, then it is
+ *                             assumed that the value is stored as the child
+ *                             node.
  * @constructor
  * @class
  */
 com.gContactSync.GElement = function gCS_GElement(aType, aTagName, aNamespace, aValidTypes, aAttribute) {
   this.contactType = aType;
-  this.tagName = aTagName;
+  this.tagName     = aTagName;
   this.namespace = aNamespace;
   switch (aType) {
     case com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR:

@@ -34,28 +34,31 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * GHttpRequest
  * Sets up an HTTP request to send to Google.
  * After calling this constructor and setting up any additional data, call the
  * send method.
  * 
- * @param aType      The type of request.  Must be one of the following:
- *                   authenticate, getAll, get, update, add, delete, getGroups
- * @param aAuth      The authorization token.
- * @param aUrl       The url for the request, if unique for the type of request.
- *                   Not required for authenticate, getAll, getGroups, and add.
- * @param aBody      The body of the request.
- * @param aUsername  Optional.  Replaces "default" in the URL.
- * @param aOther     Additional parameter to use when needed.  Currently this is
- *                   only used for GET requests for obtaining contacts in a
- *                   specified group (pass the Group ID in that case)
+ * @param aType      {string} The type of request.  Must be one of the following
+ *                            authenticate, getAll, get, update, add, delete,
+ *                            getGroups
+ * @param aAuth      {string} The authorization token.
+ * @param aUrl       {string} The url for the request, if unique for the type of
+ *                            request.  Not required for authenticate, getAll,
+ *                            getGroups, and add.
+ * @param aBody      {string} The body of the request.
+ * @param aUsername  {string} Optional.  Replaces "default" in the URL.
+ * @param aOther     {string} Additional parameter to use when needed.
+ *                            Currently this is only used for GET requests for
+ *                            obtaining contacts in a specified group (pass the
+ *                            Group ID in that case)
  * @constructor
  * @class
- * @extends HttpRequest
+ * @extends com.gContactSync.HttpRequest
  */
 com.gContactSync.GHttpRequest = function gCS_GHttpRequest(aType, aAuth, aUrl, aBody, aUsername, aOther) {
   com.gContactSync.HttpRequest.call(this);  // call the superclass' constructor
@@ -158,7 +161,6 @@ com.gContactSync.GHttpRequest = function gCS_GHttpRequest(aType, aAuth, aUrl, aB
 com.gContactSync.GHttpRequest.prototype = new com.gContactSync.HttpRequest();
 
 /**
- * com.gContactSync.handle401
  * Handles 'Token Expired' errors.
  * If a sync is in progress:
  *  - Get the username
@@ -229,6 +231,11 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
   }
 }
 
+/**
+ * Called after the re-authentication HTTP request is sent after a 401 error
+ * @param aUsername {string}  The account's username.
+ * @param aAuthToken {string} An authentication token for the account.
+ */
 com.gContactSync.finish401 = function gCS_finish401(aUsername, aAuthToken) {
   com.gContactSync.LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername
                                       + " - " + aAuthToken);
@@ -242,4 +249,4 @@ com.gContactSync.finish401 = function gCS_finish401(aUsername, aAuthToken) {
     else
       com.gContactSync.Sync.getContacts();
   }
-}
+};

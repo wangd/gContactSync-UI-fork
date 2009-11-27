@@ -34,11 +34,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * Property
  * A simple object for storing the value and type of a property.
  * @param aValue {string} The value of the property.
  * @param aType  {string} The 'type' of the property (Home, Work, Other, etc.)

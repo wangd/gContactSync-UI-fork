@@ -34,14 +34,18 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
-* GAddressBook
 * An extension of AddressBook that adds functionality specific to gContactSync.
-* @param aDirectory The actual directory.
-* @param aNoPrefs   Set this to true to skip fetching the preferences.
+* @param aDirectory {nsIAbDirectory} The actual directory.
+* @param aNoPrefs   {boolean}        Set this to true to skip fetching the
+*                                    preferences.
 * @constructor
 * @class
-* @extends AddressBook
+* @extends com.gContactSync.AddressBook
 */
 com.gContactSync.GAddressBook = function gCS_GAddressBook(aDirectory, aNoPrefs) {
   // call the AddressBook constructor using this object
@@ -79,7 +83,6 @@ com.gContactSync.GAddressBook.prototype = com.gContactSync.AddressBook.prototype
 com.gContactSync.GAddressBook.prototype.prefPrefix = "gContactSync";
 
 /**
- * GAddressBook.getPrefs
  * Fetches all of this directory's preferences.  If the directory does not have
  * any given preferences this function will use the global preference's value,
  * if any.
@@ -102,7 +105,6 @@ com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPref
 };
 
 /**
- * GAddressBook.savePref
  * Save the value of a given preference for this address book.
  *
  * @param aName  {string} The name of the preference to set.
@@ -115,9 +117,8 @@ com.gContactSync.GAddressBook.prototype.savePref = function GAddressBook_savePre
 };
 
 /**
- * GAddressBook.setUsername
  * Sets the username for the account with which this address book is synced.
- * @param aUsername The username for the Google account.
+ * @param aUsername {string} The username for the Google account.
  */
 com.gContactSync.GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername) {
   this.setStringPref("gContactSyncUsername", aUsername);
@@ -128,35 +129,34 @@ com.gContactSync.GAddressBook.prototype.setUsername = function GAddressBook_setU
  * GAddressBook.getGroupID
  * Gets and returns the ID of the group in Google with which this Address
  * Book is synchronized, if any.
- * @return The ID of the group with which this directory is synchronized.
+ * @returns {string} The ID of the group with which this directory is
+ *                  synchronized.
  */
  com.gContactSync.GAddressBook.prototype.getGroupID = function GAddressBook_getGroupID() {
    return this.getStringPref("GroupID");
  };
  
 /**
- * GAddressBook.getGroupID
- * Setsthe ID of the group in Google with which this Address Book is
+ * Sets the ID of the group in Google with which this Address Book is
  * synchronized.
  * @param aGroupID {string} The ID of the group.
- * @return The ID of the group with which this directory is synchronized.
+ * @returns {string} The ID of the group with which this directory is
+ *                  synchronized.
  */
  com.gContactSync.GAddressBook.prototype.setGroupID = function GAddressBook_setGroupID(aGroupID) {
    this.setStringPref("GroupID", aGroupID);
  };
  
  /**
-  * GAddressBook.getLastSyncDate
   * Returns the last time this address book was synchronized in milliseconds
   * since the epoch.
-  * @return The last time this address book was synchronized.
+  * @returns {string} The last time this address book was synchronized.
   */
  com.gContactSync.GAddressBook.prototype.getLastSyncDate = function GAddressBook_getLastSyncDate() {
    return this.getStringPref("lastSync");
  };
  
  /**
-  * GAddressBook.setLastSyncDate
   * Sets the last time this address book was synchronized, in milliseconds
   * since the epoch.
   * @param aLastSync {integer} The last sync time.
@@ -166,7 +166,6 @@ com.gContactSync.GAddressBook.prototype.setUsername = function GAddressBook_setU
  };
  
  /**
-  * gAddressBook.reset
   * 'Resets' this address book making it appear to be brand new and never
   * synchronized.
   * The username is NOT erased.
@@ -186,7 +185,7 @@ com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all lists");
   for (var i in lists) {
     com.gContactSync.LOGGER.VERBOSE_LOG("  - Deleting list " + lists[i].getName());
-    lists[i].delete();
+    lists[i].remove();
   }
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished deleting lists");
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all contacts");
@@ -197,7 +196,6 @@ com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
 };
 
 /**
- * GAddressBook.newListObj
  * Returns a new GMailList object given the same parameters as the GMailList
  * constructor.
  *
@@ -211,17 +209,17 @@ com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
  * @param aNew             {boolean}      Set as true for new mailing lists where
  *                                        no attempt should be made to fetch the
  *                                        contacts contained in the list.
+ * @returns {GMailList} A new GMailList.
  */
 com.gContactSync.GAddressBook.prototype.newListObj = function GAddressBook_newListObj(aList, aParentDirectory, aNew) {
   return new com.gContactSync.GMailList(aList, aParentDirectory, aNew);
 };
 
 /**
- * GAddressBook.getAllLists
  * Returns an an object containing GMailList objects whose attribute name is
  * the name of the mail list.
  * @param skipGetCards {boolean} True to skip getting the cards of each list.
- * @return An object containing GMailList objects.
+ * @returns {object} An object containing GMailList objects.
  */
 com.gContactSync.GAddressBook.prototype.getAllLists = function GAddressBook_getAllLists(skipGetCards) {
   // same in Thunderbird 2 and 3

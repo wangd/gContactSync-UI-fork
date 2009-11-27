@@ -33,19 +33,23 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-/*
- * synonyms.js
- * Some synonyms to shorten commonly-used items and some functions that don't
- * fit anywhere else.
- */
-if (!com) var com = {};
-if (!com.gContactSync) com.gContactSync = {};
 
+if (!com) {
+  /** A generic wrapper variable */
+  var com = {};
+}
+
+if (!com.gContactSync) {
+  /** A wrapper for all GCS functions and variables */
+  com.gContactSync = {};
+}
+
+/** The attribute where the dummy e-mail address is stored */
 com.gContactSync.dummyEmailName = "PrimaryEmail";
+/** The version of gContactSync */
 com.gContactSync.version        = "0.3.0a1pre";
 
 /**
- * com.gContactSync.serialize
  * Creates an XMLSerializer to serialize the given XML then create a more
  * human-friendly string representation of that XML.
  * This is an expensive method of serializing XML but results in the most
@@ -54,7 +58,7 @@ com.gContactSync.version        = "0.3.0a1pre";
  * Also see serializeFromText.
  *
  * @param aXML {XML} The XML to serialize into a human-friendly string.
- * @return A formatted string of the given XML.
+ * @returns {string}  A formatted string of the given XML.
  */
 com.gContactSync.serialize = function gCS_serialize(aXML) {
   if (!aXML)
@@ -73,13 +77,13 @@ com.gContactSync.serialize = function gCS_serialize(aXML) {
 }
 
 /**
- * com.gContactSync.serializeFromText
  * A less expensive (but still costly) function that serializes a string of XML
  * adding newlines between adjacent tags (...><...).
  * If the verboseLog preference is set as false then this function does nothing.
  *
  * @param aString {string} The XML string to serialize.
- * @return The serialized text if verboseLog is true; else the original text.
+ * @returns {string} The serialized text if verboseLog is true; else the original
+ *                  text.
  */
 com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
   // if verbose logging is disabled, don't replace >< with >\n< because it only
@@ -92,7 +96,6 @@ com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
 }
 
 /**
- * com.gContactSync.makeDummyEmail
  * Creates a 'dummy' e-mail for the given contact if possible.
  * The dummy e-mail contains 'nobody' (localized) and '@nowhere.invalid' (not
  * localized) as well as a string of numbers.  The numbers are the ID from
@@ -113,6 +116,7 @@ com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
  *                             disabling dummy e-mail addresses.  Use this in
  *                             situations where not adding an address would
  *                             definitely cause problems.
+ * @returns {string} A dummy e-mail address.
  */
 com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePref) {
   if (!aContact) throw "Invalid contact sent to makeDummyEmail";
@@ -157,12 +161,11 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
 }
 
 /**
- * com.gContactSync.isDummyEmail
  * Returns true if the given e-mail address is a fake 'dummy' address.
  *
  * @param aEmail {string} The e-mail address to check.
- * @return true  if aEmail is a dummy e-mail address
- *         false otherwise
+ * @returns {boolean} true  if aEmail is a dummy e-mail address
+ *                  false otherwise
  */
 com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
   return aEmail && aEmail.indexOf && 
@@ -170,7 +173,6 @@ com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
 }
 
 /**
- * com.gContactSync.selectMenuItem
  * Selects the menuitem with the given value (value or label attribute) in the
  * given menulist.
  * Optionally creates the menuitem if it cannot be found.
@@ -207,7 +209,6 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
 }
 
 /**
- * com.gContactSync.fixUsername
  * Attempts a few basic fixes for 'broken' usernames.
  * In the past, gContactSync didn't check that a username included the domain
  * which would pass authentication and then fail to do anything else.
@@ -217,7 +218,7 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
  *
  * @param aUsername {string} The username to fix.
  *
- * @return A username with a domain and no spaces.
+ * @returns {string} A username with a domain and no spaces.
  */
 com.gContactSync.fixUsername = function gCS_fixUsername(aUsername) {
   if (!aUsername)

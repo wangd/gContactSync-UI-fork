@@ -34,21 +34,23 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * AbManager
  * An object that can obtain address books by the name or URI, find the synced
  * address books, and edit cards.
  * @class
  */
 com.gContactSync.AbManager = {
+  /** The version of Thunderbird */
   mVersion:   Components.classes["@mozilla.org/abmanager;1"] ? 3 : 2,
+  /** True if the changes started in Bug 413260 have been applied */
   mBug413260: Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                         .createInstance(Components.interfaces.nsIAbCard)
-                        .getProperty ? true : false,
-  // attributes that can be set by getCardValue and setCardValue
+                        .getProperty != null,
+  /** attributes that can be set by getCardValue and setCardValue */
   mBasicAttributes: [
     "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
     "PagerNumber", "FaxNumber", "_AimScreenName", "PrimaryEmail", "SecondEmail",
@@ -59,19 +61,18 @@ com.gContactSync.AbManager = {
     "Custom3", "Custom4", "WorkPhoneType", "HomePhoneType", "CellularNumberType",
     "FaxNumberType", "PagerNumberType"],
   /**
-   * AbManager.isRegularAttribute
    * Returns true if the given attribute is able to be set/obtained through the
    * setCardValue and getCardValue functions of nsIAbCard.
    * @param aAttribute The attribute to check.
-   * @return True if aAttribute is usable with set/getCardValue.
+   * @returns True if aAttribute is usable with set/getCardValue.
    */
   isRegularAttribute: function AbManager_isRegularAttribute(aAttribute) {
     return this.mBasicAttributes.indexOf(aAttribute) != -1;
   },
   /**
-   * AbManager.getAllAddressBooks
    * Returns an object filled with GAddressBook objects.
    * The properties are the names of those address books.
+   * @param aDirType {int} The type of directory (2 is the usual Mork AB)
    */
   getAllAddressBooks: function AbManager_getAllAddressBooks(aDirType) {
     var iter;
@@ -104,12 +105,11 @@ com.gContactSync.AbManager = {
     return abs;
   },
   /**
-   * AbManager.getAllAddressBooks
    * Returns an object filled with GAddressBook objects.
    * The properties are the names of those address books.
-   * @param aMakeArray If this parameter evaluates as true then the returned
-   *                   object will be an array.
-   * @return If aMakeArray then the returned object is an array of objects.
+   * @param aMakeArray {boolean} If this parameter evaluates as true then the
+   *                             returned object will be an array.
+   * @returns If aMakeArray then the returned object is an array of objects.
    *         Each object has a 'username' property with the username of this
    *         synced AB and an 'ab' property with a GAddressBook object.
    *         If !aMakeArray then the returned object is keyed by username and
@@ -132,7 +132,7 @@ com.gContactSync.AbManager = {
       iter = dir.childNodes;
     }
     var data;
-    while(iter.hasMoreElements()) {
+    while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion == 3 ||
           data instanceof Components.interfaces.nsIAbMDBDirectory)) {
@@ -160,20 +160,18 @@ com.gContactSync.AbManager = {
     return arr;
   },
   /**
-   * AbManager.checkDirectory
    * Checks the validity of a directory and returns false if it is invalid.
-   * @param aDirectory The directory to check.
+   * @param aDirectory {nsIAbDirectory} The directory to check.
    */
   isDirectoryValid: function AbManager_isDirectoryValid(aDirectory) {
     return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory 
           && aDirectory.dirName != "";
   },
   /**
-   * AbManager.checkCard
    * Checks the validity of a card and throws an error if the card is invalid.
-   * @param aCard        An object that should be an instance of nsIAbCard
-   * @param aMethodName  The name of the method calling checkCard (used when
-   *                     throwing the error)
+   * @param aCard        {nsIAbCard} An object that should be an instance of nsIAbCard
+   * @param aMethodName  {string} The name of the method calling checkCard (used
+   *                              when throwing the error)
    */
   checkCard: function AbManager_checkCard(aCard, aMethodName) {
     var card = aCard && aCard.mCard ? aCard.mCard : aCard;
@@ -184,11 +182,10 @@ com.gContactSync.AbManager = {
     }
   },
   /**
-   * AbManager.getCardValue
    * Returns the value of the specifiec property in the given card, or throws an
    * error if it is not present or blank.
-   * @param aCard     The card to get the value from.
-   * @param aAttrName The name of the attribute to get.
+   * @param aCard     {nsIAbCard} The card to get the value from.
+   * @param aAttrName {string}    The name of the attribute to get.
    */
   getCardValue: function AbManager_getCardValue(aCard, aAttrName) {
     this.checkCard(aCard, "getCardValue");
@@ -210,12 +207,12 @@ com.gContactSync.AbManager = {
     return null;
   },
   /**
-   * AbManager.getCardEmailAddresses
    * Returns an object with a property for each of the e-mail addresses of this
    * card as recognized by gContactSync (PrimaryEmail, SecondEmail, ThirdEmail,
    * and FourthEmail)
-   * @param aCard The card from which the e-mail addresses are obtained.
-   * @return An object with the card's e-mail addresses.
+   * @param aCard {nsIAbCard} The card from which the e-mail addresses are
+   *                          obtained.
+   * @returns An object with the card's e-mail addresses.
    */
   getCardEmailAddresses: function AbManager_getCardEmailAddresses(aCard) {
     this.checkCard(aCard, "getCardEmailAddresses");
@@ -235,15 +232,14 @@ com.gContactSync.AbManager = {
     return addresses;
   },
   /**
-   * AbManager.getCardEmailAddresses
-   * Returns an object with a property for each of the e-mail addresses of this
-   * card as recognized by gContactSync (PrimaryEmail, SecondEmail, ThirdEmail,
-   * and FourthEmail)
-   * @param aCard      The card from which the e-mail addresses are obtained.
+   * Returns true if the card has at least one e-mail address identical to one
+   * in aAddresses.
+   * @param aCard      {nsIAbCard} The card from which the e-mail addresses are
+   *                               obtained.
    * @param aAddresses An object with the card's e-mail addresses as returned by
-   *                   AbManager.getCardEmailAddresses
-   * @return True if the card has at least one e-mail address in common with
-   *         aAddresses
+   *                   AbManager.getCardEmailAddresses.
+   * @returns {boolean} True if the card has at least one e-mail address in
+   *                   common with aAddresses.
    */
   cardHasEmailAddress: function AbManager_cardHasEmailAddress(aCard, aAddresses) {
     this.checkCard(aCard, "getCardEmailAddresses");
@@ -257,12 +253,11 @@ com.gContactSync.AbManager = {
     return false;
   },
   /**
-   * AbManager.getCardValue
    * Sets the value of the specifiec property in the given card but does not
    * update the card in the database.
-   * @param aCard     The card to get the value from.
-   * @param aAttrName The name of the attribute to set.
-   * @param aValue    The value to set for the attribute.
+   * @param aCard     {nsIAbCard} The card to get the value from.
+   * @param aAttrName {string}    The name of the attribute to set.
+   * @param aValue    {string}    The value to set for the attribute.
    */
   setCardValue: function AbManager_setCardValue(aCard, aAttrName, aValue) {
     this.checkCard(aCard, "setCardValue");
@@ -334,12 +329,13 @@ com.gContactSync.AbManager = {
     }
   },
   /**
-    * AbManager.setMDBCardValue
     * Sets the requested value of an MDB card's attribute.  Performs a
     * QueryInterface if necessary.
-    * @param aCard     The MDB card to set the value for.
-    * @param aAttrName The name of the attribute whose value is set.
-    * @param aValue    The value to set for aAttrName.
+    * @param aCard     {nsIAbCard} The MDB card to set the value for.
+    * @param aAttrName {string}    The name of the attribute whose value is set.
+    * @param aValue    {string}    The value to set for aAttrName.
+    *
+    * @returns {boolean} True if the attribute was set to the given value.
     */
   setMDBCardValue: function AbManager_setMDBCardValue(aCard, aAttrName, aValue) {
     try {
@@ -353,12 +349,11 @@ com.gContactSync.AbManager = {
     return false;
   },
   /**
-   * AbManager.getMDBCardValue
    * Returns the requested value of an MDB card's attribute.  Performs a
    * QueryInterface if necessary.
-   * @param aCard     The MDB card to get the value from.
-   * @param aAttrName The name of the attribute whose value is returned.
-   * @return The value of aCard's attribute aAttrName.
+   * @param aCard     {nsIAbCard} The MDB card to get the value from.
+   * @param aAttrName {string}    The name of the attribute whose value is returned.
+   * @returns {string} The value of aCard's attribute aAttrName.
    */
   getMDBCardValue: function AbManager_getMDBCardValue(aCard, aAttrName) {
     try {
@@ -370,10 +365,9 @@ com.gContactSync.AbManager = {
     return null;
   },
   /**
-   * AbManager.getAbByURI
    * Returns the address book with the given URI, if found.  Does not attempt
    * to make a new address book if not found and returns null.
-   * @return  The Address Book with the given URI
+   * @returns  {nsIAbDirectory} The Address Book with the given URI
    */
   getAbByURI: function AbManager_getAbByURI(aURI) {
     if (!aURI) {
@@ -402,13 +396,12 @@ com.gContactSync.AbManager = {
     return null;
   },
   /**
-   * AbManager.getAbByName
    * Returns the Address Book if it can be found.  If it cannot be found
    * it tries once to make it and return the newly made address book.
-   * @param aDirName    The name of the address book
-   * @param aDontMakeAb True if the address book shouldn't be created if not
-   *                    found. 
-   * @return            The Address Book with the name given
+   * @param aDirName    {string} The name of the address book
+   * @param aDontMakeAb {boolean} True if the address book shouldn't be created
+   *                              if not found. 
+   * @returns {nsIAbDirectory} The Address Book with the name given
    */
   getAbByName: function AbManager_getAbByName(aDirName, aDontMakeAb) {
     if (!aDirName || aDirName.length == 0)
@@ -463,12 +456,12 @@ com.gContactSync.AbManager = {
     return null;
   },
   /**
-   * AbManager.deleteAB
    * Deletes the Address Book with the given URI.
    * This does NOT provide any confirmation dialog.
    * Note: This will not work in Thunderbird 2 with mailing lists.
    * This will not allow deleting the PAB or CAB and will show a popup
    * if there is an attempt to delete one of those ABs.
+   * @param aURI {string} The URI of the address book to delete.
    */
   deleteAB: function AbManager_deleteAB(aURI) {
     if (!aURI) {
@@ -531,4 +524,4 @@ com.gContactSync.AbManager = {
     }
     return true;
   }
-}
+};

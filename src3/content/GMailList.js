@@ -34,11 +34,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * GMailList
  * GMailList is an abstraction of a mailing list that facilitates getting the
  * cards contained within the actual list as well as accessing and modifying the
  * list and its properties.
@@ -51,6 +51,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * @param aNew             {boolean}      Set as true for new mailing lists where
  *                                        no attempt should be made to fetch the
  *                                        contacts contained in the list.
+ * @extends com.gContactSync.MailList
  * @constructor
  * @class
  */
@@ -66,11 +67,10 @@ com.gContactSync.GMailList = function gCS_GMailList(aList, aParentDirectory, aNe
 
 com.gContactSync.GMailList.prototype = {
   /**
-   * GMailList.getGroupID
    * Gets and returns the ID of the group in Google with which this Mail List
    * is synchronized, if any.  If not found, returns "no id found" with a space
    * and the current time in microseconds since the epoch.
-   * @return The ID of the group with which this directory is synchronized.
+   * @returns The ID of the group with which this directory is synchronized.
    */
    getGroupID: function GMailList_getGroupID() {
      // first see if the nickname is the group id
@@ -83,10 +83,9 @@ com.gContactSync.GMailList.prototype = {
      return id;
    },
    /**
-   * GMailList.getGroupID
-   * Setsthe ID of the group in Google with which this Mail List is
+   * Sets the ID of the group in Google with which this Mail List is
    * synchronized.
-   * @return The ID of the group with which this directory is synchronized.
+   * @returns The ID of the group with which this directory is synchronized.
    */
    setGroupID: function GMailList_setGroupID(aGroupID) {
      this.setNickName(aGroupID);

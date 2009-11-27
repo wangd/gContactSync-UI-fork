@@ -34,7 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
@@ -45,11 +46,9 @@ com.gContactSync.LOGGER = {
   mErrorCount:   0,
   mWarningCount: 0,
   /**
-   * Logger.LOG
    * Appends the message to the log file and adds a newline character after the
    * message.
-   * @param aMessage The message to append.
-   TODO add pref to disable logging
+   * @param aMessage {string} The message to append.
    */
   LOG: function LOGGER_LOG(aMessage) {
     if (!aMessage)
@@ -58,19 +57,17 @@ com.gContactSync.LOGGER = {
                                          aMessage + "\n");
   },
   /**
-   * Logger.VERBOSE_LOG
    * Logs the message if verbose logging is enabled.
-   * @param aMessage The message to log.
+   * @param aMessage {string} The message to log.
    */
   VERBOSE_LOG: function LOGGER_VERBOSE_LOG(aMessage) {
     if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       this.LOG(aMessage);
   },
   /**
-   * LOGGER.LOG_ERROR
-   * Logs an error and updates the error count.
-   * @param aMessage The error message.
-   * @param aError   Optional.  The exception caught.
+   * Logs an error and increments the error count.
+   * @param aMessage {string} The error message.
+   * @param aError   {string} Optional.  The exception caught.
    */
   LOG_ERROR: function LOGGER_LOG_ERROR(aMessage, aError) {
     var str = "***ERROR: " + aMessage;
@@ -81,10 +78,10 @@ com.gContactSync.LOGGER = {
     this.mErrorCount++;
   },
   /**
-   * LOGGER.LOG_WARNING
    * Logs a warning and updates the warning count.
-   * @param aWarningMessage The warning message with info about the problem.
-   * @param aError          Optional.  The exception caught.
+   * @param aWarningMessage {string} The warning message with info about the
+   *                                 problem.
+   * @param aError          {string} Optional.  The exception caught.
    */
   LOG_WARNING: function LOGGER_LOG_WARNING(aWarningMessage, aError) {
     var str = "***WARNING: " + aWarningMessage;

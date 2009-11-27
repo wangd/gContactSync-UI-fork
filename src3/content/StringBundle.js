@@ -34,11 +34,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * com.gContactSync.StringBundle
  * Contains all of the string bundles included in gContactSync and provides
  * a method (getStr) to find a string by looking in every bundle.
  * NOTE:  This requires that string bundles have unique names for strings.
@@ -49,7 +49,6 @@ com.gContactSync.StringBundle = {
   mBundles:     {},
   mInitialized: false,
   /**
-   * com.gContactSync.StringBundle.init
    * Initializes the string bundle.
    */
   init: function StringBundle_init() {
@@ -65,9 +64,9 @@ com.gContactSync.StringBundle = {
     return true;
   },
   /**
-   * com.gContactSync.StringBundle.getStr
    * Searches every string bundle until a string is found with the given name.
-   * @param aName The name of the string to search for.
+   * @param aName {string} The name of the string to search for.
+   * @returns {string} The translated string.
    */
   getStr: function StringBundle_getStr(aName) {
     // initialize the string bundle if it wasn't already done

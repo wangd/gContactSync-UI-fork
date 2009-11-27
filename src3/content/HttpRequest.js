@@ -34,11 +34,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * HttpRequest
  * Sets up an HTTP request.
  * @constructor
  * @class
@@ -52,17 +52,19 @@ com.gContactSync.HttpRequest = function gCS_HttpRequest() {
 }
 
 com.gContactSync.HttpRequest.prototype = {
-  // content types
+  /** Content types */
   CONTENT_TYPES: {
-    URL_ENC: "application/x-www-form-urlencoded", 
+    /** URL encoded */
+    URL_ENC: "application/x-www-form-urlencoded",
+    /** ATOM/XML */
     ATOM:    "application/atom+xml",
+    /** XML */
     XML:     "application/xml"
   },
   /**
-   * HttpRequest.addContentOverride
    * Adds a content override to the header in case a firewall blocks DELETE or
    * PUT requests.
-   * @param aType   The type of override.  Must be DELETE or PUT.
+   * @param aType {string} The type of override.  Must be DELETE or PUT.
    */
   addContentOverride: function HttpRequest_addContentOverride(aType) {
     switch (aType) {
@@ -79,10 +81,9 @@ com.gContactSync.HttpRequest.prototype = {
     }
   },
   /**
-   * HttpRequest.addHeaderItem
    * Adds a header label/value pair to the arrays of header information
-   * @param aLabel  The label for the header
-   * @param aValue  The value for the header
+   * @param aLabel {string} The label for the header.
+   * @param aValue {string} The value for the header.
    */
   addHeaderItem: function HttpRequest_addHeaderItem(aLabel, aValue) {
     if (!this.mHeaderLabels) {
@@ -93,7 +94,6 @@ com.gContactSync.HttpRequest.prototype = {
     this.mHeaderValues.push(aValue);
   },
   /**
-   * HttpRequest.send
    * Sends the HTTP Request with the information stored in the object.
    * Note: Setup everything, including the callbacks for different statuses
    *       including mOnSuccess, mOnError, mOnFail, and mOnCreated first.

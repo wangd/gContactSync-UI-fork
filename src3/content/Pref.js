@@ -34,11 +34,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * Pref
  * A simple class to store information about a preference (label, type, default
  * value and the actual value).  Set the value after creating the pref.
  * @param aName    {string} The label (or name) of the preference.

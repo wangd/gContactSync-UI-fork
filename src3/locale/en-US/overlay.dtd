@@ -1,6 +1,4 @@
-<!ENTITY gContactSync.tab "gContactSync">
-<!ENTITY screenname.box "Additional Screennames">
-<!ENTITY email.box "Additional Email Addresses">
+<!-- Ordinal numbers -->
 <!ENTITY first.label "First">
 <!ENTITY second.label "Second">
 <!ENTITY third.label "Third">
@@ -9,20 +7,25 @@
 <!ENTITY sixth.label "Sixth">
 <!ENTITY seventh.label "Seventh">
 <!ENTITY eighth.label "Eighth">
+
+<!-- A label for extra screenname fields -->
+<!ENTITY screenname.box "Additional Screennames">
+<!-- A label for extra e-mail address fields -->
+<!ENTITY email.box "Additional Email Addresses">
+<!-- A label for extra phone number fields -->
 <!ENTITY numbers.box "Additional Numbers">
-<!ENTITY homeFax.label "Home Fax">
+<!-- A label for extra postal address fields -->
 <!ENTITY address.box "Additional Addresses">
-<!ENTITY home.label "Home">
-<!ENTITY work.label "Work">
-<!ENTITY mobile.label "Mobile">
-<!ENTITY pager.label "Pager">
-<!ENTITY workFax.label "Work Fax">
-<!ENTITY other.label "Other">
+
+<!-- This can be blank or something like "Click on Sync to begin" -->
 <!ENTITY initialStatus.label "">
-<!ENTITY preferences.label "Preferences">
-<!ENTITY status.tooltip "Click here to view the log file">
 
-<!ENTITY relations.box "Relations">
+<!-- People who are somehow related to or associated with the contact -->
+<!ENTITY relations.box "People">
 
+<!-- Used for the Sync button on the Address Book toolbar -->
 <!ENTITY sync.label    "Sync">
 <!ENTITY sync.tooltip  "Synchronize your contacts">
+
+<!-- A tooltip on the status bar -->
+<!ENTITY status.tooltip "Click here to view the log file">

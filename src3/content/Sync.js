@@ -34,44 +34,57 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * Sync
  * Synchronizes a Thunderbird Address Book with Google Contacts.
  * @class
  */
 com.gContactSync.Sync = {
-  // a few arrays treated as queues to add/delete/update contacts and cards
+  /** Google contacts that should be deleted */
   mContactsToDelete: [],
+  /** New contacts to add to Google */
   mContactsToAdd:    [],
+  /** Contacts to update */
   mContactsToUpdate: [],
+  /** Groups to delete */
   mGroupsToDelete:   [],
+  /** Groups to add */
   mGroupsToAdd:      [],
+  /** Groups to update */
   mGroupsToUpdate:   [],
+  /** Groups to add (URIs) */
   mGroupsToAddURI:   [],
+  /** The current authentication token */
   mCurrentAuthToken: {},
+  /** The current username */
   mCurrentUsername:  {},
+  /** The current address book being synchronized */
   mCurrentAb:        {},
+  /** Synchronized address book */
   mAddressBooks:     [],
+  /** The index of the AB being synced */
   mIndex:            0,
-  // an array of commands to execute when offline during an HTTP Request
+  /** An array of commands to execute when offline during an HTTP Request */
   mOfflineCommand: ["com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText'));", 
                     "com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'));"],
 
   // booleans used for timing to make sure only one synchronization occurs at a
   // time and that only one sync is scheduled at once
+  /** True if no synchronization is in progress */
   mSynced:        true,
+  /** True if a synchronization is scheduled */
   mSyncScheduled: false,
-  mGroups:        {},   // used to store groups for the account being synchronized
-  mLists:         {},   // stores the mail lists in the directory being synchronized
-  mContactsUrl:   null, // override for the contact feed URL.  Intended for syncing
-                        // one group only
+  /** used to store groups for the account being synchronized */
+  mGroups:        {},
+  /** stores the mail lists in the directory being synchronized */
+  mLists:         {},
+  /** override for the contact feed URL.  Intended for syncing one group only */
+  mContactsUrl:   null,
   /**
-   * com.gContactSync.Sync.begin
    * Performs the first steps of the sync process.
-   * @param firstLog Should be true if the user just logged in.
    */
   begin: function Sync_begin() {
     if (!com.gContactSync.gdata.isAuthValid()) {
@@ -92,7 +105,6 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.syncNextUser()
   },
   /**
-   * com.gContactSync.Sync.syncNextUser
    * Synchronizes the next address book in com.gContactSync.Sync.mAddressBooks.
    * If all ABs were synchronized, then this continues with com.gContactSync.Sync.finish();
    */
@@ -186,7 +198,6 @@ com.gContactSync.Sync = {
       com.gContactSync.Sync.getContacts();
   },
   /**
-   * com.gContactSync.Sync.getGroups
    * Sends an HTTP Request to Google for a feed of all of the user's groups.
    * Calls com.gContactSync.Sync.begin() when there is a successful response on an error other
    * than offline.
@@ -203,7 +214,6 @@ com.gContactSync.Sync = {
     httpReq.send();
   },
   /**
-   * com.gContactSync.Sync.getContacts
    * Sends an HTTP Request to Google for a feed of all the user's contacts.
    * Calls com.gContactSync.Sync.sync with the response if successful or com.gContactSync.Sync.syncNextUser with the
    * error.
@@ -230,13 +240,12 @@ com.gContactSync.Sync = {
     httpReq.send();
   },
   /**
-   * com.gContactSync.Sync.finish
    * Completes the synchronization process by writing the finish time to a file,
    * writing the sync details to a different file, scheduling another sync, and
    * writes the completion status to the status bar.
    * 
    * @param aError     {string} Optional.  A string containing the error message.
-   * @param aStartOver {bool}   Also optional.  True if the sync should be restarted.
+   * @param aStartOver {boolean}   Also optional.  True if the sync should be restarted.
    */
   finish: function Sync_finish(aError, aStartOver) {
     if (aError)
@@ -270,7 +279,11 @@ com.gContactSync.Sync = {
     else
       com.gContactSync.Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.refreshInterval.value * 60000);
   },
-  // TODO document
+  /**
+   * Does the actual synchronization of contacts and modifies the AB as it goes.
+   * Initializes arrays of Google contacts to add, remove, or update.
+   * @param aAtom {XML} The ATOM/XML feed of contacts.
+   */
   sync2: function Sync_sync2(aAtom) {
     // get the address book
     var ab = com.gContactSync.Sync.mCurrentAb;
@@ -540,8 +553,8 @@ com.gContactSync.Sync = {
     httpReq.send();
   },
   /**
-   * com.gContactSync.Sync.syncGroups
    * Syncs all contact groups with mailing lists.
+   * @param aAtom {XML} The ATOM/XML feed of Groups.
    */
   syncGroups: function Sync_syncGroups(aAtom) {
     // reset the groups object
@@ -689,7 +702,7 @@ com.gContactSync.Sync = {
                 }
                 else {
                   com.gContactSync.LOGGER.LOG(" * It will be deleted from Thunderbird");
-                  list.delete();
+                  list.remove();
                 }
             }
           }
@@ -738,7 +751,6 @@ com.gContactSync.Sync = {
     return com.gContactSync.Sync.deleteGroups();
   },
   /**
-   * com.gContactSync.Sync.deleteGroups
    * Deletes all of the groups in mGroupsToDelete one at a time to avoid timing
    * issues.  Calls com.gContactSync.Sync.addGroups() when finished.
    */
@@ -766,7 +778,6 @@ com.gContactSync.Sync = {
     httpReq.send();
   },
   /**
-   * com.gContactSync.Sync.addGroups
    * The first part of adding a group involves creating the XML representation
    * of the mail list and then calling com.gContactSync.Sync.addGroups2() upon successful
    * creation of a group.
@@ -799,7 +810,6 @@ com.gContactSync.Sync = {
     httpReq.send();
   },
   /**
-   * com.gContactSync.Sync.addGroups2
    * The second part of adding a group involves updating the list from which
    * this group was created so the two can be matched during the next sync.
    */
@@ -818,7 +828,6 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.addGroups();
   },
   /**
-   * com.gContactSync.Sync.updateGroups
    * Updates all groups in mGroupsToUpdate one at a time to avoid timing issues
    * and calls com.gContactSync.Sync.getContacts() when finished.
    */
@@ -847,11 +856,11 @@ com.gContactSync.Sync = {
     httpReq.send();
   },
   /**
-   * com.gContactSync.Sync.schedule
    * Schedules another sync after the given delay if one is not already scheduled,
    * there isn't a sync currently running, if the delay is greater than 0, and
    * finally if the auto sync pref is set to true.
-   * @param aDelay The duration of time to wait before synchronizing again
+   * @param aDelay {integer} The duration of time to wait before synchronizing
+   *                         again.
    */
   schedule: function Sync_schedule(aDelay) {
     // only schedule a sync if the delay is greater than 0, a sync is not

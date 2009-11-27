@@ -34,16 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
+if (!com.gContactSync) com.gContactSync = {};
+
 /**
- * GAbManager
  * An object that can obtain address books by the name or URI, find the synced
  * address books, and edit contacts.
+ * @extends com.gContactSync.AbManager
  * @class
  */
 com.gContactSync.GAbManager = com.gContactSync.AbManager;
 
 /**
- * GAbManager.resetAllSyncedABs
  * Resets all synchronized address books in the following ways:
  *  - Deletes all mailing lists
  *  - Deletes all contacts
@@ -70,4 +73,4 @@ com.gContactSync.GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedA
   com.gContactSync.LOGGER.LOG("Finished resetting all synchronized directories.");
   alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
   return true;
-}
+};

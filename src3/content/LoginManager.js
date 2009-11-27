@@ -34,28 +34,34 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * LoginManager
  * Stores and retrieves the authentication token from the login manager.
  * Does NOT store the password and username.
  * @class
  */
 com.gContactSync.LoginManager = {
+  /** The hostname used in the login manager */
   mHostname:      "chrome://gContactSync",
+  /** The URL in the login manager */
   mSubmitURL:     "User Auth Token",
+  /** The HTTP realm */
   mHttpRealm:     null,
+  /** The username field */
   mUsernameField: "",
+  /** The password field */
   mPasswordField: "",
+  /** An object with authentication tokens keyed by username */
   mAuthTokens:    {},
+  /** The number of authentication tokens found */
   mNumAuthTokens: 0,
   /**
-   * LoginManager.addAuthToken
    * Stores the token in the Login Manager.
-   * @param aUsername        The username (e-mail address).
-   * @param aToken           The authentication token from Google.
+   * @param aUsername {string} The username (e-mail address).
+   * @param aToken    {string} The authentication token from Google.
    */
   addAuthToken: function LoginManager_addAuthToken(aUsername, aToken) {
     if (this.mNumAuthTokens == 0)
@@ -83,9 +89,8 @@ com.gContactSync.LoginManager = {
     }
   },
   /**
-   * LoginManager.getAuthTokens
-   * Gets the token in the Login Manager.
-   * @return The auth token, if present, null otherwise.
+   * Gets the tokens in the Login Manager.
+   * @returns {object} The auth tokens, if any, null otherwise.
    */
   getAuthTokens: function LoginManager_getAuthTokens() {
     this.mAuthTokens = {};
@@ -121,9 +126,8 @@ com.gContactSync.LoginManager = {
     return this.mAuthTokens;
   },
   /**
-   * LoginManager.getAuthToken
    * Gets the token in the Login Manager.
-   * @return The auth token, if present, null otherwise.
+   * @returns {string} The auth token, if present, null otherwise.
    */
   getAuthToken: function LoginManager_getAuthToken(aUsername) {
     if  (this.mNumAuthTokens == 0)
@@ -131,9 +135,8 @@ com.gContactSync.LoginManager = {
     return this.mAuthTokens ? this.mAuthTokens[aUsername] : null;
   },
   /**
-   * LoginManager.removeAuthToken
    * Removes the auth token from the Login Manager.
-   * @return True if the auth token was successfully removed.
+   * @returns {boolean} True if the auth token was successfully removed.
    */
   removeAuthToken: function LoginManager_removeAuthToken(aUsername) {
     // Thunderbird 2
@@ -175,12 +178,11 @@ com.gContactSync.LoginManager = {
     }
   },
   /**
-   * LoginManager.getAllEmailAccts
    * Returns an array of all e-mail account usernames matching an optional
    * pattern.
    *
-   * @param aPattern A RegExp to match against.  If not provided all imap and
-   *                 mailbox usernames are returned.
+   * @param aPattern {RegExp} A RegExp to match against.  If not provided all
+   *                          IMAP & mailbox usernames are returned.
    */
   getAllEmailAccts: function LoginManager_getAllEmailAccts(aPattern) {
     var arr = [];
@@ -218,4 +220,4 @@ com.gContactSync.LoginManager = {
     }
     return arr;
   }
-}
+};

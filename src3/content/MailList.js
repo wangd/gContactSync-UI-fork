@@ -34,11 +34,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * MailList
  * MailList is an abstraction of a mailing list that facilitates getting the
  * cards contained within the actual list as well as accessing and modifying the
  * list and its properties.
@@ -69,10 +69,11 @@ com.gContactSync.MailList = function gCS_MailList(aList, aParentDirectory, aNew)
 }
 
 com.gContactSync.MailList.prototype = {
+  /** The contacts in this mailing list (cached) */
   mCards:       [],
+  /** This is true whenever the contacts have to be fetched again */
   mCardsUpdate: false,
   /**
-   * MailList.setName
    * Sets the name of this list. The update method must be called in order for
    * the change to become permanent.
    * @param aName The new name for the list.
@@ -81,20 +82,18 @@ com.gContactSync.MailList.prototype = {
     this.mList.dirName = aName;
   },
   /**
-   * MailList.getName
    * Returns the name of this list.
-   * @return The name of this list.
+   * @returns The name of this list.
    */
   getName: function MailList_getName() {
     return this.mList.dirName;
   },
   /**
-   * MailList.hasCard
    * Returns the card in this mail list, if any, with the same (not-null)
    * value for the GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
    * @param aCard The card being searched for.
-   * @return The card in this list, if any, with the same, and non-null value
+   * @returns The card in this list, if any, with the same, and non-null value
    *         for its GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
    */
@@ -123,7 +122,6 @@ com.gContactSync.MailList.prototype = {
     return null;
   },
   /**
-   * MailList.setNickName
    * Sets the nick name for this mailing list.  The update method must be
    * called in order for the change to become permanent.
    * @param aNickName The new nick name for this mailing list.
@@ -132,15 +130,13 @@ com.gContactSync.MailList.prototype = {
     this.mList.listNickName = aNickName;
   },
   /**
-   * MailList.getNickName
    * Returns the nick name of this mailing list.
-   * @return The nick name of this mailing list.
+   * @returns The nick name of this mailing list.
    */
   getNickName: function MailList_getNickName() {
     return this.mList.listNickName;
   },
   /**
-   * MailList.setDescription
    * Sets the description for this mailing list.  The update method must be
    * called in order for the change to become permanent.
    * @param aDescription The new description for this mailing list.
@@ -149,25 +145,24 @@ com.gContactSync.MailList.prototype = {
     this.mList.description = aDescription;
   },
   /**
-   * MailList.getDescription
    * Returns the description of this mailing list.
-   * @return The description of this mailing list.
+   * @returns The description of this mailing list.
    */
   getDescription: function MailList_getDescription() {
     return this.mList.description;
   },
   /**
-   * MailList.addCard
    * Adds a card to this mailing list without checking if it already exists.
    * NOTE: If the contact does not have a primary e-mail address then this
    * method will add a fake one.
    * @param aCard The card to add to this mailing list.
-   * @return A real card (MDB card prior to 413260).
+   * @returns A real card (MDB card prior to 413260).
    */
   addCard: function MailList_addCard(aCard) {
     com.gContactSync.AbManager.checkCard(aCard);
     var ab = this.mParent;
-    // add a dummy e-mail address if necessary and ignore the pref
+    // Add a dummy e-mail address if necessary and ignore the preference
+    // If this was not done then the mailing list would break.
     if (!ab.getCardValue(aCard, "PrimaryEmail")) {
       ab.setCardValue(aCard, "PrimaryEmail", com.gContactSync.makeDummyEmail(aCard, true));
       ab.updateCard(aCard);
@@ -177,9 +172,8 @@ com.gContactSync.MailList.prototype = {
     return realCard;
   },
   /**
-   * MailList.getURI
    * Returns the uniform resource identifier (URI) for this mailing list.
-   * @return The URI of this list.
+   * @returns The URI of this list.
    */
   getURI: function MailList_getURI() {
     if (this.mList.URI)
@@ -187,17 +181,15 @@ com.gContactSync.MailList.prototype = {
     return this.mList.getDirUri();
   },
   /**
-   * MailList.getAllCards
    * Returns an array of all of the cards in this mailing list.
-   * @return An array containing all of the cards in this mailing list.
+   * @returns An array containing all of the cards in this mailing list.
    */
   getAllCards: function MailList_getAllCards() {
     // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
-    // properly, but it shouldn't be caught or the sync won't function properly
     this.mCards = [];
-    var iter = this.mList.childCards || this.mList.childNodes;
+    var iter    = this.mList.childCards;
     var data;
-    if (iter.hasMoreElements) { // Thunderbird 3
+    if (iter instanceof Components.interfaces.nsISimpleEnumerator) { // Thunderbird 3
       try {
         while (iter.hasMoreElements()) {
           data = iter.getNext();
@@ -212,16 +204,16 @@ com.gContactSync.MailList.prototype = {
           alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
         }
         // Throw an error to stop the sync
-        throw "A mailing list is not working correctly";
+        throw com.gContactSync.StringBundle.getStr("mailListBroken");
       }
     }
-    else if (iter.first) { // TB 2
+    else if (iter instanceof Components.interfaces.nsIEnumerator) { // TB 2
       // use nsIEnumerator...
       try {
         iter.first();
         do {
           data = iter.currentItem();
-          if(data instanceof Components.interfaces.nsIAbCard)
+          if (data instanceof Components.interfaces.nsIAbCard)
             this.mCards.push(data);
           iter.next();
         } while (Components.lastResult == 0);
@@ -235,12 +227,11 @@ com.gContactSync.MailList.prototype = {
     }
     else {
       com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
-      throw "Couldn't find an address book's contacts";
+      throw com.gContactSync.StringBundle.getStr("mailListBroken");
     }
     return this.mCards;
   },
   /**
-   * MailList.deleteCards
    * Deletes all of the cards in the array of cards from this list.
    * @param aCards The array of cards to delete from this mailing list.
    */
@@ -276,10 +267,9 @@ com.gContactSync.MailList.prototype = {
     this.mCards = this.getAllCards();
   },
   /**
-   * MailList.delete
    * Deletes this mailing list from its parent address book.
    */
-  delete: function MailList_delete() {
+  remove: function MailList_delete() {
     this.mParent.mDirectory.deleteDirectory(this.mList);
     this.mCards = [];
     // make sure the functions don't do anything
@@ -289,8 +279,8 @@ com.gContactSync.MailList.prototype = {
     }
   },
   /**
-   * MailList.update
-   * Updates this mail list.
+   * Updates this mail list (commits changes like renaming or changing the
+   * nickname)
    */
   update: function MailList_update() {
     try {
@@ -299,6 +289,8 @@ com.gContactSync.MailList.prototype = {
       else
         this.mList.editMailListToDatabase(this.getURI(), null);
     }
-    catch(e) { com.gContactSync.LOGGER.LOG_WARNING("Unable to update mail list", e);}
+    catch(e) {
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to update mail list", e);
+    }
   }
 };

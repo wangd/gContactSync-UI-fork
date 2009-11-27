@@ -34,11 +34,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * AbListener
  * AbListener is a listener for the Address Book that is currently only used to
  * update the last modified date of mailing lists and cards contained within
  * them.
@@ -46,14 +46,12 @@ if (!com.gContactSync) com.gContactSync = {};
  */
 com.gContactSync.AbListener = {
   /**
-   * AbListener.onItemAdded
    * Unused.
    * @param aParentDir The parent directory to which an item was added.
    * @param aItem      The item added to the directory.
    */
   onItemAdded: function AbListener_onItemAdded(aParentDir, aItem) {},
   /**
-   * AbListener.onItemPropertyChanged
    * Unused.
    * @param aItem     The item whose property was changed.
    * @param aProperty The property changed.
@@ -65,7 +63,6 @@ com.gContactSync.AbListener = {
                                                                    aOldValue,
                                                                    aNewValue) {},
   /**
-   * AbListener.onItemRemoved
    * Used just to update the lastModifiedDate of cards removed from a mail list.
    * If a mail list is removed nothing needs to be done since the Group will be
    * deleted in Gmail.
@@ -103,10 +100,9 @@ com.gContactSync.AbListener = {
     }
   },
   /**
-   * AbListener.getURI
    * Gets the Uniform Resource Identifier (URI) of the specified directory.
-   * @param aDirectory The directory whose URI is returned.
-   * @return The URI of aDirectory.
+   * @param aDirectory {nsIAbDirectory} The directory whose URI is returned.
+   * @returns {string} The URI of aDirectory.
    */
   getURI: function AbListener_getURI(aDirectory) {
     var error;
@@ -124,7 +120,6 @@ com.gContactSync.AbListener = {
     return "";
   },
   /**
-   * AbListener.add
    * Adds this listener to be alerted whenever a directory item is removed.
    * It will be called whenever an item (card or mail list) is removed from a
    * directory (address book or mail list).

@@ -34,13 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
-// when the window is loaded wait 200 ms and try to add the tab
-window.addEventListener("load", function gCS_CardDialogOverlay_loadListener(e) {
-  com.gContactSync.CardDialogOverlay.init();
-}, false);
+window.addEventListener("load",
+  /** Initializes the CardDialogOverlay when the window has finished loading. */
+  function gCS_CardDialogOverlayLoadListener(e) {
+    com.gContactSync.CardDialogOverlay.init();
+  },
+false);
+/**
+ * Attributes added to TB by gContactSync AND present in the card dialog overlay
+ */
 com.gContactSync.gAttributes = {
   "ThirdEmail":           {}, 
   "FourthEmail":          {},
@@ -80,17 +86,18 @@ com.gContactSync.gAttributes = {
   "WebPage2Type":         {}
 };
 /**
- * CardDialogOverlay
  * Adds a tab to the tab box in the New and Edit Card Dialogs.  Using JavaScript
  * is necessary because the tab box doesn't have an ID.
  * @class
  */
 com.gContactSync.CardDialogOverlay = {
+  /** The XUL namespace 8/
   mNamespace:  "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
+  /** The number of times an attempt was made to initialize the dialog */
   mLoadNumber: 0,
+  /** This stores whether the contact is read-only (ie from LDAP or the Mac AB) */
   mDisabled:   false,
   /**
-   * editCardDialog.init
    * Adds a tab to the tab box, if possible.  Waits until the abCardOverlay is
    * loaded.
    */
@@ -338,8 +345,8 @@ com.gContactSync.CardDialogOverlay = {
    * Sets the attributes added by this extension as the value in the textbox or
    * drop down menu in aDoc whose ID is identical to the attribute's name.
    * Calls the original CheckAndSetCardValues function when finished.
-   * @param aCard  The card to set the values for.
-   * @param aDoc   The document.
+   * @param aCard  {nsIAbCard} The card to set the values for.
+   * @param aDoc   {Document Object} The document.
    * @param aCheck Unused, but passed to the original method.
    */
   CheckAndSetCardValues: function CardDialogOverlay_CheckAndSetCardValues(aCard, aDoc, aCheck) {
@@ -388,8 +395,8 @@ com.gContactSync.CardDialogOverlay = {
    * A method that gets all of the attributes added by this extension and sets
    * the value of the textbox or drop down menu in aDoc whose ID is identical to
    * the attribute's name.
-   * @param aCard The card to get the values from.
-   * @param aDoc  The document.
+   * @param aCard {nsIAbCard} The card to get the values from.
+   * @param aDoc  {Document Object} The document.
    */
   GetCardValues: function CardDialogOverlay_GetCardValues(aCard, aDoc) {
     // iterate through all the added type elements and get the card's value for
@@ -417,16 +424,17 @@ com.gContactSync.CardDialogOverlay = {
       aDoc.getElementById("PrimaryEmail").value = null;
   },
   /**
-   * addMenuItems
    * Sets up a type menu list element with a menuitem for each string in the
    * array.
-   * @param aBox   The box element to which this menu list is added.
-   * @param aArray The array of values to set for the menuitems.  There must be a
-   *               a string in the string bundle with the same name as the value.
-   * @param aID    The ID for this menu list, which should be the name of the
-   *               attribute with Type added to the end, such as WorkNumberType
-   * @param aValue The default value to set for this list.
-   * @param aWidth The maximum width, if any.
+   * @param aBox   {XUL Box} The box element to which this menu list is added.
+   * @param aArray {array}  The array of values to set for the menuitems.  There
+   *                        must be a string in the string bundle with the same
+   *                        name as the value.
+   * @param aID    {string} The ID for this menu list, which should be the name
+   *                        of the attribute with Type added to the end, such as
+   *                        WorkNumberType
+   * @param aValue {string} The default value to set for this list.
+   * @param aWidth {int}    The maximum width, if any.
    */
   addMenuItems: function CardDialogOverlay_addMenuItems(aBox, aArray, aID, aValue, aWidth) {
     var menuList = document.createElement("menulist");
@@ -467,10 +475,9 @@ com.gContactSync.CardDialogOverlay = {
     aBox.appendChild(menuList);
   },
   /**
-   * CardDialogOverlay.setupNumBox
    * Adds an hbox containing a label and textbox for a phone number.
-   * @param aID    The ID for the textbox.
-   * @param aLabel The text for the textbox's label.
+   * @param aID    {string} The ID for the textbox.
+   * @param aLabel {string} The text for the textbox's label.
    */
   setupNumBox: function CardDialogOverlay_setupNumBox(aID, aLabel) {
     var box = document.createElement("hbox");

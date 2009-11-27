@@ -34,16 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function ContactConverterLoadListener(e) {
-  com.gContactSync.ContactConverter.init();
- }, false);
+window.addEventListener("load",
+  /** Initializes the ContactConverter class when the window has finished loading */
+  function gCS_ContactConverterLoadListener(e) {
+    com.gContactSync.ContactConverter.init();
+  },
+false);
 
 
 /**
- * ContactConverter
  * Converts contacts between Thunderbird's format (a 'card') and the Atom/XML
  * representation of a contact.  Must be initialized before the first use by
  * calling the init() function.
@@ -64,16 +67,18 @@ com.gContactSync.ContactConverter = {
   mAddedAttributes: [
     "HomeFaxNumber", "OtherNumber", "ThirdEmail", "FourthEmail",
     "TalkScreenName", "ICQScreenName", "YahooScreenName", "MSNScreenName", 
-    "JabberScreenName",  "PrimaryEmailType",
-    "SecondEmailType", "_AimScreenNameType", "HomePhoneType", "WorkPhoneType",
-    "FaxNumberType", "CellularNumberType", "PagerNumberType",
+    "JabberScreenName",  "PrimaryEmailType", "SecondEmailType",
+    "ThirdEmailType", "FourthEmailType", "_AimScreenNameType",
+    "TalkScreenNameType", "ICQScreenNameType", "YahooScreenNameType",
+    "MSNScreenNameType", "JabberScreenNameType", "HomePhoneType",
+    "WorkPhoneType", "FaxNumberType", "CellularNumberType", "PagerNumberType",
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
     "Relation3Type", "CompanySymbol", "JobDescription",
     "WebPage1Type", "WebPage2Type"],
+  /** Stores whether this object has been initialized yet */
   mInitialized: false,
   /**
-   * ContactConverter.init
    * Initializes this object by populating the array of ConverterElement
    * objects and the two namespaces most commonly used by this object.
    */
@@ -149,10 +154,9 @@ com.gContactSync.ContactConverter = {
     this.mInitialized = true;
   },
   /**
-   * ContactConverter.getAllSyncAttributes
    * Returns an array of all of the extra attributes synced by this extension.
-   * @param aIncludeURLs Should be true if the URL-related attributes should be
-   *                     returned.
+   * @param aIncludeURLs {boolean} Should be true if the URL-related attributes
+   *                               should be returned.
    */
   getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs) {
     if (!this.mInitialized)
@@ -163,14 +167,14 @@ com.gContactSync.ContactConverter = {
     return arr;
   },
   /**
-   * ContactConverter.cardToAtomXML
    * Updates or creates a GContact object's Atom/XML representation using its 
    * complementary Address Book card.
-   * @param aCard    The address book card used to update the Atom feed.
-   * @param aContact Optional. The GContact object with the Atom/XML
-   *                 representation of the contact, if it exists.  If not
-   *                 supplied, a contact and feed will be created.
-   * @return A GContact object with the Atom feed for the contact.
+   * @param aCard    {nsIAbCard} The address book card used to update the Atom
+   *                             feed.
+   * @param aContact {GContact} Optional. The GContact object with the Atom/XML
+   *                            representation of the contact, if it exists.  If
+   *                            not supplied, a contact and feed will be created.
+   * @returns {GContact} A GContact object with the Atom feed for the contact.
    */
   cardToAtomXML: function ContactConverter_cardToAtomXML(aCard, aContact) {
     var isNew = !aContact;
@@ -255,10 +259,11 @@ com.gContactSync.ContactConverter = {
   /**
    * Converts an GContact's Atom/XML representation of a contact to
    * Thunderbird's address book card format.
-   * @param aContact A GContact object with the contact to convert.
-   * @param aCard Optional.  An existing card that can be QueryInterfaced to
-   *              Components.interfaces.nsIAbMDBCard if this is before 413260
-   * @return An nsIAbCard of the contact.
+   * @param aContact {GContact} A GContact object with the contact to convert.
+   * @param aCard {nsIAbCard} Optional.  An existing card that can be QI'd to
+   *                          Components.interfaces.nsIAbMDBCard if this is
+   *                          before 413260 landed.
+   * @returns An nsIAbCard of the contact.
    */
   makeCard: function ContactConverter_makeCard(aContact, aCard) {
     if (!aContact)
@@ -407,13 +412,12 @@ com.gContactSync.ContactConverter = {
     }
   },
   /**
-   * ContactConverter.checkValue
    * Check if the given string is null, of length 0, or consists only of spaces
    * and return null if any of the listed conditions is true.
    * This function was added to fix Bug 20389: Values with only spaces should be
    * treated as empty
-   * @param aValue The string to check.
-   * @return null   - The string is null, of length 0, or consists only of
+   * @param aValue {string} The string to check.
+   * @returns null   - The string is null, of length 0, or consists only of
                       spaces
    *         aValue - The string has at least one character that is not a space
    */

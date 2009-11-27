@@ -34,14 +34,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * Namespace
  * Stores the prefix and URL for a namespace.
- * @param aUrl    The URL.
- * @param aPrefix The prefix with the colon (:).
+ * @param aUrl    {string} The URL.
+ * @param aPrefix {string} The prefix with the colon (:).
  * @constructor
  * @class
  */

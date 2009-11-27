@@ -33,25 +33,29 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
-if (!com) var com = {};
+
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function AccountsLoadListener(e) {
-  com.gContactSync.Accounts.initDialog();
- }, false);
+window.addEventListener("load",
+  /** Initializes the Accounts class when the window has finished loading */
+  function gCS_AccountsLoadListener(e) {
+    com.gContactSync.Accounts.initDialog();
+  },
+false);
 
 /**
- * com.gContactSync.Accounts
  * The JavaScript variables and functions that handle different gContactSync
  * accounts allowing each synchronized address book to have its own preferences.
  * @class
  */
 com.gContactSync.Accounts = {
-  // The column index of the address book name
-  // change this if adding a column before the AB name
+  /** The column index of the address book name
+   * change this if adding a column before the AB name
+   */
   mAbNameIndex:  0,
-  // Element IDs used when enabling/disabling the preferences
+  /** Element IDs used when enabling/disabling the preferences */
   mPrefElemIDs: [
     "Username",
     "Groups",
@@ -61,7 +65,6 @@ com.gContactSync.Accounts = {
     "disabled"
   ],
   /**
-   * Accounts.initDialog
    * Initializes the Accounts dialog by filling the tree of address books,
    * filling in the usernames, hiding the advanced settings, etc.
    */
@@ -80,8 +83,8 @@ com.gContactSync.Accounts = {
     }
   },
   /**
-   * Accounts.newUsername
    * Create a new username/account for the selected plugin.
+   * @returns {boolean} True if an authentication HTTP request was sent.
    */
   newUsername: function Accounts_newUsername() {
     var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
@@ -129,10 +132,9 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.getSelectedAb
    * Returns a new GAddressBook corresponding to the currently-selected address
    * book in the accounts tree.
-   * @return A GAddressBook if one is selected, else false.
+   * @returns {GAddressBook} A GAddressBook if one is selected, else false.
    */
   getSelectedAb: function Accounts_getSelectedAb() {
     var tree = document.getElementById("loginTree");
@@ -149,8 +151,9 @@ com.gContactSync.Accounts = {
     return new com.gContactSync.GAddressBook(ab);    
   },
   /**
-   * Accounts.newAddressBook
-   * Create a new address book.
+   * Creates and returns a new address book after requesting a name for it.
+   * If an AB of any type already exists this function will do nothing.
+   * @returns {nsIAbDirectory} The new address book.
    */
   newAddressBook: function Accounts_newAddressBook() {
     var name = prompt(com.gContactSync.StringBundle.getStr("newABPrompt"));
@@ -161,8 +164,8 @@ com.gContactSync.Accounts = {
     return ab;
   },
   /**
-   * Accounts.saveSelectedAccount
-   * Saves the preferences for the selected address book
+   * Saves the preferences for the selected address book.
+   * @returns {boolean} True if the preferences were saved
    */
   saveSelectedAccount: function Accounts_saveSelectedAccount() {
     var usernameElem  = document.getElementById("Username");
@@ -172,7 +175,7 @@ com.gContactSync.Accounts = {
     var disableElem   = document.getElementById("disabled");
     var ab = this.getSelectedAb();
     if (!ab)
-      return ab;
+      return null;
 
     if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem)
       return false;
@@ -198,9 +201,7 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.enablePreferences
    * Enables or disables the preference elements.
-   *
    * @param aEnable {boolean} Set to true to enable elements or false to disable
    *                          them.
    */
@@ -212,11 +213,10 @@ com.gContactSync.Accounts = {
     }
   },
   /**
-   * Accounts.showAdvancedSettings
    * Show or hide the advanced settings and then call window.sizeToContent().
-   *
    * @param aShow {boolean} Set to true to show the advanced settings or false
    *                        to hide them.
+   * @returns {boolean} True if the advanced settings were shown or hidden.
    */
   showAdvancedSettings: function Accounts_showAdvanceDsettings(aShow) {
     var elem = document.getElementById("advancedGroupBox");
@@ -226,9 +226,8 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.selectedAbChange
    * Called when the selected address book changes in the accounts tree.
-   * @return true if there is currently an address book selected.
+   * @returns {boolean} true if there is currently an address book selected.
    */
   selectedAbChange: function Accounts_selectedAbChange() {
     var usernameElem  = document.getElementById("Username");
@@ -271,9 +270,7 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.fillUsernames
    * Fills the 'Username' menulist with all the usernames of the current plugin.
-   *
    * @param aDefault {string} The default account to select.  If not present or
    *                          evaluating to 'false' then 'None' will be
    *                          selected.
@@ -312,7 +309,6 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.fillAbTree
    * Populates the address book tree with all Personal/Mork Address Books
    */
   fillAbTree: function Accounts_fillAbTree() {
@@ -334,7 +330,6 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.addToTree
    * Adds login information (username and directory name) to the tree.
    * @param aTreeChildren {object} The <treechildren> XUL element.
    * @param aAB           {GAddressBook} The GAddressBook to add.
@@ -360,7 +355,6 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.deleteSelectedAB
    * Deletes the selected address book
    */
   deleteSelectedAB: function Accounts_deleteSelectedAB() {
@@ -383,28 +377,23 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.removeSyncSettings
    * Removes the selected account's username and auth token from the login manager.
    */
   removeSyncSettings: function Accounts_removeSelectedLogin() {  
     if (confirm(com.gContactSync.StringBundle.getStr("removeSyncSettings"))) {
-      // TODO FIXME
-      alert("Sorry, function not complete");
-      return;
       // remove the saved prefs from the address books
       var abs   = com.gContactSync.GAbManager.getSyncedAddressBooks();
       var abObj = abs[cellText];
       if (abObj) {
         for (var j in abObj) {
-          // TODO add clearPrefs
           abObj[j].setUsername("");
           abObj[j].setLastSyncDate(0);
+          abObj[j].setGroupID("");
         }
       }
     }
   },
   /**
-   * Accounts.directionPopup
    * Shows an alert dialog that briefly explains the synchronization direction
    * preference.
    */
@@ -412,7 +401,6 @@ com.gContactSync.Accounts = {
     alert(com.gContactSync.StringBundle.getStr("directionPopup")); 
   },
   /**
-   * Accounts.restoreGroups
    * Restores the Groups menulist to contain only the default groups.
    */
   restoreGroups: function Accounts_restoreGroups() {
@@ -423,7 +411,6 @@ com.gContactSync.Accounts = {
     }
   },
   /**
-   * Accounts.getAllGroups
    * Fetch all groups for the selected account and add custom groups to the
    * menulist.
    */
@@ -449,7 +436,6 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Accounts.addGroups
    * Adds groups in the given atom feed to the Groups menulist provided the
    * username hasn't changed since the groups request was sent and the username
    * isn't blank.
@@ -477,4 +463,4 @@ com.gContactSync.Accounts = {
     }
     return true;
   }
-}
+};

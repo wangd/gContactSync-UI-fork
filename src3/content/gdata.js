@@ -34,15 +34,18 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-if (!com) var com = {};
+if (!com) var com = {}; // A generic wrapper variable
+// A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
-window.addEventListener("load", function gdataLoadListener(e) {
-  com.gContactSync.gdata.contacts.init();
- }, false);
+window.addEventListener("load",
+  /** Initializes the gdata class when the window has finished loading */
+  function gCS_gdataLoadListener(e) {
+    com.gContactSync.gdata.contacts.init();
+  },
+false);
 
 /**
- * gdata
  * Stores information on using the Google Data Api™ protocol, specifically the
  * contacts portion of the protocol.
  * http://code.google.com/apis/contacts/
@@ -60,11 +63,11 @@ com.gContactSync.gdata = {
                          "http%3A%2F%2Fpirules.org%2Ftools%2Fgcs%2Findex.php",
   O_AUTH_TYPE:           "GET",
   /**
-   * gdata.makeAuthBody
    * Sets up the body for an authentication request given the e-mail address
    * and password.
-   * @param aEmail     The user's e-mail address
-   * @param aPassword  The user's password
+   * @param aEmail     {string} The user's e-mail address
+   * @param aPassword  {string} The user's password
+   * @returns {string} The body for an authentication request.
    */
   makeAuthBody: function gdata_makeAuthBody(aEmail, aPassword) {
     // NOTE: leave accountType as HOSTED_OR_GOOGLE or Google Apps for your
@@ -76,8 +79,8 @@ com.gContactSync.gdata = {
            "&service=cp&source=Josh-gContactSync-0-3";
   },
   /**
-   * gdata.getEmailFromId
    * Returns the email address of the given ID.
+   * @returns The e-mail address from an ID.
    */
   getEmailFromId: function gdata_getEmailFromId(aId) {
     if (!aId || !aId.indexOf || aId == "")
@@ -94,28 +97,41 @@ com.gContactSync.gdata = {
     com.gContactSync.LOGGER.VERBOSE_LOG("found address: " + address + " from ID: " + aId);
     return address;
   },
-  // The namespaces used
+  /** Namespaces used in the API */
   namespaces: {
+    /** The APP namespace */
     APP:         new com.gContactSync.Namespace("http://www.w3.org/2007/app", "app:"),
+    /** The ATOM namespace */
     ATOM:        new com.gContactSync.Namespace("http://www.w3.org/2005/Atom", "atom:"),
+    /** The GD namespace */
     GD:          new com.gContactSync.Namespace("http://schemas.google.com/g/2005", "gd:"),
+    /** The GCONTACT namespace */
     GCONTACT:    new com.gContactSync.Namespace("http://schemas.google.com/contact/2008",
-                               "gContact:"),
+                                                "gContact:"),
+    /** The OPEN SEARCH namespace */
     OPEN_SEARCH: new com.gContactSync.Namespace("http://a9.com/-/spec/opensearch/1.1/",
-                               "openSearch:"),
+                                                "openSearch:"),
+    /** The BATCH namespace */
     BATCH:       new com.gContactSync.Namespace("http://schemas.google.com/gdata/batch","batch:")
   },
-  // some things related to contacts, such as related URLs and HTTP Request
-  // types
+  /** some things related to contacts, such as related URLs and HTTP Request
+   * types
+   */
   contacts: {
+    /** The URL to get all contacts (full) */
     GET_ALL_URL:      "https://www.google.com/m8/feeds/contacts/default/full?" +
                       "max-results=",
+    /** The URL to get all contacts (thin) */
     GET_ALL_THIN_URL: "https://www.google.com/m8/feeds/contacts/default/thin?" +
                       "max-results=",
+    /** The URL to get all groups (max 1000) */
     GROUPS_URL:       "https://www.google.com/m8/feeds/groups/default/full?" +
                       "max-results=1000",
+    /** The URL to add a group */
     ADD_GROUP_URL:    "https://www.google.com/m8/feeds/groups/default/full",
+    /** The URL to add a contact */
     ADD_URL:          "https://www.google.com/m8/feeds/contacts/default/full",
+    /** Types of relations (people somehow associated with the contact) */
     RELATION_TYPES: {      
       "assistant":        1,
       "brother":          1,
@@ -132,6 +148,7 @@ com.gContactSync.gdata = {
       "sister":           1,
       "spouse":           1
     },
+    /** Types of HTTP requests */
     requestTypes: {
       GET_ALL: "GET",
       GET:     "GET",
@@ -139,20 +156,20 @@ com.gContactSync.gdata = {
       ADD:     "POST",
       DELETE:  "DELETE"  // NOTE: should be set to POST and overridden
     },
-    // different "types" of contact elements
+    /** Different "types" of contact elements */
     types: {
-      // has a type (#home, #work, #other, etc.) and the value is stored in a
-      // child node
+      /** Has a type (#home, #work, #other, etc.) and the value is stored in a
+       * child node */
       TYPED_WITH_CHILD: 0,
-      // has a type and the value is stored in an attribute
+      /** has a type and the value is stored in an attribute */
       TYPED_WITH_ATTR: 1,
       UNTYPED: 2,
-      // The type is stored in the element's parent
+      /** The type is stored in the element's parent */
       PARENT_TYPED: 3
     },
+    /** The prefix for rel attributes */
     rel: "http://schemas.google.com/g/2005",
     /**
-     * gdata.contacts.init
      * Initializes the values of the tagnames with an GElement object containing
      * information about how an Atom/XML representation of a contact from Google
      * is stored.
@@ -208,23 +225,29 @@ com.gContactSync.gdata = {
       this.postcode            = new GElement(parentTyped, "postcode", gd),
       this.country             = new GElement(parentTyped, "country",  gd)
     },
+    /** Different types for a website */
     WEBSITE_TYPES: [
       "home-page", "blog", "profile", "home", "work", "other", "ftp"
     ],
+    /** Different types of phones */
     PHONE_TYPES: [
       "work", "home", "work_fax", "mobile", "pager", "home_fax", "assistant",
       "callback", "car", "company_main", "fax", "isdn", "main", "other_fax",
       "radio", "telex", "tty_tdd", "work_mobile", "work_pager", "other"
     ],
+    /** Different types for IM screennames */
     IM_TYPES: [
       "AIM", "GOOGLE_TALK", "ICQ", "YAHOO", "MSN", "JABBER", "SKYPE", "QQ"
     ],
+    /** E-mail address categories */
     EMAIL_TYPES: [
       "other", "home", "work"
     ],
+    /** Postal address categories */
     POSTAL_ADDRESS_TYPES: [
       "home", "work", "other"
     ],
+    /** Tags that are valid an an organization tag */
     ORG_TAGS: {
       orgDepartment:     "1",
       orgJobDescription: "1",
@@ -232,9 +255,14 @@ com.gContactSync.gdata = {
       orgSymbol:         "1",
       orgTitle:          "1"
     },
+    /**
+     * Returns true if the given tag is valid in an organization tag
+     * @returns {boolean} True if the given tag is valid in an organization tag.
+     */
     isOrgTag: function gdata_contacts_isOrgTag(aTagName) {
       return this.ORG_TAGS[aTagName] ? true : false;
     },
+    /** Valid tags in a name tag */
     NAME_TAGS: {
       givenName:         "1",
       additionalName:    "1",
@@ -243,9 +271,14 @@ com.gContactSync.gdata = {
       nameSuffix:        "1",
       fullName:          "1"
     },
+    /**
+     * Returns true if the given tag is valid in an name tag
+     * @returns {boolean} True if the given tag is valid in a name tag.
+     */
     isNameTag: function gdata_contacts_isNameTag(aTagName) {
       return this.NAME_TAGS[aTagName] ? true : false;
     },
+    /** Valid tags in a structuredAddress tag */
     ADDRESS_TAGS: {
       housename:    "1",
       street:       "1",
@@ -257,6 +290,11 @@ com.gContactSync.gdata = {
       postcode:     "1",
       country:      "1"
     },
+    /**
+     * Returns true if the given tag is valid in a structuredAddress tag
+     * @returns {boolean} True if the given tag is valid in a structuredAddress
+     *                  tag.
+     */
     isAddressTag: function gdata_contacts_isAddressTag(aTagName) {
       return this.ADDRESS_TAGS[aTagName] ? true : false;
     },
@@ -283,17 +321,19 @@ com.gContactSync.gdata = {
     nickname:            {},
     birthday:            {},
     website:             {},
-    // links in the contacts feed.  The property name is the type of link
-    // and the value is the value of the "rel" attribute
+    /** Links in the contacts feed.  The property name is the type of link
+        and the value is the value of the "rel" attribute */
     links: {
+      /** The Photo URL */
       PhotoURL: "http://schemas.google.com/contacts/2008/rel#photo",
+      /** The contact URL */
       SelfURL:  "self",
+      /** The URL to edit the contact */
       EditURL:  "edit"
     },
     /**
-     * gdata.contacts.getNumberOfContacts
      * Returns the total number of contacts in an Atom document.
-     * @param aXML The Atom feed from Google.
+     * @param aXML {XML Element} The Atom feed from Google.
      */
     getNumberOfContacts: function gdata_contacts_getNumberOfContacts(aAtom) {
       return aAtom.getElementsByTagNameNS("totalResults",
@@ -301,8 +341,8 @@ com.gContactSync.gdata = {
     }
   },
   /**
-   * gdata.isAuthValid
    * Returns true if there is at least one auth token.
+   * @returns {boolean} True if there is at least one auth token.
    */ 
   isAuthValid: function gdata_isAuthValid() {
     if (com.gContactSync.LoginManager.mNumAuthTokens == 0)
