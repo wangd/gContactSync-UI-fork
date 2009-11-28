@@ -156,36 +156,37 @@ com.gContactSync.Overlay = {
     if (!treeCols || !treeCols.appendChild)
       return;
     if (com.gContactSync.Preferences.mSyncPrefs.phoneColLabels.value) {
-        // fix the existing phone numbers
-        var arr = ["WorkPhone", "HomePhone", "FaxNumber","CellularNumber",
-                   "PagerNumber"];
-        // the strings from the string bundle
-        //var arr2 = ["first", "second", "third", "fourth", "fifth"];
-        var elem;
-        for (var i = 0; i < arr.length; i++) {
-          elem = document.getElementById(arr[i]);
-          if (!elem)
-            continue;
-          // remove it
-          treeCols.removeChild(elem);
-          elem.setAttribute("label", com.gContactSync.StringBundle.getStr(arr[i]));
-//          elem.setAttribute("label", com.gContactSync.StringBundle.getStr(arr2[i]));
-          // and then add it to the end of the treecols element
-          treeCols.appendChild(elem);
+      // fix the existing phone numbers
+      var arr = ["WorkPhone", "HomePhone", "FaxNumber"," CellularNumber",
+                 "PagerNumber"
+                ];
+      // the strings from the string bundle
+      //var arr2 = ["first", "second", "third", "fourth", "fifth"];
+      var elem;
+      for (var i = 0; i < arr.length; i++) {
+        elem = document.getElementById(arr[i]);
+        if (!elem) {
+          continue;
         }
+        // remove it
+        treeCols.removeChild(elem);
+        elem.setAttribute("label", com.gContactSync.StringBundle.getStr(arr[i]));
+        // and then add it to the end of the treecols element
+        treeCols.appendChild(elem);
+      }
     }
     // if Bug 413260 isn't applied in this version of TB, or if the pref was
     // changed to false, then stop here
     if (!this.mBug413260 || !com.gContactSync.Preferences.mSyncPrefs.newColLabels.value)
       return;
     // get the added attributes
-    var ids = com.gContactSync.ContactConverter.getExtraSyncAttributes(false);
-    var id, splitter, treeCol;
+    var ids = com.gContactSync.ContactConverter.getExtraSyncAttributes(false),
+        id, splitter, treeCol;
     // iterate through every added attribute and add a treecol for it unless
     // it is a postal address
-    for (var i = 0, length = ids.length; i < length; i++) {
+    for (i = 0, length = ids.length; i < length; i++) {
       id = ids[i];
-      if (id.indexOf("Type") != -1)
+      if (id.indexOf("Type") !== -1)
         continue; // skip addresses and Types
       // make and add the splitter first
       splitter = document.createElement("splitter");
@@ -222,12 +223,12 @@ com.gContactSync.Overlay = {
         return false;
       }
 
-      var toolsMenu    = document.getElementById("tasksMenu");
-      var menu         = document.createElement("menu");
+      var toolsMenu    = document.getElementById("tasksMenu"),
+          menu         = document.createElement("menu"),
+          menupopup    = document.createElement("menupopup");
       menu.setAttribute("id", "gContactSyncMenu");
       menu.setAttribute("label", "gContactSync");
       menu.setAttribute("accesskey", "G");
-      var menupopup    = document.createElement("menupopup");
       menupopup.setAttribute("id", "gContactSyncMenuPopup");
 
       var syncMenuItem = document.createElement("menuitem");
@@ -458,16 +459,20 @@ com.gContactSync.Overlay = {
     var httpReq  = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["com.gContactSync.Overlay.login('" + username.value +
-                          "', httpReq.responseText.split(\"\\n\")[2]);"];
+    httpReq.mOnSuccess = function authSuccess(httpReq) {
+      com.gContactSync.Overlay.login(username.value,
+                                     httpReq.responseText.split("\n")[2]);
+    };
     // if it fails, alert the user and prompt them to try again
-    httpReq.mOnError = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
-                        "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
-                        "httpReq.status, httpReq.responseText);",
-                        "com.gContactSync.Overlay.promptLogin();"];
+    httpReq.mOnError = function authError(httpReq) {
+      alert(com.gContactSync.StringBundle.getStr('authErr'));
+      com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
+                                        httpReq.status,
+                                        httpReq.responseText);
+      com.gContactSync.Overlay.promptLogin();
+    };
     // if the user is offline, alert them and quit
-    httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
-                          "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));"];
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
     return true;
   },

@@ -61,7 +61,7 @@ com.gContactSync.GElement = function gCS_GElement(aType, aTagName, aNamespace, a
   switch (aType) {
   case com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR:
     this.attribute = aAttribute;
-    // fall through
+  // fall through
   case com.gContactSync.gdata.contacts.types.TYPED_WITH_CHILD:
     this.types = aValidTypes;
     break;

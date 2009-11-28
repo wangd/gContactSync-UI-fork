@@ -105,7 +105,7 @@ com.gContactSync.TBContact.prototype = {
       com.gContactSync.LOGGER.LOG_WARNING("Warning - TBContact.update called w/o a directory");
       return false;
     }
-    return this.mAddressBook.updateCard(this.mContact);
+    return this.mAddressBook.updateContact(this);
   },
   /**
    * Removes this card from its parent directory, if possible.
@@ -116,7 +116,7 @@ com.gContactSync.TBContact.prototype = {
       com.gContactSync.LOGGER.LOG_WARNING("Warning - TBContact.remove called w/o a directory");
       return false;
     }
-    return this.mAddressBook.deleteCards([this.mContact]);
+    return this.mAddressBook.deleteContacts([this]);
   },
   /**
    * Returns a 'name' for this contact.  It is the first non-null and not blank
@@ -134,5 +134,21 @@ com.gContactSync.TBContact.prototype = {
     if (primaryEmail)
       return primaryEmail;
     return this.getValue("GoogleID");
+  },
+  /**
+   * Returns true if an only if this contact has a value for one or more of the
+   * postal address fields (Address, Address2, City, State, ZipCode, or Country)
+   * of the given type (Home, Work, etc.)
+   * @param aPrefix {string} The type of address (Home, Work, etc.)
+   * @return {boolean} True if and only if one or more of the address fields of
+   *                   the given type has a value.
+   */
+  hasAddress: function TBContact_hasAddress(aPrefix) {
+    return this.getValue(aPrefix + "Address") ||
+           this.getValue(aPrefix + "Address2") ||
+           this.getValue(aPrefix + "City") ||
+           this.getValue(aPrefix + "State") ||
+           this.getValue(aPrefix + "ZipCode") ||
+           this.getValue(aPrefix + "Country");
   }
 };

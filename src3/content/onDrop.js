@@ -57,43 +57,42 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
   if (!dragSession)
     return;
   // get the attributes added by this extension
-  var attributes = com.gContactSync.ContactConverter.getExtraSyncAttributes();
-  var attributesLen = attributes.length;
-
-  var trans = Components.classes["@mozilla.org/widget/transferable;1"]
-                        .createInstance(Components.interfaces.nsITransferable);
+  var attributes    = com.gContactSync.ContactConverter.getExtraSyncAttributes(),
+      attributesLen = attributes.length,
+      trans         = Components.classes["@mozilla.org/widget/transferable;1"]
+                                .createInstance(Components.interfaces.nsITransferable);
   trans.addDataFlavor("moz/abcard");
 
-  var targetResource = dirTree.builderView.getResourceAtIndex(row);
+  var targetResource = dirTree.builderView.getResourceAtIndex(row),
   // get the source and target directory information
-  var targetURI      = targetResource.Value;
-  var srcURI         = GetSelectedDirectory();
-  var toDirectory    = GetDirectoryFromURI(targetURI);
-  var srcDirectory   = GetDirectoryFromURI(srcURI);
-  var ab             = new com.gContactSync.GAddressBook(toDirectory);
+      targetURI      = targetResource.Value,
+      srcURI         = GetSelectedDirectory(),
+      toDirectory    = GetDirectoryFromURI(targetURI),
+      srcDirectory   = GetDirectoryFromURI(srcURI),
+      ab             = new com.gContactSync.GAddressBook(toDirectory);
   // iterate through each dropped item from the session
   for (var i = 0, dropItems = dragSession.numDropItems; i < dropItems; i++) {
     dragSession.getData(trans, i);
-    var dataObj = {};
-    var flavor  = {};
-    var len     = {};
-    var needToRefresh = false;
+    var dataObj       = {},
+        flavor        = {},
+        len           = {},
+        needToRefresh = false;
     try {
       trans.getAnyTransferData(flavor, dataObj, len);
       dataObj = dataObj.value.QueryInterface(Components.interfaces.nsISupportsString);
     }
     catch (ex) { continue; }
-    var transData = dataObj.data.split("\n");
-    var rows      = transData[0].split(",");
-    var numrows   = rows.length;
-    var result;
+    var transData = dataObj.data.split("\n"),
+        rows      = transData[0].split(","),
+        numrows   = rows.length,
+        result,
     // needToCopyCard is used for whether or not we should be creating
     // copies of the cards in a mailing list in a different address book
     // - it's not for if we are moving or not.
-    var needToCopyCard = true;
+        needToCopyCard = true;
     if (srcURI.length > targetURI.length) {
       result = srcURI.split(targetURI);
-      if (result[0] != srcURI) {
+      if (result[0] !== srcURI) {
         // src directory is a mailing list on target directory, no need to copy card
         needToCopyCard = false;
         // workaround for a mailnews bug, get the childCards enumerator to
@@ -104,7 +103,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
     }
     else {
       result = targetURI.split(srcURI);
-      if (result[0] != targetURI) {
+      if (result[0] !== targetURI) {
         // target directory is a mailing list on src directory, no need to copy card
         needToCopyCard = false;
         // workaround for a mailnews bug, get the childCards enumerator to
@@ -119,20 +118,21 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
     // if so, we don't have to copy the card
     if (needToCopyCard) {
       var targetParentURI = GetParentDirectoryFromMailingListURI(targetURI);
-      if (targetParentURI && (targetParentURI ==
-                              GetParentDirectoryFromMailingListURI(srcURI)))
+      if (targetParentURI && (targetParentURI ===
+                              GetParentDirectoryFromMailingListURI(srcURI))) {
         needToCopyCard = false;
+      }
     }
     // Only move if we are not transferring to a mail list
-    var actionIsMoving = (dragSession.dragAction & dragSession.DRAGDROP_ACTION_MOVE)
-                         && !toDirectory.isMailList;
+    var actionIsMoving = (dragSession.dragAction & dragSession.DRAGDROP_ACTION_MOVE) &&
+                         !toDirectory.isMailList;
     // get the cards first
     var cards = [];
     for (var j = 0; j < numrows; j++) {
       cards.push(gAbView.getCardFromRow(rows[j]));
     }
     // iterate through each card and copy/move it
-    for (var j = 0; j < numrows; j++) {
+    for (j = 0; j < numrows; j++) {
       var card = cards[j];
       if (!card)
         continue;
@@ -191,10 +191,11 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
           } catch (e) { com.gContactSync.LOGGER.LOG_WARNING("Error while copying card", e); }
         }
         try {
-          var now = (new Date).getTime()/1000;
+          var now = (new Date()).getTime()/1000,
+              newContact = new com.gContactSync.TBContact(newCard, ab);
           // now set the new card's last modified date and update it
-          ab.setCardValue(newCard, "LastModifiedDate", now);
-          ab.updateCard(newCard);
+          newContact.setValue("LastModifiedDate", now);
+          newContact.update();
         } catch (e) { com.gContactSync.LOGGER.LOG_WARNING('copy card error: ' + e); }
       }
     }

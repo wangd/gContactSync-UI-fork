@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -136,7 +136,7 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
     else if (aContact instanceof com.gContactSync.TBContact)
       id = aContact.getValue("GoogleID");
     else
-      id = com.gContactSync.AbManager.getCardValue(aContact, "GoogleID");
+      id = com.gContactSync.GAbManager.getCardValue(aContact, "GoogleID");
   } catch (e) {
     try {
       // try getting the card's value
@@ -185,13 +185,14 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
   if (!aMenuList || !aMenuList.menupopup || !aValue)
     throw "Invalid parameter sent to selectMenuItem";
 
-  var arr = aMenuList.menupopup.childNodes, i, item;
-  // convert the value to lowercase
-  aValue = aValue.toLowerCase();
+  var arr = aMenuList.menupopup.childNodes,
+      i,
+      item,
+      aValueLC = aValue.toLowerCase();
   for (i = 0; i < arr.length; i++) {
     item = arr[i];
-    if (item.getAttribute("value").toLowerCase() === aValue ||
-        item.getAttribute("label").toLowerCase() === aValue) {
+    if (item.getAttribute("value").toLowerCase() === aValueLC ||
+        item.getAttribute("label").toLowerCase() === aValueLC) {
       aMenuList.selectedIndex = i;
       return true;
     }

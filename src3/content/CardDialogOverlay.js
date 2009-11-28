@@ -118,66 +118,73 @@ com.gContactSync.CardDialogOverlay = {
       // extra tabs
       if (!gEditCard.card.getProperty)
         gEditCard.card.QueryInterface(Components.interfaces.nsIAbMDBCard);
-    } catch(e) { return; }
+    }
+    catch (e) {
+      return;
+    }
     // some contacts are read-only so extra attributes should be disabled for
     // those cards (see Mozdev Bug 20169)
     try {
       com.gContactSync.CardDialogOverlay.mDisabled = document.getElementById("PreferMailFormatPopup").disabled;
-    } catch (e) {
-      alert("Error while determining if contact is read-only: " + e);
+    }
+    catch (ex) {
+      alert("Error while determining if contact is read-only: " + ex);
       com.gContactSync.CardDialogOverlay.mDisabled = true;
     }
     // add the email type drop down menus
     try {
-      var emailTypes = com.gContactSync.gdata.contacts.EMAIL_TYPES;
-      var primaryEmailBox = document.getElementById("PrimaryEmail").parentNode;
+      var emailTypes      = com.gContactSync.gdata.contacts.EMAIL_TYPES,
+          primaryEmailBox = document.getElementById("PrimaryEmail").parentNode,
+          secondEmailBox  = document.getElementById("SecondEmail").parentNode,
+          thirdEmailBox   = document.getElementById("ThirdEmail").parentNode,
+          fourthEmailBox  = document.getElementById("FourthEmail").parentNode;
       this.addMenuItems(primaryEmailBox, emailTypes, "PrimaryEmailType", "other");
-      var secondEmailBox = document.getElementById("SecondEmail").parentNode;
       this.addMenuItems(secondEmailBox, emailTypes, "SecondEmailType", "other");
-      var thirdEmailBox = document.getElementById("ThirdEmail").parentNode;
       this.addMenuItems(thirdEmailBox, emailTypes, "ThirdEmailType", "other");
-      var fourthEmailBox = document.getElementById("FourthEmail").parentNode;
       this.addMenuItems(fourthEmailBox, emailTypes, "FourthEmailType", "other");
-    } catch(e) { alert("Unable to setup email types: " + e); }
+    }
+    catch (ex0) {
+      alert("Unable to setup email types: " + ex0);
+    }
     try {
       // add drop down menus for screen name protocols
-      var imTypes = com.gContactSync.gdata.contacts.IM_TYPES;
-      var aimBox = document.getElementById("ScreenName").parentNode;
-      this.addMenuItems(aimBox, imTypes, "_AimScreenNameType", "AIM");
-      var talkBox = document.getElementById("TalkScreenName").parentNode;
-      this.addMenuItems(talkBox, imTypes, "TalkScreenNameType", "GOOGLE_TALK");
-      var icqBox = document.getElementById("ICQScreenName").parentNode;
-      this.addMenuItems(icqBox, imTypes, "ICQScreenNameType", "ICQ");
-      var yahooBox = document.getElementById("YahooScreenName").parentNode;
-      this.addMenuItems(yahooBox, imTypes, "YahooScreenNameType", "YAHOO");
-      var msnBox = document.getElementById("MSNScreenName").parentNode;
-      this.addMenuItems(msnBox, imTypes, "MSNScreenNameType", "MSN");
-      var jabberBox = document.getElementById("JabberScreenName").parentNode;
+      var imTypes   = com.gContactSync.gdata.contacts.IM_TYPES,
+          aimBox    = document.getElementById("ScreenName").parentNode,
+          talkBox   = document.getElementById("TalkScreenName").parentNode,
+          yahooBox  = document.getElementById("YahooScreenName").parentNode,
+          icqBox    = document.getElementById("ICQScreenName").parentNode,
+          msnBox    = document.getElementById("MSNScreenName").parentNode,
+          jabberBox = document.getElementById("JabberScreenName").parentNode;
+      this.addMenuItems(aimBox,    imTypes, "_AimScreenNameType",   "AIM");
+      this.addMenuItems(talkBox,   imTypes, "TalkScreenNameType",   "GOOGLE_TALK");
+      this.addMenuItems(icqBox,    imTypes, "ICQScreenNameType",    "ICQ");
+      this.addMenuItems(yahooBox,  imTypes, "YahooScreenNameType",  "YAHOO");
+      this.addMenuItems(msnBox,    imTypes, "MSNScreenNameType",    "MSN");
       this.addMenuItems(jabberBox, imTypes, "JabberScreenNameType", "JABBER");
     }
-    catch(e) {
-      alert("Unable to setup screen name protocol menus\n" + e);
+    catch (ex1) {
+      alert("Unable to setup screen name protocol menus\n" + ex1);
     }
     var pager;
     try {
       // swap pager and mobile phone textboxes and values
       pager = document.getElementById("PagerNumber");
       pager.setAttribute("id", "tmp");
-      var pagerValue = pager.value;
-      var mobile = document.getElementById("CellularNumber");
+      var pagerValue = pager.value,
+          mobile     = document.getElementById("CellularNumber");
       mobile.setAttribute("id", "PagerNumber");
       pager.setAttribute("id", "CellularNumber");
       pager.value = mobile.value;
       mobile.value = pagerValue;
     }
-    catch (e) {
-      alert("Unable to swap pager and mobile number values\n" + e);
+    catch (e1) {
+      alert("Unable to swap pager and mobile number values\n" + e1);
     }
     var newDialog = false; // post-Mailnews Core Bug 63941
     try {
       // then replace all phone labels and remove the access keys
-      var work = document.getElementById("WorkPhone");
-      var workLabel = work.parentNode.previousSibling;
+      var work = document.getElementById("WorkPhone"),
+          workLabel = work.parentNode.previousSibling;
       if (!workLabel) {
         newDialog = true;
         workLabel = work.previousSibling;
@@ -194,7 +201,7 @@ com.gContactSync.CardDialogOverlay = {
                                : fax.parentNode.previousSibling;
       faxLabel.value = com.gContactSync.StringBundle.getStr("third");
       faxLabel.setAttribute("accesskey", "");
-      var mobile = document.getElementById("CellularNumber");
+      mobile = document.getElementById("CellularNumber");
       var mobileLabel = newDialog ? mobile.previousSibling
                                   : mobile.parentNode.previousSibling;
       mobileLabel.value = com.gContactSync.StringBundle.getStr("fourth");
@@ -205,8 +212,8 @@ com.gContactSync.CardDialogOverlay = {
       pagerLabel.value = com.gContactSync.StringBundle.getStr("fifth");
       pagerLabel.setAttribute("accesskey", "");
     }
-    catch(e) {
-      alert("Unable to replace phone labels and remove access keys\n" + e);
+    catch (ex2) {
+      alert("Unable to replace phone labels and remove access keys\n" + ex2);
     }
     var phoneTypes = com.gContactSync.gdata.contacts.PHONE_TYPES;
     try {
@@ -226,8 +233,8 @@ com.gContactSync.CardDialogOverlay = {
       var otherNumberBox = document.getElementById("OtherNumber").parentNode;
       this.addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other");
     }
-    catch(e) {
-      alert("Unable to setup phone number types\n" + e);
+    catch (ex3) {
+      alert("Unable to setup phone number types\n" + ex3);
     }
     
     // Add the website types
@@ -246,8 +253,8 @@ com.gContactSync.CardDialogOverlay = {
       // add the new tab to the dialog
       tabs.appendChild(myTab);
     }
-    catch(e) {
-      alert("Unable to setup the extra tabs\n" + e);
+    catch (ex4) {
+      alert("Unable to setup the extra tabs\n" + ex4);
     }
     if (newDialog) {
       try {
@@ -260,11 +267,12 @@ com.gContactSync.CardDialogOverlay = {
           elem.setAttribute("width", "150px");
         }
         // add the sixth and seventh numbers below 1 - 5
-        var sixthNum = this.setupNumBox("HomeFaxNumber", com.gContactSync.StringBundle.getStr("sixth"));
+        var sixthNum   = this.setupNumBox("HomeFaxNumber",
+                                          com.gContactSync.StringBundle.getStr("sixth")),
+            seventhNum = this.setupNumBox("OtherNumber",
+                                     com.gContactSync.StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(sixthNum);
         this.addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax");
-        var seventhNum = this.setupNumBox("OtherNumber",
-                                     com.gContactSync.StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
         this.addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other");
         
@@ -273,15 +281,16 @@ com.gContactSync.CardDialogOverlay = {
           document.getElementById("relationFields").removeAttribute("hidden");
           var relationTypes = [""];
           // copy the relation types over
-          for (var i in com.gContactSync.gdata.contacts.RELATION_TYPES)
+          for (i in com.gContactSync.gdata.contacts.RELATION_TYPES) {
             relationTypes.push(i);
-          for (var i = 0; i < 4; i++) {
+          }
+          for (i = 0; i < 4; i++) {
             var relationBox = document.getElementById("Relation" + i + "Box");
             this.addMenuItems(relationBox, relationTypes, "Relation" + i + "Type", "", com.gContactSync.StringBundle.getStr("relationWidth"));
           }
         }
-        catch (e) {
-          com.gContactSync.LOGGER.LOG_WARNING("Could not add the relation fields.", e);
+        catch (ex5) {
+          com.gContactSync.LOGGER.LOG_WARNING("Could not add the relation fields.", ex5);
         }
         /*
         var nameWidth = "width: 30ch;";
@@ -310,8 +319,8 @@ com.gContactSync.CardDialogOverlay = {
         // fix the width of the dialog
         window.sizeToContent();
       }
-      catch(e) {
-        alert("Unable to setup the extra tabs\n" + e);
+      catch (ex6) {
+        alert("Unable to setup the extra tabs\n" + ex6);
       }
     }
     // if this is the old dialog, show the extra phone numbers
@@ -379,7 +388,7 @@ com.gContactSync.CardDialogOverlay = {
               aCard.setStringAttribute(attr, value);
           }
         }
-      } catch(e) { alert("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e); }
+      } catch (e) { alert("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e); }
     }
     if (!aCard.getProperty)
       aCard.editCardToDatabase(gEditCard.abURI);
@@ -417,7 +426,7 @@ com.gContactSync.CardDialogOverlay = {
             elem.value = value;
           }
         }
-      } catch(e) { alert("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
+      } catch (e) { alert("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
     }
   
     if (com.gContactSync.isDummyEmail(aDoc.getElementById("PrimaryEmail").value))

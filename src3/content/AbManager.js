@@ -49,7 +49,7 @@ com.gContactSync.AbManager = {
   /** True if the changes started in Bug 413260 have been applied */
   mBug413260: Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                         .createInstance(Components.interfaces.nsIAbCard)
-                        .getProperty != null,
+                        .getProperty !== null,
   /** attributes that can be set by getCardValue and setCardValue */
   mBasicAttributes: [
     "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
@@ -59,7 +59,8 @@ com.gContactSync.AbManager = {
     "HomeCountry", "WorkAddress2", "WorkCity", "WorkState", "WorkZipCode",
     "WorkCountry", "WebPage1", "WebPage2", "Department", "Custom1", "Custom2",
     "Custom3", "Custom4", "WorkPhoneType", "HomePhoneType", "CellularNumberType",
-    "FaxNumberType", "PagerNumberType"],
+    "FaxNumberType", "PagerNumberType"
+  ],
   /**
    * Returns true if the given attribute is able to be set/obtained through the
    * setCardValue and getCardValue functions of nsIAbCard.
@@ -67,7 +68,7 @@ com.gContactSync.AbManager = {
    * @returns True if aAttribute is usable with set/getCardValue.
    */
   isRegularAttribute: function AbManager_isRegularAttribute(aAttribute) {
-    return this.mBasicAttributes.indexOf(aAttribute) != -1;
+    return this.mBasicAttributes.indexOf(aAttribute) !== -1;
   },
   /**
    * Returns an object filled with GAddressBook objects.
@@ -75,30 +76,34 @@ com.gContactSync.AbManager = {
    * @param aDirType {int} The type of directory (2 is the usual Mork AB)
    */
   getAllAddressBooks: function AbManager_getAllAddressBooks(aDirType) {
-    var iter;
-    var abs = {};
-    if (this.mVersion == 3) { // TB 3
-      var abManager = Components.classes["@mozilla.org/abmanager;1"]
-                                .getService(Components.interfaces.nsIAbManager);
+    var iter,
+        abManager,
+        dir,
+        abs = {},
+        data,
+        ab,
+        dirType;
+    if (Components.classes["@mozilla.org/abmanager;1"]) { // TB 3
+      abManager = Components.classes["@mozilla.org/abmanager;1"]
+                            .getService(Components.interfaces.nsIAbManager);
       iter = abManager.directories;
     }
     else { // TB 2
       // obtain the main directory through the RDF service
-      var dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
-                          .getService(Components.interfaces.nsIRDFService)
-                          .GetResource("moz-abdirectory://")
-                          .QueryInterface(Components.interfaces.nsIAbDirectory);
+      dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                      .getService(Components.interfaces.nsIRDFService)
+                      .GetResource("moz-abdirectory://")
+                      .QueryInterface(Components.interfaces.nsIAbDirectory);
       iter = dir.childNodes;
     }
-    var data, ab, dirType;
-    while(iter.hasMoreElements()) {
+    while (iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion == 3 ||
+      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
           data instanceof Components.interfaces.nsIAbMDBDirectory)) {
         ab = new com.gContactSync.GAddressBook(data);
         dirType = ab.getDirType();
         // If no dir type was passed or the type matches then add it to abs
-        if (this.mVersion < 3 || aDirType === undefined || dirType == aDirType)
+        if (this.mVersion < 3 || aDirType === undefined || dirType === aDirType)
           abs[ab.getName()] = ab;
       }
     }
@@ -117,27 +122,34 @@ com.gContactSync.AbManager = {
    */
   getSyncedAddressBooks: function AbManager_getSyncedAddressBooks(aMakeArray) {
     this.mAddressBooks = {};
-    var iter;
-    if (this.mVersion == 3) { // TB 3
-      var abManager = Components.classes["@mozilla.org/abmanager;1"]
-                                .getService(Components.interfaces.nsIAbManager);
+    var iter,
+        abManager,
+        dir,
+        data,
+        ab,
+        username,
+        arr = [],
+        i,
+        j;
+    if (Components.classes["@mozilla.org/abmanager;1"]) { // TB 3
+      abManager = Components.classes["@mozilla.org/abmanager;1"]
+                            .getService(Components.interfaces.nsIAbManager);
       iter = abManager.directories;
     }
     else { // TB 2
       // obtain the main directory through the RDF service
-      var dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
-                          .getService(Components.interfaces.nsIRDFService)
-                          .GetResource("moz-abdirectory://")
-                          .QueryInterface(Components.interfaces.nsIAbDirectory);
+      dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                      .getService(Components.interfaces.nsIRDFService)
+                      .GetResource("moz-abdirectory://")
+                      .QueryInterface(Components.interfaces.nsIAbDirectory);
       iter = dir.childNodes;
     }
-    var data;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion == 3 ||
+      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
           data instanceof Components.interfaces.nsIAbMDBDirectory)) {
-        var ab = new com.gContactSync.GAddressBook(data);
-        var username = ab.mPrefs.Username;
+        ab = new com.gContactSync.GAddressBook(data);
+        username = ab.mPrefs.Username;
         if (username) {
           if (!this.mAddressBooks[username])
             this.mAddressBooks[username] = [];
@@ -148,9 +160,9 @@ com.gContactSync.AbManager = {
     if (!aMakeArray)
       return this.mAddressBooks;
     // now convert to an array
-    var arr = [];
-    for (var i in this.mAddressBooks) {
-      for (var j in this.mAddressBooks[i]) {
+    arr = [];
+    for (i in this.mAddressBooks) {
+      for (j in this.mAddressBooks[i]) {
         arr.push({
           username: i,
           ab:       this.mAddressBooks[i][j]
@@ -164,8 +176,9 @@ com.gContactSync.AbManager = {
    * @param aDirectory {nsIAbDirectory} The directory to check.
    */
   isDirectoryValid: function AbManager_isDirectoryValid(aDirectory) {
-    return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory 
-          && aDirectory.dirName != "";
+    return aDirectory &&
+           aDirectory instanceof Components.interfaces.nsIAbDirectory &&
+           aDirectory.dirName !== "";
   },
   /**
    * Checks the validity of a card and throws an error if the card is invalid.
@@ -192,7 +205,7 @@ com.gContactSync.AbManager = {
     if (this.mBug413260) // if the patch for Bug 413260 is applied
       return aCard.getProperty(aAttrName, null);
     else {
-      if (aAttrName == "LastModifiedDate")
+      if (aAttrName === "LastModifiedDate")
         return aCard.lastModifiedDate; // workaround for lastModifiedDate bug
       var value;
       if (this.isRegularAttribute(aAttrName))
@@ -294,7 +307,7 @@ com.gContactSync.AbManager = {
           if (aValue == "")
             aValue = 0;
           aCard.lastModifiedDate = aValue;
-        } catch(e) { com.gContactSync.LOGGER.LOG_WARNING("Invalid lastModifiedDate"); }
+        } catch (e) { com.gContactSync.LOGGER.LOG_WARNING("Invalid lastModifiedDate"); }
       else if (aAttrName == "AllowRemoteContent") {
         // AllowRemoteContent may be 1/0 if the patch or true/false otherwise
         var value = aValue == "1" || (aValue != "0" && aValue);
@@ -342,7 +355,7 @@ com.gContactSync.AbManager = {
       aCard.setStringAttribute(aAttrName, aValue);
       return true;
     }
-    catch(e) {
+    catch (e) {
       com.gContactSync.LOGGER.LOG_WARNING("Error in setMDBCardValue: " + e + "\n" + aAttrName +
                          "\n" + aValue);
     }
@@ -359,7 +372,7 @@ com.gContactSync.AbManager = {
     try {
       return aCard.getStringAttribute(aAttrName);
     }
-    catch(e) {
+    catch (e) {
       com.gContactSync.LOGGER.LOG_WARNING("Error in getMDBCardValue: " + e + "\n" + aAttrName);
     }
     return null;
@@ -392,7 +405,7 @@ com.gContactSync.AbManager = {
         return null;
       return dir;
     }
-    catch(e) { com.gContactSync.LOGGER.LOG_ERROR("Error in getAbByURI", e); }
+    catch (e) { com.gContactSync.LOGGER.LOG_ERROR("Error in getAbByURI", e); }
     return null;
   },
   /**

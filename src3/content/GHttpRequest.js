@@ -67,96 +67,97 @@ com.gContactSync.GHttpRequest = function gCS_GHttpRequest(aType, aAuth, aUrl, aB
   if (aUrl && aUrl.indexOf("https://") < 0)
     aUrl = aUrl.replace("http://", "https://");
   switch (aType) {
-    case "AUTH_SUB_SESSION":
-    case "authsubsession":
-      this.mContentType = this.CONTENT_TYPES.URL_ENC;
-      this.mUrl         = com.gContactSync.gdata.AUTH_SUB_SESSION_URL;
-      this.mType        = com.gContactSync.gdata.AUTH_SUB_SESSION_TYPE;
-      break;
-    case "AUTHENTICATE":
-    case "authenticate":
-      this.mContentType = this.CONTENT_TYPES.URL_ENC;
-      this.mUrl         = com.gContactSync.gdata.AUTH_URL;
-      this.mType        = com.gContactSync.gdata.AUTH_REQUEST_TYPE;
-      break;
-    case "GETALL":
-    case "getAll":
-      this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = com.gContactSync.gdata.contacts.GET_ALL_URL +
-                          + com.gContactSync.Preferences.mSyncPrefs.maxContacts
+  case "AUTH_SUB_SESSION":
+  case "authsubsession":
+    this.mContentType = this.CONTENT_TYPES.URL_ENC;
+    this.mUrl         = com.gContactSync.gdata.AUTH_SUB_SESSION_URL;
+    this.mType        = com.gContactSync.gdata.AUTH_SUB_SESSION_TYPE;
+    break;
+  case "AUTHENTICATE":
+  case "authenticate":
+    this.mContentType = this.CONTENT_TYPES.URL_ENC;
+    this.mUrl         = com.gContactSync.gdata.AUTH_URL;
+    this.mType        = com.gContactSync.gdata.AUTH_REQUEST_TYPE;
+    break;
+  case "GETALL":
+  case "getAll":
+    this.mContentType = this.CONTENT_TYPES.ATOM;
+    this.mUrl         = com.gContactSync.gdata.contacts.GET_ALL_URL +
+                        com.gContactSync.Preferences.mSyncPrefs.maxContacts
                                                                    .value;
-      this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET_ALL;
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    case "getFromGroup":
-      this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = com.gContactSync.gdata.contacts.GET_ALL_URL
-                          + com.gContactSync.Preferences.mSyncPrefs.maxContacts.value
-                          + "&group=" + encodeURIComponent(aOther);
-      this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET_ALL;
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    case "GETGROUPS":
-    case "getGroups":
-      this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = com.gContactSync.gdata.contacts.GROUPS_URL;
-      this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET;
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    case "GET":
-    case "get":
-      this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = aUrl; // the URL is unique and needs to be passed in
-      this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET;
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    case "UPDATE":
-    case "update":
-    case "updategroup":
-      this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = aUrl;
-      this.mType        = "POST";  // for firewalls that block PUT requests
-      this.addContentOverride(com.gContactSync.gdata.contacts.requestTypes.UPDATE);
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    case "ADD":
-    case "add":
-      this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = com.gContactSync.gdata.contacts.ADD_URL;
-      this.mType        = com.gContactSync.gdata.contacts.requestTypes.ADD;
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    case "addGroup":
-      this.mContentType = this.CONTENT_TYPES.ATOM;
-      this.mUrl         = com.gContactSync.gdata.contacts.ADD_GROUP_URL;
-      this.mType        = com.gContactSync.gdata.contacts.requestTypes.ADD;
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    case "DELETE":
-    case "delete":
-      this.mContentType = this.CONTENT_TYPES.URL_ENC;
-      this.mUrl         = aUrl;
-      this.mType        = "POST"; // for firewalls that block DELETE
-      this.addContentOverride(com.gContactSync.gdata.contacts.requestTypes.DELETE);
-      this.addHeaderItem("Content-length", 0); // required or there will be an error
-      this.addHeaderItem("Authorization", aAuth);
-      break;
-    default:
-      // if the input doesn't match one of the above throw an error
-      throw "Invalid aType parameter supplied to the "
-            + "com.gContactSync.GHttpRequest constructor"
-            + com.gContactSync.StringBundle.getStr("pleaseReport");
+    this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET_ALL;
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  case "getFromGroup":
+    this.mContentType = this.CONTENT_TYPES.ATOM;
+    this.mUrl         = com.gContactSync.gdata.contacts.GET_ALL_URL +
+                        com.gContactSync.Preferences.mSyncPrefs.maxContacts.value +
+                        "&group=" + encodeURIComponent(aOther);
+    this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET_ALL;
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  case "GETGROUPS":
+  case "getGroups":
+    this.mContentType = this.CONTENT_TYPES.ATOM;
+    this.mUrl         = com.gContactSync.gdata.contacts.GROUPS_URL;
+    this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET;
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  case "GET":
+  case "get":
+    this.mContentType = this.CONTENT_TYPES.ATOM;
+    this.mUrl         = aUrl; // the URL is unique and needs to be passed in
+    this.mType        = com.gContactSync.gdata.contacts.requestTypes.GET;
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  case "UPDATE":
+  case "update":
+  case "updategroup":
+    this.mContentType = this.CONTENT_TYPES.ATOM;
+    this.mUrl         = aUrl;
+    this.mType        = "POST";  // for firewalls that block PUT requests
+    this.addContentOverride(com.gContactSync.gdata.contacts.requestTypes.UPDATE);
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  case "ADD":
+  case "add":
+    this.mContentType = this.CONTENT_TYPES.ATOM;
+    this.mUrl         = com.gContactSync.gdata.contacts.ADD_URL;
+    this.mType        = com.gContactSync.gdata.contacts.requestTypes.ADD;
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  case "addGroup":
+    this.mContentType = this.CONTENT_TYPES.ATOM;
+    this.mUrl         = com.gContactSync.gdata.contacts.ADD_GROUP_URL;
+    this.mType        = com.gContactSync.gdata.contacts.requestTypes.ADD;
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  case "DELETE":
+  case "delete":
+    this.mContentType = this.CONTENT_TYPES.URL_ENC;
+    this.mUrl         = aUrl;
+    this.mType        = "POST"; // for firewalls that block DELETE
+    this.addContentOverride(com.gContactSync.gdata.contacts.requestTypes.DELETE);
+    this.addHeaderItem("Content-length", 0); // required or there will be an error
+    this.addHeaderItem("Authorization", aAuth);
+    break;
+  default:
+    // if the input doesn't match one of the above throw an error
+    throw "Invalid aType parameter supplied to the " +
+          "com.gContactSync.GHttpRequest constructor" +
+          com.gContactSync.StringBundle.getStr("pleaseReport");
   }
   // use version 3 of the contacts api
   this.addHeaderItem("GData-Version", "3");
   // handle Token Expired errors
-  this.mOn401 = ["com.gContactSync.handle401(httpReq);"];
+  this.mOn401 = com.gContactSync.handle401;
   if (!this.mUrl)
     throw "Error - no URL was found for the HTTP Request";
   if (aUsername && this.mUrl)
     this.mUrl = this.mUrl.replace("default",
                                   encodeURIComponent(com.gContactSync.fixUsername(aUsername)));
-}
+};
+
 // get the superclass' prototype
 com.gContactSync.GHttpRequest.prototype = new com.gContactSync.HttpRequest();
 
@@ -185,16 +186,15 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
     // Prompt for the username and password
     var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                              .getService(Components.interfaces.nsIPromptService)
-                             .promptUsernameAndPassword;
+                             .promptUsernameAndPassword,
+        password = {};
     // set the username
-    var username = { value: username };
-    var password = {};
-    
+    username = { value: username };
     com.gContactSync.LOGGER.VERBOSE_LOG( " * Showing a username/password prompt");
     // opens a username/password prompt
     var ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
                     com.gContactSync.StringBundle.getStr("loginText"), username,
-                     password, null, {value: false});
+                    password, null, {value: false});
     if (!ok) {
       com.gContactSync.LOGGER.VERBOSE_LOG(" * User canceled the prompt");
       com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr("tokenExpired"), false);
@@ -214,22 +214,28 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
     var httpReq = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com." +
-                          "gContactSync.serializeFromText(httpReq.responseText));",
-                          "com.gContactSync.finish401('" + username.value +
-                          "', httpReq.responseText.split(\"\\n\")[2]);"];
+    httpReq.mOnSuccess = function fix401Success(httpReq) {
+      com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync
+                                             .serializeFromText(httpReq.responseText));
+      com.gContactSync.finish401(username.value,
+                                 httpReq.responseText.split("\n")[2]);
+    };
     // if it fails, alert the user and prompt them to try again
-    httpReq.mOnError   = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
-                          "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
-                          "httpReq.status, httpReq.responseText);",
-                          "com.gContactSync.handle401();"];
+    httpReq.mOnError   = function fix401Error(httpReq) {
+      alert(com.gContactSync.StringBundle.getStr('authErr'));
+      com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
+                                         httpReq.status,
+                                         httpReq.responseText);
+      com.gContactSync.handle401();
+    };
     // if the user is offline, alert them and quit
-    httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
-                          "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync." +
-                          "StringBundle.getStr('offlineErr'));"];
+    httpReq.mOnOffline = function fix401Offline(httpReq) {
+      alert(com.gContactSync.StringBundle.getStr('offlineErr'));
+      com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));
+    };
     httpReq.send();
   }
-}
+};
 
 /**
  * Called after the re-authentication HTTP request is sent after a 401 error
@@ -237,8 +243,8 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
  * @param aAuthToken {string} An authentication token for the account.
  */
 com.gContactSync.finish401 = function gCS_finish401(aUsername, aAuthToken) {
-  com.gContactSync.LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername
-                                      + " - " + aAuthToken);
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * finish401 called: " + aUsername +
+                                      " - " + aAuthToken);
   if (aUsername && aAuthToken) {
     var token = 'GoogleLogin ' + aAuthToken;
     com.gContactSync.LoginManager.addAuthToken(aUsername, token);

@@ -57,13 +57,15 @@ if (!com.gContactSync) com.gContactSync = {};
  */
 com.gContactSync.GMailList = function gCS_GMailList(aList, aParentDirectory, aNew) {
   // Make a new MailList object and copy everything over
-  var list = new com.gContactSync.MailList(aList, aParentDirectory, aNew);
-  for (var i in list) {
-    if (!this[i])
+  var list = new com.gContactSync.MailList(aList, aParentDirectory, aNew),
+      i;
+  for (i in list) {
+    if (!this[i]) {
       this[i] = list[i];
+    }
   }
   this.mListObj = list;
-}
+};
 
 com.gContactSync.GMailList.prototype = {
   /**
@@ -72,22 +74,24 @@ com.gContactSync.GMailList.prototype = {
    * and the current time in microseconds since the epoch.
    * @returns The ID of the group with which this directory is synchronized.
    */
-   getGroupID: function GMailList_getGroupID() {
-     // first see if the nickname is the group id
-     var id = this.getNickName();
-     if (id.indexOf("http://www.google.com/m8/feeds/groups") == -1)
-       id = this.getDescription(); // if it isn't, get the description
-     // finally, set it as "no id found" with the current time
-     if (id.indexOf("http://www.google.com/m8/feeds/groups") == -1)
-       id = "no id found " + (new Date).getTime();
-     return id;
-   },
-   /**
+  getGroupID: function GMailList_getGroupID() {
+    // first see if the nickname is the group id
+    var id = this.getNickName();
+    if (id.indexOf("http://www.google.com/m8/feeds/groups") === -1) {
+      id = this.getDescription(); // if it isn't, get the description
+    }
+    // finally, set it as "no id found" with the current time
+    if (id.indexOf("http://www.google.com/m8/feeds/groups") === -1) {
+      id = "no id found " + (new Date()).getTime();
+    }
+    return id;
+  },
+  /**
    * Sets the ID of the group in Google with which this Mail List is
    * synchronized.
    * @returns The ID of the group with which this directory is synchronized.
    */
-   setGroupID: function GMailList_setGroupID(aGroupID) {
-     this.setNickName(aGroupID);
-   }
+  setGroupID: function GMailList_setGroupID(aGroupID) {
+    this.setNickName(aGroupID);
+  }
 };

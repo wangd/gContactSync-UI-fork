@@ -65,14 +65,14 @@ com.gContactSync.MailList = function gCS_MailList(aList, aParentDirectory, aNew)
   this.mList.QueryInterface(Components.interfaces.nsIAbMDBDirectory);
   this.mNew    = aNew;
   if (!aNew)
-    this.getAllCards();
-}
+    this.getAllContacts();
+};
 
 com.gContactSync.MailList.prototype = {
   /** The contacts in this mailing list (cached) */
-  mCards:       [],
+  mContacts:       [],
   /** This is true whenever the contacts have to be fetched again */
-  mCardsUpdate: false,
+  mContactsUpdate: false,
   /**
    * Sets the name of this list. The update method must be called in order for
    * the change to become permanent.
@@ -92,33 +92,35 @@ com.gContactSync.MailList.prototype = {
    * Returns the card in this mail list, if any, with the same (not-null)
    * value for the GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
-   * @param aCard {nsIAbCard} The card being searched for.
-   * @returns {nsIAbCard} The card in this list, if any, with the same, and
+   * @param aContact {TBContact} The contact being searched for.
+   * @returns {TBContact} The card in this list, if any, with the same, and
    *                      non-null value for its GoogleID attribute, or, if the
    *                      GoogleID is null, if the display name, primary, and
    *                      second emails are the same.
    */
-  hasCard: function MailList_hasCard(aCard) {
-    com.gContactSync.AbManager.checkCard(aCard);
+  hasContact: function MailList_hasContact(aContact) {
+    if (!(aContact instanceof com.gContactSync.TBContact)) {
+      throw "Invalid aContact sent to MailList.hasContact";
+    }
     // get all of the cards in this list again, if necessary
-    if (this.mCardsUpdate || this.mCards.length == 0)
-      this.getAllCards();
-    for (var i = 0, length = this.mCards.length; i < length; i++) {
-      var card = this.mCards[i];
-      var aCardID = com.gContactSync.AbManager.getCardValue(aCard, "GoogleID");
+    if (this.mContactsUpdate || this.mContacts.length === 0) {
+      this.getAllContacts();
+    }
+    for (var i = 0, length = this.mContacts.length; i < length; i++) {
+      var contact    = new com.gContactSync.TBContact(this.mContacts[i], this.mParent),
+          aContactID = aContact.getValue("GoogleID");
       // if it is an old card (has id) compare IDs
-      if (aCardID) {
-        if (aCardID == com.gContactSync.AbManager.getCardValue(card, "GoogleID"))
-          return card;
+      if (aContactID) {
+        if (aContactID === contact.getValue("GoogleID")) {
+          return contact;
+        }
       }
       // else check that display name, primary and second email are equal
-      else if (com.gContactSync.AbManager.getCardValue(aCard, "DisplayName") ==
-                                      com.gContactSync.AbManager.getCardValue(card,"DisplayName")
-              && com.gContactSync.AbManager.getCardValue(aCard, "PrimaryEmail") ==
-                                        com.gContactSync.AbManager.getCardValue(card, "PrimaryEmail")
-              && com.gContactSync.AbManager.getCardValue(aCard, "SecondEmail") ==
-                                        com.gContactSync.AbManager.getCardValue(card, "SecondEmail"))
-        return card;
+      else if (aContact.getValue("DisplayName")  === contact.getValue("DisplayName") &&
+               aContact.getValue("PrimaryEmail") === contact.getValue("PrimaryEmail") &&
+               aContact.getValue("SecondEmail")  === contact.getValue("SecondEmail")) {
+        return contact;
+      }
     }
     return null;
   },
@@ -153,24 +155,33 @@ com.gContactSync.MailList.prototype = {
     return this.mList.description;
   },
   /**
-   * Adds a card to this mailing list without checking if it already exists.
+   * Adds a contact to this mailing list without checking if it already exists.
    * NOTE: If the contact does not have a primary e-mail address then this
    * method will add a fake one.
-   * @param aCard {nsIAbCard} The card to add to this mailing list.
-   * @returns {nsIAbMDBCard} A real card (MDB card prior to 413260).
+   * @param aContact {TBContact} The contact to add to this mailing list.
+   * @returns {TBContact}  The contact.
    */
-  addCard: function MailList_addCard(aCard) {
-    com.gContactSync.AbManager.checkCard(aCard);
-    var ab = this.mParent;
+  addContact: function MailList_addContact(aContact) {
+    if (!(aContact instanceof com.gContactSync.TBContact)) {
+      throw "Invalid aContact sent to AddressBook.addContact";
+    }
     // Add a dummy e-mail address if necessary and ignore the preference
     // If this was not done then the mailing list would break.
-    if (!ab.getCardValue(aCard, "PrimaryEmail")) {
-      ab.setCardValue(aCard, "PrimaryEmail", com.gContactSync.makeDummyEmail(aCard, true));
-      ab.updateCard(aCard);
+    if (!(aContact.getValue("PrimaryEmail"))) {
+      aContact.setValue("PrimaryEmail", com.gContactSync.makeDummyEmail(aContact, true));
+      aContact.update(); // TODO is this necessary
     }
-    var realCard = this.mList.addCard(aCard);
-    this.mCards.push(realCard);
-    return realCard;
+    try {
+      var realContact = new com.gContactSync.TBContact(this.mList.addCard(aContact.mContact),
+                                                       this);
+      this.mContacts.push(realContact);
+      return realContact;
+    }
+    catch (e) {
+      com.gContactSync.LOGGER.LOG_ERROR("Unable to add card to the mail list with URI: " +
+                       this.getURI(), e);
+    }
+    return null;
   },
   /**
    * Returns the uniform resource identifier (URI) for this mailing list.
@@ -185,17 +196,17 @@ com.gContactSync.MailList.prototype = {
    * Returns an array of all of the cards in this mailing list.
    * @returns {array} An array containing all of the cards in this mailing list.
    */
-  getAllCards: function MailList_getAllCards() {
+  getAllContacts: function MailList_getAllContacts() {
     // NOTE: Sometimes hasMoreElements fails if mail lists aren't working
-    this.mCards = [];
-    var iter    = this.mList.childCards;
-    var data;
+    this.mContacts = [];
+    var iter = this.mList.childCards,
+        data;
     if (iter instanceof Components.interfaces.nsISimpleEnumerator) { // Thunderbird 3
       try {
         while (iter.hasMoreElements()) {
           data = iter.getNext();
           if (data instanceof Components.interfaces.nsIAbCard)
-            this.mCards.push(data);
+            this.mContacts.push(new com.gContactSync.TBContact(data, this));
         }
       }
       catch (e) {
@@ -215,68 +226,79 @@ com.gContactSync.MailList.prototype = {
         do {
           data = iter.currentItem();
           if (data instanceof Components.interfaces.nsIAbCard)
-            this.mCards.push(data);
+            this.mContacts.push(new com.gContactSync.TBContact(data, this));
           iter.next();
-        } while (Components.lastResult == 0);
+        } while (Components.lastResult === 0);
       }
-      catch(e) {
+      catch (ex) {
         // TODO find a way to distinguish between the usual errors and the
         // broken list errors
         // error is expected when finished
-        com.gContactSync.LOGGER.VERBOSE_LOG("This error is expected:\n" + e);
+        com.gContactSync.LOGGER.VERBOSE_LOG("This error is expected:\n" + ex);
       }
     }
     else {
       com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
       throw com.gContactSync.StringBundle.getStr("mailListBroken");
     }
-    return this.mCards;
+    return this.mContacts;
   },
   /**
    * Deletes all of the cards in the array of cards from this list.
-   * @param aCards {array} The array of cards to delete from this mailing list.
+   * @param aContacts {array} The array of TBContacts to delete from this mailing list.
    */
-  deleteCards: function MailList_deleteCards(aCards) {
-    if (!(aCards && aCards.length && aCards.length > 0))
+  deleteContacts: function MailList_deleteContacts(aContacts) {
+    if (!(aContacts && aContacts.length > 0))
       return;
-    var arr;
-    if (com.gContactSync.AbManager.mVersion == 3) { // TB 3
+    var arr,
+        i = 0;
+    if (com.gContactSync.AbManager.mVersion === 3) { // TB 3
       arr = Components.classes["@mozilla.org/array;1"]
                       .createInstance(Components.interfaces.nsIMutableArray);
-      for (var i = 0; i < aCards.length; i++) {
-        com.gContactSync.AbManager.checkCard(aCards[i]);
-        arr.appendElement(aCards[i], false);
+      for (; i < aContacts.length; i++) {
+        if (aContacts[i] instanceof com.gContactSync.TBContact) {
+          arr.appendElement(aContacts[i].mContact, false);
+        }
+        else {
+          com.gContactSync.LOGGER.LOG_WARNING("Found an invalid contact sent " +
+                                              "MailList.deleteContacts");
+        }
       }
     }
     else { // TB 2
       arr =  Components.classes["@mozilla.org/supports-array;1"]
                        .createInstance(Components.interfaces.nsISupportsArray);
-      for (var i = 0; i < aCards.length; i++) {
-        com.gContactSync.AbManager.checkCard(aCards[i]);
-        arr.AppendElement(aCards[i], false);
+      for (; i < aContacts.length; i++) {
+        if (aContacts[i] instanceof com.gContactSync.TBContact) {
+          arr.AppendElement(aContacts[i].mContact, false);
+        }
+        else {
+          com.gContactSync.LOGGER.LOG_WARNING("Found an invalid contact sent " +
+                                              "MailList.deleteContacts");
+        }
       }
     }
     try {
       if (arr) { // make sure arr isn't null (mailnews bug 448165)
-        this.mCardsUpdate = true; // update mCards when used
+        this.mContactsUpdate = true; // update mContacts when used
         this.mList.deleteCards(arr);
       }
     }
-    catch(e) {
+    catch (e) {
       com.gContactSync.LOGGER.LOG_WARNING("Error while deleting cards from a mailing list", e);
     }
-    this.mCards = this.getAllCards();
+    this.mContacts = this.getAllContacts();
   },
   /**
    * Deletes this mailing list from its parent address book.
    */
   remove: function MailList_delete() {
     this.mParent.mDirectory.deleteDirectory(this.mList);
-    this.mCards = [];
+    this.mContacts = [];
     // make sure the functions don't do anything
     for (var i in this) {
       if (i instanceof Function)
-        i = function() {};
+        i = function () {};
     }
   },
   /**
@@ -285,12 +307,12 @@ com.gContactSync.MailList.prototype = {
    */
   update: function MailList_update() {
     try {
-      if (com.gContactSync.AbManager.mVersion == 3)
+      if (com.gContactSync.AbManager.mVersion === 3)
         this.mList.editMailListToDatabase(null);
       else
         this.mList.editMailListToDatabase(this.getURI(), null);
     }
-    catch(e) {
+    catch (e) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to update mail list", e);
     }
   }

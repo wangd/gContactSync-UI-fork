@@ -116,18 +116,25 @@ com.gContactSync.Accounts = {
     var httpReq = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
     // if it succeeds and Google returns the auth token, store it and then start
     // a new sync
-    httpReq.mOnSuccess = ["com.gContactSync.LoginManager.addAuthToken('" + username.value +
-                          "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
-                          "com.gContactSync.Accounts.selectedAbChange();",
-                          "com.gContactSync.Accounts.fillUsernames();"];
+    httpReq.mOnSuccess = function newUsernameSuccess(httpReq) {
+      com.gContactSync.LoginManager.addAuthToken(username.value,
+                                                 'GoogleLogin' + httpReq.responseText.split("\n")[2]);
+      com.gContactSync.Accounts.selectedAbChange();
+      com.gContactSync.Accounts.fillUsernames();
+    };
     // if it fails, alert the user and prompt them to try again
-    httpReq.mOnError   = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
-                          "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
-                          "httpReq.status, httpReq.responseText);",
-                          "com.gContactSync.Accounts.newUsername();"];
+    httpReq.mOnError   = function newUsernameError(httpReq) {
+      alert(com.gContactSync.StringBundle.getStr('authErr'));
+      com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
+                                        httpReq.status,
+                                        httpReq.responseText);
+      com.gContactSync.Accounts.newUsername();
+    };
     // if the user is offline, alert them and quit
-    httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
-                          "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));"];
+    httpReq.mOnOffline = function newUsernameOffline(httpReq) {
+      alert(com.gContactSync.StringBundle.getStr('offlineErr'));
+      com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));
+    };
     httpReq.send();
     return true;
   },
@@ -313,7 +320,7 @@ com.gContactSync.Accounts = {
     var treechildren  = document.getElementById("loginTreeChildren");
   
     if (treechildren)
-      try { tree.removeChild(treechildren); } catch(e) {}
+      try { tree.removeChild(treechildren); } catch (e) {}
     var newTreeChildren = document.createElement("treechildren");
     newTreeChildren.setAttribute("id", "loginTreeChildren");
     tree.appendChild(newTreeChildren);
@@ -424,11 +431,15 @@ com.gContactSync.Accounts = {
     com.gContactSync.LOGGER.VERBOSE_LOG("Fetching groups for username: " + usernameElem.value);
     var httpReq = new com.gContactSync.GHttpRequest("getGroups", token, null,
                                    null, usernameElem.value);
-    httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
-                          "com.gContactSync.Accounts.addGroups(httpReq.responseXML, '"
-                          + usernameElem.value + "');"],
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);"];
-    httpReq.mOnOffline = [];
+    httpReq.mOnSuccess = function getAllGroupsSuccess(httpReq) {
+      com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText));
+      com.gContactSync.Accounts.addGroups(httpReq.responseXML,
+                                          usernameElem.value);
+    };
+    httpReq.mOnError   = function getAllGroupsError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);
+    };
+    httpReq.mOnOffline = null;
     httpReq.send();
     return true;
   },

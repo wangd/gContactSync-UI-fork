@@ -68,8 +68,10 @@ com.gContactSync.Sync = {
   /** The index of the AB being synced */
   mIndex:            0,
   /** An array of commands to execute when offline during an HTTP Request */
-  mOfflineCommand: ["com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText'));", 
-                    "com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'));"],
+  mOfflineFunction: function Sync_offlineFunc(httpReq) {
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
+    com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'));
+  },
 
   // booleans used for timing to make sure only one synchronization occurs at a
   // time and that only one sync is scheduled at once
@@ -126,8 +128,8 @@ com.gContactSync.Sync = {
     // If an authentication token cannot be found for this username then
     // offer to let the user login with that account
     if (!com.gContactSync.Sync.mCurrentAuthToken) {
-      com.gContactSync.LOGGER.LOG_WARNING("Unable to find the auth token for: "
-                                          + com.gContactSync.Sync.mCurrentUsername);
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to find the auth token for: " +
+                                          com.gContactSync.Sync.mCurrentUsername);
       if (confirm(com.gContactSync.StringBundle.getStr("noTokenFound") +
                   ": " + com.gContactSync.Sync.mCurrentUsername +
                   "\n" + com.gContactSync.StringBundle.getStr("ab") +
@@ -135,11 +137,11 @@ com.gContactSync.Sync = {
         // Now let the user login
         var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                                  .getService(Components.interfaces.nsIPromptService)
-                                 .promptUsernameAndPassword;
-        var username = {value: com.gContactSync.Sync.mCurrentUsername};
-        var password = {};
+                                 .promptUsernameAndPassword,
+            username = {value: com.gContactSync.Sync.mCurrentUsername},
+            password = {},
         // opens a username/password prompt
-        var ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
+            ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
                         com.gContactSync.StringBundle.getStr("loginText"), username, password, null,
                         {value: false});
         if (!ok) {
@@ -163,17 +165,22 @@ com.gContactSync.Sync = {
         var httpReq = new com.gContactSync.GHttpRequest("authenticate", null, null, body);
         // if it succeeds and Google returns the auth token, store it and then start
         // a new sync
-        httpReq.mOnSuccess = ["com.gContactSync.LoginManager.addAuthToken('" + username.value +
-                              "', 'GoogleLogin' + httpReq.responseText.split(\"\\n\")[2]);",
-                              "com.gContactSync.Sync.syncNextUser();"];
+        httpReq.mOnSuccess = function reauth_onSuccess(httpReq) {
+          com.gContactSync.LoginManager.addAuthToken(username.value,
+                                                     'GoogleLogin' +
+                                                     httpReq.responseText.split("\n")[2]);
+          com.gContactSync.Sync.syncNextUser();
+        };
         // if it fails, alert the user and prompt them to try again
-        httpReq.mOnError   = ["alert(com.gContactSync.StringBundle.getStr('authErr'));",
-                              "com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' + " + 
-                              "httpReq.status, httpReq.responseText);",
-                              "com.gContactSync.Sync.syncNextUser();"];
+        httpReq.mOnError   = function reauth_onError(httpReq) {
+          alert(com.gContactSync.StringBundle.getStr('authErr'));
+          com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
+                                            httpReq.status,
+                                            httpReq.responseText);
+          com.gContactSync.Sync.syncNextUser();
+        };
         // if the user is offline, alert them and quit
-        httpReq.mOnOffline = ["alert(com.gContactSync.StringBundle.getStr('offlineErr'));",
-                              "com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));"];
+        httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
         httpReq.send();
       }
       else
@@ -184,7 +191,7 @@ com.gContactSync.Sync = {
                        com.gContactSync.Sync.mCurrentAb.mDirectory.dirName +
                        "\n - URI: " + com.gContactSync.Sync.mCurrentAb.mURI +
                        "\n - Pref ID: " + com.gContactSync.Sync.mCurrentAb.getPrefId());
-    if (com.gContactSync.Sync.mCurrentAb.mPrefs.Disabled == "true") {
+    if (com.gContactSync.Sync.mCurrentAb.mPrefs.Disabled === "true") {
       com.gContactSync.LOGGER.LOG("*** NOTE: Synchronization was disabled for this address book ***");
       com.gContactSync.Sync.mCurrentAb = null;
       com.gContactSync.Sync.syncNextUser();
@@ -192,7 +199,7 @@ com.gContactSync.Sync = {
     }
     // getGroups must be called if the myContacts pref is set so it can find the
     // proper group URL
-    if (com.gContactSync.Sync.mCurrentAb.mPrefs.syncGroups == "true" || com.gContactSync.Sync.mCurrentAb.mPrefs.myContacts != "false")
+    if (com.gContactSync.Sync.mCurrentAb.mPrefs.syncGroups === "true" || com.gContactSync.Sync.mCurrentAb.mPrefs.myContacts !== "false")
       com.gContactSync.Sync.getGroups();
     else
       com.gContactSync.Sync.getContacts();
@@ -204,13 +211,21 @@ com.gContactSync.Sync = {
    */
   getGroups: function Sync_getGroups() {
     com.gContactSync.LOGGER.LOG("***Beginning Group - Mail List Synchronization***");
-    var httpReq = new com.gContactSync.GHttpRequest("getGroups", com.gContactSync.Sync.mCurrentAuthToken, null,
-                                   null, com.gContactSync.Sync.mCurrentUsername);
-    httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
-                          "com.gContactSync.Sync.syncGroups(httpReq.responseXML);"],
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);",
-                          "com.gContactSync.Sync.begin();"]; // if there is an error, try to sync w/o groups                   
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    var httpReq = new com.gContactSync.GHttpRequest("getGroups",
+                                                    com.gContactSync.Sync.mCurrentAuthToken,
+                                                    null,
+                                                    null,
+                                                    com.gContactSync.Sync.mCurrentUsername);
+    httpReq.mOnSuccess = function getGroupsSuccess(httpReq) {
+      com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText));
+      com.gContactSync.Sync.syncGroups(httpReq.responseXML);
+    };
+    httpReq.mOnError   = function getGroupsError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);
+      // if there is an error, try to sync w/o groups                   
+      com.gContactSync.Sync.begin();
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
   },
   /**
@@ -222,21 +237,31 @@ com.gContactSync.Sync = {
     com.gContactSync.LOGGER.LOG("***Beginning Contact Synchronization***");
     var httpReq;
     if (com.gContactSync.Sync.mContactsUrl) {
-      var httpReq = new com.gContactSync.GHttpRequest("getFromGroup", com.gContactSync.Sync.mCurrentAuthToken, null, null,
-                                     com.gContactSync.Sync.mCurrentUsername, com.gContactSync.Sync.mContactsUrl);
+      httpReq = new com.gContactSync.GHttpRequest("getFromGroup",
+                                                  com.gContactSync.Sync.mCurrentAuthToken,
+                                                  null,
+                                                  null,
+                                                  com.gContactSync.Sync.mCurrentUsername, com.gContactSync.Sync.mContactsUrl);
     }
     else {
-      var httpReq = new com.gContactSync.GHttpRequest("getAll", com.gContactSync.Sync.mCurrentAuthToken, null, null,
-                                     com.gContactSync.Sync.mCurrentUsername);
+      httpReq = new com.gContactSync.GHttpRequest("getAll",
+                                                  com.gContactSync.Sync.mCurrentAuthToken,
+                                                  null,
+                                                  null,
+                                                  com.gContactSync.Sync.mCurrentUsername);
     }
     // com.gContactSync.serializeFromText does not do anything if verbose logging is disabled
     // so this next line won't waste time
-    httpReq.mOnSuccess = ["com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText))",
-                          "com.gContactSync.Sync.sync2(httpReq.responseXML);"];
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while getting all contacts', " +
-                          "httpReq.responseText);",
-                          "com.gContactSync.Sync.syncNextUser(httpReq.responseText);"];
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    httpReq.mOnSuccess = function getContactsSuccess(httpReq) {
+      com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText));
+      com.gContactSync.Sync.sync2(httpReq.responseXML);
+    };
+    httpReq.mOnError   = function getContactsError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR('Error while getting all contacts', +
+                                        httpReq.responseText);
+      com.gContactSync.Sync.syncNextUser(httpReq.responseText);
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
   },
   /**
@@ -253,7 +278,7 @@ com.gContactSync.Sync = {
     if (com.gContactSync.LOGGER.mErrorCount > 0) {
       // if there was an error, display the error message unless the user is
       // offline
-      if (com.gContactSync.Overlay.getStatusBarText() != aError)
+      if (com.gContactSync.Overlay.getStatusBarText() !== aError)
         com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("errDuringSync"));
     }
     else {
@@ -286,19 +311,19 @@ com.gContactSync.Sync = {
    */
   sync2: function Sync_sync2(aAtom) {
     // get the address book
-    var ab = com.gContactSync.Sync.mCurrentAb;
+    var ab = com.gContactSync.Sync.mCurrentAb,
+    // get all the contacts from the feed and the cards from the address book
+        googleContacts = aAtom.getElementsByTagName('entry'),
+        abCards = ab.getAllContacts(),
+    // get and log the last sync time (milliseconds since 1970 UTC)
+        lastSync = parseInt(ab.getLastSyncDate(), 10),
+        cardsToDelete = [],
+        maxContacts = com.gContactSync.Preferences.mSyncPrefs.maxContacts.value,
+    // if there are more contacts than returned, increase the pref
+        newMax;
     // have to update the lists or TB 2 won't work properly
     com.gContactSync.Sync.mLists = ab.getAllLists();
-    // get all the contacts from the feed and the cards from the address book
-    var googleContacts = aAtom.getElementsByTagName('entry');
-    var abCards = ab.getAllCards();
-    // get and log the last sync time (milliseconds since 1970 UTC)
-    var lastSync = parseInt(ab.getLastSyncDate());
     com.gContactSync.LOGGER.LOG("Last sync was at: " + lastSync);
-    var cardsToDelete = [];
-    var maxContacts = com.gContactSync.Preferences.mSyncPrefs.maxContacts.value;
-    // if there are more contacts than returned, increase the pref
-    var newMax;
     if ((newMax = com.gContactSync.gdata.contacts.getNumberOfContacts(aAtom)) >= maxContacts.value) {
       com.gContactSync.Preferences.setPref(com.gContactSync.Preferences.mSyncBranch, maxContacts.label,
                           maxContacts.type, newMax + 50);
@@ -308,15 +333,14 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mContactsToAdd    = [];
     com.gContactSync.Sync.mContactsToDelete = [];
     com.gContactSync.Sync.mContactsToUpdate = [];
-    var gContact;
+    var gContact,
      // get the strings outside of the loop so they are only found once
-    var found       = " * Found a match Last Modified Dates:";
-    var bothChanged = " * Conflict detected: the contact has been updated in " +
-                      "both Google and Thunderbird";
-    var bothGoogle  = " * The contact from Google will be updated";
-    var bothTB      = " * The card from Thunderbird will be updated";
-    var gContacts   = {};
-    var gContact;
+        found       = " * Found a match Last Modified Dates:",
+        bothChanged = " * Conflict detected: the contact has been updated in " +
+                      "both Google and Thunderbird",
+        bothGoogle  = " * The contact from Google will be updated",
+        bothTB      = " * The card from Thunderbird will be updated",
+        gContacts   = {};
     // Step 1: get all contacts from Google into GContact objects in an object
     // keyed by ID.
     for (var i = 0, length = googleContacts.length; i < length; i++) {
@@ -326,14 +350,14 @@ com.gContactSync.Sync = {
       gContacts[gContact.id] = gContact;
     }
     // Step 2: iterate through TB Contacts and check for matches
-    for (var i = 0, length = abCards.length; i < length; i++) {
-      var tbContact = new com.gContactSync.TBContact(abCards[i], ab);
-      var id = tbContact.getValue("GoogleID");
+    for (i = 0, length = abCards.length; i < length; i++) {
+      var tbContact = abCards[i],
+          id        = tbContact.getValue("GoogleID");
       com.gContactSync.LOGGER.LOG(tbContact.getName());
       tbContact.id = id;
       // no ID = new contact
       if (!id) {
-        if (ab.mPrefs.readOnly == "true") {
+        if (ab.mPrefs.readOnly === "true") {
           com.gContactSync.LOGGER.LOG(" * The contact is new. " +
                                       "Ignoring since read-only mode is on.");
         }
@@ -348,17 +372,17 @@ com.gContactSync.Sync = {
         // remove it from gContacts
         gContacts[id]  = null;
         // note that this returns 0 if readOnly is set
-        var tbCardDate = tbContact.getValue("LastModifiedDate");
-        var gCardDate  = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 0;
+        var tbCardDate = tbContact.getValue("LastModifiedDate"),
+            gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0;
         // 4 options
         // if both were updated
         com.gContactSync.LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
         com.gContactSync.LOGGER.VERBOSE_LOG(" * Google ID: " + id);
         // If there is a conflict, looks at the updateGoogleInConflicts
         // preference and updates Google if it's true, or Thunderbird if false
-        if (gCardDate > lastSync && tbCardDate > lastSync/1000) {
+        if (gCardDate > lastSync && tbCardDate > lastSync / 1000) {
           com.gContactSync.LOGGER.LOG(bothChanged);
-          if (ab.mPrefs.writeOnly  == "true" || ab.mPrefs.updateGoogleInConflicts == "true") {
+          if (ab.mPrefs.writeOnly  === "true" || ab.mPrefs.updateGoogleInConflicts === "true") {
             com.gContactSync.LOGGER.LOG(bothGoogle);
             var toUpdate = {};
             toUpdate.gContact = gContact;
@@ -378,7 +402,7 @@ com.gContactSync.Sync = {
           com.gContactSync.ContactConverter.makeCard(gContact, tbContact);
         }
         // if the TB card is newer update Google
-        else if (tbCardDate > lastSync/1000) {
+        else if (tbCardDate > lastSync / 1000) {
           com.gContactSync.LOGGER.LOG(" * The contact from Thunderbird is newer...Updating the" +
                                       " contact from Google");
           var toUpdate = {};
@@ -391,11 +415,11 @@ com.gContactSync.Sync = {
           com.gContactSync.LOGGER.LOG(" * Neither contact has changed");
       }
       // if there isn't a match, but the card is new, add it to Google
-      else if (tbContact.getValue("LastModifiedDate") > lastSync/1000)
+      else if (tbContact.getValue("LastModifiedDate") > lastSync / 1000)
         com.gContactSync.Sync.mContactsToAdd.push(tbContact);
       // otherwise, delete the contact from the address book
       else
-        cardsToDelete.push(tbContact.mContact);
+        cardsToDelete.push(tbContact);
     }
     // STEP 3: Check for old Google contacts to delete and new contacts to add to TB
     com.gContactSync.LOGGER.LOG("**Looking for unmatched Google contacts**");
@@ -406,7 +430,7 @@ com.gContactSync.Sync = {
         var gCardDate = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 0;
         if (gCardDate > lastSync) {
           com.gContactSync.LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
-          var newCard = new com.gContactSync.TBContact(ab.addCard(ab.makeCard()), ab);
+          var newCard = ab.newContact();
           com.gContactSync.ContactConverter.makeCard(gContact, newCard);
         }
         else if (ab.mPrefs.readOnly != "true") {
@@ -420,7 +444,7 @@ com.gContactSync.Sync = {
       }
     }
     // delete the old contacts from Thunderbird
-    ab.deleteCards(cardsToDelete);
+    ab.deleteContacts(cardsToDelete);
 
     com.gContactSync.LOGGER.LOG("***Deleting contacts from Google***");
     // delete contacts from Google
@@ -454,11 +478,13 @@ com.gContactSync.Sync = {
                                                     editURL, null,
                                                     com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
-    httpReq.mOnSuccess = ["com.gContactSync.Sync.processDeleteQueue();"];
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while deleting contact', " +
-                          "httpReq.responseText);",
-                          "com.gContactSync.Sync.processDeleteQueue();"];
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    httpReq.mOnSuccess = com.gContactSync.Sync.processDeleteQueue;
+    httpReq.mOnError   = function processDeleteError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR('Error while deleting contact',
+                                        httpReq.responseText);
+      com.gContactSync.Sync.processDeleteQueue();
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
   },
   /**
@@ -498,18 +524,23 @@ com.gContactSync.Sync = {
      *  3. Update the card in the address book
      *  4. Call this method again
      */
-    var onCreated = [
-      "var ab   = com.gContactSync.Sync.mCurrentAb",
-      "var card = com.gContactSync.ContactConverter.mCurrentCard;",
-      "card.setValue('GoogleID', httpReq.responseXML.getElementsByTagNameNS"
-      + "(com.gContactSync.gdata.namespaces.ATOM.url, 'id')[0].childNodes[0].nodeValue);",
-      "ab.updateCard(card.mContact);",
-      "com.gContactSync.Sync.processAddQueue();"];
+    var onCreated = function contactCreated(httpReq) {
+      var ab      = com.gContactSync.Sync.mCurrentAb;
+      var contact = com.gContactSync.ContactConverter.mCurrentCard;
+      contact.setValue('GoogleID',
+                       httpReq.responseXML.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.ATOM.url,
+                                                                  'id')
+                       [0].childNodes[0].nodeValue);
+      contact.update();
+      com.gContactSync.Sync.processAddQueue();
+    }
     httpReq.mOnCreated = onCreated;
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while adding contact', " +
-                          "httpReq.responseText);",
-                          "com.gContactSync.Sync.processAddQueue();"];
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    httpReq.mOnError   = function contactCreatedError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR('Error while adding contact',
+                                        httpReq.responseText);
+      com.gContactSync.Sync.processAddQueue();
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
   },
   /**
@@ -544,11 +575,13 @@ com.gContactSync.Sync = {
                                                     string,
                                                     com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
-    httpReq.mOnSuccess = ["com.gContactSync.Sync.processUpdateQueue();"];
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while updating contact', " +
-                          "httpReq.responseText);",
-                          "com.gContactSync.Sync.processUpdateQueue();"],
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    httpReq.mOnSuccess = com.gContactSync.Sync.processUpdateQueue;
+    httpReq.mOnError   = function processUpdateError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR('Error while updating contact',
+                                        httpReq.responseText);
+      com.gContactSync.Sync.processUpdateQueue();
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
   },
   /**
@@ -671,7 +704,7 @@ com.gContactSync.Sync = {
               }
             }
           }
-          catch(e) {
+          catch (e) {
             if (noCatch) throw e;
             com.gContactSync.LOGGER.LOG_ERROR("Error while syncing groups: " + e);
           }
@@ -770,11 +803,13 @@ com.gContactSync.Sync = {
                                                     group.getEditURL(),
                                                     null,
                                                     com.gContactSync.Sync.mCurrentUsername);
-    httpReq.mOnSuccess = ["com.gContactSync.Sync.deleteGroups();"];
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR('Error while deleting group', " +
-                          "httpReq.responseText);",
-                          "com.gContactSync.Sync.deleteGroups();"];
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    httpReq.mOnSuccess = com.gContactSync.Sync.deleteGroups;
+    httpReq.mOnError   = function deleteGroupsError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR('Error while deleting group',
+                                        httpReq.responseText);
+      com.gContactSync.Sync.deleteGroups();
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.send();
   },
@@ -802,12 +837,14 @@ com.gContactSync.Sync = {
                                                     null,
                                                     body,
                                                     com.gContactSync.Sync.mCurrentUsername);
-    httpReq.mOnCreated = ["com.gContactSync.Sync.addGroups2(httpReq);"];
-    httpReq.mOnError =   ["com.gContactSync.LOGGER.LOG_ERROR('Error while adding group', " +
-                          "httpReq.responseText);",
-                          "com.gContactSync.Sync.mGroupsToAddURI.shift()",
-                          "com.gContactSync.Sync.addGroups();"];
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    httpReq.mOnCreated = com.gContactSync.Sync.addGroups2;
+    httpReq.mOnError =   function addGroupError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR('Error while adding group',
+                                        httpReq.responseText);
+      com.gContactSync.Sync.mGroupsToAddURI.shift()
+      com.gContactSync.Sync.addGroups();
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
   },
   /**
@@ -850,10 +887,13 @@ com.gContactSync.Sync = {
                                                     group.getEditURL(),
                                                     body,
                                                     com.gContactSync.Sync.mCurrentUsername);
-    httpReq.mOnSuccess = ["com.gContactSync.Sync.updateGroups();"];
-    httpReq.mOnError   = ["com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);",
-                          "com.gContactSync.Sync.updateGroups();"];
-    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineCommand;
+    httpReq.mOnSuccess = com.gContactSync.Sync.updateGroups;
+    httpReq.mOnError   = function updateGroupError(httpReq) {
+      com.gContactSync.LOGGER.LOG_ERROR("Error while updating group",
+                                        httpReq.responseText);
+      com.gContactSync.Sync.updateGroups();
+    };
+    httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.addHeaderItem("If-Match", "*");
     httpReq.send();
   },

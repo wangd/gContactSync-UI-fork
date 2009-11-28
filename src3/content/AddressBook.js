@@ -59,45 +59,49 @@ com.gContactSync.AddressBook = function gCS_AddressBook(aDirectory) {
     this.mDirectory.QueryInterface(Components.interfaces.nsIAbMDBDirectory);
     this.mURI = this.mDirectory.getDirUri();
   }
-}
+};
 
 com.gContactSync.AddressBook.prototype = {
   /** The Uniform Resource Identifier (URI) of the directory */
   mURI:         {},
   /** The cards within this address book */
-  mCards:       [],
-  /** set to true when mCards should be updated */
-  mCardsUpdate: false,
+  mContacts:       [],
+  /** set to true when mContacts should be updated */
+  mContactsUpdate: false,
   /**
-   * Adds the card to this address book and returns the added card.
-   * @param aCard {nsIAbCard} The card to add.
-   * @returns {nsIAbMDBCard} An MDB card
+   * Adds the contact to this address book and returns the added contact.
+   * @param aContact {TBContact} The contact to add.
+   * @returns {TBContact} The newly-added contact.
    */
-  addCard: function AddressBook_addCard(aCard) {
-    com.gContactSync.AbManager.checkCard(aCard); // check the card's validity first
-    try {
-      this.mCards.push(aCard);
-      return this.mDirectory.addCard(aCard); // then add it and return the MDBCard
+  addContact: function AddressBook_addContact(aContact) {
+    if (!(aContact instanceof com.gContactSync.TBContact)) {
+      throw "Invalid aContact sent to AddressBook.addContact";
     }
-    catch(e) {
+    try {
+      var newContact = new com.gContactSync.TBContact(this.mDirectory.addCard(aContact.mContact),
+                                                      this);
+      this.mContacts.push(newContact);
+      return newContact;
+    }
+    catch (e) {
       com.gContactSync.LOGGER.LOG_ERROR("Unable to add card to the directory with URI: " +
-                       this.URI, e);
+                       this.mURI, e);
     }
     return null;
   },
   /**
    * Returns an array of all of the cards in this Address Book.
-   * @returns  An array of the nsIAbCards in this Address Book.
+   * @returns {array} An array of the TBContacts in this Address Book.
    */
-  getAllCards: function AddressBook_getAllCards() {
-    this.mCards = [];
-    var iter = this.mDirectory.childCards;
-    var data;
+  getAllContacts: function AddressBook_getAllContacts() {
+    this.mContacts = [];
+    var iter = this.mDirectory.childCards,
+        data;
     if (iter instanceof Components.interfaces.nsISimpleEnumerator) { // Thunderbird 3
       while (iter.hasMoreElements()) {
         data = iter.getNext();
         if (data instanceof Components.interfaces.nsIAbCard && !data.isMailList)
-          this.mCards.push(data);
+          this.mContacts.push(new com.gContactSync.TBContact(data, this));
       }
     }
     else if (iter instanceof Components.interfaces.nsIEnumerator) { // TB 2
@@ -106,13 +110,14 @@ com.gContactSync.AddressBook.prototype = {
         iter.first();
         do {
           data = iter.currentItem();
-          if(data instanceof Components.interfaces.nsIAbCard && !data.isMailList)
-            this.mCards.push(data);
+          if (data instanceof Components.interfaces.nsIAbCard &&
+              !data.isMailList)
+            this.mContacts.push(new com.gContactSync.TBContact(data, this));
           iter.next();
-        } while (Components.lastResult == 0);
+        } while (Components.lastResult === 0);
       // An error is expected when finished
       }
-      catch(e) {
+      catch (e) {
         com.gContactSync.LOGGER.VERBOSE_LOG("(This error is expected): " + e);
       }
     }
@@ -120,7 +125,7 @@ com.gContactSync.AddressBook.prototype = {
       com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
       throw "Couldn't find an address book's contacts";
     }
-    return this.mCards;
+    return this.mContacts;
   },
   /**
    * Returns an an object containing MailList objects whose attribute name is
@@ -131,9 +136,11 @@ com.gContactSync.AddressBook.prototype = {
   getAllLists: function AddressBook_getAllLists(skipGetCards) {
     // same in Thunderbird 2 and 3
     com.gContactSync.LOGGER.VERBOSE_LOG("Searching for mailing lists:");
-    var iter = this.mDirectory.childNodes;
-    var obj = {};
-    var list, id, data;
+    var iter = this.mDirectory.childNodes,
+        obj = {},
+        list,
+        id,
+        data;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Components.interfaces.nsIAbDirectory && data.isMailList) {
@@ -156,12 +163,12 @@ com.gContactSync.AddressBook.prototype = {
     if (!aNickName)
       return null;
     // same in Thunderbird 2 and 3
-    var iter = this.mDirectory.childNodes;
-    var data;
+    var iter = this.mDirectory.childNodes,
+        data;
     while (iter.hasMoreElements()) {
       data = iter.getNext();
       if (data instanceof Components.interfaces.nsIAbDirectory && data.isMailList &&
-          data.listNickName == aNickName) {
+          data.listNickName === aNickName) {
         return this.newListObj(data, this, true);
       }
     }
@@ -181,60 +188,79 @@ com.gContactSync.AddressBook.prototype = {
     if (!aNickName)
       throw "Error - aNickName sent to addList is invalid";
     var list          = Components.classes["@mozilla.org/addressbook/directoryproperty;1"]
-                                  .createInstance(Components.interfaces.nsIAbDirectory);
+                                  .createInstance(Components.interfaces.nsIAbDirectory),
+        realList;
     list.isMailList   = true;
     list.dirName      = aName;
     list.listNickName = aNickName;
     this.mDirectory.addMailList(list);
     // list can't be QI'd to an MDBDirectory, so the new list has to be found...
-    var realList  = this.getListByNickName(aNickName);
+    realList  = this.getListByNickName(aNickName);
     return realList;
   },
   /**
    * Deletes the nsIAbCards from the nsIAbDirectory Address Book.  If the cards
    * aren't in the book nothing will happen.
-   * @param aCard {array} The cards to delete from the directory
+   * @param aContacts {array} The cards to delete from the directory
    */
-  deleteCards: function AddressBook_deleteCards(aCards) {
-    if (!(aCards && aCards.length && aCards.length > 0))
+  deleteContacts: function AddressBook_deleteContacts(aContacts) {
+    if (!(aContacts && aContacts.length > 0))
       return;
-    var arr;
-    if (com.gContactSync.AbManager.mVersion == 3) { // TB 3
+    var arr,
+        i = 0;
+    if (com.gContactSync.AbManager.mVersion === 3) { // TB 3
       arr = Components.classes["@mozilla.org/array;1"]
                       .createInstance(Components.interfaces.nsIMutableArray);
-      for (var i = 0; i < aCards.length; i++) {
-        com.gContactSync.AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
-        arr.appendElement(aCards[i], false);
+      for (; i < aContacts.length; i++) {
+        if (aContacts[i] instanceof com.gContactSync.TBContact) {
+          arr.appendElement(aContacts[i].mContact, false);
+        }
+        else {
+          com.gContactSync.LOGGER.LOG_WARNING("Found an invalid contact sent " +
+                                              "AddressBook.deleteContacts");
+        }
       }
     }
     else { // TB 2
       arr =  Components.classes["@mozilla.org/supports-array;1"]
                        .createInstance(Components.interfaces.nsISupportsArray);
-      for (var i = 0; i < aCards.length; i++) {
-        com.gContactSync.AbManager.checkCard(aCards[i], "AddressBook.deleteCards()");
-        arr.AppendElement(aCards[i], false);
+      for (; i < aContacts.length; i++) {
+        if (aContacts[i] instanceof com.gContactSync.TBContact) {
+          arr.AppendElement(aContacts[i].mContact, false);
+        }
+        else {
+          com.gContactSync.LOGGER.LOG_WARNING("Found an invalid contact sent " +
+                                              "AddressBook.deleteContacts");
+        }
       }
     }
-    if (arr) { // make sure arr isn't null (mailnews bug 448165)
-      this.mCardsUpdate = true;
-      this.mDirectory.deleteCards(arr);
+    try {
+      if (arr) { // make sure arr isn't null (mailnews bug 448165)
+        this.mContactsUpdate = true; // update mContacts when used
+        this.mDirectory.deleteCards(arr);
+      }
+    }
+    catch (e) {
+      com.gContactSync.LOGGER.LOG_WARNING("Error while deleting cards from an AB", e);
     }
   },
   /**
    * Updates a card (commits changes) in this address book.
-   * @param aCard The card to update.
+   * @param aContact {TBContact} The card to update.
    */
-  updateCard: function AddressBook_updateCard(aCard) {
-    com.gContactSync.AbManager.checkCard(aCard);
-    this.mCardsUpdate = true;
+  updateContact: function AddressBook_updateContact(aContact) {
+    if (!(aContact instanceof com.gContactSync.TBContact)) {
+      throw "Invalid aContact sent to AddressBook.updateContact";
+    }
+    this.mContactsUpdate = true;
     if (this.mDirectory && this.mDirectory.modifyCard)
-      this.mDirectory.modifyCard(aCard);
+      this.mDirectory.modifyCard(aContact.mContact);
     else
-      aCard.editCardToDatabase(this.URI);
+      aContact.mContact.editCardToDatabase(this.mURI);
   },
   /**
    * Checks the validity of a mailing list and throws an error if it is invalid.
-   * @param aCard        {nsIAbDirectory} An object that should be a mailing list.
+   * @param aList        {nsIAbDirectory} An object that should be a mailing list.
    * @param aMethodName  {string} The name of the method calling checkList (used
    *                              when throwing the error)
    */
@@ -254,61 +280,30 @@ com.gContactSync.AddressBook.prototype = {
    */
   checkDirectory: function AddressBook_checkDirectory(aDirectory, aMethodName) {
     if (!this.isDirectoryValid(aDirectory))
-      throw "Invalid Directory: " + aDirectory + " sent to the '" + aMethodName
-            + "' method" +  com.gContactSync.StringBundle.getStr("pleaseReport");
+      throw "Invalid Directory: " + aDirectory + " sent to the '" +
+            aMethodName + "' method" +
+            com.gContactSync.StringBundle.getStr("pleaseReport");
   },
   /**
    * Checks the validity of a directory and returns false if it is invalid.
    * @param aDirectory {nsIAbDirectory} The directory to check.
    */
   isDirectoryValid: function AddressBook_isDirectoryValid(aDirectory) {
-    return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory 
-          && aDirectory.dirName != "" && (com.gContactSync.AbManager.mVersion == 3 || 
-          aDirectory instanceof Components.interfaces.nsIAbMDBDirectory);
+    return aDirectory && aDirectory instanceof Components.interfaces.nsIAbDirectory &&
+           aDirectory.dirName !== "" &&
+          (com.gContactSync.AbManager.mVersion === 3 || 
+           aDirectory instanceof Components.interfaces.nsIAbMDBDirectory);
   },
   /**
-   * Returns the value of the specifiec property in the given card, or throws an
-   * error if it is not present or blank.
-   * @param aCard     {nsIAbCard} The card to get the value from.
-   * @param aAttrName {string}    The name of the attribute to get.
+   * Creates and returns a new TBContact in this address book.
+   * NOTE: The contact is already added to this address book.
+   * @returns {TBContact} A new TBContact in this address book.
    */
-   getCardValue: function AddressBook_getCardValue(aCard, aAttrName) {
-     return com.gContactSync.AbManager.getCardValue(aCard, aAttrName);
-   },
-  /**
-   * Sets the value of the specifiec property in the given card but does not
-   * update the card in the database.
-   * @param aCard     {nsIAbCard} The card to get the value from.
-   * @param aAttrName {string}    The name of the attribute to set.
-   * @param aValue    {string}    The value to set for the attribute.
-   */
-   setCardValue: function AddressBook_setCardValue(aCard, aAttrName, aValue) {
-     return com.gContactSync.AbManager.setCardValue(aCard, aAttrName, aValue);
-   },
-  /**
-   * Returns true if the given card has at least one address-related property
-   * for the given type.
-   * @param aCard    {nsIAbCard} The card to check.
-   * @param aPrefix  {string} The prefix/type (Home or Work).
-   * @returns {boolean} True if aCard has at least one address-related property
-   *                   of the given type.
-   */
-  hasAddress: function AddressBook_hasAddress(aCard, aPrefix) {
-    com.gContactSync.AbManager.checkCard(aCard);
-    return this.getCardValue(aCard, aPrefix + "Address") || 
-           this.getCardValue(aCard, aPrefix + "Address2") ||
-           this.getCardValue(aCard, aPrefix + "City") ||
-           this.getCardValue(aCard, aPrefix + "State") ||
-           this.getCardValue(aCard, aPrefix + "ZipCode") ||
-           this.getCardValue(aCard, aPrefix + "Country");
-  },
-  /**
-   * Creates and returns a new address book card.
-   * @returns {nsIAbCard} A new instantiation of nsIAbCard.
-   */
-  makeCard: function AddressBook_makeCard() {
-    return Components.classes["@mozilla.org/addressbook/cardproperty;1"]
-                     .createInstance(Components.interfaces.nsIAbCard);
+  newContact: function AddressBook_newContact() {
+    return this.addContact(new com.gContactSync
+                                  .TBContact(Components.classes["@mozilla.org/addressbook/cardproperty;1"]
+                                                       .createInstance(Components.interfaces.nsIAbCard),
+                                             this));
   },
   /**
    * Returns true if the directory passed in is the same as the directory
@@ -331,33 +326,35 @@ com.gContactSync.AddressBook.prototype = {
    * Returns the card in this directory, if any, with the same (not-null)
    * value for the GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
-   * @param aCard {nsIAbCard} The card being searched for.
-   * @returns {nsIAbCard} The card in this list, if any, with the same, and
+   * @param aContact {TBContact} The card being searched for.
+   * @returns {TBContact} The card in this AB, if any, with the same, and
    *                     non-null value for its GoogleID attribute, or, if the
    *                     GoogleID is null, if the display name, primary, and
    *                     second emails are the same.
    */
-  hasCard: function AddressBook_hasCard(aCard) {
-    com.gContactSync.AbManager.checkCard(aCard);
-    if (this.mCardsUpdate)
-      this.getAllCards();
-    var card, aCardID;
-    for (var i = 0, length = this.mCards.length; i < length; i++) {
-      card = this.mCards[i];
-      aCardID = com.gContactSync.AbManager.getCardValue(aCard, "GoogleID");
+  hasContact: function AddressBook_hasContact(aContact) {
+    if (!(aContact instanceof com.gContactSync.TBContact)) {
+      throw "Invalid aContact sent to AddressBook.hasContact";
+    }
+    // get all of the cards in this list again, if necessary
+    if (this.mContactsUpdate || this.mContacts.length === 0) {
+      this.getAllContacts();
+    }
+    for (var i = 0, length = this.mContacts.length; i < length; i++) {
+      var contact    = new TBContact(this.mContacts[i], this),
+          aContactID = aContact.getValue("GoogleID");
       // if it is an old card (has id) compare IDs
-      if (aCardID) {
-        if (aCardID == com.gContactSync.AbManager.getCardValue(card, "GoogleID"))
-          return card;
+      if (aContactID) {
+        if (aContactID === card.getValue("GoogleID")) {
+          return contact;
+        }
       }
       // else check that display name, primary and second email are equal
-      else if (com.gContactSync.AbManager.getCardValue(aCard, "DisplayName") ==
-                                      com.gContactSync.AbManager.getCardValue(card,"DisplayName")
-              && com.gContactSync.AbManager.getCardValue(aCard, "PrimaryEmail") ==
-                                        com.gContactSync.AbManager.getCardValue(card, "PrimaryEmail")
-              && com.gContactSync.AbManager.getCardValue(aCard, "SecondEmail") ==
-                                        com.gContactSync.AbManager.getCardValue(card, "SecondEmail"))
-        return card;
+      else if (aContact.getValue("DisplayName")  === contact.getValue("DisplayName") &&
+               aContact.getValue("PrimaryEmail") === contact.getValue("PrimaryEmail") &&
+               aContact.getValue("SecondEmail")  === contact.getValue("SecondEmail")) {
+        return contact;
+      }
     }
     return null;
   },
@@ -419,7 +416,7 @@ com.gContactSync.AddressBook.prototype = {
       return value;
     }
     // an error is expected if the value isn't present
-    catch(e) {
+    catch (e) {
       return 0;
     }
     return null;
@@ -462,7 +459,7 @@ com.gContactSync.AddressBook.prototype = {
                              .getBranch(id)
                              .QueryInterface(Components.interfaces.nsIPrefBranch2);
       branch.setCharPref(aName, aValue);
-    } catch(e) { com.gContactSync.LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+    } catch (e) { com.gContactSync.LOGGER.LOG_WARNING("Error while setting directory pref", e); }
   },
 
   /**

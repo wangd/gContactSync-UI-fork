@@ -43,8 +43,13 @@ if (!com.gContactSync) com.gContactSync = {};
  * @class
  */
 com.gContactSync.LOGGER = {
+  /** The number of errors logged */
   mErrorCount:   0,
+  /** The number of warnings logged */
   mWarningCount: 0,
+  /** The console service (for logging to the error console) */
+  mConsoleService: Components.classes['@mozilla.org/consoleservice;1']
+                             .getService(Components.interfaces.nsIConsoleService),
   /**
    * Appends the message to the log file and adds a newline character after the
    * message.
@@ -76,6 +81,7 @@ com.gContactSync.LOGGER = {
     str += com.gContactSync.StringBundle.getStr("pleaseReport");
     this.LOG(str);
     this.mErrorCount++;
+    this.mConsoleService.logStringMessage("gContactSync: " + str);
   },
   /**
    * Logs a warning and updates the warning count.

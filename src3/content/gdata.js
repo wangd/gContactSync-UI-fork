@@ -83,28 +83,32 @@ com.gContactSync.gdata = {
    * @returns The e-mail address from an ID.
    */
   getEmailFromId: function gdata_getEmailFromId(aId) {
-    if (!aId || !aId.indexOf || aId == "")
+    if (!aId || !aId.indexOf || aId === "")
       return "";
     // typical ID:
     // http://www.google.com/m8/feeds/contacts/address%40gmail.com/base/...
-    var startStr = "/feeds/contacts/";
-    var start    = aId.indexOf(startStr) + startStr.length;
-    var endStr   = "/base/";
-    var end      = aId.indexOf(endStr);
+    var startStr = "/feeds/contacts/",
+        start    = aId.indexOf(startStr) + startStr.length,
+        endStr   = "/base/",
+        end      = aId.indexOf(endStr),
+        address;
     if (start >= end)
       return "";
-    var address = decodeURIComponent(aId.substring(start, end));
+    address = decodeURIComponent(aId.substring(start, end));
     com.gContactSync.LOGGER.VERBOSE_LOG("found address: " + address + " from ID: " + aId);
     return address;
   },
   /** Namespaces used in the API */
   namespaces: {
     /** The APP namespace */
-    APP:         new com.gContactSync.Namespace("http://www.w3.org/2007/app", "app:"),
+    APP:         new com.gContactSync.Namespace("http://www.w3.org/2007/app",
+                                                "app:"),
     /** The ATOM namespace */
-    ATOM:        new com.gContactSync.Namespace("http://www.w3.org/2005/Atom", "atom:"),
+    ATOM:        new com.gContactSync.Namespace("http://www.w3.org/2005/Atom",
+                                                "atom:"),
     /** The GD namespace */
-    GD:          new com.gContactSync.Namespace("http://schemas.google.com/g/2005", "gd:"),
+    GD:          new com.gContactSync.Namespace("http://schemas.google.com/g/2005",
+                                                "gd:"),
     /** The GCONTACT namespace */
     GCONTACT:    new com.gContactSync.Namespace("http://schemas.google.com/contact/2008",
                                                 "gContact:"),
@@ -112,7 +116,8 @@ com.gContactSync.gdata = {
     OPEN_SEARCH: new com.gContactSync.Namespace("http://a9.com/-/spec/opensearch/1.1/",
                                                 "openSearch:"),
     /** The BATCH namespace */
-    BATCH:       new com.gContactSync.Namespace("http://schemas.google.com/gdata/batch","batch:")
+    BATCH:       new com.gContactSync.Namespace("http://schemas.google.com/gdata/batch",
+                                                "batch:")
   },
   /** some things related to contacts, such as related URLs and HTTP Request
    * types
@@ -175,14 +180,14 @@ com.gContactSync.gdata = {
      * is stored.
      */
     init: function gdata_contacts_init() {
-      var GElement             = com.gContactSync.GElement;
-      var untyped              = this.types.UNTYPED;
-      var typedWithChild       = this.types.TYPED_WITH_CHILD;
-      var typedWithAttr        = this.types.TYPED_WITH_ATTR;
-      var parentTyped          = this.types.PARENT_TYPED;
-      var gd                   = com.gContactSync.gdata.namespaces.GD;
-      var atom                 = com.gContactSync.gdata.namespaces.ATOM;
-      var gcontact             = com.gContactSync.gdata.namespaces.GCONTACT;
+      var GElement             = com.gContactSync.GElement,
+          untyped              = this.types.UNTYPED,
+          typedWithChild       = this.types.TYPED_WITH_CHILD,
+          typedWithAttr        = this.types.TYPED_WITH_ATTR,
+          parentTyped          = this.types.PARENT_TYPED,
+          gd                   = com.gContactSync.gdata.namespaces.GD,
+          atom                 = com.gContactSync.gdata.namespaces.ATOM,
+          gcontact             = com.gContactSync.gdata.namespaces.GCONTACT;
       this.postalAddress       = new GElement(typedWithChild, "postalAddress",
                                              gd, this.POSTAL_ADDRESS_TYPES);
       this.phoneNumber         = new GElement(typedWithChild, "phoneNumber", gd,
@@ -219,11 +224,11 @@ com.gContactSync.gdata = {
       this.website             = new GElement(typedWithAttr, "website",
                                               gcontact,
                                               this.WEBSITE_TYPES, "href");
-      this.street              = new GElement(parentTyped, "street",   gd),
-      this.city                = new GElement(parentTyped, "city",     gd),
-      this.region              = new GElement(parentTyped, "region",   gd),
-      this.postcode            = new GElement(parentTyped, "postcode", gd),
-      this.country             = new GElement(parentTyped, "country",  gd)
+      this.street              = new GElement(parentTyped, "street",   gd);
+      this.city                = new GElement(parentTyped, "city",     gd);
+      this.region              = new GElement(parentTyped, "region",   gd);
+      this.postcode            = new GElement(parentTyped, "postcode", gd);
+      this.country             = new GElement(parentTyped, "country",  gd);
     },
     /** Different types for a website */
     WEBSITE_TYPES: [
@@ -345,7 +350,7 @@ com.gContactSync.gdata = {
    * @returns {boolean} True if there is at least one auth token.
    */ 
   isAuthValid: function gdata_isAuthValid() {
-    if (com.gContactSync.LoginManager.mNumAuthTokens == 0)
+    if (com.gContactSync.LoginManager.mNumAuthTokens === 0)
       com.gContactSync.LoginManager.getAuthTokens();
     return com.gContactSync.LoginManager.mNumAuthTokens > 0;
   }

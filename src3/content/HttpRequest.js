@@ -39,7 +39,37 @@ if (!com) var com = {}; // A generic wrapper variable
 if (!com.gContactSync) com.gContactSync = {};
 
 /**
- * Sets up an HTTP request.
+ * Sets up an HTTP request.<br>
+ * The constructor is not all that useful so extend this class if you must
+ * make repetitive HTTP requests.<br><br>
+ * You may setup callbacks based on different HTTP status codes:
+ * <ul>
+ * <li>0 (offline): use <b>mOnError</b></li>
+ * <li>200 (OK): use <b>mOnSuccess</b></li>
+ * <li>201 (CREATED): use <b>mOnCreated</b></li>
+ * <li>401 (UNAUTHORIZED): use <b>mOn401</b></li>
+ * <li>&lt;anything else&gt;: use <b>mOnError</b></li>
+ * </ul>
+ * <br>Sample usage:
+ * <pre>
+ * // Create and setup a new HttpRequest
+ * var myHttpRequest   = new com.gContactSync.HttpRequest();
+ * myHttpRequest.mUrl  = "http://www.pirules.org";
+ * myHttpRequest.mType = "GET";
+ * myHttpRequest.addHeaderItem("Content-length", 0);
+ * // setup the callbacks
+ * myHttpRequest.mOnSuccess = function myRequestSuccess(aHttpReq) {
+ *   alert("Request succeeded.  Content:\n\n" + aHttpReq.statusText);
+ * };
+ * myHttpRequest.mOnOffline = function myRequestOffline(aHttpReq) {
+ *   alert("You are offline");
+ * };
+ * myHttpRequest.mOnError   = function myRequestError(aHttpReq) {
+ *   alert("Request failed...Status: " + aHttpReq.status); 
+ * };
+ * // send the request
+ * myHttpRequest.send();
+ * </pre>
  * @constructor
  * @class
  */
@@ -94,9 +124,10 @@ com.gContactSync.HttpRequest.prototype = {
     this.mHeaderValues.push(aValue);
   },
   /**
-   * Sends the HTTP Request with the information stored in the object.
+   * Sends the HTTP Request with the information stored in the object.<br>
    * Note: Setup everything, including the callbacks for different statuses
-   *       including mOnSuccess, mOnError, mOnFail, and mOnCreated first.
+   *       including mOnSuccess, mOnError, mOnFail, and mOnCreated first.<br>
+   * See the class documentation for a sample request.
    */
   send: function HttpRequest_send() {
     // log the basic info for debugging purposes
@@ -120,45 +151,48 @@ com.gContactSync.HttpRequest.prototype = {
     }
     this.mHttpRequest.send(this.mBody); // send the request
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Request Sent");
-    var httpReq   = this.mHttpRequest;
-    var onSuccess = this.mOnSuccess ? this.mOnSuccess: [];
-    var onOffline = this.mOnOffline ? this.mOnOffline: [];
-    var onFail    = this.mOnError   ? this.mOnError:   [];
-    var onCreated = this.mOnCreated ? this.mOnCreated: [];
-    var on401     = this.mOn401     ? this.mOn401:     [];
+    var httpReq   = this.mHttpRequest,
+        onSuccess = this.mOnSuccess,
+        onOffline = this.mOnOffline,
+        onFail    = this.mOnError,
+        onCreated = this.mOnCreated,
+        on401     = this.mOn401;
 
     httpReq.onreadystatechange = function httpReq_readyState() {
-      var commands = [];
+      var callback = [],
+          i;
       // if the request is done then check the status
       if (httpReq.readyState === 4) {
         // this may be called after the address book window is closed
         // if the window is closed there will be an exception thrown as
         // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
         com.gContactSync.LOGGER.VERBOSE_LOG(" * The request has finished with status: " +
-                                            httpReq.status + "/" + httpReq.statusText);
-        com.gContactSync.LOGGER.VERBOSE_LOG(" * Headers:\n" +
-                                            httpReq.getAllResponseHeaders() + "\n");
+                                            httpReq.status + "/" +
+                                            (httpReq.status ? httpReq.statusText : "offline"));
+        if (httpReq.status) {
+          com.gContactSync.LOGGER.VERBOSE_LOG(" * Headers:\n" +
+                                              httpReq.getAllResponseHeaders() + "\n");
+        }
           
         switch (httpReq.status) { 
         case 0: // the user is offline
-          commands = onOffline;
+          callback = onOffline;
           break;
         case 201: // 201 CREATED
-          commands = onCreated;
+          callback = onCreated;
           break;
         case 200: // 200 OK
-          commands = onSuccess;
+          callback = onSuccess;
           break;
         case 401: // 401 Unauthorized (Token Expired in Gmail)
-          commands = on401;
+          callback = on401;
           break;
         default: // other status
-          commands = onFail;
+          callback = onFail;
         }
-        com.gContactSync.LOGGER.VERBOSE_LOG(" * Evaluating commands");
-        for (var i in commands) {
-          com.gContactSync.LOGGER.VERBOSE_LOG("   o " + commands[i]);
-          eval(commands[i]);
+        if (callback) {
+          com.gContactSync.LOGGER.VERBOSE_LOG(" * Running the function callback");
+          callback.call(this, httpReq);
         }
       } // end of readyState
     };

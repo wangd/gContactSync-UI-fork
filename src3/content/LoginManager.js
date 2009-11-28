@@ -64,23 +64,25 @@ com.gContactSync.LoginManager = {
    * @param aToken    {string} The authentication token from Google.
    */
   addAuthToken: function LoginManager_addAuthToken(aUsername, aToken) {
-    if (this.mNumAuthTokens == 0)
+    if (this.mNumAuthTokens === 0) {
       this.getAuthTokens();
+    }
     // Thunderbird 2
     if ("@mozilla.org/passwordmanager;1" in Components.classes) {
-     var passwordManager =  Components.classes["@mozilla.org/passwordmanager;1"]
-                                      .getService(Components.interfaces.nsIPasswordManager);
-     passwordManager.addUser(this.mHostname, aUsername, aToken);
-     this.mAuthTokens[aUsername] = aToken;
-     this.mNumAuthTokens++;
+      var passwordManager =  Components.classes["@mozilla.org/passwordmanager;1"]
+                                       .getService(Components.interfaces.nsIPasswordManager);
+      passwordManager.addUser(this.mHostname, aUsername, aToken);
+      this.mAuthTokens[aUsername] = aToken;
+      this.mNumAuthTokens++;
     }
     // Thunderbird 3, Seamonkey 2
     else if ("@mozilla.org/login-manager;1" in Components.classes) {
       var loginManager =  Components.classes["@mozilla.org/login-manager;1"]
-                                    .getService(Components.interfaces.nsILoginManager);
-      var nsLoginInfo  = new Components.Constructor("@mozilla.org/login-manager/loginInfo;1",
-                                Components.interfaces.nsILoginInfo, "init");
-      var extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
+                                    .getService(Components.interfaces.nsILoginManager),
+          nsLoginInfo  = new Components.Constructor("@mozilla.org/login-manager/loginInfo;1",
+                                                    Components.interfaces.nsILoginInfo,
+                                                    "init"),
+          extLoginInfo = new nsLoginInfo(this.mHostname, this.mSubmitURL,
                                          this.mHttpRealm, aUsername, aToken,
                                          this.mUsernameField, this.mPasswordField);
       loginManager.addLogin(extLoginInfo);
@@ -98,12 +100,12 @@ com.gContactSync.LoginManager = {
     // Thunderbird 2
     if ("@mozilla.org/passwordmanager;1" in Components.classes) {
       var passwordManager = Components.classes["@mozilla.org/passwordmanager;1"]
-                                      .getService(Components.interfaces.nsIPasswordManager);
-      var iter = passwordManager.enumerator;
+                                      .getService(Components.interfaces.nsIPasswordManager),
+          iter = passwordManager.enumerator;
       while (iter.hasMoreElements()) {
         try {
           var pass = iter.getNext().QueryInterface(Components.interfaces.nsIPassword);
-          if (pass.host == this.mHostname) {
+          if (pass.host === this.mHostname) {
             this.mAuthTokens[pass.user] = pass.password;
             this.mNumAuthTokens++;
           }
@@ -130,8 +132,9 @@ com.gContactSync.LoginManager = {
    * @returns {string} The auth token, if present, null otherwise.
    */
   getAuthToken: function LoginManager_getAuthToken(aUsername) {
-    if  (this.mNumAuthTokens == 0)
+    if  (this.mNumAuthTokens === 0) {
       this.getAuthTokens();
+    }
     return this.mAuthTokens ? this.mAuthTokens[aUsername] : null;
   },
   /**
@@ -161,15 +164,15 @@ com.gContactSync.LoginManager = {
                                             this.mHttpRealm);
       // Find user from returned array of nsILoginInfo objects
       for (var i = 0; i < logins.length; i++) {
-        if (logins[i].username == aUsername) {
+        if (logins[i].username === aUsername) {
           try {
             loginManager.removeLogin(logins[i]);
             this.mAuthTokens[aUsername] = null;
             this.mNumAuthTokens--;
             return;
           }
-          catch (e) {
-            alert(com.gContactSync.StringBundle.getStr("removeLoginFailure") + "\n\n" + e);
+          catch (ex) {
+            alert(com.gContactSync.StringBundle.getStr("removeLoginFailure") + "\n\n" + ex);
           }
         }
       }
@@ -189,14 +192,15 @@ com.gContactSync.LoginManager = {
     // Thunderbird 2
     if ("@mozilla.org/passwordmanager;1" in Components.classes) {
       var passwordManager = Components.classes["@mozilla.org/passwordmanager;1"]
-                                      .getService(Components.interfaces.nsIPasswordManager);
-      var iter = passwordManager.enumerator;
+                                      .getService(Components.interfaces.nsIPasswordManager),
+          iter = passwordManager.enumerator;
       while (iter.hasMoreElements()) {
         try {
           var pass = iter.getNext().QueryInterface(Components.interfaces.nsIPassword);
-          if (pass.host.indexOf("imap://") == 0 || pass.host.indexOf("mailbox://") == 0) {
-            if (!aPattern || aPattern.test(pass.user))
+          if (pass.host.indexOf("imap://") === 0 || pass.host.indexOf("mailbox://") === 0) {
+            if (!aPattern || aPattern.test(pass.user)) {
               arr.push(pass.user);
+            }
           }
         } catch (e) {}
       }
@@ -204,17 +208,20 @@ com.gContactSync.LoginManager = {
     // Thunderbird 3, Seamonkey 2
     else if ("@mozilla.org/login-manager;1" in Components.classes) {
       var loginManager =  Components.classes["@mozilla.org/login-manager;1"]
-                                    .getService(Components.interfaces.nsILoginManager);
+                                    .getService(Components.interfaces.nsILoginManager),
       // Find users for the given parameters
-      var count  = {};
-      var out    = {};
-      var logins = loginManager.getAllLogins(count, out);
+          count  = {},
+          out    = {},
+          logins = loginManager.getAllLogins(count, out),
+          i      = 0,
+          hostname;
       // Find user from returned array of nsILoginInfo objects
-      for (var i = 0; i < logins.length; i++) {
-        var hostname = logins[i].hostname;
-        if (hostname.indexOf("imap://") == 0 || hostname.indexOf("mailbox://") == 0) {
-          if (!aPattern || aPattern.test(logins[i].username))
+      for (; i < logins.length; i++) {
+        hostname = logins[i].hostname;
+        if (hostname.indexOf("imap://") === 0 || hostname.indexOf("mailbox://") === 0) {
+          if (!aPattern || aPattern.test(logins[i].username)) {
             arr.push(logins[i].username);
+          }
         }
       }
     }

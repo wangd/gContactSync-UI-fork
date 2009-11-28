@@ -66,9 +66,13 @@ com.gContactSync.GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedA
   }
 
   com.gContactSync.LOGGER.LOG("Resetting all synchronized directories.");
-  var abs = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
-  for (var i in abs)
-    abs[i].ab.reset();
+  var abs = com.gContactSync.GAbManager.getSyncedAddressBooks(true),
+      i;
+  for (i in abs) {
+    if (abs[i].ab) {
+      abs[i].ab.reset();
+    }
+  }
   
   com.gContactSync.LOGGER.LOG("Finished resetting all synchronized directories.");
   alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));

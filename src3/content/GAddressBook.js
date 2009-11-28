@@ -89,13 +89,14 @@ com.gContactSync.GAddressBook.prototype.prefPrefix = "gContactSync";
  */
 com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
   com.gContactSync.LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':");
-  for (var i in this.mPrefs) {
-    var val = this.getStringPref(this.prefPrefix + i);
+  var i, val, pref;
+  for (i in this.mPrefs) {
+    val = this.getStringPref(this.prefPrefix + i);
     // getStringPref returns 0 iff the pref doesn't exist
     // if the pref doesn't exist, then use the global gContactSync pref
     // this behavior is mostly for backwards compatibility
     if (val === 0) {
-      var pref = com.gContactSync.Preferences.mSyncPrefs[i];
+      pref = com.gContactSync.Preferences.mSyncPrefs[i];
       val = pref ? String(pref.value) : "";
     }
     com.gContactSync.LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
@@ -179,22 +180,24 @@ com.gContactSync.GAddressBook.prototype.setUsername = function GAddressBook_setU
   */
 com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   com.gContactSync.LOGGER.LOG("Resetting the " + this.getName() + " directory.");
+  var lists, i;
   try {
-    var lists = this.getAllLists(true);
+    lists = this.getAllLists(true);
   } catch (e) {}
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all lists");
-  for (var i in lists) {
-    com.gContactSync.LOGGER.VERBOSE_LOG("  - Deleting list " + lists[i].getName());
-    lists[i].remove();
+  for (i in lists) {
+    if (lists[i] instanceof com.gContactSync.GMailList) {
+      com.gContactSync.LOGGER.VERBOSE_LOG("  - Deleting list " + lists[i].getName());
+      lists[i].remove();
+    }
   }
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished deleting lists");
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all contacts");
-  this.deleteCards(this.getAllCards());
+  this.deleteContacts(this.getAllContacts());
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
   this.setLastSyncDate(0);
   com.gContactSync.LOGGER.LOG("Finished resetting the directory.");
 };
-
 /**
  * Returns a new GMailList object given the same parameters as the GMailList
  * constructor.
