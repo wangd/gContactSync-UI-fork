@@ -102,7 +102,7 @@ com.gContactSync.Sync = {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mIndex         = 0;
     com.gContactSync.Sync.mAddressBooks  = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
-    com.gContactSync.Sync.syncNextUser()
+    com.gContactSync.Sync.syncNextUser();
   },
   /**
    * Synchronizes the next address book in com.gContactSync.Sync.mAddressBooks.
@@ -128,10 +128,10 @@ com.gContactSync.Sync = {
     if (!com.gContactSync.Sync.mCurrentAuthToken) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to find the auth token for: "
                                           + com.gContactSync.Sync.mCurrentUsername);
-      if (confirm(com.gContactSync.StringBundle.getStr("noTokenFound")
-                  + ": " + com.gContactSync.Sync.mCurrentUsername
-                  + "\n" + com.gContactSync.StringBundle.getStr("ab")
-                  + ": " + com.gContactSync.Sync.mCurrentAb.getName())) {
+      if (confirm(com.gContactSync.StringBundle.getStr("noTokenFound") +
+                  ": " + com.gContactSync.Sync.mCurrentUsername +
+                  "\n" + com.gContactSync.StringBundle.getStr("ab") +
+                  ": " + com.gContactSync.Sync.mCurrentAb.getName())) {
         // Now let the user login
         var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                                  .getService(Components.interfaces.nsIPromptService)
@@ -428,8 +428,8 @@ com.gContactSync.Sync = {
   },
   /**
    * Deletes all contacts from Google included in the mContactsToDelete
-   * array one at a time to avoid timing conflicts. Calls com.gContactSync.Sync.processAddQueue()
-   * when finished.
+   * array one at a time to avoid timing conflicts. Calls
+   * com.gContactSync.Sync.processAddQueue() when finished.
    */
   processDeleteQueue: function Sync_processDeleteQueue() {
     var ab = com.gContactSync.Sync.mCurrentAb;
@@ -440,8 +440,8 @@ com.gContactSync.Sync = {
       com.gContactSync.Sync.processAddQueue();
       return;
     }
-    // TODO if com.gContactSync.Sync.mContactsUrl is set should the contact just be removed from
-    // that group or completely removed?
+    // TODO if com.gContactSync.Sync.mContactsUrl is set should the contact just
+    // be removed from that group or completely removed?
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("deleting") + " " +
                                               com.gContactSync.Sync.mContactsToDelete.length + " " +
                                               com.gContactSync.StringBundle.getStr("remaining"));
@@ -567,7 +567,7 @@ com.gContactSync.Sync = {
       var ab         = com.gContactSync.Sync.mCurrentAb;
       var ns         = com.gContactSync.gdata.namespaces.ATOM;
       var lastSync   = parseInt(ab.getLastSyncDate());
-      var myContacts = ab.mPrefs.myContacts == "true";
+      var myContacts = ab.mPrefs.myContacts == "true" && ab.mPrefs.myContactsName;
       var arr        = aAtom.getElementsByTagNameNS(ns.url, "entry");
       var noCatch    = false;
       // get the mailing lists if not only synchronizing my contacts
@@ -709,7 +709,8 @@ com.gContactSync.Sync = {
       }
       else {
         var groupName = ab.mPrefs.myContactsName.toLowerCase();
-        com.gContactSync.LOGGER.LOG("Only synchronizing the '" + groupName + "' group.");
+        com.gContactSync.LOGGER.LOG("Only synchronizing the '"
+                                    + ab.mPrefs.myContactsName + "' group.");
         var group, id, sysId, title;
         var foundGroup = false;
         for (var i = 0; i < arr.length; i++) {
@@ -718,15 +719,16 @@ com.gContactSync.Sync = {
             // add the ID to mGroups by making a new property with the ID as the
             // name and the title as the value for easy lookup for contacts
             // Note: If someone wants to sync a group with the same name as a
-            // system group then this method won't work because system gruoups
+            // system group then this method won't work because system groups
             // are first.
             id    = group.getID();
             sysId = group.getSystemId();
-            sysId = sysId ? sysId.toLowerCase() : "";
-            title = group.getTitle().toLowerCase();
+            title = group.getTitle();
             com.gContactSync.LOGGER.VERBOSE_LOG("  - Found a group named '"
                                                 + title + "' with ID '"
                                                 + id + "'");
+            title = title ? title.toLowerCase() : "";
+            sysId = sysId ? sysId.toLowerCase() : "";
             if (sysId == groupName || title == groupName) {
               foundGroup = true;
               break;
@@ -811,6 +813,7 @@ com.gContactSync.Sync = {
   /**
    * The second part of adding a group involves updating the list from which
    * this group was created so the two can be matched during the next sync.
+   * @param aResponse {XMLHttpRequest} The HTTP request.
    */
   addGroups2: function Sync_addGroups2(aResponse) {
     var group = new com.gContactSync.Group(aResponse.responseXML

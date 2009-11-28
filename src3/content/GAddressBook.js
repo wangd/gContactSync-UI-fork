@@ -74,7 +74,7 @@ com.gContactSync.GAddressBook = function gCS_GAddressBook(aDirectory, aNoPrefs) 
   };
   if (!aNoPrefs)
     this.getPrefs();
-}
+};
 
 // Copy the AB prototype (methods and member variables)
 com.gContactSync.GAddressBook.prototype = com.gContactSync.AddressBook.prototype;
@@ -88,7 +88,7 @@ com.gContactSync.GAddressBook.prototype.prefPrefix = "gContactSync";
  * if any.
  */
 com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
-  com.gContactSync.LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':")
+  com.gContactSync.LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':");
   for (var i in this.mPrefs) {
     var val = this.getStringPref(this.prefPrefix + i);
     // getStringPref returns 0 iff the pref doesn't exist
@@ -96,7 +96,7 @@ com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPref
     // this behavior is mostly for backwards compatibility
     if (val === 0) {
       var pref = com.gContactSync.Preferences.mSyncPrefs[i];
-      val = pref ? new String(pref.value) : "";
+      val = pref ? String(pref.value) : "";
     }
     com.gContactSync.LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
     this.mPrefs[i] = val;
@@ -122,7 +122,7 @@ com.gContactSync.GAddressBook.prototype.savePref = function GAddressBook_savePre
  */
 com.gContactSync.GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername) {
   this.setStringPref("gContactSyncUsername", aUsername);
-  this.mPrefs["username"] = aUsername;
+  this.mPrefs.username = aUsername;
 };
 
 /**
@@ -224,9 +224,11 @@ com.gContactSync.GAddressBook.prototype.newListObj = function GAddressBook_newLi
 com.gContactSync.GAddressBook.prototype.getAllLists = function GAddressBook_getAllLists(skipGetCards) {
   // same in Thunderbird 2 and 3
   com.gContactSync.LOGGER.VERBOSE_LOG("Searching for mailing lists:");
-  var iter = this.mDirectory.childNodes;
-  var obj = {};
-  var list, id, data;
+  var iter = this.mDirectory.childNodes,
+      obj  = {},
+      list,
+      id,
+      data;
   while (iter.hasMoreElements()) {
     data = iter.getNext();
     if (data instanceof Components.interfaces.nsIAbDirectory && data.isMailList) {

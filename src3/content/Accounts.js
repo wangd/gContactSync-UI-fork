@@ -186,12 +186,12 @@ com.gContactSync.Accounts = {
     // this is for backward compatibility
     ab.savePref("Primary",  "true");
     // Group to sync
-    ab.savePref("syncGroups", groupElem.value == "All");
-    ab.savePref("myContacts", new String(groupElem.value != "All" && groupElem.value != "None"));
+    ab.savePref("syncGroups", groupElem.value === "All");
+    ab.savePref("myContacts", String(groupElem.value !== "All" && groupElem.value !== "None"));
     ab.savePref("myContactsName", groupElem.value);
     // Sync Direction
-    ab.savePref("writeOnly", directionElem.value == "WriteOnly");
-    ab.savePref("readOnly",  directionElem.value == "ReadOnly");
+    ab.savePref("writeOnly", directionElem.value === "WriteOnly");
+    ab.savePref("readOnly",  directionElem.value === "ReadOnly");
     // TODO only reset if necessary
     if (usernameElem.value)
       ab.reset();
@@ -206,9 +206,13 @@ com.gContactSync.Accounts = {
    *                          them.
    */
   enablePreferences: function Accounts_enablePreferences(aEnable) {
-    for (var i = 0; i < this.mPrefElemIDs.length; i++) {
-      var elem = document.getElementById(this.mPrefElemIDs[i]);
-      if (!elem) {alert(this.mPrefElemIDs[i] + " not found"); continue;}
+    var elem, i;
+    for (i = 0; i < this.mPrefElemIDs.length; i++) {
+      elem = document.getElementById(this.mPrefElemIDs[i]);
+      if (!elem) {
+        com.gContactSync.LOGGER.LOG_WARNING(this.mPrefElemIDs[i] + " not found");
+        continue;
+      }
       elem.disabled = aEnable ? false : true;
     }
   },
@@ -247,23 +251,16 @@ com.gContactSync.Accounts = {
     // The myContacts pref (enable sync w/ one group) has priority
     // If that is checked an the myContactsName is pref sync just that group
     // Otherwise sync all or no groups based on the syncGroups pref
-    var group = ab.mPrefs.myContacts
-                ? (ab.mPrefs.myContactsName
-                  ? ab.mPrefs.myContactsName
-                  : "false")
-                : (ab.mPrefs.syncGroups != "false"
-                  ? "All"
-                  : "false");
+    var group = ab.mPrefs.myContacts ?
+               (ab.mPrefs.myContactsName ? ab.mPrefs.myContactsName : "false") :
+               (ab.mPrefs.syncGroups !== "false" ? "All" : "false");
     com.gContactSync.selectMenuItem(groupElem, group, true);
     // Sync Direction
-    var direction = ab.mPrefs.readOnly == "true"
-                      ? "ReadOnly"
-                      : ab.mPrefs.writeOnly == "true"
-                        ? "WriteOnly"
-                        : "Complete";
+    var direction = ab.mPrefs.readOnly === "true" ? "ReadOnly" :
+                      ab.mPrefs.writeOnly === "true" ? "WriteOnly" : "Complete";
     com.gContactSync.selectMenuItem(directionElem, direction, true);
     // Temporarily disable synchronization with the address book
-    disableElem.checked = ab.mPrefs.Disabled == "true";
+    disableElem.checked = ab.mPrefs.Disabled === "true";
     // Select the correct plugin
     com.gContactSync.selectMenuItem(pluginElem, ab.mPrefs.Plugin, true);
     

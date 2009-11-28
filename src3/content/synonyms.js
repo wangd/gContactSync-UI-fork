@@ -64,17 +64,18 @@ com.gContactSync.serialize = function gCS_serialize(aXML) {
   if (!aXML)
     return "";
   try {
-    var serializer = new XMLSerializer();
-    var str = serializer.serializeToString(aXML);
+    var serializer = new XMLSerializer(),
+        str        = serializer.serializeToString(aXML);
     // source: http://developer.mozilla.org/en/E4X#Known_bugs_and_limitations
     str = str.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, ""); // bug 336551
     return XML(str).toXMLString();
   }
-  catch(e) {
-    com.gContactSync.LOGGER.LOG_WARNING("Error while serializing the following XML: " + aXML,e );
+  catch (e) {
+    com.gContactSync.LOGGER.LOG_WARNING("Error while serializing the following XML: " +
+                                        aXML, e);
   }
   return "";
-}
+};
 
 /**
  * A less expensive (but still costly) function that serializes a string of XML
@@ -93,7 +94,7 @@ com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
     aString = arr.join(">\n<");
   }
   return aString;
-}
+};
 
 /**
  * Creates a 'dummy' e-mail for the given contact if possible.
@@ -124,9 +125,9 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Not setting dummy e-mail");
     return "";
   }
-  var prefix = com.gContactSync.StringBundle.getStr("dummy1");
-  var suffix = com.gContactSync.StringBundle.getStr("dummy2");
-  var id = null;
+  var prefix = com.gContactSync.StringBundle.getStr("dummy1"),
+      suffix = com.gContactSync.StringBundle.getStr("dummy2"),
+      id     = null;
   // GContact and TBContact may not be defined
   try {
     if (aContact instanceof com.gContactSync.GContact)
@@ -136,29 +137,25 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
       id = aContact.getValue("GoogleID");
     else
       id = com.gContactSync.AbManager.getCardValue(aContact, "GoogleID");
-  } catch(e) {
+  } catch (e) {
     try {
       // try getting the card's value
-      if (aCard.getProperty) // post Bug 413260
-        id = aCard.getProperty("GoogleID", null);
+      if (aContact.getProperty) // post Bug 413260
+        id = aContact.getProperty("GoogleID", null);
       else // pre Bug 413260
-        id = aCard.getStringAttribute("GoogleID");
+        id = aContact.getStringAttribute("GoogleID");
     }
-    catch (e) {}
+    catch (ex) {}
   }
-
   if (id) {
     // take just the ID and not the whole URL
-    id = id.replace(/\/*.*\//, "");
-    return prefix + id + suffix;
+    return prefix + id.substr(1 + id.lastIndexOf("/")) + suffix;
   }
-  // if there is no ID make a random number
+  // if there is no ID make a random number and remove the "0."
   else {
-    var num = new String(Math.random());
-    num = num.replace("0.", "");
-    return prefix + num + suffix;
+    return prefix + String(Math.random()).replace("0.", "") + suffix;
   }
-}
+};
 
 /**
  * Returns true if the given e-mail address is a fake 'dummy' address.
@@ -169,8 +166,8 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
  */
 com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
   return aEmail && aEmail.indexOf && 
-        aEmail.indexOf(com.gContactSync.StringBundle.getStr("dummy2")) != -1;
-}
+        aEmail.indexOf(com.gContactSync.StringBundle.getStr("dummy2")) !== -1;
+};
 
 /**
  * Selects the menuitem with the given value (value or label attribute) in the
@@ -188,14 +185,13 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
   if (!aMenuList || !aMenuList.menupopup || !aValue)
     throw "Invalid parameter sent to selectMenuItem";
 
-  var arr = aMenuList.menupopup.childNodes;
+  var arr = aMenuList.menupopup.childNodes, i, item;
   // convert the value to lowercase
   aValue = aValue.toLowerCase();
-  var item;
-  for (var i = 0; i < arr.length; i++) {
+  for (i = 0; i < arr.length; i++) {
     item = arr[i];
-    if (item.getAttribute("value").toLowerCase() == aValue
-        || item.getAttribute("label").toLowerCase() == aValue) {
+    if (item.getAttribute("value").toLowerCase() === aValue ||
+        item.getAttribute("label").toLowerCase() === aValue) {
       aMenuList.selectedIndex = i;
       return true;
     }
@@ -206,7 +202,7 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
   // getIndexOfItem was added in TB/FF 3
   aMenuList.selectedIndex = aMenuList.menupopup.childNodes.length - 1;
   return true;
-}
+};
 
 /**
  * Attempts a few basic fixes for 'broken' usernames.
@@ -223,10 +219,10 @@ com.gContactSync.selectMenuItem = function gCS_selectMenuItem(aMenuList, aValue,
 com.gContactSync.fixUsername = function gCS_fixUsername(aUsername) {
   if (!aUsername)
     return null;
-  if (aUsername.indexOf("@") == -1)
+  // Add @gmail.com if necessary
+  if (aUsername.indexOf("@") === -1)
     aUsername += "@gmail.com";
-  aUsername = aUsername.replace(/ /g, "");
-  aUsername = aUsername.replace(/\t/g, "");
+  // replace any spaces or tabs
+  aUsername = aUsername.replace(/[ \t\n\r]/g, "");
   return aUsername;
-}
-
+};

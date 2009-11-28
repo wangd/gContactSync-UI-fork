@@ -81,7 +81,7 @@ com.gContactSync.AbListener = {
       if (aParentDir.isMailList) {
         try {
           aItem.QueryInterface(Components.interfaces.nsIAbCard);
-          var now = (new Date).getTime()/1000;
+          var now = (new Date()).getTime() / 1000;
           var uri = this.getURI(aParentDir);
           // the URI of the list's parent
           uri = uri.substring(0, uri.lastIndexOf("/"));
@@ -114,7 +114,7 @@ com.gContactSync.AbListener = {
         if (aDirectory.getDirUri)
           return aDirectory.getDirUri();
      } 
-    } catch(e) { error = e; }
+    } catch (e) { error = e; }
     com.gContactSync.LOGGER.LOG_WARNING("AbListener could not get a URI for: " + aDirectory,
                        error);
     return "";
@@ -125,14 +125,15 @@ com.gContactSync.AbListener = {
    * directory (address book or mail list).
    */
   add: function AbListener_add() {
+    var flags;
     if (Components.classes["@mozilla.org/abmanager;1"]) { // Thunderbird 3
-      var flags = Components.interfaces.nsIAbListener.directoryItemRemoved;
+      flags = Components.interfaces.nsIAbListener.directoryItemRemoved;
       Components.classes["@mozilla.org/abmanager;1"]
                 .getService(Components.interfaces.nsIAbManager)
                 .addAddressBookListener(com.gContactSync.AbListener, flags);
     }
     else { // Thunderbird 2
-      var flags = Components.interfaces.nsIAddrBookSession.directoryItemRemoved;
+      flags = Components.interfaces.nsIAddrBookSession.directoryItemRemoved;
       Components.classes["@mozilla.org/addressbook/services/session;1"]
                 .getService(Components.interfaces.nsIAddrBookSession)
                 .addAddressBookListener(com.gContactSync.AbListener, flags);

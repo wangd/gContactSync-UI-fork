@@ -56,7 +56,7 @@ com.gContactSync.TBContact = function gCS_TBContact(aContact, aDirectory) {
   //}
   this.mAddressBook = aDirectory;
   this.mContact     = aContact;
-}
+};
 
 com.gContactSync.TBContact.prototype = {
   /**
@@ -72,8 +72,8 @@ com.gContactSync.TBContact.prototype = {
   getValue: function TBContact_getValue(aAttribute) {
     if (!aAttribute)
       throw "Error - invalid attribute sent to TBContact.getValue";
-    if (aAttribute == "LastModifiedDate" && this.mAddressBook &&
-        this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly == "true") {
+    if (aAttribute === "LastModifiedDate" && this.mAddressBook &&
+        this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly === "true") {
       com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
       return 0;
     }
@@ -128,9 +128,11 @@ com.gContactSync.TBContact.prototype = {
    */
   getName: function TBContact_getName() {
     var displayName  = this.getValue("DisplayName");
-    if (displayName)  return displayName;
+    if (displayName)
+      return displayName;
     var primaryEmail = this.getValue("PrimaryEmail");
-    if (primaryEmail) return primaryEmail;
+    if (primaryEmail)
+      return primaryEmail;
     return this.getValue("GoogleID");
   }
 };

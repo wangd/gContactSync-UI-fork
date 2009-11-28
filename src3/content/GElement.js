@@ -59,10 +59,11 @@ com.gContactSync.GElement = function gCS_GElement(aType, aTagName, aNamespace, a
   this.tagName     = aTagName;
   this.namespace = aNamespace;
   switch (aType) {
-    case com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR:
-      this.attribute = aAttribute;
-    case com.gContactSync.gdata.contacts.types.TYPED_WITH_CHILD:
-      this.types = aValidTypes;
-      break;
+  case com.gContactSync.gdata.contacts.types.TYPED_WITH_ATTR:
+    this.attribute = aAttribute;
+    // fall through
+  case com.gContactSync.gdata.contacts.types.TYPED_WITH_CHILD:
+    this.types = aValidTypes;
+    break;
   }  
-}
+};

@@ -80,7 +80,8 @@ com.gContactSync.ContactConverter = {
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
     "Relation3Type", "CompanySymbol", "JobDescription",
-    "WebPage1Type", "WebPage2Type"],
+    "WebPage1Type", "WebPage2Type"
+  ],
   /** Stores whether this object has been initialized yet */
   mInitialized: false,
   /**
@@ -147,12 +148,12 @@ com.gContactSync.ContactConverter = {
       new com.gContactSync.ConverterElement("region",   "WorkState",   0, "work"),
       new com.gContactSync.ConverterElement("postcode", "WorkZipCode", 0, "work"),
       new com.gContactSync.ConverterElement("country",  "WorkCountry", 0, "work"),
-      // relation fields
+      // Relation fields
       new com.gContactSync.ConverterElement("relation", "Relation0", 0, ""),
       new com.gContactSync.ConverterElement("relation", "Relation1", 1, ""),
       new com.gContactSync.ConverterElement("relation", "Relation2", 2, ""),
       new com.gContactSync.ConverterElement("relation", "Relation3", 3, ""),
-      // websites
+      // Websites
       new com.gContactSync.ConverterElement("website",   "WebPage1", 0, "work"),
       new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home")
     ];
@@ -188,33 +189,33 @@ com.gContactSync.ContactConverter = {
     if (!this.mInitialized)
       this.init();
     if (!(aCard instanceof com.gContactSync.TBContact)) {
-      throw "Invalid TBContact sent to ContactConverter.cardToAtomXML from "
-            + this.caller;
+      throw "Invalid TBContact sent to ContactConverter.cardToAtomXML from " +
+            this.caller;
     }
     var ab = aCard.mAddressBook;
     if (!(ab instanceof com.gContactSync.AddressBook)) {
-      throw "Invalid TBContact (no mAddressBook) sent to "
-            + "ContactConverter.cardToAtomXML from " + this.caller;
+      throw "Invalid TBContact (no mAddressBook) sent to " +
+            "ContactConverter.cardToAtomXML from " + this.caller;
     }
     this.mCurrentCard = aCard;
     var arr = this.mConverterArr;
     // set the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
       // skip the URLs
-      if (arr[i].tbName.indexOf("URL") != -1 || arr[i].tbName == "GoogleID")
+      if (arr[i].tbName.indexOf("URL") !== -1 || arr[i].tbName === "GoogleID")
         continue;
       var obj = arr[i];
       com.gContactSync.LOGGER.VERBOSE_LOG(" * " + obj.tbName);
       var value = this.checkValue(aCard.getValue(obj.tbName));
       // for the type, get the type from the card, or use its default
       var type = aCard.getValue(obj.tbName + "Type");
-      if (!type || type == "")
+      if (!type || type === "")
         type = obj.type;
       // see the dummy e-mail note below
-      if (obj.tbName == com.gContactSync.dummyEmailName &&
+      if (obj.tbName === com.gContactSync.dummyEmailName &&
           com.gContactSync.isDummyEmail(value)) {
         value = null;
-        type = null;
+        type  = null;
       }
       com.gContactSync.LOGGER.VERBOSE_LOG("   - " + value + " type: " + type);
       aContact.setValue(obj.elementName, obj.index, type, value);
@@ -222,9 +223,9 @@ com.gContactSync.ContactConverter = {
     // Birthday can be either YYYY-M-D or --M-D for no year.
     // TB can have all three, just a day/month, or just a year through the UI
     var birthDay    = aCard.getCardValue("BirthDay");
-    var birthMonth  = isNaN(parseInt(birthDay, 10))
-                        ? null
-                        : aCard.getValue("BirthMonth");
+    var birthMonth  = isNaN(parseInt(birthDay, 10)) ?
+      null :
+      aCard.getValue("BirthMonth");
     var birthdayVal = null;
     // if the contact has a birth month (and birth day) add it to the contact
     // from Google
@@ -232,7 +233,7 @@ com.gContactSync.ContactConverter = {
       var birthYear = aCard.getValue("BirthYear");
       if (!birthYear || isNaN(parseInt(birthYear, 10)))
         birthYear = "-";
-      birthYear = new String(birthYear);
+      birthYear = String(birthYear);
       while (birthYear.length < 4)
         birthYear = "0" + birthYear;
       birthdayVal = birthYear + "-" + birthMonth + "-" + birthDay;
@@ -243,21 +244,21 @@ com.gContactSync.ContactConverter = {
     // set the extended properties
     aContact.removeExtendedProperties();
     arr = com.gContactSync.Preferences.mExtendedProperties;
-    for (var i = 0, length = arr.length; i < length; i++) {
-      var value = this.checkValue(aCard.getValue(arr[i]));
+    for (i = 0, length = arr.length; i < length; i++) {
+      value = this.checkValue(aCard.getValue(arr[i]));
       aContact.setExtendedProperty(arr[i], value);
     }
     // If the myContacts pref is set and this contact is new then add the
     // myContactsName group
-    if (ab.mPrefs.myContacts == "true") {
+    if (ab.mPrefs.myContacts === "true") {
       if (isNew && com.gContactSync.Sync.mContactsUrl) {
         aContact.setGroups([com.gContactSync.Sync.mContactsUrl]);
       }
     }
-    else if (ab.mPrefs.syncGroups == "true") {
+    else if (ab.mPrefs.syncGroups === "true") {
       // set the groups
       var groups = [];
-      for (var i in com.gContactSync.Sync.mLists) {
+      for (i in com.gContactSync.Sync.mLists) {
         var list = com.gContactSync.Sync.mLists[i];
         if (list.hasCard(aCard.mContact))
           groups.push(i);
@@ -284,13 +285,13 @@ com.gContactSync.ContactConverter = {
     if (!this.mInitialized)
       this.init();
     if (!(aCard instanceof com.gContactSync.TBContact)) {
-      throw "Invalid TBContact sent to ContactConverter.makeCard from "
-            + this.caller;
+      throw "Invalid TBContact sent to ContactConverter.makeCard from " +
+            this.caller;
     }
     var ab = aCard.mAddressBook;
     if (!(ab instanceof com.gContactSync.AddressBook)) {
-      throw "Invalid TBContact (no mAddressBook) sent to "
-            + "ContactConverter.cardToAtomXML from " + this.caller;
+      throw "Invalid TBContact (no mAddressBook) sent to " +
+            "ContactConverter.cardToAtomXML from " + this.caller;
     }
     var arr = this.mConverterArr;
     // get the regular properties from the array mConverterArr

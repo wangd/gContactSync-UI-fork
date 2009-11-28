@@ -65,7 +65,7 @@ com.gContactSync.FileIO = {
     // This really shouldn't happen since this currently uses the profile dir
     if (!directory.exists()) {
       // create the directory (type = 1) - rw for the user and r for others
-      try { directory.create("1", parseInt("755", 8)); } catch(e) {}
+      try { directory.create("1", parseInt("755", 8)); } catch (e) {}
       // if it still doesn't exist let the user know, then quit
       if (!directory.exists()) {
         alert(com.gContactSync.StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
@@ -94,8 +94,8 @@ com.gContactSync.FileIO = {
    *                   directory.
    */
   getFileInExtDir: function FileIO_getFileInExtDir(aName) {
-    var MY_ID = "gContactSync@pirules.net";
-    var em = Components.classes["@mozilla.org/extensions/manager;1"]
+    var MY_ID = "gContactSync@pirules.net",
+        em    = Components.classes["@mozilla.org/extensions/manager;1"]
                        .getService(Components.interfaces.nsIExtensionManager);
     return em.getInstallLocation(MY_ID).getItemFile(MY_ID, aName);
   },
@@ -119,23 +119,24 @@ com.gContactSync.FileIO = {
     if (!aFile.exists())
       return [];
     try {
-      var istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
+      var line    = {},
+          lines   = [],
+          hasmore,
+          istream = Components.classes["@mozilla.org/network/file-input-stream;1"]
                               .createInstance(Components.interfaces.nsIFileInputStream);
       istream.init(aFile, 0x01, 0444, 0);
       istream.QueryInterface(Components.interfaces.nsILineInputStream);
 
-      var line = {}, lines = [], hasmore;
       do {
         hasmore = istream.readLine(line);
         lines.push(line.value);
-      } while(hasmore);
+      } while (hasmore);
 
       istream.close();
       return lines;
     }
-    catch(e) {
+    catch (e) {
       throw "Unable to read from file: " + aFile + "\n" + e;
-      return [];
     }
   },
   /**
@@ -157,7 +158,7 @@ com.gContactSync.FileIO = {
       foStream.close();
       return true;
     }
-    catch(e) {
+    catch (e) {
       throw "Unable to write '" + aData + "' to file: " + aFile + "\n" + e;
     }
     return false;
@@ -183,7 +184,7 @@ com.gContactSync.FileIO = {
       foStream.close();
       return true;
     }
-    catch(e) {
+    catch (e) {
       throw "Unable to append '" + aData + "' to file: " + aFile + "\n" + e;
     }
     return false;
@@ -196,7 +197,7 @@ com.gContactSync.FileIO = {
    */
   checkFile: function FileIO_checkFile(aFile) {
     if (!aFile || !aFile instanceof Components.interfaces.nsIFile || (aFile.exists() && !aFile.isFile()))
-      throw "Invalid File: " + aFile + " sent to the '" + this.checkFile.caller
-            + "' method" + com.gContactSync.StringBundle.getStr("pleaseReport");
+      throw "Invalid File: " + aFile + " sent to the '" + this.checkFile.caller +
+            "' method" + com.gContactSync.StringBundle.getStr("pleaseReport");
   }
 };

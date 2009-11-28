@@ -49,7 +49,7 @@ com.gContactSync.HttpRequest = function gCS_HttpRequest() {
   if (!this.mHttpRequest)
     throw "Error - could not create an XMLHttpRequest" +
           com.gContactSync.StringBundle.getStr("pleaseReport");
-}
+};
 
 com.gContactSync.HttpRequest.prototype = {
   /** Content types */
@@ -68,16 +68,16 @@ com.gContactSync.HttpRequest.prototype = {
    */
   addContentOverride: function HttpRequest_addContentOverride(aType) {
     switch (aType) {
-      case "delete":
-      case "DELETE":
-        this.addHeaderItem("X-HTTP-Method-Override", "DELETE");
-        break;
-      case "put":
-      case "PUT":
-        this.addHeaderItem("X-HTTP-Method-Override", "PUT");
-        break;
-      default:
-        throw "Error - type sent to addContentOverride must be DELETE or PUT";
+    case "delete":
+    case "DELETE":
+      this.addHeaderItem("X-HTTP-Method-Override", "DELETE");
+      break;
+    case "put":
+    case "PUT":
+      this.addHeaderItem("X-HTTP-Method-Override", "PUT");
+      break;
+    default:
+      throw "Error - type sent to addContentOverride must be DELETE or PUT";
     }
   },
   /**
@@ -113,10 +113,10 @@ com.gContactSync.HttpRequest.prototype = {
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting up the header: ");
 
     for (var i = 0; i < this.mHeaderLabels.length; i++) {
-       com.gContactSync.LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] + " "
-                                           + this.mHeaderValues[i]);
-       this.mHttpRequest.setRequestHeader(this.mHeaderLabels[i],
-                                          this.mHeaderValues[i]);
+      com.gContactSync.LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] +
+                                          " " + this.mHeaderValues[i]);
+      this.mHttpRequest.setRequestHeader(this.mHeaderLabels[i],
+                                         this.mHeaderValues[i]);
     }
     this.mHttpRequest.send(this.mBody); // send the request
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Request Sent");
@@ -130,37 +130,37 @@ com.gContactSync.HttpRequest.prototype = {
     httpReq.onreadystatechange = function httpReq_readyState() {
       var commands = [];
       // if the request is done then check the status
-      if (httpReq.readyState == 4) {
+      if (httpReq.readyState === 4) {
         // this may be called after the address book window is closed
         // if the window is closed there will be an exception thrown as
         // explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527
-          com.gContactSync.LOGGER.VERBOSE_LOG(" * The request has finished with status: " +
-                             httpReq.status + "/" + httpReq.statusText);
-          com.gContactSync.LOGGER.VERBOSE_LOG(" * Headers:\n"
-                                              + httpReq.getAllResponseHeaders() + "\n");
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * The request has finished with status: " +
+                                            httpReq.status + "/" + httpReq.statusText);
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * Headers:\n" +
+                                            httpReq.getAllResponseHeaders() + "\n");
           
-          switch (httpReq.status) { 
-            case 0: // the user is offline
-              commands = onOffline;
-              break;
-            case 201: // 201 CREATED
-              commands = onCreated;
-              break;
-            case 200: // 200 OK
-              commands = onSuccess;
-              break;
-            case 401: // 401 Unauthorized (Token Expired in Gmail)
-              commands = on401;
-              break;
-            default: // other status
-              commands = onFail;
-          }
-          com.gContactSync.LOGGER.VERBOSE_LOG(" * Evaluating commands");
-          for (var i in commands) {
-            com.gContactSync.LOGGER.VERBOSE_LOG("   o " + commands[i]);
-            eval(commands[i]);
-          }
+        switch (httpReq.status) { 
+        case 0: // the user is offline
+          commands = onOffline;
+          break;
+        case 201: // 201 CREATED
+          commands = onCreated;
+          break;
+        case 200: // 200 OK
+          commands = onSuccess;
+          break;
+        case 401: // 401 Unauthorized (Token Expired in Gmail)
+          commands = on401;
+          break;
+        default: // other status
+          commands = onFail;
+        }
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * Evaluating commands");
+        for (var i in commands) {
+          com.gContactSync.LOGGER.VERBOSE_LOG("   o " + commands[i]);
+          eval(commands[i]);
+        }
       } // end of readyState
-    }
+    };
   }
 };
