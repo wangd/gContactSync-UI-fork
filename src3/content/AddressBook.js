@@ -319,8 +319,8 @@ com.gContactSync.AddressBook.prototype = {
       return false;
     // compare the URIs
     if (this.mDirectory.URI)
-      return this.mDirectory.URI == aOtherDir.URI;
-    return this.mDirectory.getDirUri() == aOtherDir.getDirUri();
+      return this.mDirectory.URI === aOtherDir.URI;
+    return this.mDirectory.getDirUri() === aOtherDir.getDirUri();
   },
   /**
    * Returns the card in this directory, if any, with the same (not-null)
@@ -345,7 +345,7 @@ com.gContactSync.AddressBook.prototype = {
           aContactID = aContact.getValue("GoogleID");
       // if it is an old card (has id) compare IDs
       if (aContactID) {
-        if (aContactID === card.getValue("GoogleID")) {
+        if (aContactID === contact.getValue("GoogleID")) {
           return contact;
         }
       }
@@ -449,7 +449,7 @@ com.gContactSync.AddressBook.prototype = {
       com.gContactSync.LOGGER.VERBOSE_LOG("Invalid ID");
       return;
     }
-    if (!aName || aName == "") {
+    if (!aName) {
       com.gContactSync.LOGGER.VERBOSE_LOG("Invalid name");
       return;
     }
@@ -479,12 +479,12 @@ com.gContactSync.AddressBook.prototype = {
     // this isn't the PAB or CAB
     var pab = com.gContactSync.AbManager.getAbByURI("moz-abmdbdirectory://abook.mab");
     var cab = com.gContactSync.AbManager.getAbByURI("moz-abmdbdirectory://history.mab");
-    if (aName == pab.dirName || aName == cab.dirName)
+    if (aName === pab.dirName || aName === cab.dirName)
       throw "Error - cannot rename a directory to the PAB or CAB's name";
-    if (this.getName() == pab.dirName || this.getName() == cab.dirName)
+    if (this.getName() === pab.dirName || this.getName() === cab.dirName)
       throw "Error - cannot rename the PAB or CAB";
     // in TB 3, it is as simple as changing a property of the directory
-    if (com.gContactSync.AbManager.mVersion == 3)
+    if (com.gContactSync.AbManager.mVersion === 3)
       this.mDirectory.dirName = aName;
     // in TB 2 a few extra steps are necessary...
     else {

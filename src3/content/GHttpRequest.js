@@ -190,7 +190,7 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
         password = {};
     // set the username
     username = { value: username };
-    com.gContactSync.LOGGER.VERBOSE_LOG( " * Showing a username/password prompt");
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Showing a username/password prompt");
     // opens a username/password prompt
     var ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
                     com.gContactSync.StringBundle.getStr("loginText"), username,

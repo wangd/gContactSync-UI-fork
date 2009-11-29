@@ -331,20 +331,23 @@ com.gContactSync.Accounts = {
    */
   fillAbTree: function Accounts_fillAbTree() {
     var tree          = document.getElementById("loginTree"),
-        treechildren  = document.getElementById("loginTreeChildren");
+        treechildren  = document.getElementById("loginTreeChildren"),
+        newTreeChildren,
+        abs,
+        i;
   
     if (treechildren) {
       try { tree.removeChild(treechildren); } catch (e) {}
     }
-    var newTreeChildren = document.createElement("treechildren");
+    newTreeChildren = document.createElement("treechildren");
     newTreeChildren.setAttribute("id", "loginTreeChildren");
     tree.appendChild(newTreeChildren);
 
     // Get all Personal/Mork DB Address Books (type == 2,
     // see mailnews/addrbook/src/nsDirPrefs.h)
     // TODO - there should be a way to change the allowed dir types...
-    var abs    = com.gContactSync.GAbManager.getAllAddressBooks(2);
-    for (var i in abs) {
+    abs = com.gContactSync.GAbManager.getAllAddressBooks(2);
+    for (i in abs) {
       if (abs[i] instanceof com.gContactSync.GAddressBook) {
         this.addToTree(newTreeChildren, abs[i]);
       }
@@ -474,16 +477,21 @@ com.gContactSync.Accounts = {
    * isn't blank.
    */
   addGroups: function Accounts_addGroups(aAtom, aUsername) {
-    var usernameElem  = document.getElementById("Username");
-    var menulistElem  = document.getElementById("Groups");
-    if (!aAtom)
+    var usernameElem  = document.getElementById("Username"),
+        menulistElem  = document.getElementById("Groups"),
+        group,
+        title,
+        i,
+        arr;
+    if (!aAtom) {
       return false;
-    if (usernameElem.value === "none" || usernameElem.value !== aUsername)
+    }
+    if (usernameElem.value === "none" || usernameElem.value !== aUsername) {
       return false;
-    var arr = aAtom.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.ATOM.url, "entry");
-    var group, title;
+    }
+    arr = aAtom.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.ATOM.url, "entry");
     com.gContactSync.LOGGER.VERBOSE_LOG("Adding groups from username: " + aUsername);
-    for (var i = 0; i < arr.length; i++) {
+    for (i = 0; i < arr.length; i++) {
       group = new com.gContactSync.Group(arr[i]);
       title = group.getTitle();
       com.gContactSync.LOGGER.VERBOSE_LOG(" * " + title);

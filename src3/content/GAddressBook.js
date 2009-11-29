@@ -160,7 +160,10 @@ com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   var lists, i;
   try {
     lists = this.getAllLists(true);
-  } catch (e) {alert(e);}
+  }
+  catch (e) {
+    alert(e);
+  }
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all lists");
   for (i in lists) {
     if (lists[i] instanceof com.gContactSync.GMailList) {
