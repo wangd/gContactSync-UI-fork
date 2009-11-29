@@ -341,7 +341,7 @@ com.gContactSync.AddressBook.prototype = {
       this.getAllContacts();
     }
     for (var i = 0, length = this.mContacts.length; i < length; i++) {
-      var contact    = new TBContact(this.mContacts[i], this),
+      var contact    = this.mContacts[i],
           aContactID = aContact.getValue("GoogleID");
       // if it is an old card (has id) compare IDs
       if (aContactID) {

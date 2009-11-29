@@ -107,7 +107,7 @@ com.gContactSync.MailList.prototype = {
       this.getAllContacts();
     }
     for (var i = 0, length = this.mContacts.length; i < length; i++) {
-      var contact    = new com.gContactSync.TBContact(this.mContacts[i], this.mParent),
+      var contact    = this.mContacts[i],
           aContactID = aContact.getValue("GoogleID");
       // if it is an old card (has id) compare IDs
       if (aContactID) {

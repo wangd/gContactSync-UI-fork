@@ -49,13 +49,17 @@ if (!com.gContactSync) com.gContactSync = {};
  * @class
  * @constructor
  */
-com.gContactSync.TBContact = function gCS_TBContact(aContact, aDirectory) {
-  com.gContactSync.GAbManager.checkCard(aContact, "TBContact constructor");
-  //if (!aDirectory instanceof com.gContactSync.AddressBook) {
+com.gContactSync.TBContact = function gCS_TBContact(aCard, aDirectory) {
+  if (!(aCard instanceof Components.interfaces.nsIAbCard)) {
+    com.gContactSync.LOGGER.LOG_ERROR("Invalid aCard passed to the TBContact constructor: " +
+                                      aCard + "\nCalled by: " + this.caller);
+    throw "Invalid aCard passed to TBContact";
+  }
+  //if (!(aDirectory instanceof com.gContactSync.AddressBook)) {
   //  throw "Error - invalid directory sent to the TBContact constructor";
   //}
   this.mAddressBook = aDirectory;
-  this.mContact     = aContact;
+  this.mContact     = aCard;
 };
 
 com.gContactSync.TBContact.prototype = {

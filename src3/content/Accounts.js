@@ -204,6 +204,7 @@ com.gContactSync.Accounts = {
       ab.reset();
     this.fillUsernames();
     this.selectedAbChange();
+    this.fillAbTree();
     alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
     return true;
   },
