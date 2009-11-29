@@ -127,57 +127,34 @@ com.gContactSync.GAddressBook.prototype.setUsername = function GAddressBook_setU
 };
 
 /**
- * GAddressBook.getGroupID
- * Gets and returns the ID of the group in Google with which this Address
- * Book is synchronized, if any.
- * @returns {string} The ID of the group with which this directory is
- *                  synchronized.
+ * Returns the last time this address book was synchronized in milliseconds
+ * since the epoch.
+ * @returns {string} The last time this address book was synchronized.
  */
- com.gContactSync.GAddressBook.prototype.getGroupID = function GAddressBook_getGroupID() {
-   return this.getStringPref("GroupID");
- };
+com.gContactSync.GAddressBook.prototype.getLastSyncDate = function GAddressBook_getLastSyncDate() {
+  return this.getStringPref("lastSync");
+};
  
 /**
- * Sets the ID of the group in Google with which this Address Book is
- * synchronized.
- * @param aGroupID {string} The ID of the group.
- * @returns {string} The ID of the group with which this directory is
- *                  synchronized.
+ * Sets the last time this address book was synchronized, in milliseconds
+ * since the epoch.
+ * @param aLastSync {integer} The last sync time.
  */
- com.gContactSync.GAddressBook.prototype.setGroupID = function GAddressBook_setGroupID(aGroupID) {
-   this.setStringPref("GroupID", aGroupID);
- };
+com.gContactSync.GAddressBook.prototype.setLastSyncDate = function GAddressBook_setLastSyncDate(aLastSync) {
+  this.setStringPref("lastSync", aLastSync);
+};
  
- /**
-  * Returns the last time this address book was synchronized in milliseconds
-  * since the epoch.
-  * @returns {string} The last time this address book was synchronized.
-  */
- com.gContactSync.GAddressBook.prototype.getLastSyncDate = function GAddressBook_getLastSyncDate() {
-   return this.getStringPref("lastSync");
- };
- 
- /**
-  * Sets the last time this address book was synchronized, in milliseconds
-  * since the epoch.
-  * @param aLastSync {integer} The last sync time.
-  */
- com.gContactSync.GAddressBook.prototype.setLastSyncDate = function GAddressBook_setLastSyncDate(aLastSync) {
-   this.setStringPref("lastSync", aLastSync);
- };
- 
- /**
-  * 'Resets' this address book making it appear to be brand new and never
-  * synchronized.
-  * The username is NOT erased.
-  * 
-  * This includes:
-  *   - Deleting all mailing lists
-  *   - Deleting all contacts
-  *   - Setting the GroupID to ""
-  *   - Setting primary to true
-  *   - Setting the last sync date to 0
-  */
+/**
+ * 'Resets' this address book making it appear to be brand new and never
+ * synchronized.
+ * The username is NOT erased.
+ * 
+ * This includes:
+ *   - Deleting all mailing lists
+ *   - Deleting all contacts
+ *   - Setting primary to true
+ *   - Setting the last sync date to 0
+ */
 com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   com.gContactSync.LOGGER.LOG("Resetting the " + this.getName() + " directory.");
   var lists, i;
