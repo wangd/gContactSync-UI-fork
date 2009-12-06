@@ -264,6 +264,17 @@ var ContactConverter = {
             // now fix the DisplayName
             ab.setCardValue(card, "DisplayName", tmpArr[1] + " " + tmpArr[0]);
           }
+          // If are there any DBCS characters in name, That's an asian name,
+          // <last> <first>
+          else if (encodeURI(name).replace(/%../g,"x").length != name.length) {
+            var tmpArr = name.split(" ");
+            if (tmpArr.length > 1) {
+              nameArr.push(tmpArr[1]);
+              nameArr.push(tmpArr[0]);
+            }
+            else
+              nameArr = [name];
+          }
           // Otherwise assume it is <first> <last>
           else
             nameArr = name.split(" ");
