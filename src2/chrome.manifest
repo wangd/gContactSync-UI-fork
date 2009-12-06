@@ -6,6 +6,7 @@ locale   gcontactsync  fr           locale/fr/
 locale   gcontactsync  pt-PT        locale/pt-PT/
 locale   gcontactsync  es           locale/es/
 locale   gcontactsync  ru-RU        locale/ru-RU/
+locale   gcontactsync  ko-KR        locale/ko-KR/
 
 style    chrome://gcontactsync/content/overlay.xul                    chrome://gcontactsync/skin/overlay.css
 overlay  chrome://messenger/content/addressbook/addressbook.xul       chrome://gcontactsync/content/overlay.xul
