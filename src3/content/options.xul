@@ -102,13 +102,11 @@
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
       </groupbox>
-    </groupbox>
-    <groupbox>
-      <caption label="&other.label;"/>
-      <vbox align="center">
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&other.label;"/>
         <grid flex="1">
           <columns>
-            <column/>
             <column/>
           </columns>
           <rows>
@@ -120,7 +118,7 @@
             </row>
           </rows>
         </grid>
-      </vbox>
+      </groupbox>
     </groupbox>
   </prefpane>
   <prefpane id="pane_interface" index="interface" label="&interface.tab;">
