@@ -49,7 +49,7 @@ com.gContactSync.AbManager = {
   /** True if the changes started in Bug 413260 have been applied */
   mBug413260: Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                         .createInstance(Components.interfaces.nsIAbCard)
-                        .getProperty !== null,
+                        .getProperty !== undefined,
   /** attributes that can be set by getCardValue and setCardValue */
   mBasicAttributes: [
     "DisplayName", "Notes", "CellularNumber", "HomePhone", "WorkPhone",
