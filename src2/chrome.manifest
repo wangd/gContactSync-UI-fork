@@ -4,7 +4,7 @@ locale   gcontactsync  en-US        locale/en-US/
 locale   gcontactsync  it           locale/it/
 locale   gcontactsync  fr           locale/fr/
 locale   gcontactsync  pt-PT        locale/pt-PT/
-locale   gcontactsync  es           locale/es/
+locale   gcontactsync  es-ES        locale/es-ES/
 locale   gcontactsync  ru-RU        locale/ru-RU/
 locale   gcontactsync  ko-KR        locale/ko-KR/
 

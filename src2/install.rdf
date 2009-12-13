@@ -12,7 +12,8 @@
         <em:translator>devezas - pt-PT</em:translator>
         <em:translator>Guillermo Klew - es</em:translator>
         <em:translator>Glk63 - ru-RU</em:translator>
-        <em:translator>Han, Dong-yoon</em:translator>
+        <em:translator>Han, Dong-yoon - ko-KR</em:translator>
+        <em:translator>RigoNet - es-ES</em:translator>
         <em:optionsURL>chrome://gcontactsync/content/options.xul</em:optionsURL>
         <em:iconURL>chrome://gcontactsync/skin/logo_main.png</em:iconURL>
         <em:homepageURL>http://gcontactsync.mozdev.org/</em:homepageURL>
@@ -32,13 +33,14 @@
                 <em:maxVersion>2.1a1pre</em:maxVersion>
             </Description>
         </em:targetApplication>
+        <!--Postbox
         <em:targetApplication>
-          <!-- Postbox -->
           <Description>
             <em:id>postbox@postbox-inc.com</em:id>
             <em:minVersion>1.0.*</em:minVersion>
             <em:maxVersion>1.1.*</em:maxVersion>
           </Description>
         </em:targetApplication> 
+        -->
     </Description>
 </RDF>
