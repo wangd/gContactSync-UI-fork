@@ -8,4 +8,4 @@ overlay  chrome://messenger/content/addressbook/abNewCardDialog.xul   chrome://g
 
 style    chrome://gcontactsync/content/overlay.xul                    chrome://gcontactsync/skin/overlay.css
 style    chrome://global/content/customizeToolbar.xul                 chrome://gcontactsync/skin/overlay.css
-style    chrome://messenger/content/addressbook/addressbook.xul       chrome://gcontactsync/content/overlay.xul
+style    chrome://messenger/content/addressbook/addressbook.xul       chrome://gcontactsync/skin/overlay.css
