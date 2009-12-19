@@ -154,7 +154,7 @@ MailList.prototype = {
     var ab = this.mParent;
     // add a dummy e-mail address if necessary and ignore the pref
     if (!ab.getCardValue(aCard, "PrimaryEmail")) {
-      ab.setCardValue(aCard, "PrimaryEmail", com.gContactSync.makeDummyEmail(aCard, true));
+      ab.setCardValue(aCard, "PrimaryEmail", makeDummyEmail(aCard, true));
       ab.updateCard(aCard);
     }
     var realCard = this.mList.addCard(aCard);
@@ -219,7 +219,7 @@ MailList.prototype = {
       }
     }
     else {
-      com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
+      LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
       throw "Couldn't find an address book's contacts";
     }
     return this.mCards;

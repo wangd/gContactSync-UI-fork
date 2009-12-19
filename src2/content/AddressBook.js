@@ -108,7 +108,7 @@ AddressBook.prototype = {
       } catch(e) {} // error is expected when finished   
     }
     else {
-      com.gContactSync.LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
+      LOGGER.LOG_ERROR("Could not iterate through an address book's contacts");
       throw "Couldn't find an address book's contacts";
     }
     return this.mCards;
