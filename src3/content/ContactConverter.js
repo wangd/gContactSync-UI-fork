@@ -91,6 +91,7 @@ com.gContactSync.ContactConverter = {
   init: function ContactConverter_init() {
     this.GD = com.gContactSync.gdata.namespaces.GD;
     this.ATOM = com.gContactSync.gdata.namespaces.ATOM;
+    var phoneTypes = com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value;
     // ConverterElement(aElement, aTbName, aIndex, aType)
     // This array stores info on what tags in Google's feed sync with which
     // properties in Thunderbird.  gdata.contacts has info on these tags
@@ -120,12 +121,12 @@ com.gContactSync.ContactConverter = {
       new com.gContactSync.ConverterElement("im", "JabberScreenName", 5, "JABBER"),
       // the phone numbers
       new com.gContactSync.ConverterElement("phoneNumber", "WorkPhone",      0, "work"),
-      new com.gContactSync.ConverterElement("phoneNumber", "HomePhone",      1, "home"),
-      new com.gContactSync.ConverterElement("phoneNumber", "FaxNumber",      2, "work_fax"),
-      new com.gContactSync.ConverterElement("phoneNumber", "CellularNumber", 3, "mobile"),
-      new com.gContactSync.ConverterElement("phoneNumber", "PagerNumber",    4, "pager"),
-      new com.gContactSync.ConverterElement("phoneNumber", "HomeFaxNumber",  5, "home_fax"),
-      new com.gContactSync.ConverterElement("phoneNumber", "OtherNumber",    6, "other"),
+      new com.gContactSync.ConverterElement("phoneNumber", "HomePhone",      (phoneTypes ? 1 : 0), "home"),
+      new com.gContactSync.ConverterElement("phoneNumber", "FaxNumber",      (phoneTypes ? 2 : 0), "work_fax"),
+      new com.gContactSync.ConverterElement("phoneNumber", "CellularNumber", (phoneTypes ? 3 : 0), "mobile"),
+      new com.gContactSync.ConverterElement("phoneNumber", "PagerNumber",    (phoneTypes ? 4 : 0), "pager"),
+      new com.gContactSync.ConverterElement("phoneNumber", "HomeFaxNumber",  (phoneTypes ? 5 : 0), "home_fax"),
+      new com.gContactSync.ConverterElement("phoneNumber", "OtherNumber",    (phoneTypes ? 6 : 0), "other"),
       // company info
       new com.gContactSync.ConverterElement("orgTitle",          "JobTitle",       0),
       new com.gContactSync.ConverterElement("orgName",           "Company",        0),
@@ -155,7 +156,7 @@ com.gContactSync.ContactConverter = {
       new com.gContactSync.ConverterElement("relation", "Relation3", 3, ""),
       // Websites
       new com.gContactSync.ConverterElement("website",   "WebPage1", 0, "work"),
-      new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home")
+      new com.gContactSync.ConverterElement("website",   "WebPage2", 0, "home")
     ];
     this.mInitialized = true;
   },

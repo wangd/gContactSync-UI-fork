@@ -58,6 +58,9 @@
       <preference id="parseNames"
                   name="extensions.gContactSync.parseNames"
                   type="bool"/>
+      <preference id="phoneTypes"
+                  name="extensions.gContactSync.phoneTypes"
+                  type="bool"/>
       <preference id="enableLogging"
                   name="extensions.gContactSync.enableLogging"
                   type="bool"/>
@@ -95,6 +98,7 @@
       <groupbox>
         <caption label="&syncBehavior.label;"/>
         <checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>
+        <checkbox preference="phoneTypes" id="phoneTypes" label="&phoneTypes.label;"/>
       </groupbox>
       <separator class="thin"/>
       <groupbox>

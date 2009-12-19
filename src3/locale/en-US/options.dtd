@@ -11,6 +11,7 @@
 <!ENTITY syncBehavior.label             "Sync Behavior">
 <!ENTITY removeOldAddresses.label       "Remove the old Thunderbird addresses after converting to the new format">
 <!ENTITY parseNames.label               "Parse names from Google contacts into First and Last names.">
+<!ENTITY phoneTypes.label               "Add phone number type fields (ignore TB's field names)">
 <!ENTITY other.label                    "Other">
 <!ENTITY chromeTime.value               "'Unresponsive Script' warning delay time (0 to disable)">
 
@@ -45,6 +46,6 @@
 <!ENTITY extended10.value               "Property 10">
 <!ENTITY extendedPropertiesDesc1.value  "10 extra properties to sync.  Examples:">
 <!-- LOCALIZATION NOTE: These 3 lines should not change -->
-<!ENTITY extendedPropertiesDesc2.value  " * WebPage1, WebPage2, FirstName, LastName, PreferMailFormat">
-<!ENTITY extendedPropertiesDesc3.value  " * Department, AllowRemoteContent, Custom1, Custom2, Custom3">
-<!ENTITY extendedPropertiesDesc4.value  " * Custom4, AnniversayDay, AnniversayMonth, AnniversaryYear">
+<!ENTITY extendedPropertiesDesc2.value  " * FirstName, LastName, PreferMailFormat, Custom1">
+<!ENTITY extendedPropertiesDesc3.value  " * Custom2, Custom3, Custom4, AllowRemoteContent">
+<!ENTITY extendedPropertiesDesc4.value  " * AnniversayDay, AnniversayMonth, AnniversaryYear">

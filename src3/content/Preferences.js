@@ -84,6 +84,7 @@ com.gContactSync.Preferences = {
     myContacts:               new com.gContactSync.Pref("myContacts",         "bool", false),
     parseNames:               new com.gContactSync.Pref("parseNames",         "bool", true),
     phoneColLabels:           new com.gContactSync.Pref("phoneColLabels",     "bool", true),
+    phoneTypes:               new com.gContactSync.Pref("phoneTypes",         "bool", true),
     newColLabels:             new com.gContactSync.Pref("newColLabels",       "bool", true),
     dummyEmail:               new com.gContactSync.Pref("dummyEmail",         "bool", true),
     enableImUrls:             new com.gContactSync.Pref("enableImUrls",       "bool", true),

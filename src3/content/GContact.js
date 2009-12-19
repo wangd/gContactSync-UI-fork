@@ -760,15 +760,21 @@ com.gContactSync.GContact.prototype = {
    * @param aType    {string}      The type (home, work, other, etc.)
    */
   isMatch: function GContact_isMatch(aElement, aXmlElem, aType, aDontSkip) {
-    if (aElement.contactType == com.gContactSync.gdata.contacts.types.UNTYPED)
+    if (aElement.contactType === com.gContactSync.gdata.contacts.types.UNTYPED)
       return true;
     // if the parent contains the type then get the XML element's parent
-    if (aElement.contactType == com.gContactSync.gdata.contacts.types.PARENT_TYPED)
+    else if (aElement.contactType === com.gContactSync.gdata.contacts.types.PARENT_TYPED)
       aXmlElem = aXmlElem.parentNode;
+    // If this is a phone number, check the phoneTypes pref
+    // If the pref is true, then always say that this is a match
+    // If the pref is false, continue with the normal type check
+    if (aElement.tagName === "phoneNumber" &&
+        com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value) {
+      return true;
+    }
     switch (aElement.tagName) {
       case "email":
-      case "phoneNumber":
-      case "website":
+      case "website": // TODO - should this be typed?
       case "relation":
         if (!aDontSkip) // always return true for e-mail by default
           return true;
