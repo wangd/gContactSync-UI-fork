@@ -44,9 +44,19 @@
        add a tab -->
   <script src="StringBundle.js"/>
   <script src="synonyms.js"/>
+  <script src="FileIO.js"/>
   <script src="Pref.js"/>
   <script src="Preferences.js"/>
-  <script src="FileIO.js"/>
+  <script src="GElement.js"/>
+  <script src="AbManager.js"/>
+  <script src="GAbManager.js"/>
+  <script src="TBContact.js"/>
+  <script src="AddressBook.js"/>
+  <script src="GAddressBook.js"/>
+  <script src="MailList.js"/>
+  <script src="GMailList.js"/>
+  <script src="Namespace.js"/>
+  <script src="gdata.js"/>
   <script src="Logger.js"/>
   <script src="CardDialogOverlay.js"/>
 

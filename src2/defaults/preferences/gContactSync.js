@@ -54,7 +54,7 @@ pref("extensions.gContactSync.phoneTypes", true);
 pref("extensions.gContactSync.newColLabels", true);
 // enable the dummy e-mail address (used when contacts don't have an address)
 // if disabled this can cause problems w/ mailing lists...
-pref("extensions.gContactSync.dummyEmail", true);
+pref("extensions.gContactSync.dummyEmail", false);
 // enable different IM URLs as defined in Overlay.js
 pref("extensions.gContactSync.enableImUrls", true);
 // the last version of gContactSync loaded

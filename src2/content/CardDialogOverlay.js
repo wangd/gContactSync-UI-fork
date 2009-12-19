@@ -444,11 +444,30 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
   }
   if (!aCard.getProperty)
     aCard.editCardToDatabase(gEditCard.abURI);
-  // ensure that every contact edited through this dialog has at least a dummy
-  // e-mail address
-  var primEmailElem = aDoc.getElementById("PrimaryEmail");
-  if (!primEmailElem.value)
-    primEmailElem.value = makeDummyEmail(aCard);
+    // ensure that every contact edited through this dialog has at least a dummy
+    // e-mail address if necessary
+    var primEmailElem = aDoc.getElementById("PrimaryEmail");
+    if (!primEmailElem.value) {
+      // if it is a new contact it isn't already in any lists
+      if (gEditCard.abURI) {
+      // Check if it is in any mailing lists.  If so, force a dummy address
+      // When fetching lists, do not get the contacts (if it is found there is
+      // no need to get the contacts in every list)
+        var ab    = AbManager.getAbByURI(gEditCard.abURI),
+            ab    = (ab ? new AddressBook(ab) : null),
+            lists = ab.getAllLists(true);
+        for (var i in lists) {
+          // if the list does have the contact then make sure it gets a dummy
+          // e-mail address regardless of the preference
+          // do not check the PrimaryEmail address in hasContact since it is now
+          // empty
+          if (lists[i].hasCard(aCard)) {
+            primEmailElem.value = makeDummyEmail(aCard, true);
+            break;
+          }
+        }
+      }
+    }
   // call the original and return its return value
   return originalCheckAndSetCardValues(aCard, aDoc, aCheck);
 }
