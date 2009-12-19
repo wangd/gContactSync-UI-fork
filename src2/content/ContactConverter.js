@@ -68,6 +68,7 @@ var ContactConverter = {
   init: function ContactConverter_init() {
     this.GD = gdata.namespaces.GD;
     this.ATOM = gdata.namespaces.ATOM;
+    var phoneTypes = Preferences.mSyncPrefs.phoneTypes.value;
     // ConverterElement(aElement, aTbName, aIndex, aType)
     this.mConverterArr = [
       // general
@@ -88,13 +89,13 @@ var ContactConverter = {
       new ConverterElement("im", "MSNScreenName", 4, "MSN"),
       new ConverterElement("im", "JabberScreenName", 5, "JABBER"),
       // the phone numbers
-      new ConverterElement("phoneNumber", "WorkPhone", 0, "work"),
-      new ConverterElement("phoneNumber", "HomePhone", 1, "home"),
-      new ConverterElement("phoneNumber", "FaxNumber", 2, "work_fax"),
-      new ConverterElement("phoneNumber", "CellularNumber", 3, "mobile"),
-      new ConverterElement("phoneNumber", "PagerNumber", 4, "pager"),
-      new ConverterElement("phoneNumber", "HomeFaxNumber", 5, "home_fax"),
-      new ConverterElement("phoneNumber", "OtherNumber", 6, "other"),
+      new ConverterElement("phoneNumber", "WorkPhone",      0, "work"),
+      new ConverterElement("phoneNumber", "HomePhone",      (phoneTypes ? 1 : 0), "home"),
+      new ConverterElement("phoneNumber", "FaxNumber",      (phoneTypes ? 2 : 0), "work_fax"),
+      new ConverterElement("phoneNumber", "CellularNumber", (phoneTypes ? 3 : 0), "mobile"),
+      new ConverterElement("phoneNumber", "PagerNumber",    (phoneTypes ? 4 : 0), "pager"),
+      new ConverterElement("phoneNumber", "HomeFaxNumber",  (phoneTypes ? 5 : 0), "home_fax"),
+      new ConverterElement("phoneNumber", "OtherNumber",    (phoneTypes ? 6 : 0), "other"),
       // company info
       new ConverterElement("orgTitle", "JobTitle", 0),
       new ConverterElement("orgName", "Company", 0),

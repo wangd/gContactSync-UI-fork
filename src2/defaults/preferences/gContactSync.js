@@ -47,6 +47,8 @@ pref("extensions.gContactSync.myContactsName", "Contacts");
 pref("extensions.gContactSync.parseNames", true);
 // true = new phone labels in the abResultsTreeCols (column labels in the AB)
 pref("extensions.gContactSync.phoneColLabels", true);
+// set to true to add types to phone numbers (Work, Home, Mobile, etc.)
+pref("extensions.gContactSync.phoneTypes", true);
 // whether or not gContactSync should add new tree column labels
 // in Thunderbird 3 (it can't work in 2)
 pref("extensions.gContactSync.newColLabels", true);

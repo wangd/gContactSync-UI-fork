@@ -195,22 +195,30 @@ var CardDialogOverlay = {
     }
     var phoneTypes = ["work", "home", "work_fax", "mobile", "pager", "home_fax",
                       "other"];
+    var showPhoneTypes = Preferences.mSyncPrefs.phoneTypes.value;
     try {
       // setup the types for the phone numbers
       var workBox = work.parentNode;
-      addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work");
+      addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work")
+          .collapsed = !showPhoneTypes;
       var homeBox = home.parentNode;
-      addMenuItems(homeBox, phoneTypes, "HomePhoneType", "home");
+      addMenuItems(homeBox, phoneTypes, "HomePhoneType", "home")
+          .collapsed = !showPhoneTypes;
       var faxBox = fax.parentNode;
-      addMenuItems(faxBox, phoneTypes, "FaxNumberType", "work_fax");
+      addMenuItems(faxBox, phoneTypes, "FaxNumberType", "work_fax")
+          .collapsed = !showPhoneTypes;
       var mobileBox = mobile.parentNode;
-      addMenuItems(mobileBox, phoneTypes, "CellularNumberType", "mobile");
+      addMenuItems(mobileBox, phoneTypes, "CellularNumberType", "mobile")
+          .collapsed = !showPhoneTypes;
       var pagerBox = pager.parentNode;
-      addMenuItems(pagerBox, phoneTypes, "PagerNumberType", "pager");
+      addMenuItems(pagerBox, phoneTypes, "PagerNumberType", "pager")
+          .collapsed = !showPhoneTypes;
       var homeFaxBox = document.getElementById("HomeFaxNumber").parentNode;
-      addMenuItems(homeFaxBox, phoneTypes, "HomeFaxNumberType", "home_fax");
+      addMenuItems(homeFaxBox, phoneTypes, "HomeFaxNumberType", "home_fax")
+          .collapsed = !showPhoneTypes;
       var otherNumberBox = document.getElementById("OtherNumber").parentNode;
-      addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other");
+      addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other")
+          .collapsed = !showPhoneTypes;
     }
     catch(e) {
       alert("Unable to setup phone number types\n" + e);
@@ -236,11 +244,13 @@ var CardDialogOverlay = {
         // add the sixth and seventh numbers below 1 - 5
         var sixthNum = setupNumBox("SixthNumber", StringBundle.getStr("sixth"));
         pager.parentNode.parentNode.appendChild(sixthNum);
-        addMenuItems(sixthNum, phoneTypes, "SixthNumberType", "other");
+        addMenuItems(sixthNum, phoneTypes, "SixthNumberType", "other")
+          .collapsed = !showPhoneTypes;
         var seventhNum = setupNumBox("SeventhNumber",
                                      StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
-        addMenuItems(seventhNum, phoneTypes, "SeventhNumberType", "other");
+        addMenuItems(seventhNum, phoneTypes, "SeventhNumberType", "other")
+          .collapsed = !showPhoneTypes;
 
         // make a tab for extra e-mail addresses and screennames
         var extraTab = document.createElement("tab");
@@ -324,6 +334,8 @@ function setupNumBox(aID, aLabel) {
  * @param aID    The ID for this menu list, which should be the name of the
  *               attribute with Type added to the end, such as WorkNumberType
  * @param aValue The default value to set for this list.
+ *
+ * @returns {XULElement}  The menulist element.
  */
 function addMenuItems(aBox, aArray, aID, aValue) {
   var menuList = document.createElement("menulist");
@@ -355,6 +367,7 @@ function addMenuItems(aBox, aArray, aID, aValue) {
   menuList.setAttribute("disabled", CardDialogOverlay.mDisabled);
   // add the menu list to the box
   aBox.appendChild(menuList);
+  return menuList;
 }
 /**
  * A method that gets all of the attributes added by this extension and sets

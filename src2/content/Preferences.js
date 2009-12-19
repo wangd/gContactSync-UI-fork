@@ -76,6 +76,7 @@ var Preferences = {
     myContacts:               new Pref("myContacts",         "bool", false),
     parseNames:               new Pref("parseNames",         "bool", true),
     phoneColLabels:           new Pref("phoneColLabels",     "bool", true),
+    phoneTypes:               new Pref("phoneTypes",         "bool", true),
     newColLabels:             new Pref("newColLabels",       "bool", true),
     dummyEmail:               new Pref("dummyEmail",         "bool", true),
     enableImUrls:             new Pref("enableImUrls",       "bool", true),

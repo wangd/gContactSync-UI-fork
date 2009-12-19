@@ -591,11 +591,17 @@ GContact.prototype = {
    * @param aType    The type (home, work, other, etc.)
    */
   isMatch: function GContact_isMatch(aElement, aXmlElem, aType, aDontSkip) {
-    if (aElement.contactType == gdata.contacts.types.UNTYPED)
+    if (aElement.contactType === gdata.contacts.types.UNTYPED)
       return true;
+    // If this is a phone number, check the phoneTypes pref
+    // If the pref is true, then always say that this is a match
+    // If the pref is false, continue with the normal type check
+    if (aElement.tagName === "phoneNumber" &&
+        Preferences.mSyncPrefs.phoneTypes.value) {
+      return true;
+    }
     switch (aElement.tagName) {
       case "email":
-      case "phoneNumber":
         if (!aDontSkip) // always return true for e-mail by default
           return true;
       case "im":
