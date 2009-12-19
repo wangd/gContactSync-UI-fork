@@ -216,22 +216,30 @@ com.gContactSync.CardDialogOverlay = {
       alert("Unable to replace phone labels and remove access keys\n" + ex2);
     }
     var phoneTypes = com.gContactSync.gdata.contacts.PHONE_TYPES;
+    var showPhoneTypes = com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value;
     try {
       // setup the types for the phone numbers
       var workBox = work.parentNode;
-      this.addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work");
+      this.addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work")
+          .collapsed = !showPhoneTypes;
       var homeBox = home.parentNode;
-      this.addMenuItems(homeBox, phoneTypes, "HomePhoneType", "home");
+      this.addMenuItems(homeBox, phoneTypes, "HomePhoneType", "home")
+          .collapsed = !showPhoneTypes;
       var faxBox = fax.parentNode;
-      this.addMenuItems(faxBox, phoneTypes, "FaxNumberType", "work_fax");
+      this.addMenuItems(faxBox, phoneTypes, "FaxNumberType", "work_fax")
+          .collapsed = !showPhoneTypes;
       var mobileBox = mobile.parentNode;
-      this.addMenuItems(mobileBox, phoneTypes, "CellularNumberType", "mobile");
+      this.addMenuItems(mobileBox, phoneTypes, "CellularNumberType", "mobile")
+          .collapsed = !showPhoneTypes;
       var pagerBox = pager.parentNode;
-      this.addMenuItems(pagerBox, phoneTypes, "PagerNumberType", "pager");
+      this.addMenuItems(pagerBox, phoneTypes, "PagerNumberType", "pager")
+          .collapsed = !showPhoneTypes;
       var homeFaxBox = document.getElementById("HomeFaxNumber").parentNode;
-      this.addMenuItems(homeFaxBox, phoneTypes, "HomeFaxNumberType", "home_fax");
+      this.addMenuItems(homeFaxBox, phoneTypes, "HomeFaxNumberType", "home_fax")
+          .collapsed = !showPhoneTypes;
       var otherNumberBox = document.getElementById("OtherNumber").parentNode;
-      this.addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other");
+      this.addMenuItems(otherNumberBox, phoneTypes, "OtherNumberType", "other")
+          .collapsed = !showPhoneTypes;
     }
     catch (ex3) {
       alert("Unable to setup phone number types\n" + ex3);
@@ -272,9 +280,11 @@ com.gContactSync.CardDialogOverlay = {
             seventhNum = this.setupNumBox("OtherNumber",
                                      com.gContactSync.StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(sixthNum);
-        this.addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax");
+        this.addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax")
+          .collapsed = !showPhoneTypes;
         pager.parentNode.parentNode.appendChild(seventhNum);
-        this.addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other");
+        this.addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other")
+          .collapsed = !showPhoneTypes;
         
         // Add the relation fields
         try {
@@ -363,6 +373,7 @@ com.gContactSync.CardDialogOverlay = {
     if (!CheckCardRequiredDataPresence(aDoc)) {
       return false;
     }
+    var contact = new com.gContactSync.TBContact(aCard);
     var existingTypes = {
       "WorkPhoneType":      {},
       "HomePhoneType":      {},
@@ -377,26 +388,37 @@ com.gContactSync.CardDialogOverlay = {
         // if the element exists, set the card's value as its value
         var elem = aDoc.getElementById(attr);
         if (elem) {
-          var value = elem.value;
-          if (aCard.setProperty) // post Bug 413260
-            aCard.setProperty(attr, value);
-          else { // pre Bug 413260
-            // if it is a number type, use setCardValue
-            if (existingTypes[attr])
-              aCard.setCardValue(attr, value);
-            else
-              aCard.setStringAttribute(attr, value);
-          }
+          contact.setValue(elem.value);
         }
       } catch (e) { alert("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e); }
     }
     if (!aCard.getProperty)
       aCard.editCardToDatabase(gEditCard.abURI);
     // ensure that every contact edited through this dialog has at least a dummy
-    // e-mail address
+    // e-mail address if necessary
     var primEmailElem = aDoc.getElementById("PrimaryEmail");
-    if (!primEmailElem.value)
-      primEmailElem.value = com.gContactSync.makeDummyEmail(aCard);
+    if (!primEmailElem.value) {
+      // if it is a new contact it isn't already in any lists
+      if (gEditCard.abURI) {
+      // Check if it is in any mailing lists.  If so, force a dummy address
+      // When fetching lists, do not get the contacts (if it is found there is
+      // no need to get the contacts in every list)
+        var ab    = com.gContactSync.GAbManager.getAbByURI(gEditCard.abURI),
+            ab    = (ab ? new com.gContactSync.GAddressBook(ab) : null),
+            lists = ab.getAllLists(true);
+        for (var i in lists) {
+          // if the list does have the contact then make sure it gets a dummy
+          // e-mail address regardless of the preference
+          // do not check the PrimaryEmail address in hasContact since it is now
+          // empty
+          if (lists[i].hasContact(contact)) {
+            primEmailElem.value = com.gContactSync.makeDummyEmail(aCard, true);
+            alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
+            break;
+          }
+        }
+      }
+    }
     // call the original and return its return value
     return com.gContactSync.originalCheckAndSetCardValues.apply(this, arguments);
   },
@@ -444,6 +466,8 @@ com.gContactSync.CardDialogOverlay = {
    *                        WorkNumberType
    * @param aValue {string} The default value to set for this list.
    * @param aWidth {int}    The maximum width, if any.
+   *
+   * @returns {XULElement}  The menulist element.
    */
   addMenuItems: function CardDialogOverlay_addMenuItems(aBox, aArray, aID, aValue, aWidth) {
     var menuList = document.createElement("menulist");
@@ -482,6 +506,7 @@ com.gContactSync.CardDialogOverlay = {
     menuList.setAttribute("disabled", com.gContactSync.CardDialogOverlay.mDisabled);
     // add the menu list to the box
     aBox.appendChild(menuList);
+    return menuList;
   },
   /**
    * Adds an hbox containing a label and textbox for a phone number.
