@@ -93,12 +93,17 @@ com.gContactSync.MailList.prototype = {
    * value for the GoogleID attribute, or, if the GoogleID is null, if the
    *         display name, primary, and second emails are the same.
    * @param aContact {TBContact} The contact being searched for.
+   * @param aAttrs   {Array} The attributes whose values must be identical in
+   *                         order for the contact to match.  The defaults are
+   *                         DisplayName, PrimaryEmail, and SecondEmail.
+   *                         This is only used if the contact doesn't have a
+   *                         GoogleID
    * @returns {TBContact} The card in this list, if any, with the same, and
    *                      non-null value for its GoogleID attribute, or, if the
    *                      GoogleID is null, if the display name, primary, and
    *                      second emails are the same.
    */
-  hasContact: function MailList_hasContact(aContact) {
+  hasContact: function MailList_hasContact(aContact, aAttrs) {
     if (!(aContact instanceof com.gContactSync.TBContact)) {
       throw "Invalid aContact sent to MailList.hasContact";
     }
@@ -106,6 +111,8 @@ com.gContactSync.MailList.prototype = {
     if (this.mContactsUpdate || this.mContacts.length === 0) {
       this.getAllContacts();
     }
+    // the attributes to check
+    var attrs = aAttrs ? aAttrs : ["DisplayName", "PrimaryEmail", "SecondEmail"];
     for (var i = 0, length = this.mContacts.length; i < length; i++) {
       var contact    = this.mContacts[i],
           aContactID = aContact.getValue("GoogleID");
@@ -116,9 +123,15 @@ com.gContactSync.MailList.prototype = {
         }
       }
       // else check that display name, primary and second email are equal
-      else if (aContact.getValue("DisplayName")  === contact.getValue("DisplayName") &&
-               aContact.getValue("PrimaryEmail") === contact.getValue("PrimaryEmail") &&
-               aContact.getValue("SecondEmail")  === contact.getValue("SecondEmail")) {
+      else {
+        for (var j = 0; j < attrs.length; j++) {
+          var aContactVal = aContact.getValue(attrs[j]),
+              contactVal  = contact.getValue(attrs[j]);
+          // if a value is non-empty and the two are not equal then return false
+          if ((aContactVal || contactVal) && aContactVal !== contactVal) {
+            return false;
+          }
+        }
         return contact;
       }
     }
