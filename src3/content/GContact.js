@@ -677,9 +677,11 @@ com.gContactSync.GContact.prototype = {
     var arr = this.xml.getElementsByTagNameNS(groupInfo.namespace.url,
                                               groupInfo.tagName);
     // iterate through every group element and remove it from the XML
-    for (var i = 0, length = arr.length; i < length; i++) {
+    for (var i = 0; i < arr.length; i++) {
       try {
-        this.xml.removeChild(arr[i]);
+        if (arr[i]) {
+          this.xml.removeChild(arr[i]);
+        }
       }
       catch(e) {
         com.gContactSync.LOGGER.LOG_WARNING("Error while trying to clear group: " + arr[i], e);
@@ -867,7 +869,7 @@ com.gContactSync.GContact.prototype = {
     // Create a name for the photo with the contact's ID and the photo extension
     var filename = this.getID();
     try {
-      var ext = findPhotoExt(ch);
+      var ext = this.findPhotoExt(ch);
       filename = filename + (ext ? "." + ext : "");
     }
     catch (e) {
@@ -912,5 +914,29 @@ com.gContactSync.GContact.prototype = {
     else
         fstream.close();
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished writing the photo " + name);
+  },
+  /**
+   * NOTE: This function was originally from Thunderbird in abCardOverlay.js
+   * Finds the file extension of the photo identified by the URI, if possible.
+   * This function can be overridden (with a copy of the original) for URIs that
+   * do not identify the extension or when the Content-Type response header is
+   * either not set or isn't 'image/png', 'image/jpeg', or 'image/gif'.
+   * The original function can be called if the URI does not match.
+   *
+   * @param aChannel {nsIHttpChannel} The opened channel for the URI.
+   *
+   * @return The extension of the file, if any, excluding the period.
+   */
+  findPhotoExt: function GContact_finishWritePhoto(aChannel) {
+    var mimeSvc = Components.classes["@mozilla.org/mime;1"]
+                            .getService(Components.interfaces.nsIMIMEService),
+        ext = "",
+        uri = aChannel.URI;
+    if (uri instanceof Components.interfaces.nsIURL)
+      ext = uri.fileExtension;
+    try {
+      return mimeSvc.getPrimaryExtension(aChannel.contentType, ext);
+    } catch (e) {}
+    return ext;
   }
 };
