@@ -156,7 +156,7 @@ com.gContactSync.ContactConverter = {
       new com.gContactSync.ConverterElement("relation", "Relation3", 3, ""),
       // Websites
       new com.gContactSync.ConverterElement("website",   "WebPage1", 0, "work"),
-      new com.gContactSync.ConverterElement("website",   "WebPage2", 0, "home")
+      new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home")
     ];
     this.mInitialized = true;
   },
