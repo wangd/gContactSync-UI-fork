@@ -317,9 +317,9 @@ com.gContactSync.GContact.prototype = {
   setAddress: function GContact_setAddress(aElement, aValue, aType, aIndex) {
     var tagName   = aElement ? aElement.tagName : null,
         addresses = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url,
-                                                "structuredPostalAddress"),
+                                                    "structuredPostalAddress"),
         address   = null,
-        thisElem = this.mCurrentElement,
+        thisElem,
         i         = 0;
     if (!tagName || !com.gContactSync.gdata.contacts.isAddressTag(tagName))
       return null;
@@ -330,6 +330,7 @@ com.gContactSync.GContact.prototype = {
     }
     // TODO how will this work w/ multiple addresses...
     this.getElementValue(aElement, (aIndex ? aIndex : 0), aType);
+    thisElem = this.mCurrentElement;
     com.gContactSync.LOGGER.VERBOSE_LOG("  - Setting address..." + address + " " + aValue + " " + aType + " " + thisElem);
     if (thisElem && address) {
       // if there is an existing value that should be updated, do so
