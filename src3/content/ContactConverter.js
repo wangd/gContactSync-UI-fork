@@ -272,8 +272,6 @@ com.gContactSync.ContactConverter = {
       }
       aGContact.setGroups(groups);
     }
-    // cleanup
-    aGContact.removeElements();
     return aGContact;
   },
   /**
@@ -327,7 +325,7 @@ com.gContactSync.ContactConverter = {
       value = value ? value.value : null;
       aTBContact.setValue(arr[i], value);
     }
-    
+
     // parse the DisplayName into FirstName and LastName
     if (ab.mPrefs.parseNames === "true") {
       var name  = aTBContact.getValue("DisplayName"),

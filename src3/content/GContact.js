@@ -68,8 +68,6 @@ com.gContactSync.GContact = function gCS_GContact(aXml) {
 };
 
 com.gContactSync.GContact.prototype = {
-  /** An array of XML Elements that will be removed */
-  mElementsToRemove: [],
   /** The current element being modified or returned (internal use only) */
   mCurrentElement:   null,
   /** The groups that this contact is in */
@@ -90,20 +88,6 @@ com.gContactSync.GContact.prototype = {
       if (address && address.indexOf(": ") !== -1)
         arr[i].setAttribute("address", address.replace(": ", ""));
     }
-  },
-  /**
-   * Removes all elements in the mElementsToRemoveArray, if possible, from this
-   * contact.
-   */
-  removeElements: function GContact_removeElements() {
-    for (var i = 0, length = this.mElementsToRemove.length; i < length; i++) {
-      try { this.xml.removeChild(this.mElementsToRemove[i]); }
-      catch (e) {
-        com.gContactSync.LOGGER.LOG_WARNING("Error while removing element: " + e + "\n" +
-                           this.mElementsToRemove[i]);
-      }
-    }
-    this.mElementsToRemove = [];
   },
   /**
    * Gets the name and e-mail address of a contact from it's Atom
@@ -237,10 +221,11 @@ com.gContactSync.GContact.prototype = {
         this.mCurrentElement.childNodes[0].nodeValue = aValue;
       // else the element should be removed
       else {
-        organization.removeChild(thisElem);
+        thisElem.parentNode.removeChild(thisElem);
         // If the org elem is empty remove it
-        if (!organization.childNodes.length)
-          this.xml.removeChild(organization);
+        if (!organization.childNodes.length) {
+          organization.parentNode.removeChild(organization);
+        }
       }
       return true;
     }
@@ -282,10 +267,10 @@ com.gContactSync.GContact.prototype = {
         this.mCurrentElement.childNodes[0].nodeValue = aValue;
       // else the element should be removed
       else {
-        name.removeChild(thisElem);
+        thisElem.parentNode.removeChild(thisElem);
         // If the org elem is empty remove it
         if (!name.childNodes.length)
-          this.xml.removeChild(name);
+          name.parentNode.removeChild(name);
       }
       return true;
     }
@@ -343,7 +328,7 @@ com.gContactSync.GContact.prototype = {
           var node = thisElem.parentNode.childNodes[i];
           if (node && node.tagName === "gd:formattedAddress") {
             com.gContactSync.LOGGER.VERBOSE_LOG("Removing formatted address: " + node.childNodes[0].nodeValue);
-            thisElem.parentNode.removeChild(node);
+            node.parentNode.removeChild(node);
             break;
           }
         }
@@ -351,10 +336,10 @@ com.gContactSync.GContact.prototype = {
       }
       // else the element should be removed
       else {
-        address.removeChild(thisElem);
+        thisElem.parentNode.removeChild(thisElem);
         // If the elem is empty remove it
         if (!address.childNodes.length)
-          this.xml.removeChild(address);
+          address.parentNode.removeChild(address);
       }
       return true;
     }
@@ -377,7 +362,6 @@ com.gContactSync.GContact.prototype = {
   },  
   /**
    * Sets the value of the specified element.
-   * NOTE: removeElements MUST be called after all elements are set
    * @param aElement {GElement} The GElement object with information about the
    *                            value to get.
    * @param aIndex  {int}  The index of the value (ie 0 for primary email, 1 for
@@ -422,8 +406,14 @@ com.gContactSync.GContact.prototype = {
       return this.setName(aElement, aValue);
 
     // if the element should be removed
-    if (!aValue && this.mCurrentElement)
-      this.mElementsToRemove.push(this.mCurrentElement);
+    if (!aValue && this.mCurrentElement) {
+      try { this.mCurrentElement.parentNode.removeChild(this.mCurrentElement); }
+      catch (e) {
+        com.gContactSync.LOGGER.LOG_WARNING("Error while removing element: " + e + "\n" +
+                                            this.mCurrentElement);
+      }
+      this.mCurrentElement = null;
+    }
     // otherwise set the value of the element
     else {
       switch (aElement.contactType) {
@@ -520,15 +510,15 @@ com.gContactSync.GContact.prototype = {
       if (com.gContactSync.Preferences.mSyncPrefs.writeOnly.value) {
         return 0;
       }
-      var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
-      var year = sModified.substring(0,4);
-      var month = sModified.substring(5,7);
-      var day = sModified.substring(8,10);
-      var hrs = sModified.substring(11,13);
-      var mins = sModified.substring(14,16);
-      var sec = sModified.substring(17,19);
-      var ms = sModified.substring(20,23);
-      return  parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
+      var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue,
+          year      = sModified.substring(0,4),
+          month     = sModified.substring(5,7),
+          day       = sModified.substring(8,10),
+          hrs       = sModified.substring(11,13),
+          mins      = sModified.substring(14,16),
+          sec       = sModified.substring(17,19),
+          ms        = sModified.substring(20,23);
+      return parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
     }
     catch(e) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
@@ -540,8 +530,9 @@ com.gContactSync.GContact.prototype = {
    */
   removeExtendedProperties: function GContact_removeExtendedProperties() {
     var arr = this.xml.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.GD.url, "extendedProperty");
-    for (var i = arr.length - 1; i > -1 ; i--)
-      this.xml.removeChild(arr[i]);
+    for (var i = arr.length - 1; i > -1 ; i--) {
+      arr[i].parentNode.removeChild(arr[i]);
+    }
   },
   /**
    * Returns the value of the extended property with a matching name attribute.
@@ -681,7 +672,7 @@ com.gContactSync.GContact.prototype = {
     for (var i = 0; i < arr.length; i++) {
       try {
         if (arr[i]) {
-          this.xml.removeChild(arr[i]);
+          arr[i].parentNode.removeChild(arr[i]);
         }
       }
       catch(e) {
@@ -721,7 +712,7 @@ com.gContactSync.GContact.prototype = {
       return null;
     }
     try {
-      this.xml.removeChild(aGroup);
+      aGroup.parentNode.removeChild(aGroup);
       return true;
     }
     catch (e) {
