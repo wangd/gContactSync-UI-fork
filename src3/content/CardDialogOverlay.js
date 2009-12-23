@@ -180,43 +180,48 @@ com.gContactSync.CardDialogOverlay = {
     catch (e1) {
       alert("Unable to swap pager and mobile number values\n" + e1);
     }
-    var newDialog = false; // post-Mailnews Core Bug 63941
-    try {
-      // then replace all phone labels and remove the access keys
-      var work = document.getElementById("WorkPhone"),
-          workLabel = work.parentNode.previousSibling;
-      if (!workLabel) {
-        newDialog = true;
-        workLabel = work.previousSibling;
-      }
-      workLabel.value = com.gContactSync.StringBundle.getStr("first");
-      workLabel.setAttribute("accesskey", "");
-      var home = document.getElementById("HomePhone");
-      var homeLabel = newDialog ? home.previousSibling
-                                : home.parentNode.previousSibling;
-      homeLabel.value = com.gContactSync.StringBundle.getStr("second");
-      homeLabel.setAttribute("accesskey", "");
-      var fax = document.getElementById("FaxNumber");
-      var faxLabel = newDialog ? fax.previousSibling
-                               : fax.parentNode.previousSibling;
-      faxLabel.value = com.gContactSync.StringBundle.getStr("third");
-      faxLabel.setAttribute("accesskey", "");
-      mobile = document.getElementById("CellularNumber");
-      var mobileLabel = newDialog ? mobile.previousSibling
-                                  : mobile.parentNode.previousSibling;
-      mobileLabel.value = com.gContactSync.StringBundle.getStr("fourth");
-      mobileLabel.setAttribute("accesskey", "");
-      pager = document.getElementById("PagerNumber");
-      var pagerLabel = newDialog ? pager.previousSibling
-                                 : pager.parentNode.previousSibling;
-      pagerLabel.value = com.gContactSync.StringBundle.getStr("fifth");
-      pagerLabel.setAttribute("accesskey", "");
+    var newDialog      = false, // post-Mailnews Core Bug 63941
+        showPhoneTypes = com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value,
+        work           = document.getElementById("WorkPhone"),
+        home           = document.getElementById("HomePhone"),
+        fax            = document.getElementById("FaxNumber");
+    mobile             = document.getElementById("CellularNumber");
+    pager              = document.getElementById("PagerNumber");
+    // then replace all phone labels and remove the access keys
+    var workLabel = work.parentNode.previousSibling;
+    if (!workLabel) {
+      newDialog = true;
+      workLabel = work.previousSibling;
     }
-    catch (ex2) {
-      alert("Unable to replace phone labels and remove access keys\n" + ex2);
+    if (showPhoneTypes) {
+      try {
+        workLabel.value = com.gContactSync.StringBundle.getStr("first");
+        workLabel.setAttribute("accesskey", "");
+        var homeLabel = newDialog ? home.previousSibling
+                                  : home.parentNode.previousSibling;
+        homeLabel.value = com.gContactSync.StringBundle.getStr("second");
+        homeLabel.setAttribute("accesskey", "");
+        var faxLabel = newDialog ? fax.previousSibling
+                                 : fax.parentNode.previousSibling;
+        faxLabel.value = com.gContactSync.StringBundle.getStr("third");
+        faxLabel.setAttribute("accesskey", "");
+        var mobileLabel = newDialog ? mobile.previousSibling
+                                    : mobile.parentNode.previousSibling;
+        mobileLabel.value = com.gContactSync.StringBundle.getStr("fourth");
+        mobileLabel.setAttribute("accesskey", "");
+        var pagerLabel = newDialog ? pager.previousSibling
+                                   : pager.parentNode.previousSibling;
+        pagerLabel.value = com.gContactSync.StringBundle.getStr("fifth");
+        pagerLabel.setAttribute("accesskey", "");
+      }
+      catch (ex2) {
+        alert("Unable to replace phone labels and remove access keys\n" + ex2);
+      }
+    }
+    else {
+      // TODO - replace the Sixth and Seventh labels
     }
     var phoneTypes = com.gContactSync.gdata.contacts.PHONE_TYPES;
-    var showPhoneTypes = com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value;
     try {
       // setup the types for the phone numbers
       var workBox = work.parentNode;
