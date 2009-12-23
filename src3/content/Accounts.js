@@ -182,13 +182,35 @@ com.gContactSync.Accounts = {
         directionElem = document.getElementById("SyncDirection"),
         pluginElem    = document.getElementById("Plugin"),
         disableElem   = document.getElementById("disabled"),
-        ab            = this.getSelectedAb();
+        ab            = this.getSelectedAb(),
+        needsReset    = false;
     if (!ab) {
       return null;
     }
 
     if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem) {
       return false;
+    }
+    var syncGroups = String(groupElem.value === "All"),
+        myContacts = String(groupElem.value !== "All" && groupElem.value !== "None");
+        
+    // Resetting an address book is necessary when:
+    //  * The username was NOT originally blank
+    //  * The new username is NOT blank
+    //  AND at least one of the following is true:
+    //  * The username has changed (and wasn't originally blank)
+    //  * The group to sync has been changed
+    if ((ab.mPrefs.Username && ab.mPrefs.Username !== "none") &&
+         usernameElem.value !== "none" && 
+         (
+          ab.mPrefs.Username !== usernameElem.value ||
+          ab.mPrefs.syncGroups !== syncGroups ||
+          ab.mPrefs.myContacts !== myContacts ||
+          ab.mPrefs.myContactsName !== groupElem.value
+         )) {
+      if (confirm(com.gContactSync.StringBundle.getStr("confirmABReset"))) {
+        needsReset = true;
+      }
     }
     // the simple preferences
     ab.savePref("Username", usernameElem.value);
@@ -197,19 +219,18 @@ com.gContactSync.Accounts = {
     // this is for backward compatibility
     ab.savePref("Primary",  "true");
     // Group to sync
-    ab.savePref("syncGroups", groupElem.value === "All");
-    ab.savePref("myContacts", String(groupElem.value !== "All" && groupElem.value !== "None"));
+    ab.savePref("syncGroups",     syncGroups);
+    ab.savePref("myContacts",     myContacts);
     ab.savePref("myContactsName", groupElem.value);
     // Sync Direction
     ab.savePref("writeOnly", directionElem.value === "WriteOnly");
     ab.savePref("readOnly",  directionElem.value === "ReadOnly");
-    // TODO only reset if necessary
-    if (usernameElem.value) {
-      ab.reset();
-    }
     this.fillUsernames();
     this.selectedAbChange();
     this.fillAbTree();
+    if (needsReset) {
+      ab.reset();
+    }
     alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
     return true;
   },
@@ -404,7 +425,7 @@ com.gContactSync.Accounts = {
   },
   /**
    * Removes the synchronization settings from the selected address book.
-   * @return True if the synchronization settings were removed.
+   * @return {boolean} True if the synchronization settings were removed.
    */
   removeSyncSettings: function Accounts_removeSelectedLogin() {  
     var ab = this.getSelectedAb();

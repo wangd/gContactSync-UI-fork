@@ -19,7 +19,7 @@
 
 <!ENTITY Groups.label         "Groups and Contacts to Synchronize">
 <!ENTITY AllGroups.label      "All groups and contacts">
-<!ENTITY NoGroups.label       "All contacts but no groups">
+<!ENTITY NoGroups.label       "Only contacts (no groups)">
 <!ENTITY Contacts.label       "My Contacts">
 <!ENTITY Coworkers.label      "Coworkers">
 <!ENTITY Family.label         "Family">
@@ -45,3 +45,6 @@
 <!ENTITY deleteAB.label       "Delete this Address Book">
 <!ENTITY removeLogin.label    "Remove Settings">
 <!ENTITY saveChanges.label    "Save Changes">
+
+<!-- Other -->
+<!ENTITY Close.label          "Close">
