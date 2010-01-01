@@ -150,7 +150,7 @@ com.gContactSync.AbManager = {
           data instanceof Components.interfaces.nsIAbMDBDirectory)) {
         ab = new com.gContactSync.GAddressBook(data);
         username = ab.mPrefs.Username;
-        if (username) {
+        if (username && username !== "none") {
           if (!this.mAddressBooks[username])
             this.mAddressBooks[username] = [];
           this.mAddressBooks[username].push(ab);
