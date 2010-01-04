@@ -51,9 +51,12 @@ false);
  * @class
  */
 com.gContactSync.FileIO = {
+  /** An nsIFile where the log is written */
   mLogFile: null,
+  /** File names */
   fileNames: {
-    LOG_FILE: "gcontactsync_log.txt" // stores the log from the last sync
+    /** Stores the log from the last sync */
+    LOG_FILE: "gcontactsync_log.txt" // 
   },
   /**
    * Initializes the files contained in this class.
