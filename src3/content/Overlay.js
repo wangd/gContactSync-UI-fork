@@ -500,14 +500,14 @@ com.gContactSync.Overlay = {
    * @param aText {string} The text to put on the status bar.
    */
   setStatusBarText: function Overlay_setStatusBarText(aText) {
-    document.getElementById("statusText2").label = aText;
+    document.getElementById("gContactSyncStatusText").label = aText;
   },
   /**
    * Gets the text of the status bar.
    * @returns {string} The text of the status bar
    */
   getStatusBarText: function Overlay_getStatusBarText() {
-    return document.getElementById("statusText2").label;
+    return document.getElementById("gContactSyncStatusText").label;
   },
   /**
    * Writes the current time to the status bar along with the sync finished

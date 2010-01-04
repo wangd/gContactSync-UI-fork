@@ -473,7 +473,7 @@ var Overlay = {
    * @param aText  The text to put on the status bar.
    */
   setStatusBarText: function Overlay_setStatusBarText(aText) {
-    document.getElementById("statusText2").label = aText;
+    document.getElementById("gContactSyncStatusText").label = aText;
   },
   /**
    * Overlay.getStatusBarText
@@ -481,7 +481,7 @@ var Overlay = {
    * @return The text of the status bar
    */
   getStatusBarText: function Overlay_getStatusBarText(aText) {
-    return document.getElementById("statusText2").label;
+    return document.getElementById("gContactSyncStatusText").label;
   },
   /**
    * Overlay.writeTimeToStatusBar
