@@ -434,7 +434,7 @@ com.gContactSync.ContactConverter = {
         // delete the card from the list, if necessary
         if (list.hasContact(aTBContact)) {
           if (!group) {
-            list.deleteCards([aTBContact]);
+            list.deleteContacts([aTBContact]);
           }
           aTBContact.update();
         }
