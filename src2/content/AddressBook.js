@@ -376,12 +376,12 @@ AddressBook.prototype = {
     this.mDirectory.dirPrefId = aPrefId;
   },
   /**
-   * AddressBook.getPrefId
-   * Returns the preference ID of this directory.
-   * @return The preference ID of this directory.
+   * Returns the preference ID of this directory prefixed with
+   * "extensions.gContactSync."
+   * @returns {string} The preference ID of this directory.
    */
   getPrefId: function AddressBook_getPrefId() {
-    return this.mDirectory.dirPrefId;
+    return "extensions.gContactSync." + this.mDirectory.dirPrefId + ".";
   },
   /**
    * AddressBook.getStringPref
@@ -396,38 +396,41 @@ AddressBook.prototype = {
    */
   getStringPref: function AddressBook_getStringPref(aName, aDefaultValue) {
     var id = this.getPrefId();
-    LOGGER.VERBOSE_LOG("Getting pref named: " + aName + " from the branch: " + id);
-    /* The code below is commented out for backward compatibility with TB 2,
-     * which crashes if you set a custom pref for a directory.  It is a somewhat
-     * sloppy workaround that, instead of using preferences from the directory's
-     * actual branch, uses a preference with from the directory's pref. ID
-     * and appends the preference name to that ID without a period in between
-     * ex. "ldap_2.servers.emailaddrgmailcomgContactSyncPrimary" instead of
-     * "ldap_2.servers.emailaddrgmailcom.gContactSyncPrimary" 
-     */
-    /*
-    if (this.mDirectory.getStringValue) {
-      try {
-        var value = this.mDirectory.getStringValue(aName, aDefaultValue);
-        LOGGER.VERBOSE_LOG("-Found the value: " + value);
-        return value;
-      } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
-      return null;
-    }*/
     if (!id)
       return null;
     try {
-      var branch = Cc["@mozilla.org/preferences-service;1"]
-                    .getService(Ci.nsIPrefService)
-                    .getBranch(id)
-                    .QueryInterface(Ci.nsIPrefBranch2);
+      var branch = Components.classes["@mozilla.org/preferences-service;1"]
+                             .getService(Components.interfaces.nsIPrefService)
+                             .getBranch(id)
+                             .QueryInterface(Components.interfaces.nsIPrefBranch2);
       var value = branch.getCharPref(aName);
-      LOGGER.VERBOSE_LOG("-Found the value: " + value);
+      //LOGGER.VERBOSE_LOG("-Found the value: " + value);
       return value;
     }
-    catch(e) {
-      //LOGGER.VERBOSE_LOG("getStringPref: (this error is usually expected)\n" + e);
-    } // an error is expected if the value isn't present
+    // keep going if the preference doesn't exist for backward-compatibility
+    catch (e) {}
+    // now if a value was not found, use the old branch ID
+    // this is for backwards compatibility with 0.3.0a1pre2/0.2.11 and below,
+    try {
+      id = this.mDirectory.dirPrefId;
+      branch = Components.classes["@mozilla.org/preferences-service;1"]
+                         .getService(Components.interfaces.nsIPrefService)
+                         .getBranch(id)
+                         .QueryInterface(Components.interfaces.nsIPrefBranch2);
+      value = branch.getCharPref(aName);
+      // if the value exists (if it gets here, a value exists):
+      //  1) Create the pref using the new branch/method
+      //  2) Delete the old pref
+      this.setStringPref(aName, value);
+      branch.clearUserPref(aName);
+      LOGGER.VERBOSE_LOG("Found and removed an obsolete pref: " +
+                         aName + " - " + value);
+      return value;
+    }
+    // an error is expected if the value isn't present
+    catch (e) {
+      return 0;
+    }
     return null;
   },
   /**
@@ -440,36 +443,21 @@ AddressBook.prototype = {
     var id = this.getPrefId();
     LOGGER.VERBOSE_LOG("Setting pref named: " + aName + " to value: " + aValue +
                        " to the branch: " + id);
-    /* The code below is commented out for backward compatibility with TB 2,
-     * which crashes if you set a custom pref for a directory.  It is a somewhat
-     * sloppy workaround that, instead of using preferences from the directory's
-     * actual branch, uses a preference with from the directory's pref. ID
-     * and appends the preference name to that ID without a period in between
-     * ex. "ldap_2.servers.emailaddrgmailcomgContactSyncPrimary" instead of
-     * "ldap_2.servers.emailaddrgmailcom.gContactSyncPrimary"
-     */
-    /*
-    if (this.mDirectory.setStringValue) {
-      try {
-        this.mDirectory.setStringValue(aName, aValue);
-      } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
-      return;
-    }*/
     if (!id) {
       LOGGER.VERBOSE_LOG("Invalid ID");
       return;
     }
-    if (!aName || aName == "") {
+    if (!aName) {
       LOGGER.VERBOSE_LOG("Invalid name");
       return;
     }
     try {
-      var branch = Cc["@mozilla.org/preferences-service;1"]
-                    .getService(Ci.nsIPrefService)
-                    .getBranch(id)
-                    .QueryInterface(Ci.nsIPrefBranch2);
+      var branch = Components.classes["@mozilla.org/preferences-service;1"]
+                             .getService(Components.interfaces.nsIPrefService)
+                             .getBranch(id)
+                             .QueryInterface(Components.interfaces.nsIPrefBranch2);
       branch.setCharPref(aName, aValue);
-    } catch(e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
+    } catch (e) { LOGGER.LOG_WARNING("Error while setting directory pref", e); }
   },
   /**
    * AddressBook.setUsername
