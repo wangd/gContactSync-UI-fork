@@ -120,12 +120,12 @@
           </menupopup>
         </menulist>
         <spacer height="5px"/>
-        <checkbox id="disabled" label="&Disable.label;"/>
+        <checkbox id="disabled" label="&Disable.label;" tooltiptext="&Disable.tooltiptext;"/>
       </groupbox>
       <spacer height="5px"/>
-      <hbox id="acctButtons">
+      <hbox id="acctButtons" align="right">
         <!--<button id="deleteAB" label="&deleteAB.label;" oncommand="com.gContactSync.Accounts.deleteSelectedAB();"/>-->
-        <button id="removeLogin" label="&removeLogin.label;" oncommand="com.gContactSync.Accounts.removeSyncSettings();"/>
+        <!--<button id="removeLogin" label="&removeLogin.label;" oncommand="com.gContactSync.Accounts.removeSyncSettings();"/>-->
         <button id="saveChanges" label="&saveChanges.label;" oncommand="com.gContactSync.Accounts.saveSelectedAccount();"/>
       </hbox>
     </vbox>

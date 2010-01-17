@@ -92,7 +92,7 @@ com.gContactSync.Accounts = {
                              .promptUsernameAndPassword,
         username = {},
         password = {},
-    // opens a username/password prompt
+        // opens a username/password prompt
         ok = prompt(window, com.gContactSync.StringBundle.getStr("loginTitle"),
                     com.gContactSync.StringBundle.getStr("loginText"), username, password, null,
                     {value: false});
@@ -193,25 +193,8 @@ com.gContactSync.Accounts = {
     }
     var syncGroups = String(groupElem.value === "All"),
         myContacts = String(groupElem.value !== "All" && groupElem.value !== "None");
-        
-    // Resetting an address book is necessary when:
-    //  * The username was NOT originally blank
-    //  * The new username is NOT blank
-    //  AND at least one of the following is true:
-    //  * The username has changed (and wasn't originally blank)
-    //  * The group to sync has been changed
-    if ((ab.mPrefs.Username && ab.mPrefs.Username !== "none") &&
-         usernameElem.value !== "none" && 
-         (
-          ab.mPrefs.Username !== usernameElem.value ||
-          ab.mPrefs.syncGroups !== syncGroups ||
-          ab.mPrefs.myContacts !== myContacts ||
-          ab.mPrefs.myContactsName !== groupElem.value
-         )) {
-      if (confirm(com.gContactSync.StringBundle.getStr("confirmABReset"))) {
-        needsReset = true;
-      }
-    }
+    // check if the AB should be reset based on the new values
+    needsReset = this.needsReset(ab, usernameElem.value, syncGroups, myContacts, groupElem.value);
     // the simple preferences
     ab.savePref("Username", usernameElem.value);
     ab.savePref("Plugin",   pluginElem.value);
@@ -230,8 +213,11 @@ com.gContactSync.Accounts = {
     this.fillAbTree();
     if (needsReset) {
       ab.reset();
+      alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
     }
-    alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
+    else {
+      alert(com.gContactSync.StringBundle.getStr("finishedAcctSaveNoRestart"));
+    }
     return true;
   },
   /**
@@ -403,7 +389,9 @@ com.gContactSync.Accounts = {
   },
   /**
    * Deletes the selected address book
+   * This function is commented out as the associated button was removed
    */
+  /*
   deleteSelectedAB: function Accounts_deleteSelectedAB() {
     var ab = this.getSelectedAb();
     if (!ab) {
@@ -423,10 +411,12 @@ com.gContactSync.Accounts = {
     this.fillAbTree();
     return true;
   },
+  */
   /**
    * Removes the synchronization settings from the selected address book.
    * @return {boolean} True if the synchronization settings were removed.
    */
+  /*
   removeSyncSettings: function Accounts_removeSelectedLogin() {  
     var ab = this.getSelectedAb();
     if (!ab) {
@@ -446,6 +436,7 @@ com.gContactSync.Accounts = {
     this.fillAbTree();
     return true;
   },
+  */
   /**
    * Shows an alert dialog that briefly explains the synchronization direction
    * preference.
@@ -524,5 +515,57 @@ com.gContactSync.Accounts = {
       menulistElem.appendItem(title, title);
     }
     return true;
+  },
+  /**
+   * Returns whether the given address book should be reset and prompts the user
+   * before returning true.
+   * Resetting an address book is necessary when ALL of the following
+   * conditions marked with * are met:
+   *  * The username was NOT originally blank
+   *  * The new username is NOT blank
+   *  * The last sync date of the AB is > 0
+   *  * The user agrees that the AB should be reset (using a confirm dialog)
+   *  * AND at least one of the following is true:
+   *    o The username has changed (and wasn't originally blank)
+   *    o OR The group to sync has been changed
+   *
+   * @param aAB {string}              The GAddressBook being modified.  If this
+   *                                  function returns true this AB should be
+   *                                  reset.
+   * @param aUsername {string}        The new username for the account with
+   *                                  which aAB will be synchronized.
+   * @param aSyncGroups {string}      The new value for the syncGroups pref.
+   * @param aMyContacts {string}      The new value for the myContacts pref.
+   * @param aMyContactsName {string}  The new value for the myContactsName pref.
+   *
+   * @return {boolean} true if the AB should be reset.  See the detailed
+   *                        description for more details.
+   */
+  needsReset: function Accounts_needsReset(aAB, aUsername, aSyncGroups, aMyContacts, aMyContactsName) {
+    com.gContactSync.LOGGER.VERBOSE_LOG
+      (
+       "**Determining if the address book '" + aAB.getName() +
+       "' should be reset:\n" +
+      "  * " + aUsername       + " <- " + aAB.mPrefs.Username + "\n" +
+      "  * " + aSyncGroups     + " <- " + aAB.mPrefs.syncGroups + "\n" +
+      "  * " + aMyContacts     + " <- " + aAB.mPrefs.myContacts + "\n" +
+      "  * " + aMyContactsName + " <- " + aAB.mPrefs.myContactsName + "\n" +
+      "  * Last sync date: " + aAB.getLastSyncDate()
+     );
+    if ((aAB.mPrefs.Username && aAB.mPrefs.Username !== "none") &&
+         aUsername !== "none" &&
+         parseInt(aAB.getLastSyncDate(), 10) > 0 &&
+         (
+          aAB.mPrefs.Username !== aUsername ||
+          aAB.mPrefs.syncGroups !== aSyncGroups ||
+          aAB.mPrefs.myContacts !== aMyContacts ||
+          aAB.mPrefs.myContactsName !== aMyContactsName
+         )) {
+      var reset = confirm(com.gContactSync.StringBundle.getStr("confirmABReset"));
+      com.gContactSync.LOGGER.VERBOSE_LOG("  * Confirmation result: " + reset + "\n");
+      return reset;
+    }
+    com.gContactSync.LOGGER.VERBOSE_LOG("  * The AB will NOT be reset\n");
+    return false;
   }
 };

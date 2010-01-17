@@ -401,8 +401,7 @@ com.gContactSync.AddressBook.prototype = {
     // keep going if the preference doesn't exist for backward-compatibility
     catch (e) {}
     // now if a value was not found, use the old branch ID
-    // this is for backwards compatibility with 0.3.0a1pre2 and below,
-    // including 0.2.x, 0.1.x
+    // this is for backwards compatibility with 0.3.0a1pre2/0.2.11 and below,
     try {
       id = this.mDirectory.dirPrefId;
       branch = Components.classes["@mozilla.org/preferences-service;1"]
@@ -524,4 +523,4 @@ com.gContactSync.AddressBook.prototype = {
   deleteAB: function AddressBook_delete() {
     return com.gContactSync.AbManager.deleteAB(this.mURI);
   }
-}
+};
