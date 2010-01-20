@@ -393,12 +393,13 @@ com.gContactSync.CardDialogOverlay = {
         // if the element exists, set the card's value as its value
         var elem = aDoc.getElementById(attr);
         if (elem) {
-          contact.setValue(elem.value);
+          contact.setValue(attr, elem.value);
         }
       } catch (e) { alert("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e); }
     }
-    if (!aCard.getProperty)
-      aCard.editCardToDatabase(gEditCard.abURI);
+    if (!contact.mContact.getProperty) {
+      contact.mContact.editCardToDatabase(gEditCard.abURI);
+    }
     // ensure that every contact edited through this dialog has at least a dummy
     // e-mail address if necessary
     var primEmailElem = aDoc.getElementById("PrimaryEmail");
@@ -417,7 +418,7 @@ com.gContactSync.CardDialogOverlay = {
           // do not check the PrimaryEmail address in hasContact since it is now
           // empty
           if (lists[i].hasContact(contact)) {
-            primEmailElem.value = com.gContactSync.makeDummyEmail(aCard, true);
+            primEmailElem.value = com.gContactSync.makeDummyEmail(contact.mContact, true);
             alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
             break;
           }
