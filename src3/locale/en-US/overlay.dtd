@@ -1,3 +1,6 @@
+<!-- The name of the extension (should just be gContactSync) -->
+<!ENTITY gContactSyncTab.label "gContactSync">
+
 <!-- Ordinal numbers -->
 <!ENTITY first.label "First">
 <!ENTITY second.label "Second">

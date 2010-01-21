@@ -104,7 +104,11 @@ var CardDialogOverlay = {
       // extra tabs
       if (!gEditCard.card.getProperty)
         gEditCard.card.QueryInterface(Ci.nsIAbMDBCard);
-    } catch(e) { return; }
+    } catch(e) {
+      document.getElementById("gContactSyncTab").collapsed  = true;
+      document.getElementById("gContactSyncTab2").collapsed = true;
+      return;
+    }
     // some contacts are read-only so extra attributes should be disabled for
     // those cards (see Mozdev Bug 20169)
     try {
@@ -223,43 +227,28 @@ var CardDialogOverlay = {
     catch(e) {
       alert("Unable to setup phone number types\n" + e);
     }
-    
-    var tabs = document.getElementById("abTabs")
-    try {
-      // setup the new screenname/e-mail address/phone numbers tab
-      var myTab = document.createElementNS(CardDialogOverlay.mNamespace, "tab");
-      myTab.setAttribute("label", "gContactSync");
-      myTab.setAttribute("id", "gContactSyncTab");
-      // add the new tab to the dialog
-      tabs.appendChild(myTab);
-      
-    }
-    catch(e) {
-      alert("Unable to setup the extra tabs\n" + e);
-    }
+    document.getElementById("gContactSyncTab2").collapsed = newDialog;
     if (newDialog) {
+      // rename the hidden phone number field IDs
+      try {
+        document.getElementById("HomeFaxNumber").id     = "OldHomeFaxNumber";
+        document.getElementById("HomeFaxNumberType").id = "OldHomeFaxNumberType";
+        document.getElementById("OtherNumber").id       = "OldOtherNumber";
+        document.getElementById("OtherNumberType").id   = "OldOtherNumberType";
+      } catch (e) {}
       try {
         // show the addresses on the one and only tab in the second column
         document.getElementById("addresses").removeAttribute("hidden");
         // add the sixth and seventh numbers below 1 - 5
-        var sixthNum = setupNumBox("SixthNumber", StringBundle.getStr("sixth"));
+        var sixthNum = setupNumBox("HomeFaxNumber", StringBundle.getStr("sixth"));
         pager.parentNode.parentNode.appendChild(sixthNum);
-        addMenuItems(sixthNum, phoneTypes, "SixthNumberType", "other")
+        addMenuItems(sixthNum, phoneTypes, "HomeFaxNumberType", "home_fax")
           .collapsed = !showPhoneTypes;
-        var seventhNum = setupNumBox("SeventhNumber",
+        var seventhNum = setupNumBox("OtherNumber",
                                      StringBundle.getStr("seventh"));
         pager.parentNode.parentNode.appendChild(seventhNum);
-        addMenuItems(seventhNum, phoneTypes, "SeventhNumberType", "other")
+        addMenuItems(seventhNum, phoneTypes, "OtherNumberType", "other")
           .collapsed = !showPhoneTypes;
-
-        // make a tab for extra e-mail addresses and screennames
-        var extraTab = document.createElement("tab");
-        extraTab.setAttribute("label", "gContactSync");
-        extraTab.setAttribute("id", "extraTab");
-        // make another address tab
-        var addressTab = document.createElement("tab");
-        addressTab.setAttribute("label", "gContactSync 2");
-        addressTab.setAttribute("id", "gContactSyncTab");
         // fix the width of the dialog
         window.sizeToContent();
       }
@@ -271,11 +260,6 @@ var CardDialogOverlay = {
     // and display a second tab for addresses
     else {
       document.getElementById("numbersGroupBox").removeAttribute("hidden");
-      // setup the new address tab
-      var myAddressTab = document.createElementNS(CardDialogOverlay.mNamespace, "tab");
-      myAddressTab.setAttribute("label", "gContactSync 2");
-      myAddressTab.setAttribute("id", "gContactSyncTab2");
-      tabs.appendChild(myAddressTab);
     }
     
     // if this is a read-only card, make added elements disabled
@@ -429,6 +413,11 @@ function myCheckAndSetCardValues(aCard, aDoc, aCheck) {
       // if the element exists, set the card's value as its value
       var elem = aDoc.getElementById(attr);
       if (elem) {
+        // I do not know why this is necessary, but it seems to be the only
+        // way to get the value correct in TB 2...
+        if (attr === "HomeFaxNumberType" || attr === "OtherNumberType") {
+          elem.value = elem.getAttribute("value");
+        }
         var value = elem.value;
         if (aCard.setProperty) // post Bug 413260
           aCard.setProperty(attr, value);

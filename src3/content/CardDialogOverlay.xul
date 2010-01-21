@@ -64,6 +64,10 @@
     <stringbundle id="gContactSyncStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
+  
+  <tabs id="abTabs">
+    <tab label="&gContactSyncTab.label;" id="gContactSyncTab"/>
+  </tabs>
 
   <tabpanels id="abTabPanels" flex="1">
     <vbox index="gcontactsync" flex="1">

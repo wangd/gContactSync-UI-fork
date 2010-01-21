@@ -120,6 +120,7 @@ com.gContactSync.CardDialogOverlay = {
         gEditCard.card.QueryInterface(Components.interfaces.nsIAbMDBCard);
     }
     catch (e) {
+      document.getElementById("gContactSyncTab").collapsed = true;
       return;
     }
     // some contacts are read-only so extra attributes should be disabled for
@@ -256,20 +257,15 @@ com.gContactSync.CardDialogOverlay = {
     this.addMenuItems(site1Box, websiteTypes, "WebPage1Type", "work");
     var site2Box = document.getElementById("WebPage2").parentNode;
     this.addMenuItems(site2Box, websiteTypes, "WebPage2Type", "home");
-    
-    var tabs = document.getElementById("abTabs");
-    try {
-      // setup the new screenname/e-mail address/phone numbers tab
-      var myTab = document.createElementNS(com.gContactSync.CardDialogOverlay.mNamespace, "tab");
-      myTab.setAttribute("label", "gContactSync");
-      myTab.setAttribute("id", "gContactSyncTab");
-      // add the new tab to the dialog
-      tabs.appendChild(myTab);
-    }
-    catch (ex4) {
-      alert("Unable to setup the extra tabs\n" + ex4);
-    }
     if (newDialog) {
+      // rename the hidden phone number field IDs
+      try {
+        document.getElementById("HomeFaxNumber").id     = "OldHomeFaxNumber";
+        document.getElementById("HomeFaxNumberType").id = "OldHomeFaxNumberType";
+        document.getElementById("OtherNumber").id       = "OldOtherNumber";
+        document.getElementById("OtherNumberType").id   = "OldOtherNumberType";
+      }
+      catch (e) {}
       try {
         // change the width of the phone numbers
         var phoneIDs = ["HomePhone", "WorkPhone", "CellularNumber", "FaxNumber",
@@ -393,6 +389,12 @@ com.gContactSync.CardDialogOverlay = {
         // if the element exists, set the card's value as its value
         var elem = aDoc.getElementById(attr);
         if (elem) {
+          // I do not know why this is necessary, but it seems to be the only
+          // way to get the value correct in TB 2...
+          if (attr === "HomeFaxNumberType" || attr === "OtherNumberType") {
+            elem.value = elem.getAttribute("value");
+          }
+          com.gContactSync.LOGGER.VERBOSE_LOG("Attribute: '" + attr + "' - Value: '" + elem.value + "'");
           contact.setValue(attr, elem.value);
         }
       } catch (e) { alert("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e); }

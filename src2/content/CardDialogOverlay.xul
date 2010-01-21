@@ -65,6 +65,13 @@
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>
   </stringbundleset>
 
+  <tabs id="abTabs">
+    <!-- Note - this isn't localized because it was added after v 0.2 was posted
+         on BabelZilla -->
+    <tab label="gContactSync" id="gContactSyncTab"/>
+    <tab label="gContactSync 2" id="gContactSyncTab2"/>
+  </tabs>
+
   <tabpanels id="abTabPanels" flex="1">
     <vbox index="gcontactsync" flex="1">
       <hbox>
