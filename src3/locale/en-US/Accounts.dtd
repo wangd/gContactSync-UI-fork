@@ -1,4 +1,4 @@
-<!ENTITY title.label          "Accounts">
+<!ENTITY title.label          "gContactSync Accounts">
 
 <!ENTITY accounts.tab         "Accounts">
 <!ENTITY addressBook.label    "Address Book">
@@ -40,6 +40,7 @@
 <!ENTITY WriteOnly.label      "Write-only (Thunderbird sends updates to Google)">
 
 <!ENTITY Disable.label        "Temporarily disable synchronization with this address book">
+<!ENTITY Disable.tooltiptext  "Check this box to skip over this address book when synchronizing.  Uncheck it when you want to synchronize it again.">
 
 <!-- Account buttons -->
 <!ENTITY deleteAB.label       "Delete this Address Book">
