@@ -192,7 +192,7 @@ com.gContactSync.Accounts = {
       return false;
     }
     var syncGroups = String(groupElem.value === "All"),
-        myContacts = String(groupElem.value !== "All" && groupElem.value !== "None");
+        myContacts = String(groupElem.value !== "All" && groupElem.value !== "false");
     // check if the AB should be reset based on the new values
     needsReset = this.needsReset(ab, usernameElem.value, syncGroups, myContacts, groupElem.value);
     // the simple preferences

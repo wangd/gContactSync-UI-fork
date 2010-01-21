@@ -199,10 +199,14 @@ com.gContactSync.Sync = {
     }
     // getGroups must be called if the myContacts pref is set so it can find the
     // proper group URL
-    if (com.gContactSync.Sync.mCurrentAb.mPrefs.syncGroups === "true" || com.gContactSync.Sync.mCurrentAb.mPrefs.myContacts !== "false")
+    if (com.gContactSync.Sync.mCurrentAb.mPrefs.syncGroups === "true" ||
+        (com.gContactSync.Sync.mCurrentAb.mPrefs.myContacts !== "false" &&
+         com.gContactSync.Sync.mCurrentAb.mPrefs.myContactsName !== "false")) {
       com.gContactSync.Sync.getGroups();
-    else
+    }
+    else {
       com.gContactSync.Sync.getContacts();
+    }
   },
   /**
    * Sends an HTTP Request to Google for a feed of all of the user's groups.
