@@ -166,7 +166,7 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
  */
 com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
   return aEmail && aEmail.indexOf && 
-        aEmail.indexOf(com.gContactSync.StringBundle.getStr("dummy2")) !== -1;
+         aEmail.indexOf(com.gContactSync.StringBundle.getStr("dummy2")) !== -1;
 };
 
 /**
