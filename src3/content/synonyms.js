@@ -47,7 +47,7 @@ if (!com.gContactSync) {
 /** The attribute where the dummy e-mail address is stored */
 com.gContactSync.dummyEmailName = "PrimaryEmail";
 /** The version of gContactSync */
-com.gContactSync.version        = "0.3.0a1pre3";
+com.gContactSync.version        = "0.3.0a1pre4";
 
 /**
  * Creates an XMLSerializer to serialize the given XML then create a more
