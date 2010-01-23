@@ -235,11 +235,28 @@ com.gContactSync.ContactConverter = {
     // from Google
     if (birthMonth && !isNaN(parseInt(birthMonth, 10))) {
       var birthYear = aTBContact.getValue("BirthYear");
-      if (!birthYear || isNaN(parseInt(birthYear, 10)))
+      // if the birth year is empty, use '-'
+      if (!birthYear || isNaN(parseInt(birthYear, 10))) {
         birthYear = "-";
-      birthYear = String(birthYear);
-      while (birthYear.length < 4)
-        birthYear = "0" + birthYear;
+      }
+      // otherwise pad it to 4 characters
+      else {
+        birthYear = String(birthYear);
+        while (birthYear.length < 4) {
+          birthYear = "0" + birthYear;
+        }
+      }
+      // Pad the birth month to 2 characters
+      birthMonth = String(birthMonth);
+      while (birthMonth.length < 2) {
+        birthMonth = "0" + birthMonth;
+      }
+      // Pad the birth day to 2 characters
+      birthDay = String(birthDay);
+      while (birthDay.length < 2) {
+        birthDay = "0" + birthDay;
+      }
+      // form the birthday string: year-month-day
       birthdayVal = birthYear + "-" + birthMonth + "-" + birthDay;
     }
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Birthday: " + birthdayVal);
