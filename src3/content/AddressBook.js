@@ -502,9 +502,19 @@ com.gContactSync.AddressBook.prototype = {
    * Returns the directory type of this address book.
    * See mailnews/addrbook/src/nsDirPrefs.h
    * @returns {integer} The directory type of this address book.
+   *                    2 means a normal Mork AB
+   *                    -1 means the dir type could not be found.
    */
   getDirType: function AddressBook_getDirType() {
-    return this.mDirectory.dirType;
+    if ("dirType" in this.mDirectory) {
+      return this.mDirectory.dirType;
+    }
+    else if ("directoryProperties" in this.mDirectory) {
+      return this.mDirectory.directoryProperties.dirType;
+    }
+    LOGGER.LOG_WARNING("Unable to find a dirType for the AB '" +
+                       this.getName() + "'");
+    return -1;
   },
   /**
    * Creates a new mailing list in this directory and returns a MailList object
