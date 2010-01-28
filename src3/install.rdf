@@ -3,7 +3,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
     <Description about="urn:mozilla:install-manifest">
         <em:id>gContactSync@pirules.net</em:id>
-        <em:version>0.3.0a1pre4</em:version>
+        <em:version>0.3.0a1pre5</em:version>
         <em:name>gContactSync</em:name>
         <em:description>gContactSync is an add-on that synchronizes your Google Contacts with an Address Book in Thunderbird</em:description>
         <em:creator>Josh Geenen</em:creator>
