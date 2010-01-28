@@ -43,7 +43,8 @@
         title="&title.label;"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         buttons="accept"
-        buttonlabelaccept="&Close.label;">
+        buttonlabelaccept="&Close.label;"
+        ondialogaccept="com.gContactSync.Accounts.close();">
 
   <hbox>
     <vbox flex="1">
@@ -73,7 +74,9 @@
           <label id="link-label"    value="&NewUsername.label;"
                  onclick="com.gContactSync.Accounts.newUsername();"/>
         </hbox>
-        <menulist id="Username" oncommand="com.gContactSync.Accounts.restoreGroups();">
+        <menulist id="Username"
+                  oncommand="com.gContactSync.Accounts.restoreGroups();
+                             com.gContactSync.Accounts.mUnsavedChange = true;">
           <menupopup id="UsernamePopup">
             <menuitem value="None" label="&NoUsername.label;"/>
           </menupopup>
@@ -81,7 +84,8 @@
         <spacer height="5px"/>
         <label control="Groups" value="&Groups.label;"/>
         <hbox id="GroupsBox">
-          <menulist id="Groups">
+          <menulist id="Groups"
+                    oncommand="com.gContactSync.Accounts.mUnsavedChange = true;">
             <menupopup id="GroupsPopup">
               <menuitem class="default" value="All"        label="&AllGroups.label;"/>
               <menuitem class="default" value="false"      label="&NoGroups.label;"/>
@@ -99,7 +103,8 @@
       <spacer height="5px"/>
       <groupbox id="advancedGroupBox">
         <label control="Plugin" value="&Plugin.label;" collapsed="true"/>
-        <menulist id="Plugin" collapsed="true">
+        <menulist id="Plugin" collapsed="true"
+                  oncommand="com.gContactSync.Accounts.mUnsavedChange = true;">
           <menupopup id="PluginPopup">
             <menuitem id="google" value="Google" label="&Google.label;"/>
           </menupopup>
@@ -112,7 +117,8 @@
           <label id="link-label"    value="&DirectionHelp.label;"
                  onclick="com.gContactSync.Accounts.directionPopup();"/>
         </hbox>
-        <menulist id="SyncDirection">
+        <menulist id="SyncDirection"
+                  oncommand="com.gContactSync.Accounts.mUnsavedChange = true;">
           <menupopup id="SyncDirectionPopup">
             <menuitem value="Complete"  label="&Complete.label;"/>
             <menuitem value="ReadOnly"  label="&ReadOnly.label;"/>
@@ -120,7 +126,10 @@
           </menupopup>
         </menulist>
         <spacer height="5px"/>
-        <checkbox id="disabled" label="&Disable.label;" tooltiptext="&Disable.tooltiptext;"/>
+        <checkbox id="disabled"
+                  label="&Disable.label;"
+                  tooltiptext="&Disable.tooltiptext;"
+                  oncommand="com.gContactSync.Accounts.mUnsavedChange = true;"/>
       </groupbox>
       <spacer height="5px"/>
       <hbox id="acctButtons" align="right">

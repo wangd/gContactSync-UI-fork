@@ -51,6 +51,7 @@ false);
  * @class
  */
 com.gContactSync.Accounts = {
+  mUnsavedChange: false,
   /** The column index of the address book name
    * change this if adding a column before the AB name
    */
@@ -193,8 +194,6 @@ com.gContactSync.Accounts = {
     }
     var syncGroups = String(groupElem.value === "All"),
         myContacts = String(groupElem.value !== "All" && groupElem.value !== "false");
-    // check if the AB should be reset based on the new values
-    needsReset = this.needsReset(ab, usernameElem.value, syncGroups, myContacts, groupElem.value);
     // the simple preferences
     ab.savePref("Username", usernameElem.value);
     ab.savePref("Plugin",   pluginElem.value);
@@ -208,9 +207,14 @@ com.gContactSync.Accounts = {
     // Sync Direction
     ab.savePref("writeOnly", directionElem.value === "WriteOnly");
     ab.savePref("readOnly",  directionElem.value === "ReadOnly");
+    // this is done before the needsReset call in case something happens
+    // reset the unsaved change
+    this.mUnsavedChange = false;
     this.fillUsernames();
     this.selectedAbChange();
     this.fillAbTree();
+    // check if the AB should be reset based on the new values
+    needsReset = this.needsReset(ab, usernameElem.value, syncGroups, myContacts, groupElem.value);
     if (needsReset) {
       ab.reset();
       alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
@@ -552,6 +556,7 @@ com.gContactSync.Accounts = {
       "  * " + aMyContactsName + " <- " + aAB.mPrefs.myContactsName + "\n" +
       "  * Last sync date: " + aAB.getLastSyncDate()
      );
+    // NOTE: mUnsavedChange is reset to false before this method is called
     if ((aAB.mPrefs.Username && aAB.mPrefs.Username !== "none") &&
          aUsername !== "none" &&
          parseInt(aAB.getLastSyncDate(), 10) > 0 &&
@@ -567,5 +572,19 @@ com.gContactSync.Accounts = {
     }
     com.gContactSync.LOGGER.VERBOSE_LOG("  * The AB will NOT be reset\n");
     return false;
+  },
+  /**
+   * This method is called when the user clicks the Accept button
+   * (labeled Close) or when acceptDialog() is called.
+   * If there are unsaved changes it will let the user save changes if
+   * desired.
+   * @returns {boolean} Always returns true (close the dialog).
+   */
+  close: function Accounts_close() {
+    if (this.mUnsavedChange &&
+        confirm(com.gContactSync.StringBundle.getStr("unsavedAcctChanges"))) {
+      this.saveSelectedAccount();
+    }
+    return true;
   }
 };
