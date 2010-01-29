@@ -227,3 +227,77 @@ com.gContactSync.fixUsername = function gCS_fixUsername(aUsername) {
   aUsername = aUsername.replace(/[ \t\n\r]/g, "");
   return aUsername;
 };
+
+/**
+ * Displays an alert dialog with the given text and an optional title.
+ *
+ * @param aText {string} The message to display.
+ * @param aTitle {string} The title for the message (optional - default is
+ *                        "gContactSync Notification").
+ * @param aParent {nsIDOMWindow} The parent window (also optional).
+ */
+com.gContactSync.alert = function gCS_alert(aText, aTitle, aParent) {
+  if (!aTitle) {
+    aTitle = com.gContactSync.StringBundle.getStr("alertTitle");
+  }
+  var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                .getService(Components.interfaces.nsIPromptService);
+  promptService.alert(aParent, aTitle, aText);
+};
+
+/**
+ * Displays an alert dialog titled "gContactSync Error" (in English).
+ *
+ * @param aText {string} The message to display.
+ */
+com.gContactSync.alertError = function gCS_alertError(aText) {
+  var title = com.gContactSync.StringBundle.getStr("alertError");
+  com.gContactSync.alert(aText, title, null);
+};
+
+/**
+ * Displays an alert dialog titled "gContactSync Warning" (in English).
+ *
+ * @param aText {string} The message to display.
+ */
+com.gContactSync.alertWarning = function gCS_alertWarning(aText) {
+  var title = com.gContactSync.StringBundle.getStr("alertWarning");
+  com.gContactSync.alert(aText, title, null);
+};
+
+/**
+ * Displays a confirmation dialog with the given text and an optional title.
+ *
+ * @param aText {string} The message to display.
+ * @param aTitle {string} The title for the message (optional - default is
+ *                        "gContactSync Confirmation").
+ * @param aParent {nsIDOMWindow} The parent window (also optional).
+ */
+com.gContactSync.confirm = function gCS_confirm(aText, aTitle, aParent) {
+  if (!aTitle) {
+    aTitle = com.gContactSync.StringBundle.getStr("confirmTitle");
+  }
+  var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                .getService(Components.interfaces.nsIPromptService);
+  return promptService.confirm(aParent, aTitle, aText);
+};
+
+/**
+ * Displays a prompt with the given text and an optional title.
+ *
+ * @param aText {string} The message to display.
+ * @param aTitle {string} The title for the message (optional - default is
+ *                        "gContactSync Prompt").
+ * @param aParent {nsIDOMWindow} The parent window (also optional).
+ * @param aDefault {string} The default value for the textbox.
+ */
+com.gContactSync.prompt = function gCS_prompt(aText, aTitle, aParent, aDefault) {
+  if (!aTitle) {
+    aTitle = com.gContactSync.StringBundle.getStr("promptTitle");
+  }
+  var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                .getService(Components.interfaces.nsIPromptService),
+      input         = { value: aDefault },
+      response      = promptService.prompt(aParent, aTitle, aText, input, null, {});
+  return response ? input.value : false; 
+};

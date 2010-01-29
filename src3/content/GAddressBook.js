@@ -162,7 +162,7 @@ com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
     lists = this.getAllLists(true);
   }
   catch (e) {
-    alert(e);
+    com.gContactSync.LOGGER.LOG_ERROR("Unable to remove all lists", e);
   }
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all lists");
   for (i in lists) {

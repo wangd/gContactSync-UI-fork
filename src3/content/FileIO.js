@@ -71,22 +71,22 @@ com.gContactSync.FileIO = {
       try { directory.create("1", parseInt("755", 8)); } catch (e) {}
       // if it still doesn't exist let the user know, then quit
       if (!directory.exists()) {
-        alert(com.gContactSync.StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
+        com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
         throw "Error - could not create the following directory: " + directory.path;
       }
     }
     if (!directory.isDirectory()) {
-      alert(com.gContactSync.StringBundle.getStr("isNotDir") + "\n" + directory.path);
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("isNotDir") + "\n" + directory.path);
       throw "Error - " + directory.path + " is not a directory.";
     }
     if (!directory.isWritable()) {
-      alert(com.gContactSync.StringBundle.getStr("notWritable") + "\n" + directory.path);
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("notWritable") + "\n" + directory.path);
       throw "Error - Cannot write to the following directory: " + directory.path;
     }
     com.gContactSync.FileIO.mLogFile = directory;
     com.gContactSync.FileIO.mLogFile.append(this.fileNames.LOG_FILE);
     if (com.gContactSync.FileIO.mLogFile.exists && !com.gContactSync.FileIO.mLogFile.isWritable) {
-      alert(com.gContactSync.StringBundle.getStr("logNotWritable") + "\n" + com.gContactSync.FileIO.mLogFile.path);
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("logNotWritable") + "\n" + com.gContactSync.FileIO.mLogFile.path);
       throw "Error - cannot write to the log file: " + com.gContactSync.FileIO.mLogFile.path;
     }
   },

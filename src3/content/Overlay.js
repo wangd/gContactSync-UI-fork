@@ -88,7 +88,7 @@ com.gContactSync.Overlay = {
 
     // Find the last version of gContactSync and set the pref to the current
     this.mLastVersion = com.gContactSync.Preferences.mSyncPrefs.lastVersion.value;
-    //alert(com.gContactSync.LoginManager.getAllEmailAccts(/@/).join('\n'));
+    //com.gContactSync.alert(com.gContactSync.LoginManager.getAllEmailAccts(/@/).join('\n'));
 
     com.gContactSync.Preferences.setPref(com.gContactSync.Preferences.mSyncBranch,
                         com.gContactSync.Preferences.mSyncPrefs.lastVersion.label,
@@ -354,7 +354,6 @@ com.gContactSync.Overlay = {
           toolbar.insertBefore(separator, deleteButton);
           // insert the button before the separator
           toolbar.insertBefore(button, separator);
-          //alert(button.style.)
           com.gContactSync.LOGGER.VERBOSE_LOG("Added the button before the delete button");
           addedButton = true;
           // insert the second separator before the button if necessary
@@ -449,7 +448,7 @@ com.gContactSync.Overlay = {
     // username, but returns an error when trying to do anything w/ that token
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
-      alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("invalidEmail"));
       return this.promptLogin();
     }
     
@@ -465,7 +464,7 @@ com.gContactSync.Overlay = {
     };
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError = function authError(httpReq) {
-      alert(com.gContactSync.StringBundle.getStr('authErr'));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr('authErr'));
       com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
                                         httpReq.status,
                                         httpReq.responseText);
@@ -554,14 +553,14 @@ com.gContactSync.Overlay = {
     for (var i = 0; i < children[0].children.length; i++) {
       str += children[0].children[i] + "\n";
     }
-    alert(str + "\n" + children[0].children);
+    com.gContactSync.alert(str + "\n" + children[0].children);
     */
     /*for (var i in gAbResultsTree.children[0])
       str += i + "\n";
     str += "1:\n";
     for (var i in gAbResultsTree.children[1])
       str += i + "\n";
-    alert(str);*/
+    com.gContactSync.alert(str);*/
     // now find and hide any dummy e-mail addresses
   },
   /**
@@ -601,7 +600,7 @@ com.gContactSync.Overlay = {
             cvData.cvEmail2Box.collapsed = true;
             break;
           default:
-            alert("Error - invalid dummy email name");
+            com.gContactSync.alertError("Error - invalid dummy email name");
         }
       }
       cvData.cvThirdEmailBox.collapsed = false;
@@ -650,7 +649,7 @@ com.gContactSync.Overlay = {
       cvSetVisible(cvData.cvhPhone, visible);
       cvSetVisible(cvData.cvbPhone, visible);
     } catch(e) { 
-        alert("Error while modifying view pane: " + e);
+        com.gContactSync.alertError("Error while modifying view pane: " + e);
         com.gContactSync.LOGGER.LOG_WARNING("Error while modifying the view pane.", e);
     }
   },
@@ -918,10 +917,10 @@ com.gContactSync.Overlay = {
     var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
     var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByURI(selected.Value), true);
     var restartStr = com.gContactSync.StringBundle.getStr("pleaseRestart");
-    if (confirm(com.gContactSync.StringBundle.getStr("resetConfirm2"))) {
+    if (com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("resetConfirm2"))) {
       ab.reset();
       this.setStatusBarText(restartStr);
-      alert(restartStr);
+      com.gContactSync.alertError(restartStr);
     }
   },
   /**

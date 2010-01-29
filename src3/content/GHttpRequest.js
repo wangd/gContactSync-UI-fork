@@ -182,7 +182,7 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
       com.gContactSync.LOGGER.VERBOSE_LOG(" * Removing old auth token");
       com.gContactSync.LoginManager.removeAuthToken(username);
     }
-    alert(com.gContactSync.StringBundle.getStr("tokenExpiredMsg"));
+    com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("tokenExpiredMsg"));
     // Prompt for the username and password
     var prompt   = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                              .getService(Components.interfaces.nsIPromptService)
@@ -205,7 +205,7 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
     // username, but returns an error when trying to do anything w/ that token
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
-      alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("invalidEmail"));
       return com.gContactSync.handle401();
     }
     // fix the username before authenticating
@@ -222,7 +222,7 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
     };
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError   = function fix401Error(httpReq) {
-      alert(com.gContactSync.StringBundle.getStr('authErr'));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr('authErr'));
       com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
                                          httpReq.status,
                                          httpReq.responseText);
@@ -230,7 +230,7 @@ com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
     };
     // if the user is offline, alert them and quit
     httpReq.mOnOffline = function fix401Offline(httpReq) {
-      alert(com.gContactSync.StringBundle.getStr('offlineErr'));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr('offlineErr'));
       com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));
     };
     httpReq.send();

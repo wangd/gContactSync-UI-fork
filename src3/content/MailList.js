@@ -224,9 +224,9 @@ com.gContactSync.MailList.prototype = {
       }
       catch (e) {
         com.gContactSync.LOGGER.LOG_ERROR("A mailing list is not working:", e);
-        if (confirm(com.gContactSync.StringBundle.getStr("resetConfirm"))) {
+        if (com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("resetConfirm"))) {
           this.mParent.reset();
-          alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
+          com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
         }
         // Throw an error to stop the sync
         throw com.gContactSync.StringBundle.getStr("mailListBroken");

@@ -129,7 +129,7 @@ com.gContactSync.CardDialogOverlay = {
       com.gContactSync.CardDialogOverlay.mDisabled = document.getElementById("PreferMailFormatPopup").disabled;
     }
     catch (ex) {
-      alert("Error while determining if contact is read-only: " + ex);
+      com.gContactSync.alertError("Error while determining if contact is read-only: " + ex);
       com.gContactSync.CardDialogOverlay.mDisabled = true;
     }
     // add the email type drop down menus
@@ -145,7 +145,7 @@ com.gContactSync.CardDialogOverlay = {
       this.addMenuItems(fourthEmailBox, emailTypes, "FourthEmailType", "other");
     }
     catch (ex0) {
-      alert("Unable to setup email types: " + ex0);
+      com.gContactSync.alertError("Unable to setup email types: " + ex0);
     }
     try {
       // add drop down menus for screen name protocols
@@ -164,7 +164,7 @@ com.gContactSync.CardDialogOverlay = {
       this.addMenuItems(jabberBox, imTypes, "JabberScreenNameType", "JABBER");
     }
     catch (ex1) {
-      alert("Unable to setup screen name protocol menus\n" + ex1);
+      com.gContactSync.alertError("Unable to setup screen name protocol menus\n" + ex1);
     }
     var pager;
     try {
@@ -179,7 +179,7 @@ com.gContactSync.CardDialogOverlay = {
       mobile.value = pagerValue;
     }
     catch (e1) {
-      alert("Unable to swap pager and mobile number values\n" + e1);
+      com.gContactSync.alertError("Unable to swap pager and mobile number values\n" + e1);
     }
     var newDialog      = false, // post-Mailnews Core Bug 63941
         showPhoneTypes = com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value,
@@ -216,7 +216,7 @@ com.gContactSync.CardDialogOverlay = {
         pagerLabel.setAttribute("accesskey", "");
       }
       catch (ex2) {
-        alert("Unable to replace phone labels and remove access keys\n" + ex2);
+        com.gContactSync.alertError("Unable to replace phone labels and remove access keys\n" + ex2);
       }
     }
     else {
@@ -248,7 +248,7 @@ com.gContactSync.CardDialogOverlay = {
           .collapsed = !showPhoneTypes;
     }
     catch (ex3) {
-      alert("Unable to setup phone number types\n" + ex3);
+      com.gContactSync.alertError("Unable to setup phone number types\n" + ex3);
     }
     
     // Add the website types
@@ -331,7 +331,7 @@ com.gContactSync.CardDialogOverlay = {
         window.sizeToContent();
       }
       catch (ex6) {
-        alert("Unable to setup the extra tabs\n" + ex6);
+        com.gContactSync.alertError("Unable to setup the extra tabs\n" + ex6);
       }
     }
     // if this is the old dialog, show the extra phone numbers
@@ -397,7 +397,10 @@ com.gContactSync.CardDialogOverlay = {
           com.gContactSync.LOGGER.VERBOSE_LOG("Attribute: '" + attr + "' - Value: '" + elem.value + "'");
           contact.setValue(attr, elem.value);
         }
-      } catch (e) { alert("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e); }
+      }
+      catch (e) {
+        com.gContactSync.alertError("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e);
+      }
     }
     if (!contact.mContact.getProperty) {
       contact.mContact.editCardToDatabase(gEditCard.abURI);
@@ -421,7 +424,7 @@ com.gContactSync.CardDialogOverlay = {
           // empty
           if (lists[i].hasContact(contact)) {
             primEmailElem.value = com.gContactSync.makeDummyEmail(contact.mContact, true);
-            alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
+            com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
             break;
           }
         }
@@ -456,7 +459,7 @@ com.gContactSync.CardDialogOverlay = {
             elem.value = value;
           }
         }
-      } catch (e) { alert("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
+      } catch (e) { com.gContactSync.alertError("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
     }
   
     if (com.gContactSync.isDummyEmail(aDoc.getElementById("PrimaryEmail").value))

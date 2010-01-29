@@ -59,13 +59,13 @@ if (!com.gContactSync) com.gContactSync = {};
  * myHttpRequest.addHeaderItem("Content-length", 0);
  * // setup the callbacks
  * myHttpRequest.mOnSuccess = function myRequestSuccess(aHttpReq) {
- *   alert("Request succeeded.  Content:\n\n" + aHttpReq.statusText);
+ *   com.gContactSync.alert("Request succeeded.  Content:\n\n" + aHttpReq.statusText);
  * };
  * myHttpRequest.mOnOffline = function myRequestOffline(aHttpReq) {
- *   alert("You are offline");
+ *   com.gContactSync.alert("You are offline");
  * };
  * myHttpRequest.mOnError   = function myRequestError(aHttpReq) {
- *   alert("Request failed...Status: " + aHttpReq.status); 
+ *   com.gContactSync.alert("Request failed...Status: " + aHttpReq.status); 
  * };
  * // send the request
  * myHttpRequest.send();

@@ -90,7 +90,7 @@ com.gContactSync.Sync = {
    */
   begin: function Sync_begin() {
     if (!com.gContactSync.gdata.isAuthValid()) {
-      alert(com.gContactSync.StringBundle.getStr("pleaseAuth"));
+      com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseAuth"));
       return;
    }
     // quit if still syncing.
@@ -130,7 +130,7 @@ com.gContactSync.Sync = {
     if (!com.gContactSync.Sync.mCurrentAuthToken) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to find the auth token for: " +
                                           com.gContactSync.Sync.mCurrentUsername);
-      if (confirm(com.gContactSync.StringBundle.getStr("noTokenFound") +
+      if (com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("noTokenFound") +
                   ": " + com.gContactSync.Sync.mCurrentUsername +
                   "\n" + com.gContactSync.StringBundle.getStr("ab") +
                   ": " + com.gContactSync.Sync.mCurrentAb.getName())) {
@@ -155,7 +155,7 @@ com.gContactSync.Sync = {
         // username, but returns an error when trying to do anything w/ that token
         // so this makes sure it is a full e-mail address.
         if (username.value.indexOf("@") < 1) {
-          alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
+          com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("invalidEmail"));
           com.gContactSync.Sync.syncNextUser();
           return;
         }
@@ -173,7 +173,7 @@ com.gContactSync.Sync = {
         };
         // if it fails, alert the user and prompt them to try again
         httpReq.mOnError   = function reauth_onError(httpReq) {
-          alert(com.gContactSync.StringBundle.getStr('authErr'));
+          com.gContactSync.alertError(com.gContactSync.StringBundle.getStr('authErr'));
           com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
                                             httpReq.status,
                                             httpReq.responseText);
@@ -664,10 +664,10 @@ com.gContactSync.Sync = {
                     noCatch = true; // don't catch this error
                     com.gContactSync.LOGGER.LOG_ERROR("  - A system group was deleted from Thunderbird");
                     var restartStr = com.gContactSync.StringBundle.getStr("pleaseRestart");
-                    if (confirm(com.gContactSync.StringBundle.getStr("resetConfirm"))) {
+                    if (com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("resetConfirm"))) {
                       ab.reset();
                       com.gContactSync.Overlay.setStatusBarText(restartStr);
-                      alert(restartStr);
+                      com.gContactSync.alert(restartStr);
                     }
                     // Throw an error to stop the sync
                     throw "A system group was deleted from Thunderbird";                  
@@ -771,7 +771,7 @@ com.gContactSync.Sync = {
               break;
             }
           }
-          catch (e) {alert(e);}
+          catch (e) {com.gContactSync.alertError(e);}
         }
         if (foundGroup) {
           com.gContactSync.LOGGER.LOG(" * Found the group to synchronize: " + id);

@@ -57,7 +57,7 @@ com.gContactSync.StringBundle = {
     this.mBundles.mStrings = document.getElementById("gContactSyncStringBundle");
     if (!this.mBundles.mStrings) {
       var err = "Error - com.gContactSync.StringBundle could not be initialized\n";
-      alert(err);
+      com.gContactSync.alertError(err);
       throw err;
     }
     this.mInitialized = true;
@@ -79,7 +79,7 @@ com.gContactSync.StringBundle = {
                                // isn't in it skip to the next
     }
     // if it gets this far the string wasn't found...
-    alert("Could not get the string named: " + aName);
+    com.gContactSync.alertError("Could not get the string named: " + aName);
     return "";
   }
 };

@@ -482,7 +482,7 @@ com.gContactSync.AbManager = {
       return false;
     }
     if (aURI.indexOf("abook.mab") != -1 || aURI.indexOf("history.mab") != -1) {
-      alert(com.gContactSync.StringBundle.getStr("deletePAB"));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("deletePAB"));
       com.gContactSync.LOGGER.LOG_WARNING("Attempt made to delete the PAB or CAB.  URI: " + aURI);
       return false;
     }

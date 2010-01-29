@@ -80,7 +80,7 @@ com.gContactSync.Accounts = {
     catch (e) {
       com.gContactSync.LOGGER.LOG_WARNING("Error in Accounts.initDialog", e);
       // TODO remove the alert
-      alert(e);
+      com.gContactSync.alertError(e);
     }
   },
   /**
@@ -101,7 +101,7 @@ com.gContactSync.Accounts = {
       return false;
     }
     if (com.gContactSync.LoginManager.getAuthToken(username.value)) { // the username already exists
-      alert(com.gContactSync.StringBundle.getStr("usernameExists"));
+      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("usernameExists"));
       return false;
     }
     // This is a primitive way of validating an e-mail address, but Google takes
@@ -109,7 +109,7 @@ com.gContactSync.Accounts = {
     // username, but returns an error when trying to do anything w/ that token
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
-      alert(com.gContactSync.StringBundle.getStr("invalidEmail"));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("invalidEmail"));
       return this.newUsername();
     }
     // fix the username before authenticating
@@ -126,7 +126,7 @@ com.gContactSync.Accounts = {
     };
     // if it fails, alert the user and prompt them to try again
     httpReq.mOnError   = function newUsernameError(httpReq) {
-      alert(com.gContactSync.StringBundle.getStr('authErr'));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr('authErr'));
       com.gContactSync.LOGGER.LOG_ERROR('Authentication Error - ' +
                                         httpReq.status,
                                         httpReq.responseText);
@@ -134,7 +134,7 @@ com.gContactSync.Accounts = {
     };
     // if the user is offline, alert them and quit
     httpReq.mOnOffline = function newUsernameOffline(httpReq) {
-      alert(com.gContactSync.StringBundle.getStr('offlineErr'));
+      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr('offlineErr'));
       com.gContactSync.LOGGER.LOG_ERROR(com.gContactSync.StringBundle.getStr('offlineErr'));
     };
     httpReq.send();
@@ -166,7 +166,7 @@ com.gContactSync.Accounts = {
    * @returns {nsIAbDirectory} The new address book.
    */
   newAddressBook: function Accounts_newAddressBook() {
-    var name = prompt(com.gContactSync.StringBundle.getStr("newABPrompt"));
+    var name = com.gContactSync.prompt(com.gContactSync.StringBundle.getStr("newABPrompt"), null, window);
     if (!name)
       return false;
     var ab = com.gContactSync.AbManager.getAbByName(name);
@@ -217,10 +217,10 @@ com.gContactSync.Accounts = {
     needsReset = this.needsReset(ab, usernameElem.value, syncGroups, myContacts, groupElem.value);
     if (needsReset) {
       ab.reset();
-      alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
+      com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedAcctSave"));
     }
     else {
-      alert(com.gContactSync.StringBundle.getStr("finishedAcctSaveNoRestart"));
+      com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedAcctSaveNoRestart"));
     }
     return true;
   },
@@ -399,16 +399,16 @@ com.gContactSync.Accounts = {
   deleteSelectedAB: function Accounts_deleteSelectedAB() {
     var ab = this.getSelectedAb();
     if (!ab) {
-      alert(com.gContactSync.StringBundle.getStr("noABSelected"));
+      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("noABSelected"));
       return ab;
     }
     // Make sure sure the user doesn't try to delete the CAB or PAB
     var uri = ab.mURI;
     if (!uri || uri.indexOf("abook.mab") !== -1 || uri.indexOf("history.mab") !== -1) {
-      alert(com.gContactSync.StringBundle.getStr("deletePAB"));
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("deletePAB"));
       return false;
     }
-    if (!confirm(com.gContactSync.StringBundle.getStr("deleteAB")))
+    if (!com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("deleteAB")))
       return false;
     // This function also checks that the AB isn't the PAB or CAB
     ab.deleteAB();
@@ -424,10 +424,10 @@ com.gContactSync.Accounts = {
   removeSyncSettings: function Accounts_removeSelectedLogin() {  
     var ab = this.getSelectedAb();
     if (!ab) {
-      alert(com.gContactSync.StringBundle.getStr("noABSelected"));
+      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("noABSelected"));
       return false;
     }
-    if (!confirm(com.gContactSync.StringBundle.getStr("removeSyncSettings"))) {
+    if (!com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("removeSyncSettings"))) {
       return false;
     }
     // remove the saved prefs from the address book
@@ -446,7 +446,7 @@ com.gContactSync.Accounts = {
    * preference.
    */
   directionPopup: function Accounts_directionPopup() {
-    alert(com.gContactSync.StringBundle.getStr("directionPopup")); 
+    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("directionPopup")); 
   },
   /**
    * Restores the Groups menulist to contain only the default groups.
@@ -566,7 +566,7 @@ com.gContactSync.Accounts = {
           aAB.mPrefs.myContacts !== aMyContacts ||
           aAB.mPrefs.myContactsName !== aMyContactsName
          )) {
-      var reset = confirm(com.gContactSync.StringBundle.getStr("confirmABReset"));
+      var reset = com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("confirmABReset"));
       com.gContactSync.LOGGER.VERBOSE_LOG("  * Confirmation result: " + reset + "\n");
       return reset;
     }
@@ -582,7 +582,7 @@ com.gContactSync.Accounts = {
    */
   close: function Accounts_close() {
     if (this.mUnsavedChange &&
-        confirm(com.gContactSync.StringBundle.getStr("unsavedAcctChanges"))) {
+        com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("unsavedAcctChanges"))) {
       this.saveSelectedAccount();
     }
     return true;

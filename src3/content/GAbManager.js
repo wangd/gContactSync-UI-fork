@@ -60,7 +60,7 @@ com.gContactSync.GAbManager = com.gContactSync.AbManager;
  */
 com.gContactSync.GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedABs(showConfirm) {
   if (showConfirm) {
-    if (!confirm(com.gContactSync.StringBundle.getStr("confirmReset"))) {
+    if (!com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("confirmReset"))) {
       return false;
     }
   }
@@ -75,6 +75,6 @@ com.gContactSync.GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedA
   }
   
   com.gContactSync.LOGGER.LOG("Finished resetting all synchronized directories.");
-  alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
+  com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
   return true;
 };
