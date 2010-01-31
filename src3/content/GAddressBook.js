@@ -67,7 +67,8 @@ com.gContactSync.GAddressBook = function gCS_GAddressBook(aDirectory, aNoPrefs) 
     // compatibility with 0.2.x
     readOnly:       "", // Fetch updates from Google but don't send any changes
     writeOnly:      "", // Send changes to the server, but don't fetch any changes
-    getPhotos:      "", // Fetch contact photos
+    getPhotos:      "", // Download contact photos from Google
+    sendPhotos:     "", // Upload contact photos to Google
     parseNames:     "", // Try to parse names into first and last
     updateGoogleInConflicts: "" // If a contact was updated in Google and TB then
                                 // this pref determines which contact to update

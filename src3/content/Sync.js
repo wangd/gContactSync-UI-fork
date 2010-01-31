@@ -67,6 +67,8 @@ com.gContactSync.Sync = {
   mAddressBooks:     [],
   /** The index of the AB being synced */
   mIndex:            0,
+  /** The URI of a photo to be added to the newly created Google contact */
+  mNewPhotoURI:      {},
   /** An array of commands to execute when offline during an HTTP Request */
   mOfflineFunction: function Sync_offlineFunc(httpReq) {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
@@ -513,8 +515,9 @@ com.gContactSync.Sync = {
     com.gContactSync.LOGGER.LOG("\n" + cardToAdd.getName());
     // get the XML representation of the card
     // NOTE: cardToAtomXML adds the contact to the current group, if any
-    var xml    = com.gContactSync.ContactConverter.cardToAtomXML(cardToAdd).xml;
-    var string = com.gContactSync.serialize(xml);
+    var gcontact = com.gContactSync.ContactConverter.cardToAtomXML(cardToAdd);
+    var xml      = gcontact.xml;
+    var string   = com.gContactSync.serialize(xml);
     if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value)
       com.gContactSync.LOGGER.LOG(" * XML of contact being added:\n" + string + "\n");
     var httpReq = new com.gContactSync.GHttpRequest("add",
@@ -522,20 +525,28 @@ com.gContactSync.Sync = {
                                                     null,
                                                     string,
                                                     com.gContactSync.Sync.mCurrentUsername);
+    this.mNewPhotoURI = com.gContactSync.Preferences.mSyncPrefs.sendPhotos ?
+                          gcontact.mNewPhotoURI : null;
     /* When the contact is successfully created:
      *  1. Get the card from which the contact was made
-     *  2. Set the card's GoogleID attribute to match the new contact's ID
-     *  3. Update the card in the address book
-     *  4. Call this method again
+     *  2. Get a GContact object for the new contact
+     *  3. Set the card's GoogleID attribute to match the new contact's ID
+     *  4. Update the card in the address book
+     *  5. Set the new contact's photo, if necessary
+     *  6. Call this method again
      */
     var onCreated = function contactCreated(httpReq) {
-      var ab      = com.gContactSync.Sync.mCurrentAb;
-      var contact = com.gContactSync.ContactConverter.mCurrentCard;
-      contact.setValue('GoogleID',
-                       httpReq.responseXML.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.ATOM.url,
-                                                                  'id')
-                       [0].childNodes[0].nodeValue);
+      var ab       = com.gContactSync.Sync.mCurrentAb,
+          contact  = com.gContactSync.ContactConverter.mCurrentCard,
+          gcontact = new com.gContactSync.GContact(httpReq.responseXML);
+      contact.setValue('GoogleID', gcontact.getID());
       contact.update();
+      // if photos are allowed to be uploaded to Google then do so
+      if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos) {
+        gcontact.setPhoto(com.gContactSync.Sync.mNewPhotoURI);
+      }
+      // reset the new photo URI variable
+      com.gContactSync.Sync.mNewPhotoURI = null;
       com.gContactSync.Sync.processAddQueue();
     }
     httpReq.mOnCreated = onCreated;

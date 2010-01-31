@@ -65,13 +65,15 @@ com.gContactSync.GContact = function gCS_GContact(aXml) {
     xml.appendChild(category);
     this.xml = xml;
   }
+  /** The current element being modified or returned (internal use only) */
+  this.mCurrentElement = null;
+  /** The groups that this contact is in */
+  this.mGroups = {};
+  /** The URI of a photo to add to this contact */
+  this.mNewPhotoURI = null;
 };
 
 com.gContactSync.GContact.prototype = {
-  /** The current element being modified or returned (internal use only) */
-  mCurrentElement:   null,
-  /** The groups that this contact is in */
-  mGroups:           {},
   /**
    * Checks for an invalid IM address as explained here:
    * http://pi3141.wordpress.com/2008/07/30/update-2/
@@ -794,14 +796,87 @@ com.gContactSync.GContact.prototype = {
     return val.substr(index + 1);
   },
   /**
+   * Sets the photo for this contact.  Note that this may not immediately take
+   * effect as contacts must be added to Google and then retrieved before a
+   * photo can be added.
+   *
+   * @param aURI {string} A string with the URI of a contact photo.
+   */
+  setPhoto: function GContact_setPhoto(aURI) {
+    com.gContactSync.LOGGER.VERBOSE_LOG("Entering GContact.setPhoto:");
+    var photoInfo = this.getPhotoInfo();
+    // If the URI is empty or a chrome URL remove the photo, if present
+    // TODO - this should probably just check if it is the default photo
+    if (!aURI || aURI.indexOf("chrome:") === 0) {
+      // Easy case: URI is empty and this contact doesn't have a photo
+      if (!photoInfo || !(photoInfo.etag)) {
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * URI is empty, contact has no photo");
+        return;
+      }
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * URI is empty, photo will be removed");
+      // Remove the photo
+      var httpReq = new com.gContactSync.GHttpRequest("delete",
+                                                      com.gContactSync.Sync.mCurrentAuthToken,
+                                                      photoInfo.url,
+                                                      null,
+                                                      com.gContactSync.Sync.mCurrentUsername);
+      httpReq.mOnSuccess = function setPhotoSuccess() {
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * Photo successfully removed");
+      };
+      httpReq.mOnError   = function setPhotoError(httpReq) {
+        com.gContactSync.LOGGER.LOG_ERROR('Error while removing photo',
+                                          httpReq.responseText);
+      };
+      httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+      httpReq.addHeaderItem("If-Match", "*");
+      httpReq.send();
+      return;
+    }
+    // The URI exists, so update or add the photo
+    // NOTE: A photo cannot be added until the contact has been added
+    else {
+      // If this is a new contact then nothing can be done until the contact is
+      // added to Google
+      if (this.mIsNew || !photoInfo) {
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * Photo will be added after the contact is created");
+        this.mNewPhotoURI = aURI;
+        return;
+      }
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * Photo will be updated");
+      // Otherwise send the PUT request
+      // TODO - this really needs error handling...
+      var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                          .getService(Components.interfaces.nsIIOService),
+          outChannel = ios.newChannel(photoInfo.url, null, null),
+          inChannel  = ios.newChannel(aURI, null, null);
+      outChannel = outChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
+      // Set the upload data
+      outChannel = outChannel.QueryInterface(Components.interfaces.nsIUploadChannel);
+      // Set the input stream as the photo URI
+      outChannel.setUploadStream(inChannel.open(), photoInfo.type, -1);
+      // set the request type to PUT (this has to be after setting the upload data)
+      outChannel = outChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
+      outChannel.requestMethod = "PUT";
+      // Setup the header: Authorization and Content-Type: image/*
+      outChannel.setRequestHeader("Authorization", com.gContactSync.Sync.mCurrentAuthToken, false);
+      outChannel.setRequestHeader("Content-Type",  photoInfo.type, false);
+      outChannel.setRequestHeader("If-Match",      "*", false);
+      // set the status bar text since this can take a minute
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("uploadingPhoto"));
+      outChannel.open();
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * Update status: " + outChannel.responseStatus);
+    }
+  },
+  /**
    * Returns an object with information about this contact's photo.
    * @returns An object containing the following properties:
    *  - url - The URL of the contact's photo
    *  - type - The type of photo (ex "image/*")
-   *  - etag - The etag of the photo.
-   * If there was no photo found (no etag) then this function returns null
+   *  - etag - The etag of the photo (if a photo exists).
+   * If there was no photo found (no etag) the etag is blank.
+   * If this contact is new then this function returns null.
    */
-  getPhotoInfo: function GContact_hasPhoto() {
+  getPhotoInfo: function GContact_hasPhoto(a) {
     // Sample photo XML:
     // <link rel='http://schemas.google.com/contacts/2008/rel#photo' type='image/*'
     //  href='http://google.com/m8/feeds/photos/media/liz%40gmail.com/c9012de'
@@ -811,13 +886,10 @@ com.gContactSync.GContact.prototype = {
     for (var i = 0, length = arr.length; i < length; i++) {
       elem = arr[i];
       if (elem.getAttribute("rel") == com.gContactSync.gdata.contacts.links["PhotoURL"]) {
-        etag = elem.getAttributeNS(com.gContactSync.gdata.namespaces.GD.url, "etag");
-        if (etag) {
-          return {
-            url:  elem.getAttribute("href"),
-            type: elem.getAttribute("type"),
-            etag: etag
-          }
+        return {
+          url:  elem.getAttribute("href"),
+          type: elem.getAttribute("type"),
+          etag: elem.getAttributeNS(com.gContactSync.gdata.namespaces.GD.url, "etag")
         }
       }
     }
@@ -827,8 +899,6 @@ com.gContactSync.GContact.prototype = {
    * Fetches and saves a local copy of this contact's photo, if present.
    * NOTE: Portions of this code are from Thunderbird written by me (Josh Geenen)
    * See https://bugzilla.mozilla.org/show_bug.cgi?id=119459
-   * NOTE 2: This method sets a timeout before the image stream is written to
-   * the disk but still returns an nsIFile where the image will be written.
    * @param aAuthToken {string} The authentication token for the account to
    *                            which this contact belongs.
    */
@@ -886,21 +956,9 @@ com.gContactSync.GContact.prototype = {
                            .createInstance(Components.interfaces.nsIBufferedOutputStream);
     fstream.init(file, 0x04 | 0x08 | 0x20, 0600, 0); // write, create, truncate
     buffer.init(fstream, 8192);
-    // A sleep is required here to allow istream time to get all the bytes ready
-    // to be read (the number returned by istream.available)
-    setTimeout(this.finishWritePhoto, 500, istream, fstream, buffer, this.getID());
-    return file;
-  },
-  /**
-   * Finishes writting the buffered output stream to the file from the input stream.
-   * @param istream The input stream
-   * @param fstream {nsIFileOutputStream} The file output stream
-   * @param buffer {nsIBufferedOutputStream} The buffered output stream that
-   *                                         has already been initialized.
-   * @param name   {string} The filename of the photo (used for logging)
-   */
-  finishWritePhoto: function GContact_finishWritePhoto(istream, fstream, buffer, name) {
-    buffer.writeFrom(istream, istream.available());
+    while (istream.available() > 0) {
+      buffer.writeFrom(istream, istream.available());
+    }
 
     // Close the output streams
     if (buffer instanceof Components.interfaces.nsISafeOutputStream)
@@ -911,7 +969,9 @@ com.gContactSync.GContact.prototype = {
         fstream.finish();
     else
         fstream.close();
-    com.gContactSync.LOGGER.VERBOSE_LOG(" * Finished writing the photo " + name);
+    // Close the input stream
+    istream.close();
+    return file;
   },
   /**
    * NOTE: This function was originally from Thunderbird in abCardOverlay.js

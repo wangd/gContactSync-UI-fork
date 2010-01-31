@@ -57,8 +57,10 @@ pref("extensions.gContactSync.lastVersion", "0");
 // fix a CSS problem in Duplicate Contacts Manager
 // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
 pref("extensions.gContactSync.fixDupContactManagerCSS", false);
-// download contact photos (Thunderbird 3+)
+// download contact photos (TB 3/SM 2+)
 pref("extensions.gContactSync.getPhotos", true);
+// upload contact photos (TB 3/SM 2+)
+pref("extensions.gContactSync.sendPhotos", true);
 // add a 'reset' menuitem to the AB context menu
 pref("extensions.gContactSync.addReset", true);
 // default plugin for new synchronization accounts

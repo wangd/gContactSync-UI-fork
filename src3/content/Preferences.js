@@ -90,6 +90,7 @@ com.gContactSync.Preferences = {
     enableImUrls:             new com.gContactSync.Pref("enableImUrls",       "bool", true),
     fixDupContactManagerCSS:  new com.gContactSync.Pref("fixDupContactManagerCSS", "bool", false),
     getPhotos:                new com.gContactSync.Pref("getPhotos",          "bool", true),
+    sendPhotos:               new com.gContactSync.Pref("sendPhotos",         "bool", true),
     addReset:                 new com.gContactSync.Pref("addReset",           "bool", true),
     myContactsName:           new com.gContactSync.Pref("myContactsName",     "char", "My Contacts"),
     addressBookName:          new com.gContactSync.Pref("addressBookName",    "char", "Google Contacts"),

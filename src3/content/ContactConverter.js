@@ -261,7 +261,7 @@ com.gContactSync.ContactConverter = {
     }
     com.gContactSync.LOGGER.VERBOSE_LOG(" * Birthday: " + birthdayVal);
     aGContact.setValue("birthday", 0, null, birthdayVal);
-      
+
     // set the extended properties
     aGContact.removeExtendedProperties();
     arr = com.gContactSync.Preferences.mExtendedProperties;
@@ -288,6 +288,10 @@ com.gContactSync.ContactConverter = {
         }
       }
       aGContact.setGroups(groups);
+    }
+    // Upload the photo
+    if (ab.mPrefs.sendPhotos) {
+      aGContact.setPhoto(aTBContact.getValue("PhotoURI"));
     }
     return aGContact;
   },
@@ -418,23 +422,30 @@ com.gContactSync.ContactConverter = {
     }
     aTBContact.setValue("BirthYear",  year);
     aTBContact.setValue("BirthMonth", month);
-    aTBContact.setValue("BirthDay",   day);    
+    aTBContact.setValue("BirthDay",   day);
 
     if (ab.mPrefs.getPhotos === "true") {
       var info = aGContact.getPhotoInfo();
-      if (info) {
-        var file = aGContact.writePhoto(com.gContactSync.Sync.mCurrentAuthToken);
-        if (file) {
-          com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
-          aTBContact.setValue("PhotoName", file.leafName);
-          aTBContact.setValue("PhotoType", "file");
-          aTBContact.setValue("PhotoURI",
-                          Components.classes["@mozilla.org/network/io-service;1"]
-                                    .getService(Components.interfaces.nsIIOService)
-                                    .newFileURI(file)
-                                    .spec);
-          aTBContact.setValue("PhotoEtag", info.etag);
-        }
+      // If the contact has a photo then save it to a local file and update
+      // the related attributes
+      if (info && info.etag &&
+          (file = aGContact.writePhoto(com.gContactSync.Sync.mCurrentAuthToken))) {
+        com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+        aTBContact.setValue("PhotoName", file.leafName);
+        aTBContact.setValue("PhotoType", "file");
+        aTBContact.setValue("PhotoURI",
+                            Components.classes["@mozilla.org/network/io-service;1"]
+                                      .getService(Components.interfaces.nsIIOService)
+                                      .newFileURI(file)
+                                      .spec);
+        aTBContact.setValue("PhotoEtag", info.etag);
+      }
+      // If the contact doesn't have a photo then clear the related attributes
+      else {
+        aTBContact.setValue("PhotoName", "");
+        aTBContact.setValue("PhotoType", "");
+        aTBContact.setValue("PhotoURI",  "");
+        aTBContact.setValue("PhotoEtag", "");
       }
     }
 
