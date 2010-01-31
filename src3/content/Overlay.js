@@ -106,8 +106,8 @@ com.gContactSync.Overlay = {
 
     com.gContactSync.originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
-    //if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
-      //this.setupButton();    // insert the Sync button
+    if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
+      this.setupButton();    // insert the Sync button
     if (com.gContactSync.Preferences.mSyncPrefs.enableMenu.value)
       this.setupMenu();      // add a shortcut menu
     // add the extra attributes as tree columns to show and
@@ -321,15 +321,10 @@ com.gContactSync.Overlay = {
     try {
       com.gContactSync.LOGGER.VERBOSE_LOG("Trying to add button");
       // get the toolbar with the buttons
-      var toolbar     = document.getElementById("ab-bar2");   // thunderbird
-      var isSeamonkey = toolbar ? true : false;
+      var toolbar     = document.getElementById("abToolbar"); // seamonkey
       if (!toolbar) {
-        com.gContactSync.LOGGER.VERBOSE_LOG("Didn't find ab-bar2...looking for abToolbar")
-        toolbar       = document.getElementById("abToolbar"); // seamonkey
-        if (!toolbar) {
-          com.gContactSync.LOGGER.LOG_ERROR("Could not find the toolbar");
-          return false;
-        }
+        com.gContactSync.LOGGER.VERBOSE_LOG("Didn't find the toolbar");
+        return false;
       }
       // setup the separators
       var separator   = document.createElement("toolbarseparator");
@@ -344,7 +339,7 @@ com.gContactSync.Overlay = {
       button.setAttribute("tooltiptext", com.gContactSync.StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
 
-      var deleteButton = document.getElementById(isSeamonkey ? "button-abdelete" : "button-delete");
+      var deleteButton = document.getElementById("button-delete");
       var writeButton  = document.getElementById("button-newmessage");
       var addedButton  = false;
       // first, try to insert it after the delete button

@@ -153,19 +153,24 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&buttons.label;"/>
-        <checkbox preference="enableSyncBtn" id="enableSyncBtn" label="&enableSyncBtn.label;"/>
-        <checkbox preference="forceBtnImage" id="forceBtnImage" label="&forceBtnImage.label;"/>
+        <checkbox preference="enableSyncBtn" id="chkEnableSyncBtn"
+                  label="&enableSyncBtn.label;" collapsed="true"/>
+        <checkbox preference="forceBtnImage" id="chkForceBtnImage"
+                  label="&forceBtnImage.label;" collapsed="true"/>
         <checkbox preference="enableMenu" id="enableMenu" label="&enableMenu.label;"/>
         <checkbox preference="addReset" id="addReset" label="&addReset.label;"/>
       </groupbox>
       <groupbox>
         <caption label="&abResults.label;"/>
-        <checkbox preference="phoneColLabels" id="phoneColLabels" label="&phoneColLabels.label;"/>
-        <checkbox preference="newColLabels" id="newColLabels" label="&newColLabels.label;"/>
+        <checkbox preference="phoneColLabels" id="phoneColLabels"
+                  label="&phoneColLabels.label;"/>
+        <checkbox preference="newColLabels" id="newColLabels"
+                  label="&newColLabels.label;"/>
       </groupbox>
       <groupbox>
         <caption label="&abCardView.label;"/>
-        <checkbox preference="enableImUrls" id="enableImUrls" label="&enableImUrls.label;"/>
+        <checkbox preference="enableImUrls" id="enableImUrls"
+                  label="&enableImUrls.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>
@@ -211,7 +216,8 @@
       <label value="&extendedPropertiesDesc3.value;"/>
       <label value="&extendedPropertiesDesc4.value;"/>
       <separator class="thin"/>
-      <checkbox preference="syncExtended" id="syncExtended" label="&syncExtended.label;"/>
+      <checkbox preference="syncExtended" id="syncExtended"
+                label="&syncExtended.label;"/>
       <separator class="thin"/>
       <vbox align="center">
         <grid flex="1">

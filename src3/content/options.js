@@ -55,8 +55,11 @@ com.gContactSync.Options = {
    * login tree.
    */
   init: function Options_init() {
+    if (navigator.userAgent.indexOf("SeaMonkey") !== -1) {
+      document.getElementById("chkEnableSyncBtn").collapsed = false;
+      document.getElementById("chkForceBtnImage").collapsed = false;
+    }
     com.gContactSync.Preferences.getSyncPrefs();
-    //document.getElementById("cMyContacts").addEventListener("change", myContactsChange, false);
     // if this is the full preferences dialog add a few event listeners
     if (document.getElementById("syncExtended")) {
       document.getElementById("syncExtended")
