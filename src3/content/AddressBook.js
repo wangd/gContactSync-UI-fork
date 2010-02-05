@@ -255,7 +255,7 @@ com.gContactSync.AddressBook.prototype = {
     this.mContactsUpdate = true;
     if (this.mDirectory && this.mDirectory.modifyCard)
       this.mDirectory.modifyCard(aContact.mContact);
-    else
+    else if (aContact.mContact.editCardToDatabase)
       aContact.mContact.editCardToDatabase(this.mURI);
   },
   /**

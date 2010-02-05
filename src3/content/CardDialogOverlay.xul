@@ -74,7 +74,7 @@
       <hbox>
         <vbox>
           <vbox id="gcontactSyncFields" class="alignBoxWithFieldset" align="left">
-            <groupbox flex="1">
+            <groupbox flex="1" id="additionalEmailBox">
             <caption label="&email.box;"/>
             <hbox>
               <spacer flex="1"/>

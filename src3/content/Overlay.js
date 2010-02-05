@@ -581,6 +581,7 @@ com.gContactSync.Overlay = {
       return; // and quit, nothing was added for mail lists
     }
     try {
+      var contact = new com.gContactSync.TBContact(aCard, null);
       com.gContactSync.Overlay.showNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes());
       var primaryEmail = com.gContactSync.GAbManager.getCardValue(aCard,
                                                  com.gContactSync.dummyEmailName);
@@ -603,17 +604,20 @@ com.gContactSync.Overlay = {
       // Contact section (ThirdEmail, FourthEmail, TalkScreenName, MSNScreenName,
       // JabberScreenName, YahooScreenName, ICQScreenName)
       var visible     = !cvData.cvbContact.getAttribute("collapsed");
-      var thirdEmail  = com.gContactSync.GAbManager.getCardValue(aCard, "ThirdEmail");
-      var fourthEmail = com.gContactSync.GAbManager.getCardValue(aCard, "FourthEmail");
-      visible = HandleLink(cvData.cvThirdEmail, com.gContactSync.StringBundle.getStr("ThirdEmail"),
-                           thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
-                           thirdEmail) || visible;
-      // Workaround for a bug where the collapsed attributes set here don't
-      // seem to get applied
-      document.getElementById(cvData.cvThirdEmailBox.id).collapsed = cvData.cvThirdEmailBox.collapsed;
-      visible = HandleLink(cvData.cvFourthEmail, com.gContactSync.StringBundle.getStr("FourthEmail"),
-                           fourthEmail, cvData.cvFourthEmailBox, "mailto:" +
-                           fourthEmail) || visible;
+      // don't show the Third and Fourth e-mail addresses in Postbox
+      if (!contact.mPostbox) {
+        var thirdEmail  = contact.getValue("ThirdEmail");
+        var fourthEmail = contact.getValue("FourthEmail");
+        visible = HandleLink(cvData.cvThirdEmail, com.gContactSync.StringBundle.getStr("ThirdEmail"),
+                             thirdEmail, cvData.cvThirdEmailBox, "mailto:" +
+                             thirdEmail) || visible;
+        // Workaround for a bug where the collapsed attributes set here don't
+        // seem to get applied
+        document.getElementById(cvData.cvThirdEmailBox.id).collapsed = cvData.cvThirdEmailBox.collapsed;
+        visible = HandleLink(cvData.cvFourthEmail, com.gContactSync.StringBundle.getStr("FourthEmail"),
+                             fourthEmail, cvData.cvFourthEmailBox, "mailto:" +
+                             fourthEmail) || visible;
+      }
     
       visible = com.gContactSync.Overlay.getVisible(aCard, ["TalkScreenName", "JabberScreenName",
                                            "YahooScreenName", "MSNScreenName",

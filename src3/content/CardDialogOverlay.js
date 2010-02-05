@@ -134,15 +134,22 @@ com.gContactSync.CardDialogOverlay = {
     }
     // add the email type drop down menus
     try {
-      var emailTypes      = com.gContactSync.gdata.contacts.EMAIL_TYPES,
-          primaryEmailBox = document.getElementById("PrimaryEmail").parentNode,
-          secondEmailBox  = document.getElementById("SecondEmail").parentNode,
-          thirdEmailBox   = document.getElementById("ThirdEmail").parentNode,
-          fourthEmailBox  = document.getElementById("FourthEmail").parentNode;
-      this.addMenuItems(primaryEmailBox, emailTypes, "PrimaryEmailType", "other");
-      this.addMenuItems(secondEmailBox, emailTypes, "SecondEmailType", "other");
-      this.addMenuItems(thirdEmailBox, emailTypes, "ThirdEmailType", "other");
-      this.addMenuItems(fourthEmailBox, emailTypes, "FourthEmailType", "other");
+      // add the type for Postbox (this does nothing for TB or Seamonkey)
+      if (!this.addPostboxEmailType(document.getElementById("PrimaryEmail"))) {
+        var emailTypes       = com.gContactSync.gdata.contacts.EMAIL_TYPES,
+            primaryEmailBox  = this.getBox("PrimaryEmail"),
+            secondEmailBox   = this.getBox("SecondEmail"),
+            thirdEmailBox    = this.getBox("ThirdEmail"),
+            fourthEmailBox   = this.getBox("FourthEmail");
+        // add the type menulist to e-mail elements if this isn't Postbox
+        this.addMenuItems(primaryEmailBox, emailTypes, "PrimaryEmailType", "other");
+        this.addMenuItems(secondEmailBox,  emailTypes, "SecondEmailType",  "other");
+        this.addMenuItems(thirdEmailBox,   emailTypes, "ThirdEmailType",   "other");
+        this.addMenuItems(fourthEmailBox,  emailTypes, "FourthEmailType",  "other");
+      }
+      else {
+        document.getElementById("additionalEmailBox").collapsed = true;
+      }
     }
     catch (ex0) {
       com.gContactSync.alertError("Unable to setup email types: " + ex0);
@@ -150,12 +157,12 @@ com.gContactSync.CardDialogOverlay = {
     try {
       // add drop down menus for screen name protocols
       var imTypes   = com.gContactSync.gdata.contacts.IM_TYPES,
-          aimBox    = document.getElementById("ScreenName").parentNode,
-          talkBox   = document.getElementById("TalkScreenName").parentNode,
-          yahooBox  = document.getElementById("YahooScreenName").parentNode,
-          icqBox    = document.getElementById("ICQScreenName").parentNode,
-          msnBox    = document.getElementById("MSNScreenName").parentNode,
-          jabberBox = document.getElementById("JabberScreenName").parentNode;
+          aimBox    = this.getBox("ScreenName"),
+          talkBox   = this.getBox("TalkScreenName"),
+          yahooBox  = this.getBox("YahooScreenName"),
+          icqBox    = this.getBox("ICQScreenName"),
+          msnBox    = this.getBox("MSNScreenName"),
+          jabberBox = this.getBox("JabberScreenName");
       this.addMenuItems(aimBox,    imTypes, "_AimScreenNameType",   "AIM");
       this.addMenuItems(talkBox,   imTypes, "TalkScreenNameType",   "GOOGLE_TALK");
       this.addMenuItems(icqBox,    imTypes, "ICQScreenNameType",    "ICQ");
@@ -362,6 +369,49 @@ com.gContactSync.CardDialogOverlay = {
     this.GetCardValues(gEditCard.card, document);
   },
   /**
+   * Gets the parent node of an element with the given ID.
+   * If there is no element with the given ID then this function will return
+   * null.
+   * @param aID The ID of the element whose parent node is returned.
+   * @returns {XULElement} The parentNode of the element with the given ID.
+   */
+  getBox: function CardDialogOverlay_getBox(aID) {
+    var elem = document.getElementById(aID);
+    if (elem && elem.tagName === "emailaddress-input") { // Postbox
+      return elem;
+    }
+    return elem ? elem.parentNode : null;
+  },
+  /**
+   * Adds the e-mail type menulist to Postbox's emailaddress-input element.
+   * This also overrides the addRow method to add the type menulist to
+   * future emailaddress-input elements (and calls the original addRow)
+   * @param aElem The emailaddress-input element.
+   * @returns {boolean} True if the application is Postbox and the menulist was
+   *                    added.
+   */
+  addPostboxEmailType: function CardDialogOverlay_addPBEmailType(aElem) {
+    if (!aElem || aElem.tagName !== "emailaddress-input") {
+      return false;
+    }
+    /*
+    var emailTypes = com.gContactSync.gdata.contacts.EMAIL_TYPES;
+    this.addMenuItems(aElem, emailTypes, "", "other");
+    // save the original addRow method
+    aElem.origAddRow = aElem.addRow;
+    // override addRow to call the original then add the e-mail types
+    aElem.addRow = function gContactSync_addRow() {
+      // call the original
+      this.origAddRow.apply(this, arguments);
+      // add the e-mail type menulist
+      com.gContactSync.CardDialogOverlay.addPostboxEmailType(this.nextSibling);
+      // resize the window
+      window.sizeToContent();
+    }
+    */
+    return true;
+  },
+  /**
    * Sets the attributes added by this extension as the value in the textbox or
    * drop down menu in aDoc whose ID is identical to the attribute's name.
    * Calls the original CheckAndSetCardValues function when finished.
@@ -402,8 +452,16 @@ com.gContactSync.CardDialogOverlay = {
         com.gContactSync.alertError("Error in com.gContactSync.CheckAndSetCardValues: " + attr + "\n" + e);
       }
     }
-    if (!contact.mContact.getProperty) {
-      contact.mContact.editCardToDatabase(gEditCard.abURI);
+    if (!contact.mContact.getProperty && gEditCard.abURI) {
+      if (contact.mContact.editCardToDatabase) { // Thunderbird 2
+        contact.mContact.editCardToDatabase(gEditCard.abURI);
+      }
+      else if (GetDirectoryFromURI) { // Postbox doesn't have editCardToDatabase
+        var dir = GetDirectoryFromURI(gEditCard.abURI);
+        if (dir) {
+          dir.modifyCard(contact.mContact);
+        }
+      }
     }
     // ensure that every contact edited through this dialog has at least a dummy
     // e-mail address if necessary
@@ -481,6 +539,9 @@ com.gContactSync.CardDialogOverlay = {
    * @returns {XULElement}  The menulist element.
    */
   addMenuItems: function CardDialogOverlay_addMenuItems(aBox, aArray, aID, aValue, aWidth) {
+    if (!aBox) {
+      return false;
+    }
     var menuList = document.createElement("menulist");
     menuList.setAttribute("id", aID);
     var menuPopup = document.createElement("menupopup");

@@ -60,6 +60,7 @@ com.gContactSync.TBContact = function gCS_TBContact(aCard, aDirectory) {
   //}
   this.mAddressBook = aDirectory;
   this.mContact     = aCard;
+  this.mPostbox     = this.mContact.setAdditionalEmailAddresses;
 };
 
 com.gContactSync.TBContact.prototype = {
@@ -81,6 +82,18 @@ com.gContactSync.TBContact.prototype = {
       com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
       return 0;
     }
+    // Postbox stores additional e-mail addresses already
+    if (this.mPostbox && (aAttribute === "ThirdEmail" || aAttribute === "FourthEmail")) {
+      var arrLen   = {},
+          emailArr = this.mContact.getAdditionalEmailAddresses(arrLen);
+      if (aAttribute === "ThirdEmail" && emailArr.length > 0) {
+        return emailArr[0];
+      }
+      else if (emailArr.length > 1) {
+        return emailArr[1];
+      }
+      return null;
+    }
     return com.gContactSync.GAbManager.getCardValue(this.mContact, aAttribute);
   },
   /**
@@ -95,7 +108,25 @@ com.gContactSync.TBContact.prototype = {
    * @returns {boolean} True if the contact was updated.
    */
   setValue: function TBContact_setValue(aAttribute, aValue, aUpdate) {
-    com.gContactSync.GAbManager.setCardValue(this.mContact, aAttribute, aValue);
+    if (this.mPostbox && (aAttribute === "ThirdEmail" || aAttribute === "FourthEmail")) {
+      // get the existing e-mail addresses
+      var arrLen   = {},
+          emailArr = this.mContact.getAdditionalEmailAddresses(arrLen);
+      if (aAttribute === "ThirdEmail") {
+        emailArr[0] = aValue;
+      }
+      // FourthEmail
+      else if (emailArr.length > 0) {
+        emailArr[1] = aValue;
+      }
+      else {
+        emailArr[0] = aValue;
+      }
+      this.mContact.setAdditionalEmailAddresses(emailArr.length, emailArr);
+    }
+    else {
+      com.gContactSync.GAbManager.setCardValue(this.mContact, aAttribute, aValue);
+    }
     if (aUpdate)
       return this.update();
     return false;
