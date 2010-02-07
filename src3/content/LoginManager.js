@@ -162,10 +162,12 @@ com.gContactSync.LoginManager = {
       // Find logins for the given parameters
       var logins = loginManager.findLogins({}, this.mHostname, this.mSubmitURL,
                                             this.mHttpRealm);
+      aUsername = aUsername.toLowerCase();
       // Find user from returned array of nsILoginInfo objects
       for (var i = 0; i < logins.length; i++) {
-        if (logins[i].username === aUsername) {
+        if (logins[i].username.toLowerCase() == aUsername) {
           try {
+            com.gContactSync.LOGGER.VERBOSE_LOG("Found the login to remove");
             loginManager.removeLogin(logins[i]);
             this.mAuthTokens[aUsername] = null;
             this.mNumAuthTokens--;
