@@ -390,7 +390,7 @@ com.gContactSync.AbManager = {
     }
     try {
       var dir;
-      if (this.mVersion == 3)
+      if (Components.classes["@mozilla.org/abmanager;1"])
         dir = Components.classes["@mozilla.org/abmanager;1"]
                         .getService(Components.interfaces.nsIAbManager)
                         .getDirectory(aURI)
@@ -421,7 +421,7 @@ com.gContactSync.AbManager = {
       throw "Invalid aDirName passed to the 'getAbByName' method." +
             com.gContactSync.StringBundle.getStr("pleaseReport");
     var iter, data;
-    if (this.mVersion == 3) { // TB 3
+    if (Components.classes["@mozilla.org/abmanager;1"]) { // TB 3
       var abManager = Components.classes["@mozilla.org/abmanager;1"]
                                 .getService(Components.interfaces.nsIAbManager);
       iter = abManager.directories;
@@ -440,15 +440,12 @@ com.gContactSync.AbManager = {
         if (data.dirName == aDirName)
           return data;
     }
+    iter = null;
     if (aDontMakeAb)
       return null;
     // the AB doesn't exist, so make one:
     // TODO - this should be in its own method
-    if (this.mVersion == 3) { // TB 3
-      abManager.newAddressBook(aDirName, "moz-abmdbdirectory://", 2);
-      iter = abManager.directories;
-    }
-    else {
+    if (Components.classes["@mozilla.org/addressbook/properties;1"]) { // TB 2
       // setup the "properties" of the new address book
       var properties = Components.classes["@mozilla.org/addressbook/properties;1"]
 	                             .createInstance(Components.interfaces.nsIAbDirectoryProperties);
@@ -456,6 +453,25 @@ com.gContactSync.AbManager = {
 	    properties.dirType = 2; // address book
       dir.createNewDirectory(properties);
       iter = dir.childNodes;
+    }
+    else if (abManager) { // TB 3
+      abManager.newAddressBook(aDirName, "moz-abmdbdirectory://", 2);
+      iter = abManager.directories;
+    }
+    else if (Components.classes["@mozilla.org/addressbook;1"]) { // Postbox
+      var addressbook = Components.classes["@mozilla.org/addressbook;1"]
+                                   .createInstance(Components.interfaces.nsIAddressBook);
+      addressbook.newAddressBook(aDirName, "", 2);
+      iter = dir.childNodes;
+    }
+    else {
+      com.gContactSync.LOGGER.LOG_WARNING("Unable to determine how to create a directory");
+      alert("error");
+      return null;
+    }
+    if (!iter) {
+      com.gContactSync.LOGGER.LOG_WARNING("iter is invalid in getAbByName");
+      return null;
     }
     while (iter.hasMoreElements()) {
       data = iter.getNext();
@@ -488,7 +504,7 @@ com.gContactSync.AbManager = {
     }
     com.gContactSync.LOGGER.VERBOSE_LOG("Deleting address book with the URI " + aURI);
     // In TB 3 just use the AbManager to delete the AB
-    if (this.mVersion == 3) {
+    if (Components.classes["@mozilla.org/abmanager;1"]) {
       var abManager = Components.classes["@mozilla.org/abmanager;1"]
                                 .getService(Components.interfaces.nsIAbManager);
       if (!abManager) {
