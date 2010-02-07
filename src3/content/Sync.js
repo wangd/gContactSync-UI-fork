@@ -127,6 +127,16 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mCurrentAb        = obj.ab;
     com.gContactSync.Sync.mCurrentAuthToken = com.gContactSync.LoginManager.getAuthTokens()[com.gContactSync.Sync.mCurrentUsername];
     com.gContactSync.Sync.mContactsUrl      = null;
+    com.gContactSync.LOGGER.VERBOSE_LOG("Found Address Book with name: " +
+                       com.gContactSync.Sync.mCurrentAb.mDirectory.dirName +
+                       "\n - URI: " + com.gContactSync.Sync.mCurrentAb.mURI +
+                       "\n - Pref ID: " + com.gContactSync.Sync.mCurrentAb.getPrefId());
+    if (com.gContactSync.Sync.mCurrentAb.mPrefs.Disabled === "true") {
+      com.gContactSync.LOGGER.LOG("*** NOTE: Synchronization was disabled for this address book ***");
+      com.gContactSync.Sync.mCurrentAb = null;
+      com.gContactSync.Sync.syncNextUser();
+      return;
+    }
     // If an authentication token cannot be found for this username then
     // offer to let the user login with that account
     if (!com.gContactSync.Sync.mCurrentAuthToken) {
@@ -187,16 +197,6 @@ com.gContactSync.Sync = {
       }
       else
         com.gContactSync.Sync.syncNextUser();
-      return;
-    }
-    com.gContactSync.LOGGER.VERBOSE_LOG("Found Address Book with name: " +
-                       com.gContactSync.Sync.mCurrentAb.mDirectory.dirName +
-                       "\n - URI: " + com.gContactSync.Sync.mCurrentAb.mURI +
-                       "\n - Pref ID: " + com.gContactSync.Sync.mCurrentAb.getPrefId());
-    if (com.gContactSync.Sync.mCurrentAb.mPrefs.Disabled === "true") {
-      com.gContactSync.LOGGER.LOG("*** NOTE: Synchronization was disabled for this address book ***");
-      com.gContactSync.Sync.mCurrentAb = null;
-      com.gContactSync.Sync.syncNextUser();
       return;
     }
     // getGroups must be called if the myContacts pref is set so it can find the
