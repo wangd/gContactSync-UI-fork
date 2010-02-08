@@ -864,7 +864,12 @@ com.gContactSync.GContact.prototype = {
       // set the status bar text since this can take a minute
       com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("uploadingPhoto"));
       outChannel.open();
-      com.gContactSync.LOGGER.VERBOSE_LOG(" * Update status: " + outChannel.responseStatus);
+      try {
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * Update status: " + outChannel.responseStatus);
+      }
+      catch (e) {
+        com.gContactSync.LOGGER.LOG_WARNING(" * outChannel.responseStatus failed", e);
+      }
     }
   },
   /**
