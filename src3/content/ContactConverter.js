@@ -276,15 +276,22 @@ com.gContactSync.ContactConverter = {
         aGContact.setGroups([com.gContactSync.Sync.mContactsUrl]);
       }
     }
-    else if (ab.mPrefs.syncGroups === "true") {
+    else {
       // set the groups
       var groups = [],
           list;
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * Determining the groups this contact belongs to");
+      alert(com.gContactSync.Sync.mLists);
       for (i in com.gContactSync.Sync.mLists) {
+        list = com.gContactSync.Sync.mLists[i];
         if (list instanceof com.gContactSync.GMailList) {
-          list = com.gContactSync.Sync.mLists[i];
-          if (list.hasContact(aTBContact))
+          if (list.hasContact(aTBContact)) {
+            com.gContactSync.LOGGER.VERBOSE_LOG("   - " + list.getName());
             groups.push(i);
+          }
+        }
+        else {
+          com.gContactSync.LOGGER.LOG_WARNING("   - Found an invalid list: " + i);
         }
       }
       aGContact.setGroups(groups);
