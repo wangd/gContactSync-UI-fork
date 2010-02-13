@@ -265,9 +265,18 @@ com.gContactSync.ContactConverter = {
     // set the extended properties
     aGContact.removeExtendedProperties();
     arr = com.gContactSync.Preferences.mExtendedProperties;
+    var props = {};
     for (i = 0, length = arr.length; i < length; i++) {
-      value = this.checkValue(aTBContact.getValue(arr[i]));
-      aGContact.setExtendedProperty(arr[i], value);
+      // add this extended property if it isn't a duplicate
+      if (!props[arr[i]]) {
+        props[arr[i]] = true;
+        value = this.checkValue(aTBContact.getValue(arr[i]));
+        aGContact.setExtendedProperty(arr[i], value);
+      }
+      else {
+        com.gContactSync.LOGGER.LOG_WARNING("Found a duplicate extended property: " +
+                                            arr[i]);
+      }
     }
     // If the myContacts pref is set and this contact is new then add the
     // myContactsName group
