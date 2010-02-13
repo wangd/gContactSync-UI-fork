@@ -1007,6 +1007,6 @@ com.gContactSync.GContact.prototype = {
     try {
       return mimeSvc.getPrimaryExtension(aChannel.contentType, ext);
     } catch (e) {}
-    return ext;
+    return ext === "jpe" ? "jpeg" : ext;
   }
 };
