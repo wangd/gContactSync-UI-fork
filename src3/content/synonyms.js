@@ -131,7 +131,7 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
   // GContact and TBContact may not be defined
   try {
     if (aContact instanceof com.gContactSync.GContact)
-      id = aContact.getID();
+      id = aContact.getID(true);
     // otherwise it is from Thunderbird, so try to get the Google ID, if any
     else if (aContact instanceof com.gContactSync.TBContact)
       id = aContact.getValue("GoogleID");

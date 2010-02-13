@@ -788,10 +788,17 @@ com.gContactSync.GContact.prototype = {
   },
   /**
    * Returns the last portion of this contact's ID
+   * @param {boolean} aFull Set this to true to return the complete ID for this
+   *                        contact (the entire URL).
+   *                        Otherwise just the portion after the last / is
+   *                        returned.
    * @returns {string} The ID of this contact.
    */
-  getID: function GContact_getID() {
+  getID: function GContact_getID(aFull) {
     var val   = this.getValue("id").value;
+    if (aFull) {
+      return val;
+    }
     var index = val.lastIndexOf("/");
     return val.substr(index + 1);
   },
@@ -940,7 +947,7 @@ com.gContactSync.GContact.prototype = {
     }
 
     // Create a name for the photo with the contact's ID and the photo extension
-    var filename = this.getID();
+    var filename = this.getID(false);
     try {
       var ext = this.findPhotoExt(ch);
       filename = filename + (ext ? "." + ext : "");

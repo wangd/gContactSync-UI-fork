@@ -537,7 +537,7 @@ com.gContactSync.Sync = {
       var ab       = com.gContactSync.Sync.mCurrentAb,
           contact  = com.gContactSync.ContactConverter.mCurrentCard,
           gcontact = new com.gContactSync.GContact(httpReq.responseXML);
-      contact.setValue('GoogleID', gcontact.getID());
+      contact.setValue('GoogleID', gcontact.getID(true));
       contact.update();
       // if photos are allowed to be uploaded to Google then do so
       if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos) {
