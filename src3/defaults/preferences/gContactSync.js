@@ -1,5 +1,7 @@
 // refresh interval in minutes
 pref("extensions.gContactSync.refreshInterval", 30);
+// the delay between synchronizing individual accounts (in ms)
+pref("extensions.gContactSync.accountDelay", 5000);
 // the name of the address book to sync with
 pref("extensions.gContactSync.addressBookName", "Google Contacts");
 // the number of contacts supported.  Automatically raised, if necessary.

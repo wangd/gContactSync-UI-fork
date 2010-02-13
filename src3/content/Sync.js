@@ -113,14 +113,12 @@ com.gContactSync.Sync = {
    * If all ABs were synchronized, then this continues with com.gContactSync.Sync.finish();
    */
   syncNextUser: function Sync_syncNextUser() {
-    // set the previous address book's last sync date (if it exists)
-    if (com.gContactSync.Sync.mCurrentAb && com.gContactSync.Sync.mCurrentAb.setLastSyncDate)
-      com.gContactSync.Sync.mCurrentAb.setLastSyncDate((new Date()).getTime());
     var obj = com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex++];
     if (!obj) {
       com.gContactSync.Sync.finish();
       return;
     }
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mCurrentUsername = obj.username;
     com.gContactSync.LOGGER.LOG("Starting Synchronization for " + com.gContactSync.Sync.mCurrentUsername +
                " at: " + Date() + "\n");
@@ -359,7 +357,7 @@ com.gContactSync.Sync = {
     for (i = 0, length = abCards.length; i < length; i++) {
       var tbContact = abCards[i],
           id        = tbContact.getValue("GoogleID");
-      com.gContactSync.LOGGER.LOG(tbContact.getName());
+      com.gContactSync.LOGGER.LOG(tbContact.getName() + ": " + id);
       tbContact.id = id;
       // no ID = new contact
       if (!id) {
@@ -432,7 +430,7 @@ com.gContactSync.Sync = {
     for (var id in gContacts) {
       var gContact = gContacts[id];
       if (gContact) {
-        com.gContactSync.LOGGER.LOG(gContact.getName());
+        com.gContactSync.LOGGER.LOG(gContact.getName() + ": " + id);
         var gCardDate = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 0;
         if (gCardDate > lastSync) {
           com.gContactSync.LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
@@ -567,7 +565,17 @@ com.gContactSync.Sync = {
     if (!com.gContactSync.Sync.mContactsToUpdate
         || com.gContactSync.Sync.mContactsToUpdate.length == 0
         || ab.mPrefs.readOnly == "true") {
-      com.gContactSync.Sync.syncNextUser();
+      // set the previous address book's last sync date (if it exists)
+      if (com.gContactSync.Sync.mCurrentAb &&
+          com.gContactSync.Sync.mCurrentAb.setLastSyncDate) {
+        com.gContactSync.Sync.mCurrentAb.setLastSyncDate((new Date()).getTime());
+      }
+      var delay = com.gContactSync.Preferences.mSyncPrefs.accountDelay.value;
+      com.gContactSync.LOGGER.LOG("**About to wait " + delay +
+                                  " ms before synchronizing the next account**");
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("waiting"));
+      setTimeout(com.gContactSync.Sync.syncNextUser, delay);
+                 
       return;
     }
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("updating") + " " +

@@ -69,6 +69,7 @@ com.gContactSync.Preferences = {
     verboseLog:               new com.gContactSync.Pref("verboseLog",         "bool", true),
     initialDelay:             new com.gContactSync.Pref("initialDelay",       "int",  500),
     refreshInterval:          new com.gContactSync.Pref("refreshInterval",    "int",  30),
+    accountDelay:             new com.gContactSync.Pref("accountDelay",       "int",  5000),
     maxContacts:              new com.gContactSync.Pref("maxContacts",        "int",  5000),
     syncExtended:             new com.gContactSync.Pref("syncExtended",       "bool", true),
     overrideCopy:             new com.gContactSync.Pref("overrideCopy",       "bool", true),
