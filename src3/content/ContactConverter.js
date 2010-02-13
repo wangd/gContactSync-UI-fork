@@ -137,18 +137,6 @@ com.gContactSync.ContactConverter = {
       new com.gContactSync.ConverterElement("PhotoURL", "PhotoURL", 0),
       new com.gContactSync.ConverterElement("SelfURL",  "SelfURL",  0),
       new com.gContactSync.ConverterElement("EditURL",  "EditURL",  0),
-      // Home address
-      new com.gContactSync.ConverterElement("street",   "HomeAddress", 0, "home"),
-      new com.gContactSync.ConverterElement("city",     "HomeCity",    0, "home"),
-      new com.gContactSync.ConverterElement("region",   "HomeState",   0, "home"),
-      new com.gContactSync.ConverterElement("postcode", "HomeZipCode", 0, "home"),
-      new com.gContactSync.ConverterElement("country",  "HomeCountry", 0, "home"),
-      // Work address
-      new com.gContactSync.ConverterElement("street",   "WorkAddress", 0, "work"),
-      new com.gContactSync.ConverterElement("city",     "WorkCity",    0, "work"),
-      new com.gContactSync.ConverterElement("region",   "WorkState",   0, "work"),
-      new com.gContactSync.ConverterElement("postcode", "WorkZipCode", 0, "work"),
-      new com.gContactSync.ConverterElement("country",  "WorkCountry", 0, "work"),
       // Relation fields
       new com.gContactSync.ConverterElement("relation", "Relation0", 0, ""),
       new com.gContactSync.ConverterElement("relation", "Relation1", 1, ""),
@@ -158,6 +146,23 @@ com.gContactSync.ContactConverter = {
       new com.gContactSync.ConverterElement("website",   "WebPage1", 0, "work"),
       new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home")
     ];
+
+    // Only synchronize (if possible) postal addresses if the preference was
+    // changed to true
+    if (com.gContactSync.Preferences.mSyncPrefs.syncAddresses.value) {
+      // Home address
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("street",   "HomeAddress", 0, "home"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("city",     "HomeCity",    0, "home"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("region",   "HomeState",   0, "home"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("postcode", "HomeZipCode", 0, "home"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("country",  "HomeCountry", 0, "home"));
+      // Work address
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("street",   "WorkAddress", 0, "work"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("city",     "WorkCity",    0, "work"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("region",   "WorkState",   0, "work"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("postcode", "WorkZipCode", 0, "work"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("country",  "WorkCountry", 0, "work"));
+    }
     this.mInitialized = true;
   },
   /**

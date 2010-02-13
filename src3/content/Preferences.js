@@ -98,7 +98,8 @@ com.gContactSync.Preferences = {
     lastVersion:              new com.gContactSync.Pref("lastVersion",        "char", "0"),
     Plugin:                   new com.gContactSync.Pref("Plugin",             "char", "Google"),
     Disabled:                 new com.gContactSync.Pref("Disabled",           "char", "false"),
-    updateGoogleInConflicts:  new com.gContactSync.Pref("updateGoogleInConflicts",  "bool", true)
+    updateGoogleInConflicts:  new com.gContactSync.Pref("updateGoogleInConflicts",  "bool", true),
+    syncAddresses:            new com.gContactSync.Pref("syncAddresses",      "bool", true)
   },
   /**
    * Gets a preference given its branch, name, and type

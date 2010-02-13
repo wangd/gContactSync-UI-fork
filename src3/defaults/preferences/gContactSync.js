@@ -69,6 +69,8 @@ pref("extensions.gContactSync.addReset", true);
 pref("extensions.gContactSync.Plugin", "Google");
 // disable synchronization with all address books--even those setup to sync--by default
 pref("extensions.gContactSync.Disabled", "false");
+// enable address synchronization (this is buggy and disabled by default since the API isn't fully implemented...)
+pref("extensions.gContactSync.syncAddresses", false);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "PreferMailFormat");
 pref("extensions.gContactSync.extended2", "AllowRemoteContent");

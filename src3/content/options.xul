@@ -61,6 +61,9 @@
       <preference id="phoneTypes"
                   name="extensions.gContactSync.phoneTypes"
                   type="bool"/>
+      <preference id="syncAddresses"
+                  name="extensions.gContactSync.syncAddresses"
+                  type="bool"/>
       <preference id="accountDelay"
                   name="extensions.gContactSync.accountDelay"
                   type="int"/>
@@ -102,6 +105,7 @@
         <caption label="&syncBehavior.label;"/>
         <checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>
         <checkbox preference="phoneTypes" id="phoneTypes" label="&phoneTypes.label;"/>
+        <checkbox preference="syncAddresses" id="syncAddresses" label="&syncAddresses.label;"/>
         <grid flex="1">
           <columns>
             <column/>

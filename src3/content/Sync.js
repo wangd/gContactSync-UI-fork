@@ -353,6 +353,8 @@ com.gContactSync.Sync = {
       gContact.id            = gContact.getValue("id").value;
       gContacts[gContact.id] = gContact;
     }
+    // re-initialize the contact converter (in case a pref changed)
+    com.gContactSync.ContactConverter.init();
     // Step 2: iterate through TB Contacts and check for matches
     for (i = 0, length = abCards.length; i < length; i++) {
       var tbContact = abCards[i],
