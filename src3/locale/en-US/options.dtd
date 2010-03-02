@@ -12,11 +12,7 @@
 <!ENTITY removeOldAddresses.label       "Remove the old Thunderbird addresses after converting to the new format">
 <!ENTITY parseNames.label               "Parse names from Google contacts into First and Last names.">
 <!ENTITY phoneTypes.label               "Add phone number type fields (ignore TB's field names)">
-<!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
-<!ENTITY syncAddresses.label            "Synchronize postal addresses (EXPERIMENTAL)">
 <!ENTITY accountDelay.value             "Delay between accounts (ms) [5000]">
-<!ENTITY other.label                    "Other">
-<!ENTITY chromeTime.value               "'Unresponsive Script' warning delay time (0 to disable)">
 
 <!ENTITY interface.tab                  "Interface">
 <!ENTITY logging.label                  "Logging">
@@ -34,7 +30,7 @@
 <!ENTITY abCardView.label               "Address Book Contact Details">
 <!ENTITY enableImUrls.label             "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
 
-<!ENTITY extended.tab                   "Advanced">
+<!ENTITY extended.tab                   "Other">
 <!ENTITY syncExtended.label             "Sync Extended Properties">
 <!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
 <!ENTITY extended1.value                "Property 1  ">
@@ -52,3 +48,10 @@
 <!ENTITY extendedPropertiesDesc2.value  " * FirstName, LastName, PreferMailFormat, Custom1">
 <!ENTITY extendedPropertiesDesc3.value  " * Custom2, Custom3, Custom4, AllowRemoteContent">
 <!ENTITY extendedPropertiesDesc4.value  " * AnniversayDay, AnniversayMonth, AnniversaryYear">
+
+<!ENTITY advanced.tab                   "Advanced">
+<!ENTITY warning.value                  "Warning - this is intended for testing and troubleshooting only">
+<!ENTITY other.label                    "Other">
+<!ENTITY chromeTime.value               "'Unresponsive Script' warning delay time (0 to disable)">
+<!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
+<!ENTITY syncAddresses.label            "Synchronize postal addresses (EXPERIMENTAL)">

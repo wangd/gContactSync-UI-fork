@@ -129,14 +129,14 @@ radio[pane][selected="true"] {
 }
 
 radio[pane=pane_main] {
-  list-style-image: url("chrome://gcontactsync/skin/general.png");
+  list-style-image: url("chrome://gcontactsync/skin/main.png");
 }
 radio[pane=pane_interface] {
   list-style-image: url("chrome://gcontactsync/skin/interface.png");
 }
-radio[pane=pane_accounts] {
-  list-style-image: url("chrome://gcontactsync/skin/accounts.png");
-}
 radio[pane=pane_extended] {
+  list-style-image: url("chrome://gcontactsync/skin/extended.png");
+}
+radio[pane=pane_advanced] {
   list-style-image: url("chrome://gcontactsync/skin/advanced.png");
 }
