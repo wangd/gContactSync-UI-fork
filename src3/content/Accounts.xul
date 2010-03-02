@@ -51,7 +51,7 @@
       <tree flex="1" id="loginTree" seltype="single"
             onselect="com.gContactSync.Accounts.selectedAbChange();">
         <treecols>
-          <treecol id="addressBook" label="&addressBook.label;" flex="1"/>
+          <treecol id="addressBook" label="&addressBook.label;" flex="1" primary="true"/>
           <splitter class="treesplitter"/>
           <treecol id="synced"      label="&abSynced.label;"    flex="1"/>
         </treecols>
