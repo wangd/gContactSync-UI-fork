@@ -71,6 +71,7 @@ com.gContactSync.Preferences = {
     refreshInterval:          new com.gContactSync.Pref("refreshInterval",    "int",  30),
     accountDelay:             new com.gContactSync.Pref("accountDelay",       "int",  5000),
     maxContacts:              new com.gContactSync.Pref("maxContacts",        "int",  5000),
+    backupInterval:           new com.gContactSync.Pref("backupInterval",     "int", 60),
     syncExtended:             new com.gContactSync.Pref("syncExtended",       "bool", true),
     overrideCopy:             new com.gContactSync.Pref("overrideCopy",       "bool", true),
     autoSync:                 new com.gContactSync.Pref("autoSync",           "bool", true),

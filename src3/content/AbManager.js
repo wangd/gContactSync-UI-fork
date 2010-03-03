@@ -110,68 +110,6 @@ com.gContactSync.AbManager = {
     return abs;
   },
   /**
-   * Returns an object filled with GAddressBook objects.
-   * The properties are the names of those address books.
-   * @param aMakeArray {boolean} If this parameter evaluates as true then the
-   *                             returned object will be an array.
-   * @returns If aMakeArray then the returned object is an array of objects.
-   *         Each object has a 'username' property with the username of this
-   *         synced AB and an 'ab' property with a GAddressBook object.
-   *         If !aMakeArray then the returned object is keyed by username and
-   *         the value of that property is an array of GAddressBook objects.
-   */
-  getSyncedAddressBooks: function AbManager_getSyncedAddressBooks(aMakeArray) {
-    this.mAddressBooks = {};
-    var iter,
-        abManager,
-        dir,
-        data,
-        ab,
-        username,
-        arr = [],
-        i,
-        j;
-    if (Components.classes["@mozilla.org/abmanager;1"]) { // TB 3
-      abManager = Components.classes["@mozilla.org/abmanager;1"]
-                            .getService(Components.interfaces.nsIAbManager);
-      iter = abManager.directories;
-    }
-    else { // TB 2
-      // obtain the main directory through the RDF service
-      dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
-                      .getService(Components.interfaces.nsIRDFService)
-                      .GetResource("moz-abdirectory://")
-                      .QueryInterface(Components.interfaces.nsIAbDirectory);
-      iter = dir.childNodes;
-    }
-    while (iter.hasMoreElements()) {
-      data = iter.getNext();
-      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
-          data instanceof Components.interfaces.nsIAbMDBDirectory)) {
-        ab = new com.gContactSync.GAddressBook(data);
-        username = ab.mPrefs.Username;
-        if (username && username !== "none") {
-          if (!this.mAddressBooks[username])
-            this.mAddressBooks[username] = [];
-          this.mAddressBooks[username].push(ab);
-        }
-      }
-    }
-    if (!aMakeArray)
-      return this.mAddressBooks;
-    // now convert to an array
-    arr = [];
-    for (i in this.mAddressBooks) {
-      for (j in this.mAddressBooks[i]) {
-        arr.push({
-          username: i,
-          ab:       this.mAddressBooks[i][j]
-        });
-      }
-    }
-    return arr;
-  },
-  /**
    * Checks the validity of a directory and returns false if it is invalid.
    * @param aDirectory {nsIAbDirectory} The directory to check.
    */

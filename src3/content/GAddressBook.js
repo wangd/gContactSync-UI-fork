@@ -70,8 +70,10 @@ com.gContactSync.GAddressBook = function gCS_GAddressBook(aDirectory, aNoPrefs) 
     getPhotos:      "", // Download contact photos from Google
     sendPhotos:     "", // Upload contact photos to Google
     parseNames:     "", // Try to parse names into first and last
-    updateGoogleInConflicts: "" // If a contact was updated in Google and TB then
-                                // this pref determines which contact to update
+    updateGoogleInConflicts: "", // If a contact was updated in Google and TB then
+                                 // this pref determines which contact to update
+    lastSync:       "",
+    lastBackup:     ""
   };
   if (!aNoPrefs)
     this.getPrefs();

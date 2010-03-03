@@ -197,6 +197,19 @@ com.gContactSync.Sync = {
         com.gContactSync.Sync.syncNextUser();
       return;
     }
+    var lastBackup = parseInt(obj.ab.mPrefs.lastBackup, 10),
+        interval   = com.gContactSync.Preferences.mSyncPrefs.backupInterval.value * 24 * 3600 * 1000;
+    com.gContactSync.LOGGER.VERBOSE_LOG(" - Last backup was at " + lastBackup +
+                                        ", interval is " + interval);
+    // determine if the AB should be backed up
+    if (!lastBackup && interval >= 0) {
+      com.gContactSync.GAbManager.backupAB(com.gContactSync.Sync.mCurrentAb,
+                                           "init_", ".bak");
+    }
+    else if (interval >= 0 && new Date().getTime() - lastBackup > interval) {
+      com.gContactSync.GAbManager.backupAB(com.gContactSync.Sync.mCurrentAb, "",
+                                           ".bak");
+    }
     // getGroups must be called if the myContacts pref is set so it can find the
     // proper group URL
     if (com.gContactSync.Sync.mCurrentAb.mPrefs.syncGroups === "true" ||

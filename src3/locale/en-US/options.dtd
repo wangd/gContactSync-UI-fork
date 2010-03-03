@@ -13,11 +13,13 @@
 <!ENTITY parseNames.label               "Parse names from Google contacts into First and Last names.">
 <!ENTITY phoneTypes.label               "Add phone number type fields (ignore TB's field names)">
 <!ENTITY accountDelay.value             "Delay between accounts (ms) [5000]">
-
-<!ENTITY interface.tab                  "Interface">
 <!ENTITY logging.label                  "Logging">
 <!ENTITY enableLogging.label            "Enable Logging">
 <!ENTITY verboseLog.label               "Enable Verbose Logging">
+<!ENTITY backup.label                   "Address Book Backup Policy">
+<!ENTITY backupInterval.value           "Backup interval (days, -1 to disable) [14]">
+
+<!ENTITY interface.tab                  "Interface">
 <!ENTITY buttons.label                  "Buttons and Menus">
 <!ENTITY enableSyncBtn.label            "Enable the Sync toolbar button">
 <!ENTITY forceBtnImage.label            "Fix the Sync toolbar button">

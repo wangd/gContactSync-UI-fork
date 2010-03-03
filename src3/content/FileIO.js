@@ -55,8 +55,10 @@ com.gContactSync.FileIO = {
   mLogFile: null,
   /** File names */
   fileNames: {
+    /** Stores AB backups and the gContactSync log */
+    FOLDER_NAME: "gcontactsync",
     /** Stores the log from the last sync */
-    LOG_FILE: "gcontactsync_log.txt" // 
+    LOG_FILE:    "gcontactsync_log.txt"
   },
   /**
    * Initializes the files contained in this class.
@@ -64,30 +66,49 @@ com.gContactSync.FileIO = {
    */
   init: function FileIO_init() {
     var directory = this.getProfileDirectory();
-    // if the directory doesn't exist yet
-    // This really shouldn't happen since this currently uses the profile dir
-    if (!directory.exists()) {
+    // Make sure the profile directory exists (if not something is very wrong)
+    this.checkDirectory(directory);
+    // Append the gcontactsync folder onto the directory and make sure it exists
+    directory.append(this.fileNames.FOLDER_NAME);
+    this.checkDirectory(directory);
+    this.mLogFile   = directory;
+    this.mLogFile.append(this.fileNames.LOG_FILE);
+    if (this.mLogFile.exists() && !this.mLogFile.isWritable()) {
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("logNotWritable") +
+                                  "\n" + this.mLogFile.path);
+      throw "Error - cannot write to the log file: " +
+            com.gContactSync.FileIO.mLogFile.path;
+    }
+  },
+  /**
+   * Checks that a directory corresponding to an nsIFile exists, and creates it
+   * if necessary.
+   * This will throw an error if the directory could not be created, is not a
+   * directory, or if the directory is not writeable.
+   */
+  checkDirectory: function FileIO_checkDirectory(aDirectory) {
+    // If the directory doesn't exist yet then create it
+    if (!aDirectory.exists()) {
       // create the directory (type = 1) - rw for the user and r for others
-      try { directory.create("1", parseInt("755", 8)); } catch (e) {}
+      try { aDirectory.create("1", parseInt("755", 8)); } catch (e) {}
       // if it still doesn't exist let the user know, then quit
-      if (!directory.exists()) {
-        com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("couldntMkDir") + "\n" + directory.path);
-        throw "Error - could not create the following directory: " + directory.path;
+      if (!aDirectory.exists()) {
+        com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("couldntMkDir") +
+                                    "\n" + aDirectory.path);
+        throw "Error - could not create the following directory: " +
+              aDirectory.path;
       }
     }
-    if (!directory.isDirectory()) {
-      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("isNotDir") + "\n" + directory.path);
-      throw "Error - " + directory.path + " is not a directory.";
+    if (!aDirectory.isDirectory()) {
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("isNotDir") +
+                                  "\n" + aDirectory.path);
+      throw "Error - " + aDirectory.path + " is not a directory.";
     }
-    if (!directory.isWritable()) {
-      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("notWritable") + "\n" + directory.path);
-      throw "Error - Cannot write to the following directory: " + directory.path;
-    }
-    com.gContactSync.FileIO.mLogFile = directory;
-    com.gContactSync.FileIO.mLogFile.append(this.fileNames.LOG_FILE);
-    if (com.gContactSync.FileIO.mLogFile.exists && !com.gContactSync.FileIO.mLogFile.isWritable) {
-      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("logNotWritable") + "\n" + com.gContactSync.FileIO.mLogFile.path);
-      throw "Error - cannot write to the log file: " + com.gContactSync.FileIO.mLogFile.path;
+    if (!aDirectory.isWritable()) {
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("notWritable") +
+                                  "\n" + aDirectory.path);
+      throw "Error - Cannot write to the following directory: " +
+            aDirectory.path;
     }
   },
   /**
@@ -188,9 +209,30 @@ com.gContactSync.FileIO = {
       return true;
     }
     catch (e) {
-      throw "Unable to append '" + aData + "' to file: " + aFile + "\n" + e;
+      throw "Unable to append '" + aData + "' to file: " + aFile + + "\n" + aFile.path + "\n" + e;
     }
     return false;
+  },
+  /**
+   * Copies the contents of one file to another using the readFile and writeFile
+   * methods of this class.
+   * If there is an error reading the source file, or if one or more of the
+   * given files are invalid an error will be thrown.
+   * NOTE: The contents of the destination file are removed permanently.
+   *
+   * @param aSrc  {nsIFile} The source file.
+   * @param aDest {nsIFile} The destination file.  NOTE: the contents of this
+   *                        file before the copy will be permanently removed.
+   * @returns {boolean} True if the copy finished successfully
+   */
+  copyFile: function FileIO_copyFile(aSrc, aDest) {
+    this.checkFile(aSrc);
+    this.checkFile(aDest);
+    // read the file into an array
+    var lines = this.readFile(aSrc) || [];
+    // write the array into a file
+    this.writeToFile(aDest, lines.join("\n"));
+    return true;
   },
   /**
    * Checks that an argument is not null, is an instance of nsIFile, and that,

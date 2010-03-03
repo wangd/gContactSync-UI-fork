@@ -58,7 +58,8 @@ com.gContactSync.GAbManager = com.gContactSync.AbManager;
  * @param showConfirm {boolean} Show a confirmation dialog first and quit if
  * the user presses Cancel.
  */
-com.gContactSync.GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedABs(showConfirm) {
+com.gContactSync.GAbManager.resetAllSyncedABs =
+function GAbManager_resetSyncedABs(showConfirm) {
   if (showConfirm) {
     if (!com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("confirmReset"))) {
       return false;
@@ -77,4 +78,103 @@ com.gContactSync.GAbManager.resetAllSyncedABs = function GAbManager_resetSyncedA
   com.gContactSync.LOGGER.LOG("Finished resetting all synchronized directories.");
   com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
   return true;
+};
+/**
+ * Returns an object filled with GAddressBook objects.
+ * The properties are the names of those address books.
+ * @param aMakeArray {boolean} If this parameter evaluates as true then the
+ *                             returned object will be an array.
+ * @returns If aMakeArray then the returned object is an array of objects.
+ *         Each object has a 'username' property with the username of this
+ *         synced AB and an 'ab' property with a GAddressBook object.
+ *         If !aMakeArray then the returned object is keyed by username and
+ *         the value of that property is an array of GAddressBook objects.
+ */
+com.gContactSync.GAbManager.getSyncedAddressBooks =
+function AbManager_getSyncedAddressBooks(aMakeArray) {
+  this.mAddressBooks = {};
+  var iter,
+      abManager,
+      dir,
+      data,
+      ab,
+      username,
+      arr = [],
+      i,
+      j;
+  if (Components.classes["@mozilla.org/abmanager;1"]) { // TB 3
+    abManager = Components.classes["@mozilla.org/abmanager;1"]
+                          .getService(Components.interfaces.nsIAbManager);
+    iter = abManager.directories;
+  }
+  else { // TB 2
+    // obtain the main directory through the RDF service
+    dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                    .getService(Components.interfaces.nsIRDFService)
+                    .GetResource("moz-abdirectory://")
+                    .QueryInterface(Components.interfaces.nsIAbDirectory);
+    iter = dir.childNodes;
+  }
+  while (iter.hasMoreElements()) {
+    data = iter.getNext();
+    if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
+        data instanceof Components.interfaces.nsIAbMDBDirectory)) {
+      ab = new com.gContactSync.GAddressBook(data);
+      username = ab.mPrefs.Username;
+      if (username && username !== "none") {
+        if (!this.mAddressBooks[username])
+          this.mAddressBooks[username] = [];
+        this.mAddressBooks[username].push(ab);
+      }
+    }
+  }
+  if (!aMakeArray)
+    return this.mAddressBooks;
+  // now convert to an array
+  arr = [];
+  for (i in this.mAddressBooks) {
+    for (j in this.mAddressBooks[i]) {
+      arr.push({
+        username: i,
+        ab:       this.mAddressBooks[i][j]
+      });
+    }
+  }
+  return arr;
+};
+
+/**
+ * Backs up the given address book.  This consists of copying the Mork Address
+ * Book (MAB) file into the gContactSync directory.
+ * The backup is prefixed with the value of aPrefix (if not blank) followed by
+ * the original name of the file and ended with the value of aSuffix.
+ * NOTE: If a file already exists with the 
+ * @param aAb {GAddressBook} The address book to backup.
+ * @returns {boolean} True if the AB was successfully backed up
+ */
+com.gContactSync.GAbManager.backupAB = function GAbManager_backupAB(aAB, aPrefix, aSuffix) {
+  var destFile    = com.gContactSync.FileIO.getProfileDirectory(),
+      uri         = aAB.mURI,
+      srcFileName = uri.substr(1 + uri.lastIndexOf("/")),
+      srcFile     = com.gContactSync.FileIO.getProfileDirectory(),
+      lines       = [];
+  // the source file is profile_dir/{FileNameFromURI}
+  srcFile.append(srcFileName);
+  // the destination is profile_dir/gcontactsync/{aPrefix}{FileName}{aSuffix}
+  destFile.append(com.gContactSync.FileIO.fileNames.FOLDER_NAME);
+  destFile.append((aPrefix || "") + srcFileName + (aSuffix || ""));
+  com.gContactSync.LOGGER.LOG("Beginning a backup of the Address Book:\n" +
+                              srcFile.path + "\nto:\n" + destFile.path);
+  // make sure the AB we are copying exists
+  if (!srcFile.exists()) {
+    com.gContactSync.LOGGER.LOG_ERROR("The source file does not exist");
+    return false;
+  }
+  if (com.gContactSync.FileIO.copyFile(srcFile, destFile)) {
+    aAB.savePref("lastBackup", (new Date()).getTime());
+    com.gContactSync.LOGGER.LOG(" - Backup finished successfully");
+    return true;
+  }
+  com.gContactSync.LOGGER.LOG(" - Unable to read the source address book");
+  return false;
 };

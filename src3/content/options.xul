@@ -70,6 +70,9 @@
       <preference id="verboseLog"
                   name="extensions.gContactSync.verboseLog"
                   type="bool"/>
+      <preference id="backupInterval"
+                  name="extensions.gContactSync.backupInterval"
+                  type="int"/>
     </preferences>
     <groupbox flex="1">
       <label href="http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences"
@@ -118,7 +121,22 @@
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
       </groupbox>
-    </groupbox>
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&backup.label;"/>
+        <grid flex="1">
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="backupInterval" value="&backupInterval.value;"/>
+              <textbox preference="backupInterval" id="backupInterval" maxlength="6" maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+      </groupbox>    </groupbox>
   </prefpane>
   <prefpane id="pane_interface" index="interface" label="&interface.tab;">
     <preferences>
