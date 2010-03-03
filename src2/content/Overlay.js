@@ -277,7 +277,12 @@ var Overlay = {
       menupopup.appendChild(faqMenuItem);
       menupopup.appendChild(errorMenuItem);
       menu.appendChild(menupopup);
-      menubar.insertBefore(menu, toolsMenu);
+      if (toolsMenu) {
+        toolsMenu.parentNode.insertBefore(menu, toolsMenu);
+      }
+      else {
+        menubar.appendChild(menu);
+      }
       return true;
     }
     catch(e) {

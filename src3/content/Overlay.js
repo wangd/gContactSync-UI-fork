@@ -304,7 +304,12 @@ com.gContactSync.Overlay = {
       menupopup.appendChild(logMenuItem);
       menupopup.appendChild(gcMenuItem);
       menu.appendChild(menupopup);
-      menubar.insertBefore(menu, toolsMenu);
+      if (toolsMenu) {
+        toolsMenu.parentNode.insertBefore(menu, toolsMenu);
+      }
+      else {
+        menubar.appendChild(menu);
+      }
       return true;
     }
     catch(e) {
