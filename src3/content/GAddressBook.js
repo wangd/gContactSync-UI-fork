@@ -160,7 +160,9 @@ com.gContactSync.GAddressBook.prototype.setLastSyncDate = function GAddressBook_
  */
 com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   com.gContactSync.LOGGER.LOG("Resetting the " + this.getName() + " directory.");
-  var lists, i;
+  var lists, i, dt;
+  dt = new Date().toLocaleFormat("%Y_%m_%d_");
+  com.gContactSync.GAbManager.backupAB(this, "reset_" + dt, ".bak");
   try {
     lists = this.getAllLists(true);
   }
