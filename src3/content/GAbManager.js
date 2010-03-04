@@ -70,7 +70,7 @@ function GAbManager_resetSyncedABs(showConfirm) {
   var abs = com.gContactSync.GAbManager.getSyncedAddressBooks(true),
       i;
   for (i in abs) {
-    if (abs[i].ab) {
+    if (abs[i].ab && abs[i].ab.mPrefs.Disabled !== "true") {
       abs[i].ab.reset();
     }
   }
@@ -121,7 +121,7 @@ function AbManager_getSyncedAddressBooks(aMakeArray) {
         data instanceof Components.interfaces.nsIAbMDBDirectory)) {
       ab = new com.gContactSync.GAddressBook(data);
       username = ab.mPrefs.Username;
-      if (username && username !== "none") {
+      if (username && username.toLowerCase() !== "none") {
         if (!this.mAddressBooks[username])
           this.mAddressBooks[username] = [];
         this.mAddressBooks[username].push(ab);
