@@ -62,8 +62,6 @@
                 oncommand="com.gContactSync.Accounts.newAddressBook();"/>
         <button id="refreshTree" label="&refreshTree.label;"
                 oncommand="com.gContactSync.Accounts.fillAbTree();"/>
-        <button id="resetAll"    label="&resetAll.label;"
-                oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
       </hbox>
     </vbox>
     <vbox>

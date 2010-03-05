@@ -92,7 +92,7 @@
             </row>
             <row align="center">
               <label control="initialDelayBox" value="&initialDelay.value;"/>
-              <textbox preference="initialDelay" id="initialDelayBox" maxlength="4" maxwidth="60"/>
+              <textbox preference="initialDelay" id="initialDelayBox" maxlength="8" maxwidth="60"/>
             </row>
           </rows>
         </grid>
@@ -315,6 +315,10 @@
           </rows>
         </grid>
       </groupbox>
+      <hbox>
+        <button id="resetAll" label="&resetAll.label;"
+                oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
+      </hbox>
     </vbox>
   </prefpane>
   <script type="application/x-javascript"
@@ -341,6 +345,8 @@
           src="chrome://gcontactsync/content/AbManager.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/GAbManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/TBContact.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Namespace.js"/>
   <script type="application/x-javascript"
