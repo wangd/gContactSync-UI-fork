@@ -121,7 +121,7 @@ com.gContactSync.Sync = {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mCurrentUsername = obj.username;
     com.gContactSync.LOGGER.LOG("Starting Synchronization for " + com.gContactSync.Sync.mCurrentUsername +
-               " at: " + Date() + "\n");
+                                " at: " + Date() + "\n");
     com.gContactSync.Sync.mCurrentAb        = obj.ab;
     com.gContactSync.Sync.mCurrentAuthToken = com.gContactSync.LoginManager.getAuthTokens()[com.gContactSync.Sync.mCurrentUsername];
     com.gContactSync.Sync.mContactsUrl      = null;
@@ -462,12 +462,54 @@ com.gContactSync.Sync = {
         }
       }
     }
+    var threshold = com.gContactSync.Preferences.mSyncPrefs
+                                                .confirmDeleteThreshold.value;
+    // Request permission from the user to delete > threshold contacts from a
+    // single source
+    // If the user clicks Cancel the AB is disabled
+    if (threshold > -1 &&
+          (cardsToDelete.length >= threshold ||
+           com.gContactSync.Sync.mContactsToDelete.length >= threshold) &&
+          !com.gContactSync.Sync.requestDeletePermission(cardsToDelete.length,
+                                                       com.gContactSync.Sync.mContactsToDelete.length)) {
+        com.gContactSync.Sync.syncNextUser();
+        return;
+    }
     // delete the old contacts from Thunderbird
-    ab.deleteContacts(cardsToDelete);
+    if (cardsToDelete.length > 0) {
+      ab.deleteContacts(cardsToDelete);
+    }
 
     com.gContactSync.LOGGER.LOG("***Deleting contacts from Google***");
     // delete contacts from Google
     com.gContactSync.Sync.processDeleteQueue();
+  },
+  /**
+   * Shows a confirmation dialog asking the user to give gContactSync permission
+   * to delete the specified number of contacts from Google and Thunderbird.
+   * If the user clicks Cancel then synchronization with the current address
+   * book is disabled.
+   * @param {int} The number of contacts about to be deleted from Thunderbird.
+   * @param {int} The number of contacts about to be deleted from Google.
+   * @returns {boolean} True if the user clicked OK, false if Cancel.
+   */
+  requestDeletePermission: function Sync_requestDeletePermission(aNumTB, aNumGoogle) {
+    var warning = com.gContactSync.StringBundle.getStr("confirmDelete1") +
+                  " '" + com.gContactSync.Sync.mCurrentAb.getName() + "'" +
+                  "\nThunderbird: " + aNumTB +
+                  "\nGoogle: "      + aNumGoogle +
+                  "\n" + com.gContactSync.StringBundle.getStr("confirmDelete2");
+    com.gContactSync.LOGGER.LOG("Requesting permission to delete " +
+                                "TB: " + aNumTB + ", Google: " + aNumGoogle +
+                                " contacts...");
+    if (!com.gContactSync.confirm(warning)) {
+      com.gContactSync.LOGGER.LOG(" * Permission denied, disabling AB");
+      ab.savePref("Disabled", true);
+      com.gContactSync.alert(com.gContactSync.StringBundle.getStr("deleteCancel"));
+      return false;
+    }
+    com.gContactSync.LOGGER.LOG(" * Permission granted");
+    return true;
   },
   /**
    * Deletes all contacts from Google included in the mContactsToDelete
@@ -573,7 +615,9 @@ com.gContactSync.Sync = {
   },
   /**
    * Updates all cards to Google included in the mContactsToUpdate array one at
-   * a time to avoid timing conflicts.  Calls com.gContactSync.Sync.syncNextUser() when done
+   * a time to avoid timing conflicts.  Calls
+   * com.gContactSync.Sync.syncNextUser() when done if there is at least one
+   * more AB to sync, otherwise calls com.gContactSync.Sync.finish().
    */
   processUpdateQueue: function Sync_processUpdateQueue() {
     var ab = com.gContactSync.Sync.mCurrentAb;
@@ -589,8 +633,12 @@ com.gContactSync.Sync = {
       com.gContactSync.LOGGER.LOG("**About to wait " + delay +
                                   " ms before synchronizing the next account**");
       com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("waiting"));
-      setTimeout(com.gContactSync.Sync.syncNextUser, delay);
-                 
+      if (com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex + 1]) {
+        setTimeout(com.gContactSync.Sync.syncNextUser, delay);
+      }
+      else {
+        com.gContactSync.Sync.finish();
+      }
       return;
     }
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("updating") + " " +

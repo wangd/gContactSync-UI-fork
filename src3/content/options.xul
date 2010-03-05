@@ -292,6 +292,9 @@
       <preference id="syncAddresses"
                   name="extensions.gContactSync.syncAddresses"
                   type="bool"/>
+      <preference id="confirmDeleteThreshold"
+                  name="extensions.gContactSync.confirmDeleteThreshold"
+                  type="int"/>
     </preferences>
     <vbox>
       <label value="&warning.value;"/>
@@ -308,6 +311,12 @@
             </row>
             <row align="center">
               <textbox preference="max_chrome_script_run_time" id="chromeTimeBox" maxlength="5" maxwidth="60"/>
+            </row>
+            <row align="center">
+              <label control="confirmDeleteThreshold" value="&confirmDeleteThreshold.value;"/>
+            </row>
+            <row align="center">
+              <textbox preference="confirmDeleteThreshold" id="confirmDeleteThreshold" maxlength="5" maxwidth="60"/>
             </row>
             <row>
               <checkbox preference="syncAddresses" id="syncAddresses" label="&syncAddresses.label;"/>

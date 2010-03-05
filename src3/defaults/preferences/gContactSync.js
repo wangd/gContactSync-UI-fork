@@ -73,6 +73,8 @@ pref("extensions.gContactSync.Disabled", "false");
 pref("extensions.gContactSync.syncAddresses", false);
 // the interval between AB backups, in days
 pref("extensions.gContactSync.backupInterval", 14);
+// the minimum number of contacts about to be deleted for a confirmation dialog to be displayed
+pref("extensions.gContactSync.confirmDeleteThreshold", 5);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "PreferMailFormat");
 pref("extensions.gContactSync.extended2", "AllowRemoteContent");

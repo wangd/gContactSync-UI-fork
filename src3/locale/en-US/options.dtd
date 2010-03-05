@@ -55,6 +55,7 @@
 <!ENTITY warning.value                  "Warning - this is intended for testing and troubleshooting only">
 <!ENTITY other.label                    "Other">
 <!ENTITY chromeTime.value               "'Unresponsive Script' warning delay time (0 to disable)">
+<!ENTITY confirmDeleteThreshold.value   "Minimum number of contacts to delete before requesting permission">
 <!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
 <!ENTITY syncAddresses.label            "Synchronize postal addresses (EXPERIMENTAL)">
 <!ENTITY resetAll.label                 "Reset All Synced ABs">
