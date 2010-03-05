@@ -97,7 +97,7 @@
             </row>
             <row align="center">
               <label control="initialDelayBox" value="&initialDelay.value;"/>
-              <textbox preference="initialDelay" id="initialDelayBox" maxlength="4" maxwidth="60"/>
+              <textbox preference="initialDelay" id="initialDelayBox" maxlength="8" maxwidth="60"/>
             </row>
           </rows>
         </grid>
