@@ -15,9 +15,7 @@
 <!ENTITY accountDelay.value             "Delay between accounts (ms) [5000]">
 <!ENTITY logging.label                  "Logging">
 <!ENTITY enableLogging.label            "Enable Logging">
-<!ENTITY verboseLog.label               "Enable Verbose Logging">
-<!ENTITY backup.label                   "Address Book Backup Policy">
-<!ENTITY backupInterval.value           "Backup interval (days, -1 to disable) [14]">
+<!ENTITY verboseLog.label               "Enable Verbose Logging (for debugging)">
 
 <!ENTITY interface.tab                  "Interface">
 <!ENTITY buttons.label                  "Buttons and Menus">
@@ -46,13 +44,15 @@
 <!ENTITY extended9.value                "Property 9  ">
 <!ENTITY extended10.value               "Property 10">
 <!ENTITY extendedPropertiesDesc1.value  "10 extra properties to sync.  Examples:">
-<!-- LOCALIZATION NOTE: These 3 lines should not change -->
-<!ENTITY extendedPropertiesDesc2.value  " * FirstName, LastName, PreferMailFormat, Custom1">
-<!ENTITY extendedPropertiesDesc3.value  " * Custom2, Custom3, Custom4, AllowRemoteContent">
-<!ENTITY extendedPropertiesDesc4.value  " * AnniversayDay, AnniversayMonth, AnniversaryYear">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc2.value  " * Custom1, Custom2, Custom3, Custom4">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc3.value  " * AnniversayDay, AnniversayMonth, AnniversaryYear">
 
 <!ENTITY advanced.tab                   "Advanced">
-<!ENTITY warning.value                  "Warning - this is intended for testing and troubleshooting only">
+<!ENTITY warning.value                  "Warning - this is intended for advanced users only">
+<!ENTITY backup.label                   "Address Book Backup Policy">
+<!ENTITY backupInterval.value           "Backup interval (days, -1 to disable) [14]">
 <!ENTITY other.label                    "Other">
 <!ENTITY chromeTime.value               "'Unresponsive Script' warning delay time (0 to disable)">
 <!ENTITY confirmDeleteThreshold.value   "Minimum number of contacts to delete before requesting permission">

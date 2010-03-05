@@ -121,22 +121,7 @@
         <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
         <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
       </groupbox>
-      <separator class="thin"/>
-      <groupbox>
-        <caption label="&backup.label;"/>
-        <grid flex="1">
-          <columns>
-            <column/>
-            <column/>
-          </columns>
-          <rows>
-            <row align="center">
-              <label control="backupInterval" value="&backupInterval.value;"/>
-              <textbox preference="backupInterval" id="backupInterval" maxlength="6" maxwidth="60"/>
-            </row>
-          </rows>
-        </grid>
-      </groupbox>    </groupbox>
+    </groupbox>
   </prefpane>
   <prefpane id="pane_interface" index="interface" label="&interface.tab;">
     <preferences>
@@ -227,7 +212,6 @@
       <label value="&extendedPropertiesDesc1.value;"/>
       <label value="&extendedPropertiesDesc2.value;"/>
       <label value="&extendedPropertiesDesc3.value;"/>
-      <label value="&extendedPropertiesDesc4.value;"/>
       <separator class="thin"/>
       <checkbox preference="syncExtended" id="syncExtended"
                 label="&syncExtended.label;"/>
@@ -300,6 +284,22 @@
       <label value="&warning.value;"/>
       <separator class="thin"/>
       <groupbox>
+        <caption label="&backup.label;"/>
+        <grid flex="1">
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="backupInterval" value="&backupInterval.value;"/>
+              <textbox preference="backupInterval" id="backupInterval" maxlength="6" maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+      </groupbox>
+      <separator class="thin"/>
+      <groupbox>
         <caption label="&other.label;"/>
         <grid flex="1">
           <columns>
@@ -324,6 +324,7 @@
           </rows>
         </grid>
       </groupbox>
+      <separator class="thin"/>
       <hbox>
         <button id="resetAll" label="&resetAll.label;"
                 oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
