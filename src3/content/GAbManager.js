@@ -185,6 +185,11 @@ com.gContactSync.GAbManager.backupAB = function GAbManager_backupAB(aAB, aPrefix
   return false;
 };
 
+/**
+ * Returns a GAddressBook object for the given URI.
+ * If a GAddressBook for the URI or directory's pref branch has already been
+ * returned and is still stored, it is returned and no new object is created.
+ */
 com.gContactSync.GAbManager.getGAbByURI = function GAbManager_getGAbByURI(aURI) {
   // first check if a GAddressBook object for the URI already exists
   var ab = this.mABs[aURI]
@@ -196,6 +201,11 @@ com.gContactSync.GAbManager.getGAbByURI = function GAbManager_getGAbByURI(aURI) 
   return this.getGAb(this.getAbByURI(aURI));
 };
 
+/**
+ * Returns a GAddressBook object for the given nsIAbDirectory.
+ * If a GAddressBook for the directory's URI or pref branch has already been
+ * returned and is still stored, it is returned and no new object is created.
+ */
 com.gContactSync.GAbManager.getGAb = function GAbManager_getGAb(aDirectory, aNoPrefs) {
   if (!aDirectory) {
     return aDirectory;
@@ -212,6 +222,7 @@ com.gContactSync.GAbManager.getGAb = function GAbManager_getGAb(aDirectory, aNoP
   this.mABs[ab.getPrefId()] = ab;
   return ab;
 };
+
 /**
  * Returns an object filled with GAddressBook objects.
  * The properties are the names of those address books.
