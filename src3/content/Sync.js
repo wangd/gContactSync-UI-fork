@@ -346,7 +346,7 @@ com.gContactSync.Sync = {
     // if there are more contacts than returned, increase the pref
         newMax;
     // mark the AB as not having been reset if it gets this far
-    com.gContactSync.mCurrentAb.savePref("reset", false);
+    com.gContactSync.Sync.mCurrentAb.savePref("reset", false);
     // have to update the lists or TB 2 won't work properly
     com.gContactSync.Sync.mLists = ab.getAllLists();
     com.gContactSync.LOGGER.LOG("Last sync was at: " + lastSync);
