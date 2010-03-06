@@ -46,6 +46,9 @@ if (!com.gContactSync) com.gContactSync = {};
  */
 com.gContactSync.GAbManager = com.gContactSync.AbManager;
 
+/** Stores GAddressBook objects keyed by preference ID *AND* URI */
+com.gContactSync.GAbManager.mABs = {};
+
 /**
  * Resets all synchronized address books in the following ways:
  *  - Deletes all mailing lists
@@ -122,7 +125,7 @@ function AbManager_getSyncedAddressBooks(aMakeArray) {
     data = iter.getNext();
     if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
         data instanceof Components.interfaces.nsIAbMDBDirectory)) {
-      ab = new com.gContactSync.GAddressBook(data);
+      ab = this.getGAb(data);
       username = ab.mPrefs.Username;
       if (username && username.toLowerCase() !== "none") {
         if (!this.mAddressBooks[username])
@@ -180,4 +183,71 @@ com.gContactSync.GAbManager.backupAB = function GAbManager_backupAB(aAB, aPrefix
   }
   com.gContactSync.LOGGER.LOG(" - Unable to read the source address book");
   return false;
+};
+
+com.gContactSync.GAbManager.getGAbByURI = function GAbManager_getGAbByURI(aURI) {
+  // first check if a GAddressBook object for the URI already exists
+  var ab = this.mABs[aURI]
+  if (ab) {
+    return ab;
+  }
+  // if it hasn't been obtained yet, get the nsIAbDirectory through its URI
+  // then get a GAddressBook object from that and add it to this.mABs
+  return this.getGAb(this.getAbByURI(aURI));
+};
+
+com.gContactSync.GAbManager.getGAb = function GAbManager_getGAb(aDirectory, aNoPrefs) {
+  if (!aDirectory) {
+    return aDirectory;
+  }
+  // first check if a GAddressBook object for the URI already exists
+  // if so, return it
+  var uri = aDirectory.URI || aDirectory.getDirUri();
+  if (uri && this.mABs[uri]) {
+    return this.mABs[uri];
+  }
+  // otherwise create a new GAddressBook object and add it to this.mABs
+  var ab  = new com.gContactSync.GAddressBook(aDirectory, aNoPrefs);
+  this.mABs[ab.mURI] = ab;
+  this.mABs[ab.getPrefId()] = ab;
+  return ab;
+};
+/**
+ * Returns an object filled with GAddressBook objects.
+ * The properties are the names of those address books.
+ * @param aDirType {int} The type of directory (2 is the usual Mork AB)
+ */
+com.gContactSync.GAbManager.getAllAddressBooks = function GAbManager_getAllAddressBooks(aDirType) {
+  var iter,
+      abManager,
+      dir,
+      abs = {},
+      data,
+      ab,
+      dirType;
+  if (Components.classes["@mozilla.org/abmanager;1"]) { // TB 3
+    abManager = Components.classes["@mozilla.org/abmanager;1"]
+                          .getService(Components.interfaces.nsIAbManager);
+    iter = abManager.directories;
+  }
+  else { // TB 2
+    // obtain the main directory through the RDF service
+    dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
+                    .getService(Components.interfaces.nsIRDFService)
+                    .GetResource("moz-abdirectory://")
+                    .QueryInterface(Components.interfaces.nsIAbDirectory);
+    iter = dir.childNodes;
+  }
+  while (iter.hasMoreElements()) {
+    data = iter.getNext();
+    if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
+        data instanceof Components.interfaces.nsIAbMDBDirectory)) {
+      ab = this.getGAb(data);
+      dirType = ab.getDirType();
+      // If no dir type was passed or the type matches then add it to abs
+      if (this.mVersion < 3 || aDirType === undefined || dirType === aDirType)
+        abs[ab.getName()] = ab;
+    }
+  }
+  return abs;
 };

@@ -310,7 +310,7 @@ com.gContactSync.ContactConverter = {
       aGContact.setGroups(groups);
     }
     // Upload the photo
-    if (ab.mPrefs.sendPhotos) {
+    if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value) {
       aGContact.setPhoto(aTBContact.getValue("PhotoURI"));
     }
     return aGContact;
@@ -368,7 +368,7 @@ com.gContactSync.ContactConverter = {
     }
 
     // parse the DisplayName into FirstName and LastName
-    if (ab.mPrefs.parseNames === "true") {
+    if (com.gContactSync.Preferences.mSyncPrefs.parseNames.value) {
       var name  = aTBContact.getValue("DisplayName"),
           first = aTBContact.getValue("FirstName"),
           last  = aTBContact.getValue("LastName");
@@ -444,7 +444,7 @@ com.gContactSync.ContactConverter = {
     aTBContact.setValue("BirthMonth", month);
     aTBContact.setValue("BirthDay",   day);
 
-    if (ab.mPrefs.getPhotos === "true") {
+    if (com.gContactSync.Preferences.mSyncPrefs.getPhotos.value) {
       var info = aGContact.getPhotoInfo();
       // If the contact has a photo then save it to a local file and update
       // the related attributes

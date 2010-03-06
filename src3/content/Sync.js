@@ -99,7 +99,6 @@ com.gContactSync.Sync = {
     if (!com.gContactSync.Sync.mSynced)
       return;
     // get the next auth token
-    com.gContactSync.Preferences.getSyncPrefs(); // get the preferences
     com.gContactSync.Sync.mSyncScheduled = false;
     com.gContactSync.Sync.mSynced        = false;
     com.gContactSync.LOGGER.mErrorCount  = 0; // reset the error count
@@ -340,7 +339,7 @@ com.gContactSync.Sync = {
         googleContacts = aAtom.getElementsByTagName('entry'),
         abCards = ab.getAllContacts(),
     // get and log the last sync time (milliseconds since 1970 UTC)
-        lastSync = parseInt(ab.getLastSyncDate(), 10),
+        lastSync = parseInt(ab.mPrefs.lastSync, 10),
         cardsToDelete = [],
         maxContacts = com.gContactSync.Preferences.mSyncPrefs.maxContacts.value,
     // if there are more contacts than returned, increase the pref
@@ -694,7 +693,7 @@ com.gContactSync.Sync = {
     if (aAtom) {
       var ab         = com.gContactSync.Sync.mCurrentAb;
       var ns         = com.gContactSync.gdata.namespaces.ATOM;
-      var lastSync   = parseInt(ab.getLastSyncDate());
+      var lastSync   = parseInt(ab.mPrefs.lastSync, 10);
       var myContacts = ab.mPrefs.myContacts == "true" && ab.mPrefs.myContactsName;
       var arr        = aAtom.getElementsByTagNameNS(ns.url, "entry");
       var noCatch    = false;

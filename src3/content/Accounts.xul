@@ -128,6 +128,11 @@
                   label="&Disable.label;"
                   tooltiptext="&Disable.tooltiptext;"
                   oncommand="com.gContactSync.Accounts.mUnsavedChange = true;"/>
+        <spacer height="5px"/>
+        <checkbox id="updateGoogleInConflicts"
+                  label="&updateG.label;"
+                  tooltiptext="&updateG.tooltiptext;"
+                  oncommand="com.gContactSync.Accounts.mUnsavedChange = true;"/>
       </groupbox>
       <spacer height="5px"/>
       <hbox id="acctButtons" align="right">

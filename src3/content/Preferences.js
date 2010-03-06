@@ -38,6 +38,25 @@ if (!com) var com = {}; // A generic wrapper variable
 // A wrapper for all GCS functions and variables
 if (!com.gContactSync) com.gContactSync = {};
 
+window.addEventListener("load",
+  /**
+   * Registers the pref observer and loads the preferences
+   */
+  function gCS_PreferencesLoadListener(e) {
+    com.gContactSync.Preferences.register();
+    com.gContactSync.Preferences.getSyncPrefs();
+  },
+false);
+
+window.addEventListener("unload",
+  /**
+   * Unregisters the pref observer.
+   */
+  function gCS_PreferencesLoadListener(e) {
+    com.gContactSync.Preferences.unregister();
+  },
+false);
+
 /**
  * Stores information on Preferences related to gContactSync.
  * @class
@@ -46,11 +65,13 @@ com.gContactSync.Preferences = {
   /** The preferences service */
   mService: Components.classes["@mozilla.org/preferences-service;1"]
                       .getService(Components.interfaces.nsIPrefService),
+  mBranchName: "extensions.gContactSync.",
   /** The Preferences branch used by gContactSync */
   mSyncBranch: Components.classes["@mozilla.org/preferences-service;1"]
                          .getService(Components.interfaces.nsIPrefService)
                          .getBranch("extensions.gContactSync.")
                         .QueryInterface(Components.interfaces.nsIPrefBranch2),
+  /** An array of the extended properties to use with Google contacts */
   mExtendedProperties: [],
   /** different types of preferences (bool, int, and char) */
   mTypes: {
@@ -60,6 +81,61 @@ com.gContactSync.Preferences = {
     INT:  "int",
     /** String preference */
     CHAR: "char"
+  },
+  /** Stores whether the preference observer has been registered*/
+  mRegistered: false,
+  /**
+   * Registers the pref observer and gets the initial preference values.
+   */
+  register: function CP_Preferences_register() {
+    // Add an observer
+    this.mSyncBranch.addObserver("", this, false);
+    this.mRegistered = true;
+  },
+  /**
+   * Unregisters the pref observer.
+   */
+  unregister: function CP_Preferences_unregister() {
+    if(!this.mPrefBranch || !this.mRegistered) {
+      return;
+    }
+    com.gContactSync.LOGGER.VERBOSE_LOG("**Unregistering preference observer");
+    this.mSyncBranch.removeObserver("", this);
+    this.mRegistered = false;
+  },
+  /**
+   * Called when a preference changes on the extensions.gContactSync. branch.
+   *
+   * @param aSubject {nsIPrefBranch} The branch.
+   * @param aTopic {string} A description of what happened.
+   * @param aData  {string} The name of the pref that was changed.
+   */
+  observe: function(aSubject, aTopic, aData) {
+    if (aTopic != "nsPref:changed") {
+      return;
+    }
+    com.gContactSync.LOGGER.VERBOSE_LOG("**Observed a preference change: " + aData + " - " + aTopic);
+    var pref = this.mSyncPrefs[aData];
+    if (pref) {
+      var oldValue = pref.value;
+      pref.value = this.getPref(this.mSyncBranch, pref.label, pref.type);
+      com.gContactSync.LOGGER.VERBOSE_LOG(" - Old value: '" + oldValue + "'\n" +
+                                          " - New value: '" + pref.value + "'");
+    }
+    // if it isn't a sync pref, check if it is a preference for an existing
+    // GAddressBook
+    else {
+      var ab = com.gContactSync.GAbManager.mABs[this.mBranchName + aData.substring(0, aData.lastIndexOf(".") + 1)];
+      if (ab) {
+        var pref         = aData.substring(aData.lastIndexOf(".") + 1),
+            prefNoPrefix = pref.replace(ab.prefPrefix, "");
+            newPrefValue = ab.getStringPref(pref);
+        com.gContactSync.LOGGER.VERBOSE_LOG("Changing AB pref: " + pref +
+                                            "\nFrom: " + ab.mPrefs[prefNoPrefix] +
+                                            "\nTo: " + newPrefValue);
+        ab.mPrefs[prefNoPrefix] = newPrefValue;
+      }
+    }
   },
   /**
    * Preferences related to gContactSync
@@ -171,6 +247,7 @@ com.gContactSync.Preferences = {
    * sets its default value if it is not present.
    */
   getSyncPrefs: function Preferences_getSyncPrefs() {
+    com.gContactSync.LOGGER.LOG("\n***Loading Preferences***");
     for (var i in this.mSyncPrefs) {
       try {
         this.mSyncPrefs[i].value = this.getPref(this.mSyncBranch,
@@ -182,12 +259,9 @@ com.gContactSync.Preferences = {
         this.setPref(this.mSyncBranch, this.mSyncPrefs[i].label,
                      this.mSyncPrefs[i].type, this.mSyncPrefs[i].defaultValue);
       }
-      if (i == "verboseLog") {
-        com.gContactSync.LOGGER.VERBOSE_LOG("\n***Loading Preferences***");
-      }
-      com.gContactSync.LOGGER.VERBOSE_LOG(" * " + i + ": " + this.mSyncPrefs[i].value);
+      com.gContactSync.LOGGER.LOG(" * " + i + ": " + this.mSyncPrefs[i].value);
     }
-    com.gContactSync.LOGGER.VERBOSE_LOG("***Finished Loading Preferences***\n");
+    com.gContactSync.LOGGER.LOG("***Finished Loading Preferences***\n");
     // only add these extended properties if the pref to sync them is true
     this.mExtendedProperties = [];
     if (this.mSyncPrefs.syncExtended.value)

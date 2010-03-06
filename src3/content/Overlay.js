@@ -84,12 +84,11 @@ com.gContactSync.Overlay = {
     var card = Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                          .createInstance(Components.interfaces.nsIAbCard);
     this.mBug413260 = card.getProperty ? true : false;
-    com.gContactSync.Preferences.getSyncPrefs(); // get the preferences
 
     // Find the last version of gContactSync and set the pref to the current
     this.mLastVersion = com.gContactSync.Preferences.mSyncPrefs.lastVersion.value;
-    // Set the last version
-    com.gContactSync.Preferences.setSyncPref("lastVersion", com.gContactSync.version);
+    com.gContactSync.Preferences.setSyncPref("lastVersion",
+                                             com.gContactSync.version);
 
     if (com.gContactSync.FileIO.mLogFile && com.gContactSync.FileIO.mLogFile.exists())
       com.gContactSync.FileIO.mLogFile.remove(false); // delete the old log file
@@ -100,6 +99,14 @@ com.gContactSync.Overlay = {
     com.gContactSync.LOGGER.LOG(" * Last version was: " + this.mLastVersion);
     com.gContactSync.LOGGER.LOG(" * User Agent:       " + navigator.userAgent + "\n");
 
+    // log the preferences
+    com.gContactSync.LOGGER.LOG("***Preferences:***");
+    for (var i in com.gContactSync.Preferences.mSyncPrefs) {
+      var pref = com.gContactSync.Preferences.mSyncPrefs[i];
+      com.gContactSync.LOGGER.LOG(" - " + pref.label + ": " + pref.value);
+    }
+    com.gContactSync.LOGGER.LOG("***EndPreferences***\n");
+    
     com.gContactSync.originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = this.myOnLoadCardView;
     if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
@@ -408,10 +415,9 @@ com.gContactSync.Overlay = {
   checkAuthentication: function Overlay_checkAuthentication() {
     if (com.gContactSync.gdata.isAuthValid()) {
       if (this.mUsername) {
-        com.gContactSync.Preferences.getSyncPrefs();
         var name = com.gContactSync.Preferences.mSyncPrefs.addressBookName.value;
         var ab   = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByName(name));
-        ab.setUsername(this.mUsername);
+        ab.savePref("Username", this.mUsername);
         ab.setLastSyncDate(0);
         com.gContactSync.Sync.begin();
       }
@@ -854,11 +860,6 @@ com.gContactSync.Overlay = {
   openPreferences: function Overlay_openPreferences() {
     var win = window.open("chrome://gcontactsync/content/options.xul", "prefs",
                           "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
-   win.onload = function onloadListener() {
-      win.onunload = function onunloadListener() {
-        try { com.gContactSync.Preferences.getSyncPrefs(); } catch (e) {}
-      };
-    };
   },
   /**
    * Opens the Accounts dialog for gContactSync

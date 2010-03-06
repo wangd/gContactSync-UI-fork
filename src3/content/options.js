@@ -59,7 +59,6 @@ com.gContactSync.Options = {
       document.getElementById("chkEnableSyncBtn").collapsed = false;
       document.getElementById("chkForceBtnImage").collapsed = false;
     }
-    com.gContactSync.Preferences.getSyncPrefs();
     // if this is the full preferences dialog add a few event listeners
     if (document.getElementById("syncExtended")) {
       document.getElementById("syncExtended")

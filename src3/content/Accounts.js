@@ -71,7 +71,6 @@ com.gContactSync.Accounts = {
    */
   initDialog:  function Accounts_initDialog() {
     try {
-      com.gContactSync.Preferences.getSyncPrefs();
       this.fillAbTree();
       this.fillUsernames();
       this.showAdvancedSettings(document.getElementById("showAdvanced").checked);
@@ -183,6 +182,7 @@ com.gContactSync.Accounts = {
         directionElem = document.getElementById("SyncDirection"),
         pluginElem    = document.getElementById("Plugin"),
         disableElem   = document.getElementById("disabled"),
+        updateGElem   = document.getElementById("updateGoogleInConflicts"),
         ab            = this.getSelectedAb(),
         needsReset    = false;
     if (!ab) {
@@ -195,9 +195,10 @@ com.gContactSync.Accounts = {
     var syncGroups = String(groupElem.value === "All"),
         myContacts = String(groupElem.value !== "All" && groupElem.value !== "false");
     // the simple preferences
-    ab.savePref("Username", usernameElem.value);
-    ab.savePref("Plugin",   pluginElem.value);
-    ab.savePref("Disabled", disableElem.checked);
+    ab.savePref("Username",                usernameElem.value);
+    ab.savePref("Plugin",                  pluginElem.value);
+    ab.savePref("Disabled",                disableElem.checked);
+    ab.savePref("updateGoogleInConflicts", updateGElem.checked);
     // this is for backward compatibility
     ab.savePref("Primary",  "true");
     // Group to sync
@@ -263,6 +264,7 @@ com.gContactSync.Accounts = {
         directionElem = document.getElementById("SyncDirection"),
         pluginElem    = document.getElementById("Plugin"),
         disableElem   = document.getElementById("disabled"),
+        updateGElem   = document.getElementById("updateGoogleInConflicts"),
         ab            = this.getSelectedAb();
     this.restoreGroups();
     if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem) {
@@ -287,6 +289,8 @@ com.gContactSync.Accounts = {
     com.gContactSync.selectMenuItem(directionElem, direction, true);
     // Temporarily disable synchronization with the address book
     disableElem.checked = ab.mPrefs.Disabled === "true";
+    // Overwrite remote changes with local changes in a conflict
+    updateGElem.checked = ab.mPrefs.updateGoogleInConflicts === "true";
     // Select the correct plugin
     com.gContactSync.selectMenuItem(pluginElem, ab.mPrefs.Plugin, true);
     
@@ -379,8 +383,6 @@ com.gContactSync.Accounts = {
         addressbook = document.createElement("treecell"),
         synced      = document.createElement("treecell");
 
-    aAB.getPrefs();
-
     addressbook.setAttribute("label", aAB.getName());
     synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : com.gContactSync.StringBundle.getStr("noAccount"));
 
@@ -431,7 +433,7 @@ com.gContactSync.Accounts = {
       return false;
     }
     // remove the saved prefs from the address book
-    ab.setUsername("");
+    ab.savePref("Username", "");
     ab.setLastSyncDate(0);
     ab.savePref("myContactsName", "");
     ab.savePref("myContacts",     "");
@@ -554,12 +556,12 @@ com.gContactSync.Accounts = {
       "  * " + aSyncGroups     + " <- " + aAB.mPrefs.syncGroups + "\n" +
       "  * " + aMyContacts     + " <- " + aAB.mPrefs.myContacts + "\n" +
       "  * " + aMyContactsName + " <- " + aAB.mPrefs.myContactsName + "\n" +
-      "  * Last sync date: " + aAB.getLastSyncDate()
+      "  * Last sync date: " + aAB.mPrefs.lastSync
      );
     // NOTE: mUnsavedChange is reset to false before this method is called
     if ((aAB.mPrefs.Username && aAB.mPrefs.Username !== "none") &&
          aUsername !== "none" &&
-         parseInt(aAB.getLastSyncDate(), 10) > 0 &&
+         parseInt(aAB.mPrefs.lastSync, 10) > 0 &&
          (
           aAB.mPrefs.Username !== aUsername ||
           aAB.mPrefs.syncGroups !== aSyncGroups ||

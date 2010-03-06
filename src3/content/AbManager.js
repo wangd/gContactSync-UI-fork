@@ -71,45 +71,6 @@ com.gContactSync.AbManager = {
     return this.mBasicAttributes.indexOf(aAttribute) !== -1;
   },
   /**
-   * Returns an object filled with GAddressBook objects.
-   * The properties are the names of those address books.
-   * @param aDirType {int} The type of directory (2 is the usual Mork AB)
-   */
-  getAllAddressBooks: function AbManager_getAllAddressBooks(aDirType) {
-    var iter,
-        abManager,
-        dir,
-        abs = {},
-        data,
-        ab,
-        dirType;
-    if (Components.classes["@mozilla.org/abmanager;1"]) { // TB 3
-      abManager = Components.classes["@mozilla.org/abmanager;1"]
-                            .getService(Components.interfaces.nsIAbManager);
-      iter = abManager.directories;
-    }
-    else { // TB 2
-      // obtain the main directory through the RDF service
-      dir = Components.classes["@mozilla.org/rdf/rdf-service;1"]
-                      .getService(Components.interfaces.nsIRDFService)
-                      .GetResource("moz-abdirectory://")
-                      .QueryInterface(Components.interfaces.nsIAbDirectory);
-      iter = dir.childNodes;
-    }
-    while (iter.hasMoreElements()) {
-      data = iter.getNext();
-      if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
-          data instanceof Components.interfaces.nsIAbMDBDirectory)) {
-        ab = new com.gContactSync.GAddressBook(data);
-        dirType = ab.getDirType();
-        // If no dir type was passed or the type matches then add it to abs
-        if (this.mVersion < 3 || aDirType === undefined || dirType === aDirType)
-          abs[ab.getName()] = ab;
-      }
-    }
-    return abs;
-  },
-  /**
    * Checks the validity of a directory and returns false if it is invalid.
    * @param aDirectory {nsIAbDirectory} The directory to check.
    */
@@ -216,7 +177,7 @@ com.gContactSync.AbManager = {
       aValue = "";
     // make sure the last modified date is in milliseconds since 1/1/1970 UTC
     // and not in microseconds
-    if (aAttrName == "LastModifiedDate" && parseInt(aValue) > 2147483647) {
+    if (aAttrName == "LastModifiedDate" && parseInt(aValue, 10) > 2147483647) {
       com.gContactSync.LOGGER.LOG_WARNING("Had to adjust last modified date from " + aValue);
       aValue = aValue/1000;
     }

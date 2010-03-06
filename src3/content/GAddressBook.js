@@ -67,9 +67,6 @@ com.gContactSync.GAddressBook = function gCS_GAddressBook(aDirectory, aNoPrefs) 
     // compatibility with 0.2.x
     readOnly:       "", // Fetch updates from Google but don't send any changes
     writeOnly:      "", // Send changes to the server, but don't fetch any changes
-    getPhotos:      "", // Download contact photos from Google
-    sendPhotos:     "", // Upload contact photos to Google
-    parseNames:     "", // Try to parse names into first and last
     updateGoogleInConflicts: "", // If a contact was updated in Google and TB then
                                  // this pref determines which contact to update
     lastSync:       "",
@@ -95,13 +92,17 @@ com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPref
   com.gContactSync.LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':");
   var i, val, pref;
   for (i in this.mPrefs) {
-    val = this.getStringPref(this.prefPrefix + i);
+    // all prefs except lastSync have the prefPrefix in from of them
+    val = this.getStringPref((i === "lastSync" ? i : this.prefPrefix + i));
     // getStringPref returns 0 iff the pref doesn't exist
     // if the pref doesn't exist, then use the global gContactSync pref
+    // AND set this AB's pref so this doesn't fall through next time
     // this behavior is mostly for backwards compatibility
     if (val === 0) {
+      com.gContactSync.LOGGER.VERBOSE_LOG("getPrefs fell through on " + i);
       pref = com.gContactSync.Preferences.mSyncPrefs[i];
-      val = pref ? String(pref.value) : "";
+      val  = pref ? String(pref.value) : "";
+      this.savePref(i, val);
     }
     com.gContactSync.LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
     this.mPrefs[i] = val;
@@ -117,26 +118,11 @@ com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPref
  */
 com.gContactSync.GAddressBook.prototype.savePref = function GAddressBook_savePref(aName, aValue) {
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting pref '" + aName + "' to value '" + aValue + "'");
-  this.setStringPref(this.prefPrefix + aName, aValue);
+  // all prefs except lastSync have the prefPrefix in from of them
+  this.setStringPref((aName === "lastSync" ? aName : this.prefPrefix + aName), aValue);
+  // in theory (and in testing) the preferences listener should already take
+  // care of setting the preference in this.mPrefs...
   this.mPrefs[aName] = aValue;
-};
-
-/**
- * Sets the username for the account with which this address book is synced.
- * @param aUsername {string} The username for the Google account.
- */
-com.gContactSync.GAddressBook.prototype.setUsername = function GAddressBook_setUsername(aUsername) {
-  this.setStringPref("gContactSyncUsername", aUsername);
-  this.mPrefs.username = aUsername;
-};
-
-/**
- * Returns the last time this address book was synchronized in milliseconds
- * since the epoch.
- * @returns {string} The last time this address book was synchronized.
- */
-com.gContactSync.GAddressBook.prototype.getLastSyncDate = function GAddressBook_getLastSyncDate() {
-  return this.getStringPref("lastSync");
 };
  
 /**
@@ -146,6 +132,9 @@ com.gContactSync.GAddressBook.prototype.getLastSyncDate = function GAddressBook_
  */
 com.gContactSync.GAddressBook.prototype.setLastSyncDate = function GAddressBook_setLastSyncDate(aLastSync) {
   this.setStringPref("lastSync", aLastSync);
+  // in theory (and in testing) the preferences listener should already take
+  // care of setting the preference in this.mPrefs...
+  this.mPrefs.lastSync = aLastSync;
 };
  
 /**
@@ -164,8 +153,6 @@ com.gContactSync.GAddressBook.prototype.setLastSyncDate = function GAddressBook_
 com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   com.gContactSync.LOGGER.LOG("Resetting the " + this.getName() + " directory.");
   var lists, i, dt;
-  // refetch the preferences to check if this AB was already reset
-  this.getPrefs();
   if (this.mPrefs.reset === "true") {
     com.gContactSync.LOGGER.LOG_WARNING("An attempt was made to reset an AB which was already reset.  Ignoring request.");
     return false;

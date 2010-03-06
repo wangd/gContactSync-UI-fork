@@ -41,6 +41,9 @@
 <!ENTITY Disable.label        "Temporarily disable synchronization with this address book">
 <!ENTITY Disable.tooltiptext  "Check this box to skip over this address book when synchronizing.  Uncheck it when you want to synchronize it again.">
 
+<!ENTITY updateG.label        "Local changes have priority over remote changes">
+<!ENTITY updateG.tooltiptext  "When a contact has been updated locally and remotely after the last synchronization, gContactSync needs to know which change to keep.  Check this box to have the local change overwrite the remote change">
+
 <!-- Account buttons -->
 <!ENTITY deleteAB.label       "Delete this Address Book">
 <!ENTITY removeLogin.label    "Remove Settings">
