@@ -7,7 +7,7 @@
 <!ENTITY autoSync.label                 "Synchronize contacts automatically">
 <!ENTITY refreshInterval.value          "Synchronize Interval (minutes) [Default is 30]">
 <!ENTITY initialDelay.value             "Initial sync delay (ms) [Default is 500]">
-<!ENTITY abName.value                    "Name of the Address Book to sync with (old or new)">
+<!ENTITY abName.value                   "Name of the Address Book to sync with (old or new)">
 <!ENTITY syncBehavior.label             "Sync Behavior">
 <!ENTITY removeOldAddresses.label       "Remove the old Thunderbird addresses after converting to the new format">
 <!ENTITY parseNames.label               "Parse names from Google contacts into First and Last names.">

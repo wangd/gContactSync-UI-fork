@@ -88,14 +88,8 @@ com.gContactSync.Overlay = {
 
     // Find the last version of gContactSync and set the pref to the current
     this.mLastVersion = com.gContactSync.Preferences.mSyncPrefs.lastVersion.value;
-    //com.gContactSync.alert(com.gContactSync.LoginManager.getAllEmailAccts(/@/).join('\n'));
-
-    com.gContactSync.Preferences.setPref(com.gContactSync.Preferences.mSyncBranch,
-                        com.gContactSync.Preferences.mSyncPrefs.lastVersion.label,
-                        com.gContactSync.Preferences.mSyncPrefs.lastVersion.type,
-                        com.gContactSync.version);
-    // reset the needRestart pref
-    com.gContactSync.Preferences.setSyncPref("needRestart", false);
+    // Set the last version
+    com.gContactSync.Preferences.setSyncPref("lastVersion", com.gContactSync.version);
 
     if (com.gContactSync.FileIO.mLogFile && com.gContactSync.FileIO.mLogFile.exists())
       com.gContactSync.FileIO.mLogFile.remove(false); // delete the old log file
