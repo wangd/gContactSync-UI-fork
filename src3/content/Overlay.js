@@ -94,6 +94,8 @@ com.gContactSync.Overlay = {
                         com.gContactSync.Preferences.mSyncPrefs.lastVersion.label,
                         com.gContactSync.Preferences.mSyncPrefs.lastVersion.type,
                         com.gContactSync.version);
+    // reset the needRestart pref
+    com.gContactSync.Preferences.setSyncPref("needRestart", false);
 
     if (com.gContactSync.FileIO.mLogFile && com.gContactSync.FileIO.mLogFile.exists())
       com.gContactSync.FileIO.mLogFile.remove(false); // delete the old log file
@@ -919,12 +921,18 @@ com.gContactSync.Overlay = {
   resetSelectedAB: function Overlay_resetSelectedAB() {
     var dirTree  = document.getElementById("dirTree");
     var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
-    var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByURI(selected.Value), true);
-    var restartStr = com.gContactSync.StringBundle.getStr("pleaseRestart");
+    var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByURI(selected.Value));
+    if (ab.mPrefs.reset === "true") {
+      com.gContactSync.alert(com.gContactSync.StringBundle.getStr("alreadyReset"));
+      return;
+    }
     if (com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("resetConfirm2"))) {
-      ab.reset();
-      this.setStatusBarText(restartStr);
-      com.gContactSync.alertError(restartStr);
+      if (ab.reset()) {
+        var restartStr = com.gContactSync.StringBundle.getStr("pleaseRestart");
+        com.gContactSync.Preferences.setSyncPref("needRestart", true);
+        this.setStatusBarText(restartStr);
+        com.gContactSync.alertError(restartStr);
+      }
     }
   },
   /**

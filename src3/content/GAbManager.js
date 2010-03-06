@@ -68,15 +68,18 @@ function GAbManager_resetSyncedABs(showConfirm) {
 
   com.gContactSync.LOGGER.LOG("Resetting all synchronized directories.");
   var abs = com.gContactSync.GAbManager.getSyncedAddressBooks(true),
-      i;
+      i,
+      needRestart = false;;
   for (i in abs) {
     if (abs[i].ab && abs[i].ab.mPrefs.Disabled !== "true") {
-      abs[i].ab.reset();
+      needRestart = abs[i].ab.reset() || needRestart;
     }
   }
   
   com.gContactSync.LOGGER.LOG("Finished resetting all synchronized directories.");
-  com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
+  if (needRestart) {
+    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
+  }
   return true;
 };
 /**

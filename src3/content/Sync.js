@@ -118,6 +118,13 @@ com.gContactSync.Sync = {
       com.gContactSync.Sync.finish();
       return;
     }
+    // make sure the user doesn't have to restart TB
+    if (com.gContactSync.Preferences.mSyncPrefs.needRestart.value) {
+      var restartStr = com.gContactSync.StringBundle.getStr("pleaseRestart");
+      com.gContactSync.alert(restartStr);
+      com.gContactSync.Overlay.setStatusBarText(restartStr);
+      return;
+    }
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mCurrentUsername = obj.username;
     com.gContactSync.LOGGER.LOG("Starting Synchronization for " + com.gContactSync.Sync.mCurrentUsername +
@@ -338,6 +345,8 @@ com.gContactSync.Sync = {
         maxContacts = com.gContactSync.Preferences.mSyncPrefs.maxContacts.value,
     // if there are more contacts than returned, increase the pref
         newMax;
+    // mark the AB as not having been reset if it gets this far
+    com.gContactSync.mCurrentAb.savePref("reset", false);
     // have to update the lists or TB 2 won't work properly
     com.gContactSync.Sync.mLists = ab.getAllLists();
     com.gContactSync.LOGGER.LOG("Last sync was at: " + lastSync);
@@ -750,6 +759,7 @@ com.gContactSync.Sync = {
                       ab.reset();
                       com.gContactSync.Overlay.setStatusBarText(restartStr);
                       com.gContactSync.alert(restartStr);
+                      com.gContactSync.Preferences.setSyncPref("needRestart", true);
                     }
                     // Throw an error to stop the sync
                     throw "A system group was deleted from Thunderbird";                  

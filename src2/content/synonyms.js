@@ -95,17 +95,17 @@ function makeDummyEmail(aContact, ignorePref) {
   } catch(e) {
     try {
       // try getting the card's value
-      if (aCard.getProperty) // post Bug 413260
-        id = aCard.getProperty("GoogleID", null);
+      if (aContact.getProperty) // post Bug 413260
+        id = aContact.getProperty("GoogleID", null);
       else // pre Bug 413260
-        id = aCard.getStringAttribute("GoogleID");
+        id = aContact.getStringAttribute("GoogleID");
     }
     catch (e) {}
   }
 
   if (id) {
     // take just the ID and not the whole URL
-    id = id.replace(/\/*.*\//, "");
+    id = id.substr(1 + id.lastIndexOf("/"));
     return prefix + id + suffix;
   }
   // if there is no ID make a random number

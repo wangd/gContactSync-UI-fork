@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2009
+ * Portions created by the Initial Developer are Copyright (C) 2008-2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -73,7 +73,8 @@ com.gContactSync.GAddressBook = function gCS_GAddressBook(aDirectory, aNoPrefs) 
     updateGoogleInConflicts: "", // If a contact was updated in Google and TB then
                                  // this pref determines which contact to update
     lastSync:       "",
-    lastBackup:     ""
+    lastBackup:     "",
+    reset:          ""
   };
   if (!aNoPrefs)
     this.getPrefs();
@@ -153,21 +154,30 @@ com.gContactSync.GAddressBook.prototype.setLastSyncDate = function GAddressBook_
  * The username is NOT erased.
  * 
  * This includes:
+ *   - Creating a backup
  *   - Deleting all mailing lists
  *   - Deleting all contacts
  *   - Setting primary to true
  *   - Setting the last sync date to 0
+ * @returns {boolean} True if the AB was reset, false otherwise.
  */
 com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   com.gContactSync.LOGGER.LOG("Resetting the " + this.getName() + " directory.");
   var lists, i, dt;
+  // refetch the preferences to check if this AB was already reset
+  this.getPrefs();
+  if (this.mPrefs.reset === "true") {
+    com.gContactSync.LOGGER.LOG_WARNING("An attempt was made to reset an AB which was already reset.  Ignoring request.");
+    return false;
+  }
   dt = new Date().toLocaleFormat("%Y_%m_%d_");
   com.gContactSync.GAbManager.backupAB(this, "reset_" + dt, ".bak");
   try {
     lists = this.getAllLists(true);
   }
   catch (e) {
-    com.gContactSync.LOGGER.LOG_ERROR("Unable to remove all lists", e);
+    com.gContactSync.LOGGER.LOG_ERROR("Unable to get all lists", e);
+    lists = {};
   }
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting all lists");
   for (i in lists) {
@@ -182,6 +192,9 @@ com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   com.gContactSync.LOGGER.VERBOSE_LOG(" * Setting Last Sync Date to 0");
   this.setLastSyncDate(0);
   com.gContactSync.LOGGER.LOG("Finished resetting the directory.");
+  // mark the AB as having been reset
+  this.savePref("reset", true);
+  return true;
 };
 /**
  * Returns a new GMailList object given the same parameters as the GMailList

@@ -101,7 +101,8 @@ com.gContactSync.Preferences = {
     Plugin:                   new com.gContactSync.Pref("Plugin",                   "char", "Google"),
     Disabled:                 new com.gContactSync.Pref("Disabled",                 "char", "false"),
     updateGoogleInConflicts:  new com.gContactSync.Pref("updateGoogleInConflicts",  "bool", true),
-    syncAddresses:            new com.gContactSync.Pref("syncAddresses",            "bool", true)
+    syncAddresses:            new com.gContactSync.Pref("syncAddresses",            "bool", true),
+    needRestart:              new com.gContactSync.Pref("needRestart",              "bool", false)
   },
   /**
    * Gets a preference given its branch, name, and type
@@ -149,6 +150,20 @@ com.gContactSync.Preferences = {
         throw "Invalid aType parameter supplied to the setPref method" +
               com.gContactSync.StringBundle.getStr("pleaseReport");
     }
+  },
+  /**
+   * A convientient method of saving a sync preference.
+   * @param aPrefName {string} The preference on the gContactSync branch
+   *                           to save.
+   * @param aValue {string}    The new value for the given preference.
+   */
+  setSyncPref: function Preferences_setSyncPref(aPrefName, aValue) {
+    var pref = this.mSyncPrefs[aPrefName];
+    if (!pref) {
+      throw "Error - invalid pref name '" + aPrefName + "'" +
+            " sent to setSyncPref";
+    }
+    return this.setPref(this.mSyncBranch, pref.label, pref.type, aValue);
   },
   /**
    * Preferences.getSyncPrefs
