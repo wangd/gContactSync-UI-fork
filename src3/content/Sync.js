@@ -637,11 +637,11 @@ com.gContactSync.Sync = {
           com.gContactSync.Sync.mCurrentAb.setLastSyncDate) {
         com.gContactSync.Sync.mCurrentAb.setLastSyncDate((new Date()).getTime());
       }
-      var delay = com.gContactSync.Preferences.mSyncPrefs.accountDelay.value;
-      com.gContactSync.LOGGER.LOG("**About to wait " + delay +
-                                  " ms before synchronizing the next account**");
-      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("waiting"));
       if (com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex + 1]) {
+        var delay = com.gContactSync.Preferences.mSyncPrefs.accountDelay.value;
+        com.gContactSync.LOGGER.LOG("**About to wait " + delay +
+                                    " ms before synchronizing the next account**");
+        com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("waiting"));
         setTimeout(com.gContactSync.Sync.syncNextUser, delay);
       }
       else {
