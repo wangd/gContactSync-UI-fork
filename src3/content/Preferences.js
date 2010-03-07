@@ -52,7 +52,7 @@ window.addEventListener("unload",
   /**
    * Unregisters the pref observer.
    */
-  function gCS_PreferencesLoadListener(e) {
+  function gCS_PreferencesUnloadListener(e) {
     com.gContactSync.Preferences.unregister();
   },
 false);
@@ -73,7 +73,7 @@ com.gContactSync.Preferences = {
                         .QueryInterface(Components.interfaces.nsIPrefBranch2),
   /** An array of the extended properties to use with Google contacts */
   mExtendedProperties: [],
-  /** different types of preferences (bool, int, and char) */
+  /** Different types of preferences (bool, int, and char) */
   mTypes: {
     /** Boolean preference */
     BOOL: "bool",
