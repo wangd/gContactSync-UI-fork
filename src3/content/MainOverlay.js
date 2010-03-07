@@ -49,6 +49,14 @@ com.gContactSync.MainOverlay = {
   initialize: function MainOverlay_initialize() {
     // reset the needRestart pref
     com.gContactSync.Preferences.setSyncPref("needRestart", false);
-  }
+    // remove the old log file
+    if (com.gContactSync.FileIO.mLogFile && com.gContactSync.FileIO.mLogFile.exists())
+      com.gContactSync.FileIO.mLogFile.remove(false); // delete the old log file
+
+    // log some basic system and application info
+    com.gContactSync.LOGGER.LOG("Loading gContactSync at " + new Date());
+    com.gContactSync.LOGGER.LOG(" * Version is:       " + com.gContactSync.version);
+    com.gContactSync.LOGGER.LOG(" * Last version was: " + com.gContactSync.Preferences.mSyncPrefs.lastVersion.value);
+    com.gContactSync.LOGGER.LOG(" * User Agent:       " + navigator.userAgent + "\n");  }
 };
 
