@@ -39,13 +39,24 @@ if (!com) var com = {}; // A generic wrapper variable
 if (!com.gContactSync) com.gContactSync = {};
 
 window.addEventListener("load",
-  /** Initializes the FileIO class when the window has finished loading */
+  /** Initializes the MainOverlay class when the window has finished loading */
   function gCS_mainOverlayLoadListener(e) {
     com.gContactSync.MainOverlay.initialize();
   },
 false);
 
+/**
+ * The main overlay removes old log files and displays basic information about
+ * the version of gContactSync and Thunderbird.
+ * Also resets the needRestart pref to false.
+ * @class
+ */
 com.gContactSync.MainOverlay = {
+  /**
+   * Initializes the MainOverlay class.
+   * This consists of setting the needRestart pref to false, removing the old
+   * log file, and logging basic TB and gContactSync information.
+   */
   initialize: function MainOverlay_initialize() {
     // reset the needRestart pref
     com.gContactSync.Preferences.setSyncPref("needRestart", false);
@@ -57,6 +68,6 @@ com.gContactSync.MainOverlay = {
     com.gContactSync.LOGGER.LOG("Loading gContactSync at " + new Date());
     com.gContactSync.LOGGER.LOG(" * Version is:       " + com.gContactSync.version);
     com.gContactSync.LOGGER.LOG(" * Last version was: " + com.gContactSync.Preferences.mSyncPrefs.lastVersion.value);
-    com.gContactSync.LOGGER.LOG(" * User Agent:       " + navigator.userAgent + "\n");  }
+    com.gContactSync.LOGGER.LOG(" * User Agent:       " + navigator.userAgent + "\n");
+  }
 };
-

@@ -69,9 +69,9 @@ com.gContactSync.GAddressBook = function gCS_GAddressBook(aDirectory, aNoPrefs) 
     writeOnly:      "", // Send changes to the server, but don't fetch any changes
     updateGoogleInConflicts: "", // If a contact was updated in Google and TB then
                                  // this pref determines which contact to update
-    lastSync:       "",
-    lastBackup:     "",
-    reset:          ""
+    lastSync:       "", // The last time this AB was synchronized
+    lastBackup:     "", // The last time this AB was backed up
+    reset:          ""  // Whether this AB has been reset since the last sync
   };
   if (!aNoPrefs)
     this.getPrefs();
