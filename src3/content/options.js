@@ -119,15 +119,15 @@ com.gContactSync.Options = {
         abPrefIDs  = {},
         i          = 0,
         numDeleted = 0,
-        prefNames  = /(lastSync|gContactSync(Username|lastSync|readOnly|writeOnly|myContacts|myContactsName|Plugin|Disabled|syncGroups|updateGoogleInConflicts|lastBackup|reset|Primary))/;
-    // Step 1: Backup prefs.js
-    var prefsFile  = com.gContactSync.FileIO.getProfileDirectory(),
+        prefNames  = /(lastSync|gContactSync(Username|lastSync|readOnly|writeOnly|myContacts|myContactsName|Plugin|Disabled|syncGroups|updateGoogleInConflicts|lastBackup|reset|Primary))/,
+        // Step 1: Backup prefs.js
+        prefsFile  = com.gContactSync.FileIO.getProfileDirectory(),
         backupFile = com.gContactSync.FileIO.getProfileDirectory();
     prefsFile.append(com.gContactSync.FileIO.fileNames.PREFS_JS);
     backupFile.append(com.gContactSync.FileIO.fileNames.FOLDER_NAME);
     backupFile.append(new Date().getTime() + "_" +
                       com.gContactSync.FileIO.fileNames.PREFS_JS + ".bak");
-    com.gContactSync.LOGGER.LOG("***Backing up prefs.js file***");
+    com.gContactSync.LOGGER.LOG("***Backing up prefs.js***");
     com.gContactSync.LOGGER.LOG(" - Destination: " + backupFile.path);
     com.gContactSync.FileIO.copyFile(prefsFile, backupFile);
     // Step 2: Clean all gContactSync prefs on ldap_2.servers

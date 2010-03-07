@@ -1,0 +1,197 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/* ***** BEGIN LICENSE BLOCK *****
+<span class='line'>  2</span>  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+<span class='line'>  3</span>  *
+<span class='line'>  4</span>  * The contents of this file are subject to the Mozilla Public License Version
+<span class='line'>  5</span>  * 1.1 (the "License"); you may not use this file except in compliance with
+<span class='line'>  6</span>  * the License. You may obtain a copy of the License at
+<span class='line'>  7</span>  * http://www.mozilla.org/MPL/
+<span class='line'>  8</span>  *
+<span class='line'>  9</span>  * Software distributed under the License is distributed on an "AS IS" basis,
+<span class='line'> 10</span>  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+<span class='line'> 11</span>  * for the specific language governing rights and limitations under the
+<span class='line'> 12</span>  * License.
+<span class='line'> 13</span>  *
+<span class='line'> 14</span>  * The Original Code is gContactSync.
+<span class='line'> 15</span>  *
+<span class='line'> 16</span>  * The Initial Developer of the Original Code is
+<span class='line'> 17</span>  * Josh Geenen &lt;gcontactsync@pirules.org>.
+<span class='line'> 18</span>  * Portions created by the Initial Developer are Copyright (C) 2009
+<span class='line'> 19</span>  * the Initial Developer. All Rights Reserved.
+<span class='line'> 20</span>  *
+<span class='line'> 21</span>  * Contributor(s):
+<span class='line'> 22</span>  *
+<span class='line'> 23</span>  * Alternatively, the contents of this file may be used under the terms of
+<span class='line'> 24</span>  * either the GNU General Public License Version 2 or later (the "GPL"), or
+<span class='line'> 25</span>  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+<span class='line'> 26</span>  * in which case the provisions of the GPL or the LGPL are applicable instead
+<span class='line'> 27</span>  * of those above. If you wish to allow use of your version of this file only
+<span class='line'> 28</span>  * under the terms of either the GPL or the LGPL, and not to allow others to
+<span class='line'> 29</span>  * use your version of this file under the terms of the MPL, indicate your
+<span class='line'> 30</span>  * decision by deleting the provisions above and replace them with the notice
+<span class='line'> 31</span>  * and other provisions required by the GPL or the LGPL. If you do not delete
+<span class='line'> 32</span>  * the provisions above, a recipient may use your version of this file under
+<span class='line'> 33</span>  * the terms of any one of the MPL, the GPL or the LGPL.
+<span class='line'> 34</span>  *
+<span class='line'> 35</span>  * ***** END LICENSE BLOCK ***** */</span><span class="WHIT">
+<span class='line'> 36</span> 
+<span class='line'> 37</span> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">com</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">com</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// A generic wrapper variable</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="COMM">// A wrapper for all GCS functions and variables</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">com.gContactSync</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="NAME">com.gContactSync</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 40</span> 
+<span class='line'> 41</span> </span><span class="COMM">/**
+<span class='line'> 42</span>  * Makes a new TBContact object that has functions to get and set various values
+<span class='line'> 43</span>  * for a contact independently of the version of Thunderbird (using com.gContactSync.GAbManager).
+<span class='line'> 44</span>  * Optionally takes the parent directory and is able to update the card in that
+<span class='line'> 45</span>  * directory.
+<span class='line'> 46</span>  * 
+<span class='line'> 47</span>  * @param aContact   {nsIAbCard}   A Thunderbird contact.
+<span class='line'> 48</span>  * @param aDirectory {AddressBook} The parent directory.  Optional.
+<span class='line'> 49</span>  * @class
+<span class='line'> 50</span>  * @constructor
+<span class='line'> 51</span>  */</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="NAME">com.gContactSync.TBContact</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_TBContact</span><span class="PUNC">(</span><span class="NAME">aCard</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aDirectory</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="PUNC">(</span><span class="NAME">aCard</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Components.interfaces.nsIAbCard</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.LOG_ERROR</span><span class="PUNC">(</span><span class="STRN">"Invalid aCard passed to the TBContact constructor: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">                                      </span><span class="NAME">aCard</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"\nCalled by: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.caller</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Invalid aCard passed to TBContact"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">  </span><span class="COMM">//if (!(aDirectory instanceof com.gContactSync.AddressBook)) {</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">  </span><span class="COMM">//  throw "Error - invalid directory sent to the TBContact constructor";</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="WHIT">  </span><span class="COMM">//}</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">  </span><span class="NAME">this.mAddressBook</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aDirectory</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">  </span><span class="NAME">this.mContact</span><span class="WHIT">     </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aCard</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">  </span><span class="NAME">this.mPostbox</span><span class="WHIT">     </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mContact.setAdditionalEmailAddresses</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 65</span> 
+<span class='line'> 66</span> </span><span class="NAME">com.gContactSync.TBContact.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 68</span>    * Returns the value of the requested property of this contact.
+<span class='line'> 69</span>    *
+<span class='line'> 70</span>    * If the readOnly preference is enabled, then this will return 0 for the
+<span class='line'> 71</span>    * LastModifiedDate.
+<span class='line'> 72</span>    * 
+<span class='line'> 73</span>    * @param aAttribute {string} The attribute to get (PrimaryEmail, for example)
+<span class='line'> 74</span>    *
+<span class='line'> 75</span>    * @returns {string} The value of the attribute, or null if not set.
+<span class='line'> 76</span>    */</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">  </span><span class="NAME">getValue</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">TBContact_getValue</span><span class="PUNC">(</span><span class="NAME">aAttribute</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aAttribute</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">      </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Error - invalid attribute sent to TBContact.getValue"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aAttribute</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"LastModifiedDate"</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.mAddressBook</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">        </span><span class="NAME">this.mAddressBook.mPrefs</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.mAddressBook.mPrefs.readOnly</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"true"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">      </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Read only mode, setting LMD to 0"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">    </span><span class="COMM">// Postbox stores additional e-mail addresses already</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.mPostbox</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aAttribute</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"ThirdEmail"</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">aAttribute</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"FourthEmail"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">      </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">arrLen</span><span class="WHIT">   </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">          </span><span class="NAME">emailArr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mContact.getAdditionalEmailAddresses</span><span class="PUNC">(</span><span class="NAME">arrLen</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aAttribute</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"ThirdEmail"</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">emailArr.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">emailArr</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">      </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">emailArr.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">emailArr</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.GAbManager.getCardValue</span><span class="PUNC">(</span><span class="NAME">this.mContact</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aAttribute</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>100</span>    * Sets the value of the requested attribute of this contact and optionally
+<span class='line'>101</span>    * updates the contact in its parent directory.
+<span class='line'>102</span>    *
+<span class='line'>103</span>    * @param aAttribute {string} The attribute to set (PrimaryEmail, for example)
+<span class='line'>104</span>    * @param aValue     {string} The value for the given attribute.  If null the
+<span class='line'>105</span>    *                   attribute is 'deleted' from the contact.
+<span class='line'>106</span>    * @param aUpdate    {boolean} Set to true to update this card after setting
+<span class='line'>107</span>    *                   the value of the attribute.
+<span class='line'>108</span>    * @returns {boolean} True if the contact was updated.
+<span class='line'>109</span>    */</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">  </span><span class="NAME">setValue</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">TBContact_setValue</span><span class="PUNC">(</span><span class="NAME">aAttribute</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aUpdate</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.mPostbox</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aAttribute</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"ThirdEmail"</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">aAttribute</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"FourthEmail"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">      </span><span class="COMM">// get the existing e-mail addresses</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">      </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">arrLen</span><span class="WHIT">   </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">          </span><span class="NAME">emailArr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mContact.getAdditionalEmailAddresses</span><span class="PUNC">(</span><span class="NAME">arrLen</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aAttribute</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"ThirdEmail"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">        </span><span class="NAME">emailArr</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">      </span><span class="COMM">// FourthEmail</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">      </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">emailArr.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">        </span><span class="NAME">emailArr</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">      </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">        </span><span class="NAME">emailArr</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">      </span><span class="NAME">this.mContact.setAdditionalEmailAddresses</span><span class="PUNC">(</span><span class="NAME">emailArr.length</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">emailArr</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">    </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">      </span><span class="NAME">com.gContactSync.GAbManager.setCardValue</span><span class="PUNC">(</span><span class="NAME">this.mContact</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aAttribute</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aUpdate</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.update</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>135</span>    * Updates this card in its parent directory, if possible.
+<span class='line'>136</span>    * @returns {boolean} True if the contact was updated.
+<span class='line'>137</span>    */</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">  </span><span class="NAME">update</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">TBContact_update</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.mAddressBook</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">      </span><span class="NAME">com.gContactSync.LOGGER.LOG_WARNING</span><span class="PUNC">(</span><span class="STRN">"Warning - TBContact.update called w/o a directory"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.mAddressBook.updateContact</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>146</span>    * Removes this card from its parent directory, if possible.
+<span class='line'>147</span>    * @returns {boolean} True if the contact was removed.
+<span class='line'>148</span>    */</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">  </span><span class="NAME">remove</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">TBContact_remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.mAddressBook</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">      </span><span class="NAME">com.gContactSync.LOGGER.LOG_WARNING</span><span class="PUNC">(</span><span class="STRN">"Warning - TBContact.remove called w/o a directory"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.mAddressBook.deleteContacts</span><span class="PUNC">(</span><span class="PUNC">[</span><span class="KEYW">this</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>157</span>    * Returns a 'name' for this contact.  It is the first non-null and not blank
+<span class='line'>158</span>    * value for the following attributes:
+<span class='line'>159</span>    *  - DisplayName
+<span class='line'>160</span>    *  - PrimaryEmail
+<span class='line'>161</span>    *  - GoogleID
+<span class='line'>162</span>    * @returns {string} The name of this contact.
+<span class='line'>163</span>    */</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">  </span><span class="NAME">getName</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">TBContact_getName</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">displayName</span><span class="WHIT">  </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="STRN">"DisplayName"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">displayName</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">displayName</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">primaryEmail</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="STRN">"PrimaryEmail"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">primaryEmail</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">primaryEmail</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="STRN">"GoogleID"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>174</span>    * Returns true if an only if this contact has a value for one or more of the
+<span class='line'>175</span>    * postal address fields (Address, Address2, City, State, ZipCode, or Country)
+<span class='line'>176</span>    * of the given type (Home, Work, etc.)
+<span class='line'>177</span>    * @param aPrefix {string} The type of address (Home, Work, etc.)
+<span class='line'>178</span>    * @return {boolean} True if and only if one or more of the address fields of
+<span class='line'>179</span>    *                   the given type has a value.
+<span class='line'>180</span>    */</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">  </span><span class="NAME">hasAddress</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">TBContact_hasAddress</span><span class="PUNC">(</span><span class="NAME">aPrefix</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="NAME">aPrefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"Address"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">           </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="NAME">aPrefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"Address2"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>184</span> </span><span class="WHIT">           </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="NAME">aPrefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"City"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">           </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="NAME">aPrefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"State"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">           </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="NAME">aPrefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"ZipCode"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">           </span><span class="NAME">this.getValue</span><span class="PUNC">(</span><span class="NAME">aPrefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"Country"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>190</span> </span></pre></body></html>
