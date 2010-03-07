@@ -55,6 +55,8 @@ com.gContactSync.FileIO = {
   mLogFile: null,
   /** File names */
   fileNames: {
+    /** The file where preferences are stored */
+    PREFS_JS:    "prefs.js",
     /** Stores AB backups and the gContactSync log */
     FOLDER_NAME: "gcontactsync",
     /** Stores the log from the last sync */

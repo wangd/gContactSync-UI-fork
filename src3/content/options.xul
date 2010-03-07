@@ -328,6 +328,8 @@
       <hbox>
         <button id="resetAll" label="&resetAll.label;"
                 oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
+        <button id="cleanOldPrefs" label="&cleanOldPrefs.label;"
+                oncommand="com.gContactSync.Options.cleanOldPrefs(true);"/>
       </hbox>
     </vbox>
   </prefpane>

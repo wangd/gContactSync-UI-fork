@@ -59,3 +59,4 @@
 <!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
 <!ENTITY syncAddresses.label            "Synchronize postal addresses (EXPERIMENTAL)">
 <!ENTITY resetAll.label                 "Reset All Synced ABs">
+<!ENTITY cleanOldPrefs.label            "Clean Old AB Preferences">

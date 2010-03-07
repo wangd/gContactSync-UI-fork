@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2009
+ * Portions created by the Initial Developer are Copyright (C) 2008-2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -102,5 +102,61 @@ com.gContactSync.Options = {
     if (initialElem)
       initialElem.disabled  = !disableElem.value;
     return true;
+  },
+  /**
+   * Deletes old preferences that are no longer required.
+   */
+  cleanOldPrefs: function Options_cleanOldPrefs() {
+    var abBranch   = Components.classes["@mozilla.org/preferences-service;1"]
+                               .getService(Components.interfaces.nsIPrefService)
+                               .getBranch("ldap_2.servers."),
+        gAbBranch  = Components.classes["@mozilla.org/preferences-service;1"]
+                               .getService(Components.interfaces.nsIPrefService)
+                               .getBranch("extensions.gContactSync.ldap_2.servers."),
+        abs        = com.gContactSync.GAbManager.getAllAddressBooks(),
+        children   = [],
+        count      = {},
+        abPrefIDs  = {},
+        i          = 0,
+        numDeleted = 0,
+        prefNames  = /(lastSync|gContactSync(Username|lastSync|readOnly|writeOnly|myContacts|myContactsName|Plugin|Disabled|syncGroups|updateGoogleInConflicts|lastBackup|reset|Primary))/;
+    // Step 1: Backup prefs.js
+    var prefsFile  = com.gContactSync.FileIO.getProfileDirectory(),
+        backupFile = com.gContactSync.FileIO.getProfileDirectory();
+    prefsFile.append(com.gContactSync.FileIO.fileNames.PREFS_JS);
+    backupFile.append(com.gContactSync.FileIO.fileNames.FOLDER_NAME);
+    backupFile.append(new Date().getTime() + "_" +
+                      com.gContactSync.FileIO.fileNames.PREFS_JS + ".bak");
+    com.gContactSync.LOGGER.LOG("***Backing up prefs.js file***");
+    com.gContactSync.LOGGER.LOG(" - Destination: " + backupFile.path);
+    com.gContactSync.FileIO.copyFile(prefsFile, backupFile);
+    // Step 2: Clean all gContactSync prefs on ldap_2.servers
+    //         if and only if the extensions.gContactSync.ldap_2.servers. branch
+    //         exists (means that old prefs were already updated)
+    com.gContactSync.LOGGER.LOG("***Finding existing AB preference IDs***");
+    for (i in abs) {
+      var id = abs[i].mDirectory.dirPrefId;
+      com.gContactSync.LOGGER.VERBOSE_LOG(" - " + id);
+      abPrefIDs[id] = abs[i];
+    }
+    com.gContactSync.LOGGER.LOG("***Searching for obsolete prefs on ldap_2.servers.***");
+    children = abBranch.getChildList("", count);
+    for (i = 0; i < count.value; i++) {
+      // extract the preference ID from the whole preference
+      // (ie MyAB_1.filename -> MyAB_1)
+      var index  = children[i].indexOf("."),
+          prefID = index > 0 ? children[i].substring(0, index) : children[i];
+      com.gContactSync.LOGGER.VERBOSE_LOG(" - " + children[i] + " - " + prefID);
+      if (!abPrefIDs["ldap_2.servers." + prefID]) {
+        if (prefNames.test(children[i])) {
+          abBranch.clearUserPref(children[i]);
+          com.gContactSync.LOGGER.LOG("  * Deleted");
+          numDeleted++;
+        }
+      }
+    }
+    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedPrefClean").replace("%d", numDeleted));
+    // Step 3: clean preferences for deleted address books on ldap_2.servers.
+    // Step 4: clean prefs for deleted ABs on extensions.gContactSync.ldap_2.servers.
   }
 };
