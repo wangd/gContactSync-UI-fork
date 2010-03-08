@@ -55,24 +55,38 @@ com.gContactSync.FileIO = {
   mLogFile: null,
   /** File names */
   fileNames: {
-    /** The file where preferences are stored */
-    PREFS_JS:    "prefs.js",
     /** Stores AB backups and the gContactSync log */
-    FOLDER_NAME: "gcontactsync",
+    FOLDER_NAME:      "gcontactsync",
     /** Stores the log from the last sync */
-    LOG_FILE:    "gcontactsync_log.txt"
+    LOG_FILE:         "gcontactsync_log.txt",
+    /** The folder where AB backups are stored (inside FOLDER_NAME) */
+    AB_BACKUP_DIR:    "address_book_backups",
+    /** The folder where preferences backups are stored (inside FOLDER_NAME) */
+    PREFS_BACKUP_DIR: "preferences_backups",
+    /** The file where TB preferences are stored */
+    PREFS_JS:         "prefs.js"
   },
   /**
    * Initializes the files contained in this class.
    * Also creates the log directory, if necessary.
    */
   init: function FileIO_init() {
-    var directory = this.getProfileDirectory();
+    var directory      = this.getProfileDirectory(),
+        abBackupDir    = this.getProfileDirectory(),
+        prefsBackupDir = this.getProfileDirectory();
     // Make sure the profile directory exists (if not something is very wrong)
     this.checkDirectory(directory);
     // Append the gcontactsync folder onto the directory and make sure it exists
     directory.append(this.fileNames.FOLDER_NAME);
     this.checkDirectory(directory);
+    // make sure the AB backup dir exists
+    abBackupDir.append(this.fileNames.FOLDER_NAME);
+    abBackupDir.append(this.fileNames.AB_BACKUP_DIR);
+    this.checkDirectory(abBackupDir);
+    // make sure the prefs backup dir exists
+    prefsBackupDir.append(this.fileNames.FOLDER_NAME);
+    prefsBackupDir.append(this.fileNames.PREFS_BACKUP_DIR);
+    this.checkDirectory(prefsBackupDir);
     this.mLogFile   = directory;
     this.mLogFile.append(this.fileNames.LOG_FILE);
     if (this.mLogFile.exists() && !this.mLogFile.isWritable()) {

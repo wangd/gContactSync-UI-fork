@@ -168,6 +168,7 @@ com.gContactSync.GAbManager.backupAB = function GAbManager_backupAB(aAB, aPrefix
   srcFile.append(srcFileName);
   // the destination is profile_dir/gcontactsync/{aPrefix}{FileName}{aSuffix}
   destFile.append(com.gContactSync.FileIO.fileNames.FOLDER_NAME);
+  destFile.append(com.gContactSync.FileIO.fileNames.AB_BACKUP_DIR);
   destFile.append((aPrefix || "") + srcFileName + (aSuffix || ""));
   com.gContactSync.LOGGER.LOG("Beginning a backup of the Address Book:\n" +
                               srcFile.path + "\nto:\n" + destFile.path);
