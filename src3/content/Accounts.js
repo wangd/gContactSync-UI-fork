@@ -558,6 +558,8 @@ com.gContactSync.Accounts = {
       "  * " + aMyContactsName + " <- " + aAB.mPrefs.myContactsName + "\n" +
       "  * Last sync date: " + aAB.mPrefs.lastSync
      );
+    // TODO - remove once this is no longer necessary
+    aAB.getPrefs();
     // NOTE: mUnsavedChange is reset to false before this method is called
     if ((aAB.mPrefs.Username && aAB.mPrefs.Username !== "none") &&
          aUsername !== "none" &&
