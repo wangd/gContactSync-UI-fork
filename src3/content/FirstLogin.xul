@@ -67,6 +67,9 @@
       <preference id="autoSync"
                   name="extensions.gContactSync.autoSync"
                   type="bool"/>
+      <preference id="phoneTypes"
+                  name="extensions.gContactSync.phoneTypes"
+                  type="bool"/>
     </preferences>
     <groupbox>
       <label value="&gettingStarted1.value;"/>
@@ -90,6 +93,9 @@
       <checkbox preference="autoSync"
                 id="autoSync"
                 label="&autoSync.label;"/>
+      <checkbox preference="phoneTypes"
+                id="phoneTypes"
+                label="&phoneTypes.label;"/>
     </groupbox>
   </prefpane>
 </prefwindow>
