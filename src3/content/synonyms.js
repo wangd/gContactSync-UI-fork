@@ -338,14 +338,18 @@ com.gContactSync.openURL = function gCS_openURL(aURL) {
       return;
     }
   }
-  catch (e) {}
+  catch (e) {
+    com.gContactSync.LOGGER.LOG_WARNING(" - Error in openFormattedURL", e);
+  }
   try {
     if (openFormattedRegionURL) {
       openFormattedRegionURL(aURL);
       return;
     }
   }
-  catch (e) {}
+  catch (e) {
+    com.gContactSync.LOGGER.LOG_WARNING(" - Error in openFormattedURL", e);
+  }
   com.gContactSync.LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
   return;
 };
