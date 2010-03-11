@@ -158,6 +158,7 @@ com.gContactSync.Options = {
       }
     }
     com.gContactSync.LOGGER.LOG("***Found " + numObsolete + " obsolete prefs on ldap_2.servers.***");
+    // Step 3: clean prefs for deleted ABs on extensions.gContactSync.ldap_2.servers.
     com.gContactSync.LOGGER.LOG("***Searching for gContactSync prefs for deleted ABs***");
     children = gAbBranch.getChildList("", count);
     for (i = 0; i < count.value; i++) {
@@ -176,6 +177,5 @@ com.gContactSync.Options = {
     }
     com.gContactSync.LOGGER.LOG("***Found " + numDeleted + " gContactSync prefs for deleted ABs***");
     com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedPrefClean").replace("%d", numDeleted + numObsolete));
-    // Step 3: clean prefs for deleted ABs on extensions.gContactSync.ldap_2.servers.
   }
 };
