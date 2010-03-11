@@ -301,3 +301,51 @@ com.gContactSync.prompt = function gCS_prompt(aText, aTitle, aParent, aDefault) 
       response      = promptService.prompt(aParent, aTitle, aText, input, null, {});
   return response ? input.value : false; 
 };
+
+/**
+ * Opens the Accounts dialog for gContactSync
+ */
+com.gContactSync.openAccounts = function gCS_openAccounts() {
+    window.open("chrome://gcontactsync/content/Accounts.xul",
+                "gContactSync_Accts",
+                "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
+};
+
+/**
+ * Opens the Preferences dialog for gContactSync
+ */
+com.gContactSync.openPreferences = function gCS_openPreferences() {
+  window.open("chrome://gcontactsync/content/options.xul",
+              "gContactSync_Prefs",
+              "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
+};
+
+/**
+ * Opens the given URL using the openFormattedURL and
+ * openFormattedRegionURL functions.
+ *
+ * @param aURL {string} THe URL to open.
+ */
+com.gContactSync.openURL = function gCS_openURL(aURL) {
+  com.gContactSync.LOGGER.VERBOSE_LOG("Opening the following URL: " + aURL);
+  if (!aURL) {
+    com.gContactSync.LOGGER.LOG_WARNING("Caught an attempt to load a blank URL");
+    return;
+  }
+  try {
+    if (openFormattedURL) {
+      openFormattedURL(aURL);
+      return;
+    }
+  }
+  catch (e) {}
+  try {
+    if (openFormattedRegionURL) {
+      openFormattedRegionURL(aURL);
+      return;
+    }
+  }
+  catch (e) {}
+  com.gContactSync.LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
+  return;
+};

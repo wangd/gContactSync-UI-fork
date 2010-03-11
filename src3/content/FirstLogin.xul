@@ -70,6 +70,9 @@
       <preference id="phoneTypes"
                   name="extensions.gContactSync.phoneTypes"
                   type="bool"/>
+      <preference id="myContacts"
+                  name="extensions.gContactSync.myContacts"
+                  type="bool"/>
     </preferences>
     <groupbox>
       <label value="&gettingStarted1.value;"/>
@@ -96,6 +99,17 @@
       <checkbox preference="phoneTypes"
                 id="phoneTypes"
                 label="&phoneTypes.label;"/>
+  	  <checkbox preference="myContacts"
+  	            id="cMyContacts"
+        				label="&myContacts.label;"/>
+      <hbox id="advancedSettings">
+        <label onclick="com.gContactSync.openAccounts();"
+               class="text-link"
+               value="&openAccounts.value;"/>
+        <label onclick="com.gContactSync.openPreferences();"
+               class="text-link"
+               value="&openPreferences.value;"/>
+      </hbox>
     </groupbox>
   </prefpane>
 </prefwindow>

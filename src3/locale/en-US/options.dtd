@@ -60,3 +60,8 @@
 <!ENTITY syncAddresses.label            "Synchronize postal addresses (EXPERIMENTAL)">
 <!ENTITY resetAll.label                 "Reset All Synced ABs">
 <!ENTITY cleanOldPrefs.label            "Clean Old AB Preferences">
+
+<!-- FirstLogin.xul only -->
+<!ENTITY myContacts.label               "Only synchronize the 'My Contacts' group">
+<!ENTITY openAccounts.value             "Advanced Account Settings">
+<!ENTITY openPreferences.value          "Advanced Settings">

@@ -228,42 +228,42 @@ com.gContactSync.Overlay = {
       acctMenuItem.setAttribute("id", "acctMenuItem");
       acctMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("acctMenu"));
       acctMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("acctMenuKey"));
-      acctMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openAccounts();");
+      acctMenuItem.setAttribute("oncommand", "com.gContactSync.openAccounts();");
       acctMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var prefMenuItem = document.createElement("menuitem");
       prefMenuItem.setAttribute("id", "prefMenuItem");
       prefMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("prefMenu"));
       prefMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("prefMenuKey"));
-      prefMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openPreferences();");
+      prefMenuItem.setAttribute("oncommand", "com.gContactSync.openPreferences();");
       prefMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var forumMenuItem = document.createElement("menuitem");
       forumMenuItem.setAttribute("id", "forumMenuItem");
       forumMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("forumMenu"));
       forumMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("forumMenuKey"));
-      forumMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.forumURL');");
+      forumMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.forumURL');");
       forumMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var wikiMenuItem = document.createElement("menuitem");
       wikiMenuItem.setAttribute("id", "wikiMenuItem");
       wikiMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("wikiMenu"));
       wikiMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("wikiMenuKey"));
-      wikiMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.wikiURL');");
+      wikiMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.wikiURL');");
       wikiMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var faqMenuItem = document.createElement("menuitem");
       faqMenuItem.setAttribute("id", "faqMenuItem");
       faqMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("faqMenu"));
       faqMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("faqMenuKey"));
-      faqMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.faqURL');");
+      faqMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.faqURL');");
       faqMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var errorMenuItem = document.createElement("menuitem");
       errorMenuItem.setAttribute("id", "errorMenuItem");
       errorMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("errorMenu"));
       errorMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("errorMenuKey"));
-      errorMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.errorURL');");
+      errorMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.errorURL');");
       errorMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       var logMenuItem = document.createElement("menuitem");
@@ -277,7 +277,7 @@ com.gContactSync.Overlay = {
       gcMenuItem.setAttribute("id", "gcMenuItem");
       gcMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("gcMenu"));
       gcMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("gcMenuKey"));
-      gcMenuItem.setAttribute("oncommand", "com.gContactSync.Overlay.openURL('extensions.gContactSync.googleContactsURL');");
+      gcMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.googleContactsURL');");
       gcMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
 
       menupopup.appendChild(syncMenuItem);
@@ -836,49 +836,6 @@ com.gContactSync.Overlay = {
     elem.setAttribute("class", aClass);
     elem.setAttribute("id", "cv" + aName);
     return elem;
-  },
-  /**
-   * Opens the Preferences dialog for gContactSync
-   */
-  openPreferences: function Overlay_openPreferences() {
-    var win = window.open("chrome://gcontactsync/content/options.xul", "prefs",
-                          "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
-  },
-  /**
-   * Opens the Accounts dialog for gContactSync
-   */
-  openAccounts: function Overlay_openAccounts() {
-    window.open("chrome://gcontactsync/content/Accounts.xul", "accts",
-                "chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes");
-  },
-  /**
-   * Opens the given URL using the openFormattedURL and
-   * openFormattedRegionURL functions.
-   *
-   * @param aURL {string} THe URL to open.
-   */
-  openURL: function Overlay_openURL(aURL) {
-    com.gContactSync.LOGGER.VERBOSE_LOG("Opening the following URL: " + aURL);
-    if (!aURL) {
-      com.gContactSync.LOGGER.LOG_WARNING("Caught an attempt to load a blank URL");
-      return;
-    }
-    try {
-      if (openFormattedURL) {
-        openFormattedURL(aURL);
-        return;
-      }
-    }
-    catch (e) {}
-    try {
-      if (openFormattedRegionURL) {
-        openFormattedRegionURL(aURL);
-        return;
-      }
-    }
-    catch (e) {}
-    com.gContactSync.LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
-    return;
   },
   /**
    * Adds a 'Reset' menuitem to the Address Book contaxt menu for the list on
