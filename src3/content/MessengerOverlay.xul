@@ -37,7 +37,7 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://gContactSync/locale/overlay.dtd">
 
-<overlay id="gContactSync-MainOverlay"
+<overlay id="gContactSync-MessengerOverlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/FileIO.js"/>
@@ -50,7 +50,7 @@
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Preferences.js"/>
   <script type="application/x-javascript"
-          src="chrome://gcontactsync/content/MainOverlay.js"/>
+          src="chrome://gcontactsync/content/MessengerOverlay.js"/>
   <stringbundleset id="stringbundleset">
     <stringbundle id="gContactSyncStringBundle"
                   src="chrome://gContactSync/locale/gcontactsync.properties"/>

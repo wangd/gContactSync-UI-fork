@@ -39,9 +39,9 @@ if (!com) var com = {}; // A generic wrapper variable
 if (!com.gContactSync) com.gContactSync = {};
 
 window.addEventListener("load",
-  /** Initializes the MainOverlay class when the window has finished loading */
+  /** Initializes the MessengerOverlay class when the window has finished loading */
   function gCS_mainOverlayLoadListener(e) {
-    com.gContactSync.MainOverlay.initialize();
+    com.gContactSync.MessengerOverlay.initialize();
   },
 false);
 
@@ -51,13 +51,13 @@ false);
  * Also resets the needRestart pref to false.
  * @class
  */
-com.gContactSync.MainOverlay = {
+com.gContactSync.MessengerOverlay = {
   /**
-   * Initializes the MainOverlay class.
+   * Initializes the MessengerOverlay class.
    * This consists of setting the needRestart pref to false, removing the old
    * log file, and logging basic TB and gContactSync information.
    */
-  initialize: function MainOverlay_initialize() {
+  initialize: function MessengerOverlay_initialize() {
     // reset the needRestart pref
     com.gContactSync.Preferences.setSyncPref("needRestart", false);
     // remove the old log file
