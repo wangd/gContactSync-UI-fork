@@ -66,13 +66,21 @@ com.gContactSync.Overlay = {
    * Format: Type (from Google): protocol
    */
   links: {
+    /** AOL Instant Messenger link */
     AIM:         "aim:goim?screenname=",
+    /** MSN Messenger link */
     MSN:         "msnim:chat?contact=",
+    /** Yahoo Me3ssenger link */
     YAHOO:       "ymsgr:sendim?",
+    /** Skype link */
     SKYPE:       "skype:",
+    /** Skype chat link */
     SKYPES:      "?chat",
+    /** Jabber link */
     JABBER:      "xmpp:",
+    /** XMPP link */
     XMPP:        "xmpp:",
+    /** Google Talk link */
     GOOGLE_TALK: "gtalk:chat?jid="
   },
   /**
@@ -113,7 +121,9 @@ com.gContactSync.Overlay = {
     //SetAbView = com.gContactSync.SetAbView;
     com.gContactSync.AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
-    window.addEventListener("unload", function unloadListener(e) { com.gContactSync.Overlay.unload(); }, false);
+    window.addEventListener("unload", function unloadListener(e) {
+          com.gContactSync.Overlay.unload();
+        }, false);
     // Fix the style for description elements accidentally set in the
     // Duplicate Contacts Manager extension
     // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
