@@ -39,6 +39,13 @@
 
 <overlay id="gContactSync-MessengerOverlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <!-- Add some text to the status bar -->
+  <statusbar id="status-bar" class="chromeclass-status">
+    <statusbarpanel id="gContactSyncStatusText"
+                    onclick="com.gContactSync.showLog();"
+                    label="&initialStatus.label;"
+                    tooltiptext="&status.tooltip;"/>
+  </statusbar>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/FileIO.js"/>
   <script type="application/x-javascript"
@@ -49,6 +56,32 @@
           src="chrome://gcontactsync/content/Pref.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Preferences.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/TBContact.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/AbManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GAbManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/AbListener.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/MailList.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GMailList.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/AddressBook.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GAddressBook.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/LoginManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Namespace.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GElement.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/gdata.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Overlay.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/MessengerOverlay.js"/>
   <stringbundleset id="stringbundleset">

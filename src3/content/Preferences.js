@@ -121,6 +121,12 @@ com.gContactSync.Preferences = {
       pref.value = this.getPref(this.mSyncBranch, pref.label, pref.type);
       com.gContactSync.LOGGER.VERBOSE_LOG(" - Old value: '" + oldValue + "'\n" +
                                           " - New value: '" + pref.value + "'");
+      if (aData == "statusBarText") {
+        var elem = document.getElementById("gContactSyncStatusText");
+        if (elem) {
+          elem.label = pref.value;
+        }
+      }
     }
     // if it isn't a sync pref, check if it is a preference for an existing
     // GAddressBook
@@ -171,6 +177,7 @@ com.gContactSync.Preferences = {
     getPhotos:                new com.gContactSync.Pref("getPhotos",                "bool", true),
     sendPhotos:               new com.gContactSync.Pref("sendPhotos",               "bool", true),
     addReset:                 new com.gContactSync.Pref("addReset",                 "bool", true),
+    statusBarText:            new com.gContactSync.Pref("statusBarText",            "char", ""),
     myContactsName:           new com.gContactSync.Pref("myContactsName",           "char", "My Contacts"),
     addressBookName:          new com.gContactSync.Pref("addressBookName",          "char", "Google Contacts"),
     lastVersion:              new com.gContactSync.Pref("lastVersion",              "char", "0"),

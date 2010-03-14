@@ -193,13 +193,14 @@ com.gContactSync.GAbManager.backupAB = function GAbManager_backupAB(aAB, aPrefix
  */
 com.gContactSync.GAbManager.getGAbByURI = function GAbManager_getGAbByURI(aURI) {
   // first check if a GAddressBook object for the URI already exists
-  var ab = this.mABs[aURI]
+  var ab = com.gContactSync.GAbManager.mABs[aURI]
   if (ab) {
     return ab;
   }
   // if it hasn't been obtained yet, get the nsIAbDirectory through its URI
-  // then get a GAddressBook object from that and add it to this.mABs
-  return this.getGAb(this.getAbByURI(aURI));
+  // then get a GAddressBook object from that and add it to
+  // com.gContactSync.GAbManager.mABs
+  return com.gContactSync.GAbManager.getGAb(com.gContactSync.GAbManager.getAbByURI(aURI));
 };
 
 /**
@@ -214,13 +215,14 @@ com.gContactSync.GAbManager.getGAb = function GAbManager_getGAb(aDirectory, aNoP
   // first check if a GAddressBook object for the URI already exists
   // if so, return it
   var uri = aDirectory.URI || aDirectory.getDirUri();
-  if (uri && this.mABs[uri]) {
-    return this.mABs[uri];
+  if (uri && com.gContactSync.GAbManager.mABs[uri]) {
+    return com.gContactSync.GAbManager.mABs[uri];
   }
-  // otherwise create a new GAddressBook object and add it to this.mABs
+  // otherwise create a new GAddressBook object and add it to
+  // com.gContactSync.GAbManager.mABs
   var ab  = new com.gContactSync.GAddressBook(aDirectory, aNoPrefs);
-  this.mABs[ab.mURI] = ab;
-  this.mABs[ab.getPrefId()] = ab;
+  com.gContactSync.GAbManager.mABs[ab.mURI] = ab;
+  com.gContactSync.GAbManager.mABs[ab.getPrefId()] = ab;
   return ab;
 };
 

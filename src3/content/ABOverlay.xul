@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - Josh Geenen <gcontactsync@pirules.org>.
-   - Portions created by the Initial Developer are Copyright (C) 2008-2009
+   - Portions created by the Initial Developer are Copyright (C) 2008-2010
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -37,7 +37,7 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://gContactSync/locale/overlay.dtd">
 
-<overlay id="gContactSync-overlay"
+<overlay id="gContactSync-ABOverlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/synonyms.js"/>
@@ -78,6 +78,8 @@
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Overlay.js"/>
   <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/ABOverlay.js"/>
+  <script type="application/x-javascript"
           src="chrome://gcontactsync/content/AddressBook.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/GAddressBook.js"/>
@@ -104,7 +106,7 @@
   <!-- Add some text to the status bar -->
   <statusbar id="status-bar" class="chromeclass-status">
     <statusbarpanel id="gContactSyncStatusText"
-                    onclick="com.gContactSync.Overlay.showLog();"
+                    onclick="com.gContactSync.showLog();"
                     label="&initialStatus.label;"
                     tooltiptext="&status.tooltip;"/>
   </statusbar>

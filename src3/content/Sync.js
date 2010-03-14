@@ -137,9 +137,9 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mContactsUrl      = null;
     com.gContactSync.Sync.mBackup           = false;
     com.gContactSync.LOGGER.VERBOSE_LOG("Found Address Book with name: " +
-                       com.gContactSync.Sync.mCurrentAb.mDirectory.dirName +
-                       "\n - URI: " + com.gContactSync.Sync.mCurrentAb.mURI +
-                       "\n - Pref ID: " + com.gContactSync.Sync.mCurrentAb.getPrefId());
+                                        com.gContactSync.Sync.mCurrentAb.mDirectory.dirName +
+                                        "\n - URI: " + com.gContactSync.Sync.mCurrentAb.mURI +
+                                        "\n - Pref ID: " + com.gContactSync.Sync.mCurrentAb.getPrefId());
     if (com.gContactSync.Sync.mCurrentAb.mPrefs.Disabled === "true") {
       com.gContactSync.LOGGER.LOG("*** NOTE: Synchronization was disabled for this address book ***");
       com.gContactSync.Sync.mCurrentAb = null;
@@ -366,7 +366,7 @@ com.gContactSync.Sync = {
     com.gContactSync.LOGGER.LOG("Last sync was at: " + lastSync);
     if ((newMax = com.gContactSync.gdata.contacts.getNumberOfContacts(aAtom)) >= maxContacts.value) {
       com.gContactSync.Preferences.setPref(com.gContactSync.Preferences.mSyncBranch, maxContacts.label,
-                          maxContacts.type, newMax + 50);
+                                           maxContacts.type, newMax + 50);
       com.gContactSync.Sync.finish("Max Contacts too low...resynchronizing", true);
       return;
     }
@@ -726,7 +726,7 @@ com.gContactSync.Sync = {
             var title = group.getTitle();
             var modifiedDate = group.getLastModifiedDate();
             com.gContactSync.LOGGER.LOG(" * " + title + " - " + id +
-                       " last modified: " + modifiedDate);
+                                        " last modified: " + modifiedDate);
             var list = com.gContactSync.Sync.mLists[id];
             com.gContactSync.Sync.mGroups[id] = group;
             if (modifiedDate < lastSync) { // it's an old group
@@ -852,8 +852,8 @@ com.gContactSync.Sync = {
       }
       else {
         var groupName = ab.mPrefs.myContactsName.toLowerCase();
-        com.gContactSync.LOGGER.LOG("Only synchronizing the '"
-                                    + ab.mPrefs.myContactsName + "' group.");
+        com.gContactSync.LOGGER.LOG("Only synchronizing the '" +
+                                    ab.mPrefs.myContactsName + "' group.");
         var group, id, sysId, title;
         var foundGroup = false;
         for (var i = 0; i < arr.length; i++) {

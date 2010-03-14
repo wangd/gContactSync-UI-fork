@@ -78,6 +78,8 @@ pref("extensions.gContactSync.confirmDeleteThreshold", 5);
 // this is set to true when TB should be restarted beore syncing.
 // this pref is set to false on startup
 pref("extensions.gContactSync.needRestart", false);
+// the text to be displayed on the status bar in addressbook.xul & messenger.xul
+pref("extensions.gContactSync.statusBarText", "");
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "PreferMailFormat");
 pref("extensions.gContactSync.extended2", "AllowRemoteContent");

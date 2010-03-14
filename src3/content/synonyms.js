@@ -355,3 +355,17 @@ com.gContactSync.openURL = function gCS_openURL(aURL) {
   com.gContactSync.LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
   return;
 };
+
+/**
+ * Opens the "view source" window with the log file.
+ */
+com.gContactSync.showLog = function gCS_showLog() {
+  try {
+    window.open("view-source:file://" + com.gContactSync.FileIO.mLogFile.path,
+                "Log",
+                "chrome=yes,resizable=yes,height=480,width=600");
+  }
+  catch(e) {
+    com.gContactSync.LOGGER.LOG_WARNING("Unable to open the log", e);
+  }
+};
