@@ -83,13 +83,15 @@ com.gContactSync.serialize = function gCS_serialize(aXML) {
  * If the verboseLog preference is set as false then this function does nothing.
  *
  * @param aString {string} The XML string to serialize.
+ * @param aForce {boolean} Set to true to force a serialization regardless of
+ *                         verboseLog.
  * @returns {string} The serialized text if verboseLog is true; else the original
  *                  text.
  */
-com.gContactSync.serializeFromText = function gCS_serializeFromText(aString) {
+com.gContactSync.serializeFromText = function gCS_serializeFromText(aString, aForce) {
   // if verbose logging is disabled, don't replace >< with >\n< because it only
   // wastes time
-  if (com.gContactSync.Preferences.mSyncPrefs.verboseLog.value) {
+  if (aForce || com.gContactSync.Preferences.mSyncPrefs.verboseLog.value) {
     var arr = aString.split("><");
     aString = arr.join(">\n<");
   }

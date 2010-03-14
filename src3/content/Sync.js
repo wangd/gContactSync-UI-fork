@@ -69,6 +69,10 @@ com.gContactSync.Sync = {
   mIndex:            0,
   /** The URI of a photo to be added to the newly created Google contact */
   mNewPhotoURI:      {},
+  /** Temporarily set to true when a backup is necessary for this account */
+  mBackup:           false,
+  /** Temporarily set to true when the first backup is necessary */
+  mFirstBackup:      false,
   /** An array of commands to execute when offline during an HTTP Request */
   mOfflineFunction: function Sync_offlineFunc(httpReq) {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
@@ -98,9 +102,9 @@ com.gContactSync.Sync = {
     // quit if still syncing.
     if (!com.gContactSync.Sync.mSynced)
       return;
-    // get the next auth token
     com.gContactSync.Sync.mSyncScheduled = false;
     com.gContactSync.Sync.mSynced        = false;
+    com.gContactSync.Sync.mBackup        = false;
     com.gContactSync.LOGGER.mErrorCount  = 0; // reset the error count
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mIndex         = 0;
@@ -131,6 +135,7 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mCurrentAb        = obj.ab;
     com.gContactSync.Sync.mCurrentAuthToken = com.gContactSync.LoginManager.getAuthTokens()[com.gContactSync.Sync.mCurrentUsername];
     com.gContactSync.Sync.mContactsUrl      = null;
+    com.gContactSync.Sync.mBackup           = false;
     com.gContactSync.LOGGER.VERBOSE_LOG("Found Address Book with name: " +
                        com.gContactSync.Sync.mCurrentAb.mDirectory.dirName +
                        "\n - URI: " + com.gContactSync.Sync.mCurrentAb.mURI +
@@ -204,16 +209,16 @@ com.gContactSync.Sync = {
       return;
     }
     var lastBackup = parseInt(obj.ab.mPrefs.lastBackup, 10),
-        interval   = com.gContactSync.Preferences.mSyncPrefs.backupInterval.value * 24 * 3600 * 1000;
+        interval   = com.gContactSync.Preferences.mSyncPrefs.backupInterval.value * 24 * 3600 * 1000,
+        prefix     = "";
     com.gContactSync.LOGGER.VERBOSE_LOG(" - Last backup was at " + lastBackup +
                                         ", interval is " + interval);
-    // determine if the AB should be backed up
-    if (!lastBackup && interval >= 0) {
+    this.mFirstBackup = !lastBackup && interval >= 0;
+    this.mBackup      = this.mFirstBackup || interval >= 0 && new Date().getTime() - lastBackup > interval;
+    prefix = this.mFirstBackup ? "init_" : "";
+    if (this.mBackup) {
       com.gContactSync.GAbManager.backupAB(com.gContactSync.Sync.mCurrentAb,
-                                           "init_", ".bak");
-    }
-    else if (interval >= 0 && new Date().getTime() - lastBackup > interval) {
-      com.gContactSync.GAbManager.backupAB(com.gContactSync.Sync.mCurrentAb, "",
+                                           prefix,
                                            ".bak");
     }
     // getGroups must be called if the myContacts pref is set so it can find the
@@ -273,14 +278,24 @@ com.gContactSync.Sync = {
                                                   null,
                                                   com.gContactSync.Sync.mCurrentUsername);
     }
-    // com.gContactSync.serializeFromText does not do anything if verbose logging is disabled
-    // so this next line won't waste time
     httpReq.mOnSuccess = function getContactsSuccess(httpReq) {
-      com.gContactSync.LOGGER.VERBOSE_LOG(com.gContactSync.serializeFromText(httpReq.responseText));
+      // com.gContactSync.serializeFromText does not do anything if verbose
+      // logging is disabled so the serialization won't waste time
+      var backup      = com.gContactSync.Sync.mBackup,
+          firstBackup = com.gContactSync.Sync.mFirstBackup,
+          feed        = com.gContactSync.serializeFromText(httpReq.responseText,
+                                                      backup);
+      com.gContactSync.LOGGER.VERBOSE_LOG(feed);
+      if (backup) {
+        com.gContactSync.gdata.backupFeed(feed,
+                                          com.gContactSync.Sync.mCurrentUsername,
+                                          (firstBackup ? "init_" : ""),
+                                          ".bak");
+      }
       com.gContactSync.Sync.sync2(httpReq.responseXML);
     };
     httpReq.mOnError   = function getContactsError(httpReq) {
-      com.gContactSync.LOGGER.LOG_ERROR('Error while getting all contacts', +
+      com.gContactSync.LOGGER.LOG_ERROR('Error while getting all contacts',
                                         httpReq.responseText);
       com.gContactSync.Sync.syncNextUser(httpReq.responseText);
     };
@@ -292,8 +307,8 @@ com.gContactSync.Sync = {
    * writing the sync details to a different file, scheduling another sync, and
    * writes the completion status to the status bar.
    * 
-   * @param aError     {string} Optional.  A string containing the error message.
-   * @param aStartOver {boolean}   Also optional.  True if the sync should be restarted.
+   * @param aError     {string}   Optional.  A string containing the error message.
+   * @param aStartOver {boolean} Also optional.  True if the sync should be restarted.
    */
   finish: function Sync_finish(aError, aStartOver) {
     if (aError)
@@ -335,14 +350,14 @@ com.gContactSync.Sync = {
   sync2: function Sync_sync2(aAtom) {
     // get the address book
     var ab = com.gContactSync.Sync.mCurrentAb,
-    // get all the contacts from the feed and the cards from the address book
+        // get all the contacts from the feed and the cards from the address book
         googleContacts = aAtom.getElementsByTagName('entry'),
         abCards = ab.getAllContacts(),
-    // get and log the last sync time (milliseconds since 1970 UTC)
+        // get and log the last sync time (milliseconds since 1970 UTC)
         lastSync = parseInt(ab.mPrefs.lastSync, 10),
         cardsToDelete = [],
         maxContacts = com.gContactSync.Preferences.mSyncPrefs.maxContacts.value,
-    // if there are more contacts than returned, increase the pref
+        // if there are more contacts than returned, increase the pref
         newMax;
     // mark the AB as not having been reset if it gets this far
     com.gContactSync.Sync.mCurrentAb.savePref("reset", false);

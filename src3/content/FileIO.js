@@ -56,15 +56,17 @@ com.gContactSync.FileIO = {
   /** File names */
   fileNames: {
     /** Stores AB backups and the gContactSync log */
-    FOLDER_NAME:      "gcontactsync",
+    FOLDER_NAME:       "gcontactsync",
     /** Stores the log from the last sync */
-    LOG_FILE:         "gcontactsync_log.txt",
+    LOG_FILE:          "gcontactsync_log.txt",
     /** The folder where AB backups are stored (inside FOLDER_NAME) */
-    AB_BACKUP_DIR:    "address_book_backups",
+    AB_BACKUP_DIR:     "address_book_backups",
+    /** The folder where Google backups are stored (inside FOLDER_NAME) */
+    GOOGLE_BACKUP_DIR: "google_feed_backups",
     /** The folder where preferences backups are stored (inside FOLDER_NAME) */
-    PREFS_BACKUP_DIR: "preferences_backups",
+    PREFS_BACKUP_DIR:  "preferences_backups",
     /** The file where TB preferences are stored */
-    PREFS_JS:         "prefs.js"
+    PREFS_JS:          "prefs.js"
   },
   /**
    * Initializes the files contained in this class.
@@ -73,6 +75,7 @@ com.gContactSync.FileIO = {
   init: function FileIO_init() {
     var directory      = this.getProfileDirectory(),
         abBackupDir    = this.getProfileDirectory(),
+        gBackupDir     = this.getProfileDirectory(),
         prefsBackupDir = this.getProfileDirectory();
     // Make sure the profile directory exists (if not something is very wrong)
     this.checkDirectory(directory);
@@ -83,6 +86,10 @@ com.gContactSync.FileIO = {
     abBackupDir.append(this.fileNames.FOLDER_NAME);
     abBackupDir.append(this.fileNames.AB_BACKUP_DIR);
     this.checkDirectory(abBackupDir);
+    // make sure the Google backup dir exists
+    gBackupDir.append(this.fileNames.FOLDER_NAME);
+    gBackupDir.append(this.fileNames.GOOGLE_BACKUP_DIR);
+    this.checkDirectory(gBackupDir);
     // make sure the prefs backup dir exists
     prefsBackupDir.append(this.fileNames.FOLDER_NAME);
     prefsBackupDir.append(this.fileNames.PREFS_BACKUP_DIR);

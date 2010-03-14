@@ -353,5 +353,22 @@ com.gContactSync.gdata = {
     if (com.gContactSync.LoginManager.mNumAuthTokens === 0)
       com.gContactSync.LoginManager.getAuthTokens();
     return com.gContactSync.LoginManager.mNumAuthTokens > 0;
+  },
+  /**
+   * Backs up the Google contacts or groups feed to a file.
+   * @param aFeed {string}    The feed to backup (as a string).
+   * @param aAccount {string} The username of the account.
+   * @param aPrefix {string}  The prefix for the backup file.
+   * @param aSuffix {string}  The suffix for the backup file.
+   * @return {boolean} True if the backup was successful.
+   */
+  backupFeed: function gdata_backupFeed(aFeed, aAccount, aPrefix, aSuffix) {
+    var destFile = com.gContactSync.FileIO.getProfileDirectory();
+    destFile.append(com.gContactSync.FileIO.fileNames.FOLDER_NAME);
+    destFile.append(com.gContactSync.FileIO.fileNames.GOOGLE_BACKUP_DIR);
+    destFile.append((aPrefix || "") + aAccount + (aSuffix || ""));
+    com.gContactSync.LOGGER.LOG("Beginning a backup of the Google Account:\n" +
+                                aAccount + "\nto:\n" + destFile.path);
+    return com.gContactSync.FileIO.writeToFile(destFile, aFeed);
   }
 };
