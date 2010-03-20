@@ -105,5 +105,5 @@ com.gContactSync.Overlay = {
     seconds     = seconds.length == 1 ? "0" + seconds : seconds;
     var text    = com.gContactSync.StringBundle.getStr("syncFinishedString");
     this.setStatusBarText(text + " " + hours + ":" + minutes + ":" + seconds);
-  },
+  }
 };

@@ -652,7 +652,7 @@ com.gContactSync.Sync = {
           com.gContactSync.Sync.mCurrentAb.setLastSyncDate) {
         com.gContactSync.Sync.mCurrentAb.setLastSyncDate((new Date()).getTime());
       }
-      if (com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex + 1]) {
+      if (com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex]) {
         var delay = com.gContactSync.Preferences.mSyncPrefs.accountDelay.value;
         com.gContactSync.LOGGER.LOG("**About to wait " + delay +
                                     " ms before synchronizing the next account**");

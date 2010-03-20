@@ -78,8 +78,8 @@ com.gContactSync.ABOverlay = {
     OnLoadCardView = this.myOnLoadCardView;
     if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
       this.setupButton();    // insert the Sync button
-    if (com.gContactSync.Preferences.mSyncPrefs.enableMenu.value)
-      this.setupMenu();      // add a shortcut menu
+    if (!com.gContactSync.Preferences.mSyncPrefs.enableMenu.value)
+      document.getElementById("gContactSyncMenu").collapsed = true;
     // add the extra attributes as tree columns to show and
     this.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver
@@ -260,118 +260,6 @@ com.gContactSync.ABOverlay = {
     }
   },
   /**
-   * Sets up the gContactSync menu in the address book menubar
-   * @returns {boolean} True  - The menu was created
-   */
-  setupMenu: function ABOverlay_setupMenu() {
-    try {
-      // Workaround for those who have the TinyMenu extension
-      var menubar      = document.getElementById("tinymenu-popup");
-      if (!menubar)
-        menubar      = document.getElementById("mail-menubar");
-      var isSeamonkey  = menubar ? true : false;
-      if (!menubar) // seamonkey
-          menubar      = document.getElementById("ab-menubar");
-      if (!menubar) {
-        com.gContactSync.LOGGER.LOG_WARNING("Unable to find the menubar");
-        return false;
-      }
-
-      var toolsMenu    = document.getElementById("tasksMenu"),
-          menu         = document.createElement("menu"),
-          menupopup    = document.createElement("menupopup");
-      menu.setAttribute("id", "gContactSyncMenu");
-      menu.setAttribute("label", "gContactSync");
-      menu.setAttribute("accesskey", "G");
-      menupopup.setAttribute("id", "gContactSyncMenuPopup");
-
-      var syncMenuItem = document.createElement("menuitem");
-      syncMenuItem.setAttribute("id", "syncMenuItem");
-      syncMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("syncMenu"));
-      syncMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("syncMenuKey"));
-      syncMenuItem.setAttribute("oncommand", "com.gContactSync.Sync.begin();");
-      syncMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var acctMenuItem = document.createElement("menuitem");
-      acctMenuItem.setAttribute("id", "acctMenuItem");
-      acctMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("acctMenu"));
-      acctMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("acctMenuKey"));
-      acctMenuItem.setAttribute("oncommand", "com.gContactSync.openAccounts();");
-      acctMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var prefMenuItem = document.createElement("menuitem");
-      prefMenuItem.setAttribute("id", "prefMenuItem");
-      prefMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("prefMenu"));
-      prefMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("prefMenuKey"));
-      prefMenuItem.setAttribute("oncommand", "com.gContactSync.openPreferences();");
-      prefMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var forumMenuItem = document.createElement("menuitem");
-      forumMenuItem.setAttribute("id", "forumMenuItem");
-      forumMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("forumMenu"));
-      forumMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("forumMenuKey"));
-      forumMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.forumURL');");
-      forumMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var wikiMenuItem = document.createElement("menuitem");
-      wikiMenuItem.setAttribute("id", "wikiMenuItem");
-      wikiMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("wikiMenu"));
-      wikiMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("wikiMenuKey"));
-      wikiMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.wikiURL');");
-      wikiMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var faqMenuItem = document.createElement("menuitem");
-      faqMenuItem.setAttribute("id", "faqMenuItem");
-      faqMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("faqMenu"));
-      faqMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("faqMenuKey"));
-      faqMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.faqURL');");
-      faqMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var errorMenuItem = document.createElement("menuitem");
-      errorMenuItem.setAttribute("id", "errorMenuItem");
-      errorMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("errorMenu"));
-      errorMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("errorMenuKey"));
-      errorMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.errorURL');");
-      errorMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var logMenuItem = document.createElement("menuitem");
-      logMenuItem.setAttribute("id", "logMenuItem");
-      logMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("logMenu"));
-      logMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("logMenuKey"));
-      logMenuItem.setAttribute("oncommand", "com.gContactSync.showLog();");
-      logMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      var gcMenuItem = document.createElement("menuitem");
-      gcMenuItem.setAttribute("id", "gcMenuItem");
-      gcMenuItem.setAttribute("label", com.gContactSync.StringBundle.getStr("gcMenu"));
-      gcMenuItem.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("gcMenuKey"));
-      gcMenuItem.setAttribute("oncommand", "com.gContactSync.openURL('extensions.gContactSync.googleContactsURL');");
-      gcMenuItem.setAttribute("class", "menuitem-iconic icon-mail16 menu-iconic");
-
-      menupopup.appendChild(syncMenuItem);
-      menupopup.appendChild(acctMenuItem);
-      menupopup.appendChild(prefMenuItem);
-      menupopup.appendChild(forumMenuItem);
-      menupopup.appendChild(wikiMenuItem);
-      menupopup.appendChild(faqMenuItem);
-      menupopup.appendChild(errorMenuItem);
-      menupopup.appendChild(logMenuItem);
-      menupopup.appendChild(gcMenuItem);
-      menu.appendChild(menupopup);
-      if (toolsMenu) {
-        toolsMenu.parentNode.insertBefore(menu, toolsMenu);
-      }
-      else {
-        menubar.appendChild(menu);
-      }
-      return true;
-    }
-    catch(e) {
-      com.gContactSync.LOGGER.LOG_WARNING("Unable to setup the menu", e);
-      return false;
-    }
-  },
-  /**
    * Sets up the Sync button to go between the Write and Delete buttons and adds
    * a separator between Sync and Delete.
    * @returns {boolean} True if the button was added manually.
@@ -449,7 +337,7 @@ com.gContactSync.ABOverlay = {
       if (com.gContactSync.Preferences.mSyncPrefs.forceBtnImage.value) {
         com.gContactSync.LOGGER.VERBOSE_LOG("Forcing the listStyleImage for the button");
         document.getElementById("button-sync").style.listStyleImage =
-          "url('chrome://gcontactsync/skin/abcard-large.png')";
+          "url('chrome://gcontactsync/skin/logo_main_24.png')";
       }
       com.gContactSync.LOGGER.VERBOSE_LOG("Finished adding button\n");
       return true;

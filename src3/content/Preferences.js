@@ -121,11 +121,19 @@ com.gContactSync.Preferences = {
       pref.value = this.getPref(this.mSyncBranch, pref.label, pref.type);
       com.gContactSync.LOGGER.VERBOSE_LOG(" - Old value: '" + oldValue + "'\n" +
                                           " - New value: '" + pref.value + "'");
-      if (aData == "statusBarText") {
+      switch (aData) {
+      case "statusBarText":
         var elem = document.getElementById("gContactSyncStatusText");
         if (elem) {
           elem.label = pref.value;
         }
+        break;
+      case "enableMenu":
+        var elem = document.getElementById("gContactSyncMenu");
+        if (elem) {
+          elem.collapsed = !pref.value;
+        }
+        break;
       }
     }
     // if it isn't a sync pref, check if it is a preference for an existing
