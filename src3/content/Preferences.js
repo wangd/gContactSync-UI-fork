@@ -157,8 +157,8 @@ com.gContactSync.Preferences = {
    */
   mSyncPrefs: {
     verboseLog:               new com.gContactSync.Pref("verboseLog",               "bool", true),
-    initialDelay:             new com.gContactSync.Pref("initialDelay",             "int",  500),
-    refreshInterval:          new com.gContactSync.Pref("refreshInterval",          "int",  30),
+    initialDelayMinutes:      new com.gContactSync.Pref("initialDelayMinutes",      "int",  5),
+    refreshInterval:          new com.gContactSync.Pref("refreshInterval",          "int",  120),
     accountDelay:             new com.gContactSync.Pref("accountDelay",             "int",  5000),
     maxContacts:              new com.gContactSync.Pref("maxContacts",              "int",  5000),
     backupInterval:           new com.gContactSync.Pref("backupInterval",           "int",  60),
@@ -193,7 +193,8 @@ com.gContactSync.Preferences = {
     Disabled:                 new com.gContactSync.Pref("Disabled",                 "char", "false"),
     updateGoogleInConflicts:  new com.gContactSync.Pref("updateGoogleInConflicts",  "bool", true),
     syncAddresses:            new com.gContactSync.Pref("syncAddresses",            "bool", true),
-    needRestart:              new com.gContactSync.Pref("needRestart",              "bool", false)
+    needRestart:              new com.gContactSync.Pref("needRestart",              "bool", false),
+    synchronizing:            new com.gContactSync.Pref("synchronizing",            "bool", false)
   },
   /**
    * Gets a preference given its branch, name, and type

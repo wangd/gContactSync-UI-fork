@@ -5,8 +5,8 @@
 <!ENTITY gettingStarted1.value          "Before you start synchronizing your contacts, please check these settings">
 <!ENTITY autoSync.value                 "Automatic Synchronization">
 <!ENTITY autoSync.label                 "Synchronize contacts automatically">
-<!ENTITY refreshInterval.value          "Synchronize Interval (minutes) [Default is 30]">
-<!ENTITY initialDelay.value             "Initial sync delay (ms) [Default is 500]">
+<!ENTITY refreshInterval.value          "Synchronize Interval (minutes) [Default is 120 (2 hours)]">
+<!ENTITY initialDelayMinutes.value      "Initial sync delay (minutes) [Default is 5]">
 <!ENTITY abName.value                   "Name of the Address Book to sync with (old or new)">
 <!ENTITY syncBehavior.label             "Sync Behavior">
 <!ENTITY removeOldAddresses.label       "Remove the old Thunderbird addresses after converting to the new format">
@@ -21,8 +21,8 @@
 <!ENTITY buttons.label                  "Buttons and Menus">
 <!ENTITY enableSyncBtn.label            "Enable the Sync toolbar button">
 <!ENTITY forceBtnImage.label            "Fix the Sync toolbar button">
-<!ENTITY enableMenu.label               "Enable the gContactSync Menu in the Address Book window">
-<!ENTITY enableMenuLinks.label          "Enable links in the gContactSync Menu">
+<!ENTITY enableMenu.label               "Enable the gContactSync Menu">
+<!ENTITY enableMenuLinks.label          "Add some links (Wiki, FAQ, etc.) to the gContactSync Menu">
 <!ENTITY addReset.label                 "Add a Reset link to the Address Book context menu">
 <!ENTITY abResults.label                "Contacts List">
 <!ENTITY phoneColLabels.label           "Rename the phone column labels">

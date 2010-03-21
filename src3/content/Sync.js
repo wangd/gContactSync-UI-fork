@@ -78,11 +78,6 @@ com.gContactSync.Sync = {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
     com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'));
   },
-
-  // booleans used for timing to make sure only one synchronization occurs at a
-  // time and that only one sync is scheduled at once
-  /** True if no synchronization is in progress */
-  mSynced:        true,
   /** True if a synchronization is scheduled */
   mSyncScheduled: false,
   /** used to store groups for the account being synchronized */
@@ -100,10 +95,11 @@ com.gContactSync.Sync = {
       return;
    }
     // quit if still syncing.
-    if (!com.gContactSync.Sync.mSynced)
+    if (com.gContactSync.Preferences.mSyncPrefs.synchronizing.value) {
       return;
+    }
     com.gContactSync.Sync.mSyncScheduled = false;
-    com.gContactSync.Sync.mSynced        = false;
+    com.gContactSync.Preferences.setSyncPref("synchronizing", true);
     com.gContactSync.Sync.mBackup        = false;
     com.gContactSync.LOGGER.mErrorCount  = 0; // reset the error count
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
@@ -325,14 +321,16 @@ com.gContactSync.Sync = {
     }
     // reset some variables
     com.gContactSync.ContactConverter.mCurrentCard = {};
-    com.gContactSync.Sync.mSynced                  = true;
+    com.gContactSync.Preferences.setSyncPref("synchronizing", false);
     com.gContactSync.Sync.mCurrentAb               = {};
     com.gContactSync.Sync.mContactsUrl             = null;
     com.gContactSync.Sync.mCurrentUsername         = {};
     com.gContactSync.Sync.mCurrentAuthToken        = {};
     // refresh the ab results pane
     // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
-    SetAbView(GetSelectedDirectory(), false);
+    if (SetAbView) {
+      SetAbView(GetSelectedDirectory(), false);
+    }
     // select the first card, if any
     if (gAbView && gAbView.getCardFromRow(0))
       SelectFirstCard();
@@ -1017,7 +1015,7 @@ com.gContactSync.Sync = {
   schedule: function Sync_schedule(aDelay) {
     // only schedule a sync if the delay is greater than 0, a sync is not
     // already scheduled, and autosyncing is enabled
-    if (aDelay && com.gContactSync.Sync.mSynced &&
+    if (aDelay && !com.gContactSync.Preferences.mSyncPrefs.synchronizing.value &&
         !com.gContactSync.Sync.mSyncScheduled && aDelay > 0 &&
         com.gContactSync.Preferences.mSyncPrefs.autoSync.value) {
       com.gContactSync.Sync.mSyncScheduled = true;

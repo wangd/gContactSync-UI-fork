@@ -1,5 +1,5 @@
 // refresh interval in minutes
-pref("extensions.gContactSync.refreshInterval", 30);
+pref("extensions.gContactSync.refreshInterval", 120);
 // the delay between synchronizing individual accounts (in ms)
 pref("extensions.gContactSync.accountDelay", 5000);
 // the name of the address book to sync with
@@ -13,7 +13,7 @@ pref("extensions.gContactSync.updateGoogleInConflicts", true);
 // the extra attributes added by this extension
 pref("extensions.gContactSync.overrideCopy", true);
 // how long gContactSync should wait to sync after the address book is opened
-pref("extensions.gContactSync.initialDelay", 500);
+pref("extensions.gContactSync.initialDelayMinutes", 5);
 // set to true to enable logging (recommended)
 pref("extensions.gContactSync.enableLogging", true);
 // set to true to enable verbose logging
@@ -80,6 +80,8 @@ pref("extensions.gContactSync.confirmDeleteThreshold", 5);
 pref("extensions.gContactSync.needRestart", false);
 // the text to be displayed on the status bar in addressbook.xul & messenger.xul
 pref("extensions.gContactSync.statusBarText", "");
+// set to true when a synchronization is occurring (to avoid one being run from multiple places at one time)
+pref("extensions.gContactSync.synchronizing", false);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "PreferMailFormat");
 pref("extensions.gContactSync.extended2", "AllowRemoteContent");

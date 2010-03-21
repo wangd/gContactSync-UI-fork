@@ -95,7 +95,7 @@ com.gContactSync.Options = {
   enableDelays: function Options_enableDelays() {
     var disableElem  = document.getElementById("autoSync");
     var intervalElem = document.getElementById("refreshIntervalBox");
-    var initialElem  = document.getElementById("initialDelayBox");
+    var initialElem  = document.getElementById("initialDelayMinutesBox");
     if (!disableElem) return false;
     if (intervalElem)
       intervalElem.disabled = !disableElem.value;

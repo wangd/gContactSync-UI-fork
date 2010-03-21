@@ -45,6 +45,12 @@
   <statusbar id="status-bar" class="chromeclass-status">
     <statusbarpanel id="gContactSyncStatusText"/>
   </statusbar>
+  <menubar id="mail-menubar">
+    <menu id="gContactSyncMenu" insertbefore="tasksMenu"/>
+  </menubar>
+  <toolbarpalette id="MailToolbarPalette">
+    <toolbarbutton id="button-sync"/>
+  </toolbarpalette>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/MessengerOverlay.js"/>
 </overlay>

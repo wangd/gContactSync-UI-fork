@@ -28,7 +28,7 @@
 
 <!-- Used for the Sync button on the Address Book toolbar -->
 <!ENTITY sync.label    "Sync">
-<!ENTITY sync.tooltip  "Synchronize your contacts">
+<!ENTITY sync.tooltip  "Synchronize your contacts with gContactSync">
 
 <!-- A tooltip on the status bar -->
 <!ENTITY status.tooltip "Click here to view the log file">

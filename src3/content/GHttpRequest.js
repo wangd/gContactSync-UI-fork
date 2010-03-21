@@ -174,7 +174,7 @@ com.gContactSync.GHttpRequest.prototype = new com.gContactSync.HttpRequest();
 com.gContactSync.handle401 = function gCS_handle401(httpRequest) {
   com.gContactSync.LOGGER.LOG("***Found an expired token***");
   // If there is a synchronization in process
-  if (!com.gContactSync.Sync.mSynced) {
+  if (com.gContactSync.Preferences.mSyncPrefs.synchronizing.value) {
     // Get the current username
     var username = com.gContactSync.Sync.mCurrentUsername;
     // Remove the auth token if it wasn't already

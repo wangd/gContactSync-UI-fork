@@ -52,8 +52,8 @@
       <preference id="refreshInterval"
                   name="extensions.gContactSync.refreshInterval"
                   type="int"/>
-      <preference id="initialDelay"
-                  name="extensions.gContactSync.initialDelay"
+      <preference id="initialDelayMinutes"
+                  name="extensions.gContactSync.initialDelayMinutes"
                   type="int"/>
       <preference id="parseNames"
                   name="extensions.gContactSync.parseNames"
@@ -91,8 +91,8 @@
               <textbox preference="refreshInterval" id="refreshIntervalBox" maxlength="4" maxwidth="60"/>
             </row>
             <row align="center">
-              <label control="initialDelayBox" value="&initialDelay.value;"/>
-              <textbox preference="initialDelay" id="initialDelayBox" maxlength="8" maxwidth="60"/>
+              <label control="initialDelayMinutesBox" value="&initialDelayMinutes.value;"/>
+              <textbox preference="initialDelayMinutes" id="initialDelayMinutesBox" maxlength="8" maxwidth="60"/>
             </row>
           </rows>
         </grid>
