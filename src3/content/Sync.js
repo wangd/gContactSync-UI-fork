@@ -525,7 +525,7 @@ com.gContactSync.Sync = {
                                 " contacts...");
     if (!com.gContactSync.confirm(warning)) {
       com.gContactSync.LOGGER.LOG(" * Permission denied, disabling AB");
-      ab.savePref("Disabled", true);
+      com.gContactSync.Sync.mCurrentAb.savePref("Disabled", true);
       com.gContactSync.alert(com.gContactSync.StringBundle.getStr("deleteCancel"));
       return false;
     }
