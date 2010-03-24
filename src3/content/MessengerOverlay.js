@@ -73,6 +73,7 @@ com.gContactSync.MessengerOverlay = {
                                 com.gContactSync.Preferences.mSyncPrefs.lastVersion.value);
     com.gContactSync.LOGGER.LOG(" * User Agent:       " +
                                 navigator.userAgent + "\n");
+    com.gContactSync.Preferences.setSyncPref("synchronizing", false);
     this.checkAuthentication(); // check if the Auth token is valid
   },
   /**
