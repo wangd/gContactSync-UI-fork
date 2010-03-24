@@ -328,7 +328,7 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mCurrentAuthToken        = {};
     // refresh the ab results pane
     // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
-    if (SetAbView) {
+    if (SetAbView !== undefined) {
       SetAbView(GetSelectedDirectory(), false);
     }
     // select the first card, if any
