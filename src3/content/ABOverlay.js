@@ -99,6 +99,10 @@ com.gContactSync.ABOverlay = {
     window.addEventListener("unload", function unloadListener(e) {
           com.gContactSync.Overlay.unload();
         }, false);
+    var elem = document.getElementById("gContactSyncStatusText");
+    if (elem) {
+      elem.label = com.gContactSync.Preferences.mSyncPrefs.statusBarText.value;
+    }
     // Fix the style for description elements accidentally set in the
     // Duplicate Contacts Manager extension
     // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
