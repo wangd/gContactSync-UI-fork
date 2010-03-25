@@ -77,14 +77,14 @@ com.gContactSync.GMailList.prototype = {
   getGroupID: function GMailList_getGroupID() {
     // first see if the nickname is the group id
     var id = this.getNickName();
-    if (id.indexOf("http://www.google.com/m8/feeds/groups") === -1) {
+    if (id.indexOf("www.google.com/m8/feeds/groups") === -1) {
       id = this.getDescription(); // if it isn't, get the description
     }
     // finally, set it as "no id found" with the current time
-    if (id.indexOf("http://www.google.com/m8/feeds/groups") === -1) {
+    if (id.indexOf("www.google.com/m8/feeds/groups") === -1) {
       id = "no id found " + (new Date()).getTime();
     }
-    return id;
+    return id.replace(/^http:/, "https:");
   },
   /**
    * Sets the ID of the group in Google with which this Mail List is

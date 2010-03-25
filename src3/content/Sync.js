@@ -328,12 +328,16 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mCurrentAuthToken        = {};
     // refresh the ab results pane
     // https://www.mozdev.org/bugs/show_bug.cgi?id=19733
-    if (SetAbView !== undefined) {
-      SetAbView(GetSelectedDirectory(), false);
-    }
-    // select the first card, if any
-    if (gAbView && gAbView.getCardFromRow(0))
-      SelectFirstCard();
+    try {
+      if (SetAbView !== undefined) {
+        SetAbView(GetSelectedDirectory(), false);
+      }
+      
+      // select the first card, if any
+      if (gAbView && gAbView.getCardFromRow(0))
+        SelectFirstCard();
+      }
+    catch (e) {}
     // start over, if necessary, or schedule the next synchronization
     if (aStartOver)
       com.gContactSync.Sync.begin();
@@ -384,16 +388,17 @@ com.gContactSync.Sync = {
     for (var i = 0, length = googleContacts.length; i < length; i++) {
       gContact               = new com.gContactSync.GContact(googleContacts[i]);
       gContact.lastModified  = gContact.getLastModifiedDate();
-      gContact.id            = gContact.getValue("id").value;
+      gContact.id            = gContact.getValue("id").value.replace(/^http:/, "https:");
       gContacts[gContact.id] = gContact;
     }
     // re-initialize the contact converter (in case a pref changed)
     com.gContactSync.ContactConverter.init();
     // Step 2: iterate through TB Contacts and check for matches
     for (i = 0, length = abCards.length; i < length; i++) {
-      var tbContact = abCards[i],
-          id        = tbContact.getValue("GoogleID");
-      com.gContactSync.LOGGER.LOG(tbContact.getName() + ": " + id);
+      var tbContact  = abCards[i],
+          id         = tbContact.getValue("GoogleID").replace(/^http:/, "https:");
+          tbCardDate = tbContact.getValue("LastModifiedDate");
+      com.gContactSync.LOGGER.LOG(tbContact.getName() + ": " + id + " - " + tbCardDate);
       tbContact.id = id;
       // no ID = new contact
       if (!id) {
@@ -412,7 +417,6 @@ com.gContactSync.Sync = {
         // remove it from gContacts
         gContacts[id]  = null;
         // note that this returns 0 if readOnly is set
-        var tbCardDate = tbContact.getValue("LastModifiedDate"),
             gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0;
         // 4 options
         // if both were updated
@@ -720,7 +724,7 @@ com.gContactSync.Sync = {
             var group = new com.gContactSync.Group(arr[i]);
             // add the ID to mGroups by making a new property with the ID as the
             // name and the title as the value for easy lookup for contacts
-            var id = group.getID();
+            var id = group.getID().replace(/^http:/, "https:");
             var title = group.getTitle();
             var modifiedDate = group.getLastModifiedDate();
             com.gContactSync.LOGGER.LOG(" * " + title + " - " + id +

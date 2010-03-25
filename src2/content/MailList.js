@@ -295,12 +295,12 @@ MailList.prototype = {
    getGroupID: function MailList_getGroupID() {
      // first see if the nickname is the group id
      var id = this.getNickName();
-     if (id.indexOf("http://www.google.com/m8/feeds/groups") == -1)
+     if (id.indexOf("www.google.com/m8/feeds/groups") == -1)
        id = this.getDescription(); // if it isn't, get the description
      // finally, set it as "no id found" with the current time
-     if (id.indexOf("http://www.google.com/m8/feeds/groups") == -1)
+     if (id.indexOf("www.google.com/m8/feeds/groups") == -1)
        id = "no id found " + (new Date).getTime();
-     return id;
+     return id.replace(/^http:/, "https:");
    },
    /**
    * AddressBook.getGroupID
