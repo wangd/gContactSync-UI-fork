@@ -41,7 +41,8 @@ if (!com.gContactSync) com.gContactSync = {};
 window.addEventListener("load",
   /** Initializes the MessengerOverlay class when the window has finished loading */
   function gCS_mainOverlayLoadListener(e) {
-    com.gContactSync.MessengerOverlay.initialize();
+    // introduce a slight delay before initializing to let FileIO load in TB 2
+    setTimeout(com.gContactSync.MessengerOverlay.initialize, 100);
   },
 false);
 
@@ -74,7 +75,7 @@ com.gContactSync.MessengerOverlay = {
     com.gContactSync.LOGGER.LOG(" * User Agent:       " +
                                 navigator.userAgent + "\n");
     com.gContactSync.Preferences.setSyncPref("synchronizing", false);
-    this.checkAuthentication(); // check if the Auth token is valid
+    com.gContactSync.MessengerOverlay.checkAuthentication(); // check if the Auth token is valid
   },
   /**
    * Checks to see whether or not there is an authentication token in the login
@@ -82,10 +83,10 @@ com.gContactSync.MessengerOverlay = {
    */
   checkAuthentication: function MessengerOverlay_checkAuthentication() {
     if (com.gContactSync.gdata.isAuthValid()) {
-      if (this.mUsername) {
+      if (com.gContactSync.MessengerOverlay.mUsername) {
         var name = com.gContactSync.Preferences.mSyncPrefs.addressBookName.value;
         var ab   = com.gContactSync.GAbManager.getGAb(com.gContactSync.GAbManager.getAbByName(name));
-        ab.savePref("Username", this.mUsername);
+        ab.savePref("Username", com.gContactSync.MessengerOverlay.mUsername);
         ab.setLastSyncDate(0);
         com.gContactSync.Sync.begin();
       }
@@ -94,8 +95,8 @@ com.gContactSync.MessengerOverlay = {
       }
       return;
     }
-    this.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
-    this.promptLogin();
+    com.gContactSync.MessengerOverlay.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
+    com.gContactSync.MessengerOverlay.promptLogin();
   },
   /**
    * Prompts the user to enter his or her Google username and password and then
@@ -120,7 +121,7 @@ com.gContactSync.MessengerOverlay = {
     // so this makes sure it is a full e-mail address.
     if (username.value.indexOf("@") < 1) {
       com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("invalidEmail"));
-      return this.promptLogin();
+      return com.gContactSync.MessengerOverlay.promptLogin();
     }
     
     // fix the username before authenticating
@@ -153,11 +154,11 @@ com.gContactSync.MessengerOverlay = {
    */
   login: function MessengerOverlay_login(aUsername, aAuthToken) {
     com.gContactSync.LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
-    this.setStatusBarText(com.gContactSync.StringBundle.getStr("initialSetup"));
+    com.gContactSync.MessengerOverlay.setStatusBarText(com.gContactSync.StringBundle.getStr("initialSetup"));
     var setup = window.open("chrome://gcontactsync/content/FirstLogin.xul",
                             "SetupWindow",
                             "chrome,resizable=yes,scrollbars=no,status=no");
-    this.mUsername = aUsername;
+    com.gContactSync.MessengerOverlay.mUsername = aUsername;
     // when the setup window loads, set its onunload property to begin a sync
     setup.onload = function onloadListener() {
       setup.onunload = function onunloadListener() {

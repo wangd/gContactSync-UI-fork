@@ -58,8 +58,11 @@ com.gContactSync.LOGGER = {
   LOG: function LOGGER_LOG(aMessage) {
     if (!aMessage)
       return;
-    com.gContactSync.FileIO.appendToFile(com.gContactSync.FileIO.mLogFile,
-                                         aMessage + "\n");
+    // this can fail if called before FileIO is initialized
+    try {
+      com.gContactSync.FileIO.appendToFile(com.gContactSync.FileIO.mLogFile,
+                                           aMessage + "\n");
+    } catch (e) {}
   },
   /**
    * Logs the message if verbose logging is enabled.
