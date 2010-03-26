@@ -47,7 +47,7 @@ if (!com.gContactSync) {
 /** The attribute where the dummy e-mail address is stored */
 com.gContactSync.dummyEmailName = "PrimaryEmail";
 /** The version of gContactSync */
-com.gContactSync.version        = "0.3.0a4";
+com.gContactSync.version        = "0.3.0a5";
 
 /**
  * Creates an XMLSerializer to serialize the given XML then create a more
@@ -136,7 +136,7 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
       id = aContact.getID(true);
     // otherwise it is from Thunderbird, so try to get the Google ID, if any
     else if (aContact instanceof com.gContactSync.TBContact)
-      id = aContact.getValue("GoogleID");
+      id = aContact.getID();
     else
       id = com.gContactSync.GAbManager.getCardValue(aContact, "GoogleID");
   } catch (e) {
@@ -368,4 +368,19 @@ com.gContactSync.showLog = function gCS_showLog() {
   catch(e) {
     com.gContactSync.LOGGER.LOG_WARNING("Unable to open the log", e);
   }
+};
+
+/**
+ * Replaces http://... with https://... in URLs as a permanent workaround for
+ * the issue described here:
+ * http://www.google.com/support/forum/p/apps-apis/thread?tid=6fde249ce2ffe7a9&hl=en
+ *
+ * @param aURL {string} The URL to fix.
+ * @return {string} The URL using https instead of http
+ */
+com.gContactSync.fixURL = function gCS_fixURL(aURL) {
+  if (!aURL) {
+    return aURL;
+  }
+  return aURL.replace(/^http:/i, "https:");
 };

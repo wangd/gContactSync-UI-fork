@@ -342,10 +342,10 @@ com.gContactSync.AddressBook.prototype = {
     }
     for (var i = 0, length = this.mContacts.length; i < length; i++) {
       var contact    = this.mContacts[i],
-          aContactID = aContact.getValue("GoogleID");
+          aContactID = aContact.getID();
       // if it is an old card (has id) compare IDs
       if (aContactID) {
-        if (aContactID === contact.getValue("GoogleID")) {
+        if (aContactID === contact.getID()) {
           return contact;
         }
       }

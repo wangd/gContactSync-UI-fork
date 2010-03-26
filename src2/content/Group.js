@@ -154,7 +154,7 @@ Group.prototype = {
     var atom = gdata.namespaces.ATOM;
     var id   = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
     if (id && id.childNodes[0])
-      return id.childNodes[0].nodeValue;
+      return gCS_fixURL(id.childNodes[0].nodeValue);
     return null;
   },
   /**

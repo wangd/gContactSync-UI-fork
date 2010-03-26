@@ -84,7 +84,7 @@ com.gContactSync.GMailList.prototype = {
     if (id.indexOf("www.google.com/m8/feeds/groups") === -1) {
       id = "no id found " + (new Date()).getTime();
     }
-    return id.replace(/^http:/, "https:");
+    return com.gContactSync.fixURL(id);
   },
   /**
    * Sets the ID of the group in Google with which this Mail List is

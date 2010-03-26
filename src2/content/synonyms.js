@@ -45,7 +45,7 @@ var Cr = Components.results;
 
 var nsIAbCard      = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
-var version        = "0.2.14";
+var version        = "0.2.15";
 
 function serialize(aXML, aRemoveVersion) {
   if (!aXML)
@@ -126,4 +126,19 @@ function changeDeleteListener(enable) {
                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.label,
                         Preferences.mSyncPrefs.listenerDeleteFromGoogle.type,
                         enable);
+}
+
+/**
+ * Replaces http://... with https://... in URLs as a permanent workaround for
+ * the issue described here:
+ * http://www.google.com/support/forum/p/apps-apis/thread?tid=6fde249ce2ffe7a9&hl=en
+ *
+ * @param aURL {string} The URL to fix.
+ * @return {string} The URL using https instead of http
+ */
+function gCS_fixURL(aURL) {
+  if (!aURL) {
+    return aURL;
+  }
+  return aURL.replace(/^http:/i, "https:");
 }

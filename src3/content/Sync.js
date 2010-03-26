@@ -388,7 +388,7 @@ com.gContactSync.Sync = {
     for (var i = 0, length = googleContacts.length; i < length; i++) {
       gContact               = new com.gContactSync.GContact(googleContacts[i]);
       gContact.lastModified  = gContact.getLastModifiedDate();
-      gContact.id            = gContact.getValue("id").value.replace(/^http:/, "https:");
+      gContact.id            = gContact.getID(true);
       gContacts[gContact.id] = gContact;
     }
     // re-initialize the contact converter (in case a pref changed)
@@ -396,7 +396,7 @@ com.gContactSync.Sync = {
     // Step 2: iterate through TB Contacts and check for matches
     for (i = 0, length = abCards.length; i < length; i++) {
       var tbContact  = abCards[i],
-          id         = tbContact.getValue("GoogleID").replace(/^http:/, "https:");
+          id         = tbContact.getID(),
           tbCardDate = tbContact.getValue("LastModifiedDate");
       com.gContactSync.LOGGER.LOG(tbContact.getName() + ": " + id + " - " + tbCardDate);
       tbContact.id = id;
@@ -724,7 +724,7 @@ com.gContactSync.Sync = {
             var group = new com.gContactSync.Group(arr[i]);
             // add the ID to mGroups by making a new property with the ID as the
             // name and the title as the value for easy lookup for contacts
-            var id = group.getID().replace(/^http:/, "https:");
+            var id = group.getID();
             var title = group.getTitle();
             var modifiedDate = group.getLastModifiedDate();
             com.gContactSync.LOGGER.LOG(" * " + title + " - " + id +

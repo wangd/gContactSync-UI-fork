@@ -147,21 +147,25 @@ var AbManager = {
    */
   getCardValue: function AbManager_getCardValue(aCard, aAttrName) {
     this.checkCard(aCard, "getCardValue");
+    var value;
     if (this.mBug413260) // if the patch for Bug 413260 is applied
-      return aCard.getProperty(aAttrName, null);
+      value = aCard.getProperty(aAttrName, null);
     else {
       if (aAttrName == "LastModifiedDate")
         return aCard.lastModifiedDate; // workaround for lastModifiedDate bug
-      var value;
       if (this.isRegularAttribute(aAttrName))
-        try { return aCard.getCardValue(aAttrName); }
+        try { value = aCard.getCardValue(aAttrName); }
         catch (e) { LOGGER.LOG_WARNING("Error in getCardValue: " + e); }
       else if (Ci.nsIAbMDBCard && aCard instanceof Ci.nsIAbMDBCard)
-        return this.getMDBCardValue(aCard, aAttrName);
+        value = this.getMDBCardValue(aCard, aAttrName);
       else
         LOGGER.LOG_WARNING("Couldn't get the value " + aAttrName + " of the card "
                            + aCard);
     }
+    // make sure the GoogleID always uses HTTPS
+    if (aAttrName == "GoogleID")
+      value = gCS_fixURL(value);
+    return value;
   },
   /**
    * AbManager.getCardEmailAddresses

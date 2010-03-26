@@ -97,6 +97,16 @@ com.gContactSync.TBContact.prototype = {
     return com.gContactSync.GAbManager.getCardValue(this.mContact, aAttribute);
   },
   /**
+   * Returns the Google ID of this contact, if any, and forces it to be
+   * https://... (if present).
+   *
+   * @returns {string} The GoogleID of this contact using https
+   */
+  getID: function TBContact_getID() {
+    // get the GoogleID then force http: -> https:
+    return com.gContactSync.fixURL(this.getValue("GoogleID"));
+  },
+  /**
    * Sets the value of the requested attribute of this contact and optionally
    * updates the contact in its parent directory.
    *
@@ -168,7 +178,7 @@ com.gContactSync.TBContact.prototype = {
     var primaryEmail = this.getValue("PrimaryEmail");
     if (primaryEmail)
       return primaryEmail;
-    return this.getValue("GoogleID");
+    return this.getID();
   },
   /**
    * Returns true if an only if this contact has a value for one or more of the

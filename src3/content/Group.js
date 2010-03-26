@@ -162,7 +162,7 @@ com.gContactSync.Group.prototype = {
     var atom = com.gContactSync.gdata.namespaces.ATOM,
         id   = this.xml.getElementsByTagNameNS(atom.url, "id")[0];
     if (id && id.childNodes[0]) {
-      return id.childNodes[0].nodeValue;
+      return com.gContactSync.fixURL(id.childNodes[0].nodeValue);
     }
     return null;
   },

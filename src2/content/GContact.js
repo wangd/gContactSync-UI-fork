@@ -483,7 +483,7 @@ GContact.prototype = {
     // iterate through each group and add the group as a new property of the
     // groups object with the ID as the name of the property.
     for (var i = 0, length = arr.length; i < length; i++) {
-      var id = arr[i].getAttribute("href");
+      var id = gCS_fixURL(arr[i].getAttribute("href"));
       var group = Sync.mGroups[id];
       if (group)
         groups[id] = group;
@@ -619,11 +619,18 @@ GContact.prototype = {
     return str == aType; // return true if the end is equal to aType
   },
   /**
-   * GContact.getID
-   * Returns the last portion of this contact's ID
+   * Returns the last portion of this contact's ID, or optionally, the full ID.
+   * @param {boolean} aFull Set this to true to return the complete ID for this
+   *                        contact (the entire URL).
+   *                        Otherwise just the portion after the last / is
+   *                        returned.
+   * @returns {string} The ID of this contact.
    */
-  getID: function GContact_getID() {
+  getID: function GContact_getID(aFull) {
     var val   = this.getValue("id").value;
+    if (aFull) {
+      return gCS_fixURL(val); // make sure to change http to https
+    }
     var index = val.lastIndexOf("/");
     return val.substr(index + 1);
   }

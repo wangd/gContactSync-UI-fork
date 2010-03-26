@@ -300,7 +300,7 @@ MailList.prototype = {
      // finally, set it as "no id found" with the current time
      if (id.indexOf("www.google.com/m8/feeds/groups") == -1)
        id = "no id found " + (new Date).getTime();
-     return id.replace(/^http:/, "https:");
+     return gCS_fixURL(id);
    },
    /**
    * AddressBook.getGroupID

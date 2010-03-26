@@ -248,7 +248,7 @@ var Sync = {
       // put this contact in the object if all groups are synced or the contact
       // is in the group that is being synchronized
       if (!Sync.mContactsUrl || gContact.getGroups()[Sync.mContactsUrl]) {
-        var id = gContact.getValue("id").value.replace(/^http:/, "https:");
+        var id = gContact.getID(true);
         var lastModified = gContact.getLastModifiedDate();
         gContact.lastModified = lastModified;
         gContact.id = id;
@@ -262,7 +262,7 @@ var Sync = {
     // Step 2: iterate through TB Contacts and check for matches
     for (var i = 0, length = abCards.length; i < length; i++) {
       var tbContact = new TBContact(abCards[i], ab);
-      var id = tbContact.getValue("GoogleID").replace(/^http:/, "https:");
+      var id = tbContact.getValue("GoogleID");
       LOGGER.LOG(tbContact.getName());
       tbContact.id = id;
       // no ID = new contact
@@ -495,7 +495,7 @@ var Sync = {
             var group = new Group(arr[i]);
             // add the ID to mGroups by making a new property with the ID as the
             // name and the title as the value for easy lookup for contacts
-            var id = group.getID().replace(/^http:/, "https:");
+            var id = group.getID();
             var title = group.getTitle();
             var modifiedDate = group.getLastModifiedDate();
             LOGGER.LOG(" * " + title + " - " + id +
