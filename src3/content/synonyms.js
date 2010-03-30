@@ -47,7 +47,7 @@ if (!com.gContactSync) {
 /** The attribute where the dummy e-mail address is stored */
 com.gContactSync.dummyEmailName = "PrimaryEmail";
 /** The version of gContactSync */
-com.gContactSync.version        = "0.3.0a5";
+com.gContactSync.version        = "0.3.0a6";
 
 /**
  * Creates an XMLSerializer to serialize the given XML then create a more
@@ -382,5 +382,5 @@ com.gContactSync.fixURL = function gCS_fixURL(aURL) {
   if (!aURL) {
     return aURL;
   }
-  return aURL.replace(/^http:/i, "https:");
+  return aURL.replace(/^https:/i, "http:");
 };

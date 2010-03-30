@@ -45,7 +45,7 @@ var Cr = Components.results;
 
 var nsIAbCard      = Ci.nsIAbCard;
 var dummyEmailName = "PrimaryEmail";
-var version        = "0.2.15";
+var version        = "0.2.16";
 
 function serialize(aXML, aRemoveVersion) {
   if (!aXML)
@@ -140,5 +140,5 @@ function gCS_fixURL(aURL) {
   if (!aURL) {
     return aURL;
   }
-  return aURL.replace(/^http:/i, "https:");
+  return aURL.replace(/^https:/i, "http:");
 }
