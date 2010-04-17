@@ -83,7 +83,10 @@ com.gContactSync.gAttributes = {
   "Relation3":            {},
   "Relation3Type":        {},
   "WebPage1Type":         {},
-  "WebPage2Type":         {}
+  "WebPage2Type":         {},
+  "FullHomeAddress":      {},
+  "FullWorkAddress":      {},
+  "OtherAddress":         {}
 };
 /**
  * Adds a tab to the tab box in the New and Edit Card Dialogs.  Using JavaScript
@@ -333,8 +336,6 @@ com.gContactSync.CardDialogOverlay = {
         elem.style.maxWidth = "850px";
         elem.style.minWidth = "850px";
         */
-        // fix the width of the dialog
-        window.sizeToContent();
       }
       catch (ex6) {
         com.gContactSync.alertError("Unable to setup the extra tabs\n" + ex6);
@@ -342,7 +343,20 @@ com.gContactSync.CardDialogOverlay = {
     }
     // if this is the old dialog, show the extra phone numbers
     else {
-      document.getElementById("numbersGroupBox").removeAttribute("hidden");
+      try {
+        // move the address descriptions below the addresses (rather than beside)
+        var gbox = document.getElementById("addressDescGroupBox");
+        if (gbox) {
+          var parent = gbox.parentNode;
+          parent.removeChild(gbox);
+          parent.parentNode.firstChild.appendChild(gbox);
+        }
+        document.getElementById("numbersGroupBox").removeAttribute("hidden");
+      }
+      catch (e) {
+        com.gContactSync.LOGGER.LOG_WARNING("Unable to move addressDescGroupBox" +
+                                            " or remove hidden from numbersGB", e);
+      }
     }
     
     // if this is a read-only card, make added elements disabled
@@ -360,6 +374,8 @@ com.gContactSync.CardDialogOverlay = {
       document.getElementById("OtherNumber").readOnly      = true;
       document.getElementById("Relation").readOnly         = true;
     }
+    // fix the width of the dialog
+    window.sizeToContent();
 
     // override the check and set card values function
     com.gContactSync.originalCheckAndSetCardValues = CheckAndSetCardValues;

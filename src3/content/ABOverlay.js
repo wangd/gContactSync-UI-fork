@@ -355,6 +355,89 @@ com.gContactSync.ABOverlay = {
                                                       visible, true);
       cvSetVisible(cvData.cvhContact, visible);
       cvSetVisible(cvData.cvbContact, visible);
+      // Other section (OtherAddress)
+      var visible = !cvData.cvhOther.getAttribute("collapsed");
+      visible = com.gContactSync.ABOverlay.getVisible(aCard, ["OtherAddress"], visible);
+      cvSetVisible(cvData.cvhOther, visible);
+      cvSetVisible(cvData.cvbOther, visible);
+      // setup the OtherAddress MapIt button 
+      if (cvData.cvOtherAddress && cvData.cvOtherAddress.childNodes[0] &&
+          cvData.cvOtherAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvOtherAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":")
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvOtherMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbOtherMapItBox, true);
+      }  
+      else {
+        cvData.cvOtherMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbOtherMapItBox, false);
+      }
+      // setup the OtherAddress MapIt button 
+      if (cvData.cvOtherAddress && cvData.cvOtherAddress.childNodes[0] &&
+          cvData.cvOtherAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvOtherAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":");
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvOtherMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbOtherMapItBox, true);
+      }  
+      else {
+        cvData.cvOtherMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbOtherMapItBox, false);
+      }
+      // Home Section (FullHomeAddress)
+      var visible = !cvData.cvhHome.getAttribute("collapsed");
+      visible = com.gContactSync.ABOverlay.getVisible(aCard, ["FullHomeAddress"], visible);
+      cvSetVisible(cvData.cvhHome, visible);
+      cvSetVisible(cvData.cvbHome, visible);
+      // setup the HomeAddress MapIt button 
+      if (cvData.cvFullHomeAddress && cvData.cvFullHomeAddress.childNodes[0] &&
+          cvData.cvFullHomeAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvFullHomeAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":")
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvFullHomeMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbFullHomeMapItBox, true);
+        // hide the old home address...
+        com.gContactSync.ABOverlay.collapseAddress("Home");
+      }  
+      else {
+        cvData.cvFullHomeMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbFullHomeMapItBox, false);
+      }
+      // Work Section (FullWorkAddress)
+      var visible = !cvData.cvhWork.getAttribute("collapsed");
+      visible = com.gContactSync.ABOverlay.getVisible(aCard, ["FullWorkAddress"], visible);
+      cvSetVisible(cvData.cvhWork, visible);
+      cvSetVisible(cvData.cvbWork, visible);
+      // setup the WorkAddress MapIt button 
+      if (cvData.cvFullWorkAddress && cvData.cvFullWorkAddress.childNodes[0] &&
+          cvData.cvFullWorkAddress.childNodes[0].nodeValue) {
+        var baseUrl = "http://maps.google.com/maps?q=";
+        var address = cvData.cvFullWorkAddress.childNodes[0].nodeValue;
+        // remove the label
+        var index = address.indexOf(":");
+        if (index != -1 && address.length > index + 2)
+          address = address.substring(address.indexOf(":") + 2);
+        cvData.cvFullWorkMapIt.setAttribute("url",  baseUrl + encodeURIComponent(address));
+        cvSetVisible(cvData.cvbFullWorkMapItBox, true);
+        // hide the old Work address...
+        com.gContactSync.ABOverlay.collapseAddress("Work");
+      }  
+      else {
+        cvData.cvFullWorkMapIt.setAttribute("url", "");
+        cvSetVisible(cvData.cvbFullWorkMapItBox, false);
+      }
       // Other section (relations)
       var visible = !cvData.cvhOther.getAttribute("collapsed");
       // Relation fields
@@ -385,6 +468,25 @@ com.gContactSync.ABOverlay = {
         com.gContactSync.alertError("Error while modifying view pane: " + e);
         com.gContactSync.LOGGER.LOG_WARNING("Error while modifying the view pane.", e);
     }
+  },
+  /**
+   * Collapses (hides) the old components of an address: Address Line 1 and 2,
+   * the City, State Zip line, and the Country of the given type (Home or Work).
+   * @param aPrefix {string} The type of address.  Must be 'Home' or 'Work'.
+   */
+  collapseAddress: function ABOverlay_collapseAddress(aPrefix) {
+    if (!aPrefix || (aPrefix != "Home" && aPrefix != "Work"))
+      return;
+    var arr = ["Address", "Address2", "CityStZip", "Country"];
+    for (var i = 0, length = arr.length; i < length; i++) {
+      var id = "cv" + aPrefix + arr[i];
+      var elem = document.getElementById(id);
+      if (elem && elem.setAttribute)
+        elem.setAttribute("collapsed", true);
+    }
+    var mapItBox = document.getElementById("cvb" + aPrefix + "MapItBox");
+    if (mapItBox && mapItBox.setAttribute)
+      mapItBox.setAttribute("collapsed", true);
   },
   /**
    * Hides all of the nodes based on the array.  The node must be a propery of
@@ -539,6 +641,84 @@ com.gContactSync.ABOverlay = {
       vbox.appendChild(cvData.cvYahooScreenName);
       vbox.appendChild(cvData.cvJabberScreenName);
     }
+    // Other Address
+    vbox = document.getElementById("cvbOther");
+    var otherHbox = document.createElement("hbox");
+    var otherVbox = document.createElement("vbox");
+    otherVbox.setAttribute("flex", "1");
+    cvData.cvOtherAddress = com.gContactSync.ABOverlay.makeDescElement("OtherAddress", "CardViewText");
+    if (Components.classes["@mozilla.org/abmanager;1"]) // TB 3 - style should be pre-wrap
+      cvData.cvOtherAddress.setAttribute("style", "white-space: pre-wrap;");
+    else // TB 2 - the style should be -moz-pre-wrap
+      cvData.cvOtherAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
+    // setup the MapIt box
+    cvData.cvbOtherMapItBox = document.createElement("vbox");
+    cvData.cvbOtherMapItBox.setAttribute("id", "cvbOtherMapItBox");
+    cvData.cvbOtherMapItBox.setAttribute("pack", "end");
+    cvData.cvOtherMapIt = document.createElement("button");
+    cvData.cvOtherMapIt.setAttribute("label", com.gContactSync.StringBundle.getStr("getMap"));
+    cvData.cvOtherMapIt.setAttribute("url", "");
+    cvData.cvOtherMapIt.setAttribute("oncommand", "MapIt('cvOtherMapIt');");
+    cvData.cvOtherMapIt.setAttribute("tooltip", com.gContactSync.StringBundle.getStr("getMapTooltip"));
+    cvData.cvOtherMapIt.setAttribute("id", "cvOtherMapIt");
+    otherVbox.appendChild(cvData.cvOtherAddress);
+    cvData.cvbOtherMapItBox.appendChild(cvData.cvOtherMapIt);
+    otherHbox.appendChild(otherVbox);
+    otherHbox.appendChild(cvData.cvbOtherMapItBox);
+    vbox.appendChild(otherHbox);
+    // FullHomeAddress
+    vbox = document.getElementById("cvbHome");
+    var FullHomeHbox = document.createElement("hbox");
+    var FullHomeVbox = document.createElement("vbox");
+    FullHomeVbox.setAttribute("flex", "1");
+    cvData.cvFullHomeAddress = com.gContactSync.ABOverlay.makeDescElement("FullHomeAddress", "CardViewText");
+    if (Components.classes["@mozilla.org/abmanager;1"]) // TB 3 - style should be pre-wrap
+      cvData.cvFullHomeAddress.setAttribute("style", "white-space: pre-wrap;");
+    else // TB 2 - the style should be -moz-pre-wrap
+      cvData.cvFullHomeAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
+    // setup the MapIt box
+    cvData.cvbFullHomeMapItBox = document.createElement("vbox");
+    cvData.cvbFullHomeMapItBox.setAttribute("id", "cvbFullHomeMapItBox");
+    cvData.cvbFullHomeMapItBox.setAttribute("pack", "end");
+    cvData.cvFullHomeMapIt = document.createElement("button");
+    cvData.cvFullHomeMapIt.setAttribute("label", com.gContactSync.StringBundle.getStr("getMap"));
+    cvData.cvFullHomeMapIt.setAttribute("url", "");
+    cvData.cvFullHomeMapIt.setAttribute("oncommand", "MapIt('cvFullHomeMapIt');");
+    cvData.cvFullHomeMapIt.setAttribute("tooltip", com.gContactSync.StringBundle.getStr("getMapTooltip"));
+    cvData.cvFullHomeMapIt.setAttribute("id", "cvFullHomeMapIt");
+    FullHomeVbox.appendChild(cvData.cvFullHomeAddress);
+    cvData.cvbFullHomeMapItBox.appendChild(cvData.cvFullHomeMapIt);
+    FullHomeHbox.appendChild(FullHomeVbox);
+    FullHomeHbox.appendChild(cvData.cvbFullHomeMapItBox);
+    var homeWebPageBox = document.getElementById("cvHomeWebPageBox");
+    if (homeWebPageBox)
+      vbox.insertBefore(FullHomeHbox, homeWebPageBox);
+    else
+      vbox.appendChild(FullHomeHbox);
+    // FullWorkAddress
+    vbox = document.getElementById("cvbWork");
+    var FullWorkHbox = document.createElement("hbox");
+    var FullWorkVbox = document.createElement("vbox");
+    FullWorkVbox.setAttribute("flex", "1");
+    cvData.cvFullWorkAddress = com.gContactSync.ABOverlay.makeDescElement("FullWorkAddress", "CardViewText");
+    if (Components.classes["@mozilla.org/abmanager;1"]) // TB 3 - style should be pre-wrap
+      cvData.cvFullWorkAddress.setAttribute("style", "white-space: pre-wrap;");
+    else // TB 2 - the style should be -moz-pre-wrap
+      cvData.cvFullWorkAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
+    // setup the MapIt box
+    cvData.cvbFullWorkMapItBox = document.createElement("vbox");
+    cvData.cvbFullWorkMapItBox.setAttribute("id", "cvbFullWorkMapItBox");
+    cvData.cvbFullWorkMapItBox.setAttribute("pack", "end");
+    cvData.cvFullWorkMapIt = document.createElement("button");
+    cvData.cvFullWorkMapIt.setAttribute("label", com.gContactSync.StringBundle.getStr("getMap"));
+    cvData.cvFullWorkMapIt.setAttribute("url", "");
+    cvData.cvFullWorkMapIt.setAttribute("oncommand", "MapIt('cvFullWorkMapIt');");
+    cvData.cvFullWorkMapIt.setAttribute("tooltip", com.gContactSync.StringBundle.getStr("getMapTooltip"));
+    cvData.cvFullWorkMapIt.setAttribute("id", "cvFullWorkMapIt");
+    FullWorkVbox.appendChild(cvData.cvFullWorkAddress);
+    cvData.cvbFullWorkMapItBox.appendChild(cvData.cvFullWorkMapIt);
+    FullWorkHbox.appendChild(FullWorkVbox);
+    FullWorkHbox.appendChild(cvData.cvbFullWorkMapItBox);
 
     // Work section
     cvData.cvJobDescription = com.gContactSync.ABOverlay.makeDescElement("JobDescription", "CardViewText");

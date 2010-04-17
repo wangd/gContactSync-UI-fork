@@ -11,14 +11,31 @@
 <!ENTITY seventh.label "Seventh">
 <!ENTITY eighth.label "Eighth">
 
+<!-- Different address types -->
+<!ENTITY home.label "Home">
+<!ENTITY work.label "Work">
+<!ENTITY other.label "Other">
+
 <!-- A label for extra screenname fields -->
-<!ENTITY screenname.box "Additional Screennames">
+<!ENTITY screenname.box            "Additional Screennames">
 <!-- A label for extra e-mail address fields -->
-<!ENTITY email.box "Additional Email Addresses">
+<!ENTITY email.box                 "Additional Email Addresses">
 <!-- A label for extra phone number fields -->
-<!ENTITY numbers.box "Additional Numbers">
+<!ENTITY numbers.box               "Additional Numbers">
 <!-- A label for extra postal address fields -->
-<!ENTITY address.box "Additional Addresses">
+<!ENTITY gContactSyncAddrTab.label "Addresses">
+<!ENTITY address.box               "Formatted Addresses">
+
+<!-- Note: these are only displayed in Thunderbird 3/Seamonkey 2 (not Postbox or TB 2) -->
+<!ENTITY addressDesc.box           "Description">
+<!-- LOCALIZATION NOTE: Please try to keep the number of characters down (around 60) to avoid making the window too wide -->
+<!ENTITY addressDesc1.value        "Google uses 'formatted' address fields like these.">
+<!ENTITY addressDesc2.value        "You can add an address to Google with Thunderbird's">
+<!ENTITY addressDesc3.value        "default fields, but all subsequent changes are only">
+<!ENTITY addressDesc4.value        "applied to these fields.">
+<!ENTITY addressDesc5.value        "">
+<!ENTITY addressDesc6.value        "These fields have priority when synchronizing or">
+<!ENTITY addressDesc7.value        "viewing addresses.">
 
 <!-- This can be blank or something like "Click on Sync to begin" -->
 <!ENTITY initialStatus.label "">
