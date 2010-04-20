@@ -96,7 +96,7 @@ com.gContactSync.Preferences = {
    * Unregisters the pref observer.
    */
   unregister: function CP_Preferences_unregister() {
-    if(!this.mPrefBranch || !this.mRegistered) {
+    if(!this.mSyncBranch || !this.mRegistered) {
       return;
     }
     com.gContactSync.LOGGER.VERBOSE_LOG("**Unregistering preference observer");
