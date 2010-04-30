@@ -5,7 +5,7 @@
         <em:id>gContactSync@pirules.net</em:id>
         <em:version>0.3.0a6</em:version>
         <em:name>gContactSync</em:name>
-        <em:description>gContactSync is an add-on that synchronizes your Google Contacts with an Address Book in Thunderbird</em:description>
+        <em:description>gContactSync synchronizes your Google Contacts with Thunderbird</em:description>
         <em:creator>Josh Geenen</em:creator>
         <em:optionsURL>chrome://gcontactsync/content/options.xul</em:optionsURL>
         <em:iconURL>chrome://gcontactsync/skin/logo_main.png</em:iconURL>
