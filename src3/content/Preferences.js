@@ -244,7 +244,7 @@ com.gContactSync.Preferences = {
     }
   },
   /**
-   * A convientient method of saving a sync preference.
+   * A convienient method of saving a sync preference.
    * @param aPrefName {string} The preference on the gContactSync branch
    *                           to save.
    * @param aValue {string}    The new value for the given preference.
@@ -258,7 +258,6 @@ com.gContactSync.Preferences = {
     return this.setPref(this.mSyncBranch, pref.label, pref.type, aValue);
   },
   /**
-   * Preferences.getSyncPrefs
    * Tries to get each preference in mSyncPrefs and creates the preference and
    * sets its default value if it is not present.
    */
