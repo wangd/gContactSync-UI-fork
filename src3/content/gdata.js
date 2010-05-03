@@ -224,11 +224,12 @@ com.gContactSync.gdata = {
       this.website             = new GElement(typedWithAttr, "website",
                                               gcontact,
                                               this.WEBSITE_TYPES, "href");
-      this.street              = new GElement(parentTyped, "street",   gd);
-      this.city                = new GElement(parentTyped, "city",     gd);
-      this.region              = new GElement(parentTyped, "region",   gd);
-      this.postcode            = new GElement(parentTyped, "postcode", gd);
-      this.country             = new GElement(parentTyped, "country",  gd);
+      this.formattedAddress    = new GElement(parentTyped, "formattedAddress", gd);
+      this.street              = new GElement(parentTyped, "street",           gd);
+      this.city                = new GElement(parentTyped, "city",             gd);
+      this.region              = new GElement(parentTyped, "region",           gd);
+      this.postcode            = new GElement(parentTyped, "postcode",         gd);
+      this.country             = new GElement(parentTyped, "country",          gd);
     },
     /** Different types for a website */
     WEBSITE_TYPES: [

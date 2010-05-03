@@ -80,7 +80,8 @@ com.gContactSync.ContactConverter = {
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
     "Relation3Type", "CompanySymbol", "JobDescription",
-    "WebPage1Type", "WebPage2Type"
+    "WebPage1Type", "WebPage2Type", "FullHomeAddress", "FullWorkAddress",
+    "OtherAddress"
   ],
   /** Stores whether this object has been initialized yet */
   mInitialized: false,
@@ -144,7 +145,11 @@ com.gContactSync.ContactConverter = {
       new com.gContactSync.ConverterElement("relation", "Relation3", 3, ""),
       // Websites
       new com.gContactSync.ConverterElement("website",   "WebPage1", 0, "work"),
-      new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home")
+      new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home"),
+      // full (formatted) addresses
+      new com.gContactSync.ConverterElement("formattedAddress", "FullHomeAddress", 0, "home"),
+      new com.gContactSync.ConverterElement("formattedAddress", "FullWorkAddress", 0, "work"),
+      new com.gContactSync.ConverterElement("formattedAddress", "OtherAddress",    0, "other")
     ];
 
     // Only synchronize (if possible) postal addresses if the preference was
@@ -339,13 +344,14 @@ com.gContactSync.ContactConverter = {
       throw "Invalid TBContact (no mAddressBook) sent to " +
             "ContactConverter.cardToAtomXML from " + this.caller;
     }
-    var arr = this.mConverterArr;
+    var arr = this.mConverterArr,
+        blankProp = new com.gContactSync.Property("", "");
     // get the regular properties from the array mConverterArr
     for (var i = 0, length = arr.length; i < length; i++) {
-      var obj = arr[i];
+      var obj = arr[i],
+          property = aGContact.getValue(obj.elementName, obj.index, obj.type);
       com.gContactSync.LOGGER.VERBOSE_LOG(obj.tbName);
-      var property = aGContact.getValue(obj.elementName, obj.index, obj.type);
-      property = property ? property : new com.gContactSync.Property("", "");
+      property = property || blankProp;
       com.gContactSync.LOGGER.VERBOSE_LOG(property.value + " - " + property.type);
       // Thunderbird has problems with contacts who do not have an e-mail addr
       // and are in Mailing Lists.  To avoid problems, use a dummy e-mail addr
