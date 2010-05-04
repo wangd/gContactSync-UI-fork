@@ -16,7 +16,7 @@
    -
    - The Initial Developer of the Original Code is
    - Josh Geenen <gcontactsync@pirules.org>.
-   - Portions created by the Initial Developer are Copyright (C) 2008-2009
+   - Portions created by the Initial Developer are Copyright (C) 2008-2010
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
@@ -36,7 +36,7 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://gcontactsync/skin/overlay.css" type="text/css"?>
+<?xml-stylesheet href="chrome://gcontactsync/skin/options.css" type="text/css"?>
 
 <!DOCTYPE prefwindow SYSTEM "chrome://gContactSync/locale/options.dtd">
 
@@ -80,19 +80,29 @@
              value="&help.value;"/>
       <groupbox>
         <caption label="&autoSync.value;"/>
-        <checkbox preference="autoSync" id="autoSync" label="&autoSync.label;"/>
+        <checkbox preference="autoSync"
+                  id="autoSync"
+                  label="&autoSync.label;"/>
         <grid>
           <columns>
             <column/>
           </columns>
           <rows>
             <row align="center">
-              <label control="refreshInterval" value="&refreshInterval.value;"/>
-              <textbox preference="refreshInterval" id="refreshIntervalBox" maxlength="4" maxwidth="60"/>
+              <label control="refreshInterval"
+                     value="&refreshInterval.value;"/>
+              <textbox preference="refreshInterval"
+                       id="refreshIntervalBox"
+                       maxlength="4"
+                       maxwidth="60"/>
             </row>
             <row align="center">
-              <label control="initialDelayMinutesBox" value="&initialDelayMinutes.value;"/>
-              <textbox preference="initialDelayMinutes" id="initialDelayMinutesBox" maxlength="8" maxwidth="60"/>
+              <label control="initialDelayMinutesBox"
+                     value="&initialDelayMinutes.value;"/>
+              <textbox preference="initialDelayMinutes"
+                       id="initialDelayMinutesBox"
+                       maxlength="8"
+                       maxwidth="60"/>
             </row>
           </rows>
         </grid>
@@ -100,8 +110,12 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&syncBehavior.label;"/>
-        <checkbox preference="parseNames" id="parseNames" label="&parseNames.label;"/>
-        <checkbox preference="phoneTypes" id="phoneTypes" label="&phoneTypes.label;"/>
+        <checkbox preference="parseNames"
+                  id="parseNames"
+                  label="&parseNames.label;"/>
+        <checkbox preference="phoneTypes"
+                  id="phoneTypes"
+                  label="&phoneTypes.label;"/>
         <grid flex="1">
           <columns>
             <column/>
@@ -109,8 +123,12 @@
           </columns>
           <rows>
             <row align="center">
-              <label control="accountDelay" value="&accountDelay.value;"/>
-              <textbox preference="accountDelay" id="accountDelay" maxlength="6" maxwidth="60"/>
+              <label control="accountDelay"
+                     value="&accountDelay.value;"/>
+              <textbox preference="accountDelay"
+                       id="accountDelay"
+                       maxlength="6"
+                       maxwidth="60"/>
             </row>
           </rows>
         </grid>
@@ -118,8 +136,12 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&logging.label;"/>
-        <checkbox preference="enableLogging" id="enableLogging" label="&enableLogging.label;"/>
-        <checkbox preference="verboseLog" id="verboseLog" label="&verboseLog.label;"/>
+        <checkbox preference="enableLogging"
+                  id="enableLogging"
+                  label="&enableLogging.label;"/>
+        <checkbox preference="verboseLog"
+                  id="verboseLog"
+                  label="&verboseLog.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>
@@ -151,28 +173,41 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&buttons.label;"/>
-        <checkbox preference="enableSyncBtn" id="chkEnableSyncBtn"
-                  label="&enableSyncBtn.label;" collapsed="true"/>
-        <checkbox preference="forceBtnImage" id="chkForceBtnImage"
-                  label="&forceBtnImage.label;" collapsed="true"/>
-        <checkbox preference="enableMenu" id="enableMenu" label="&enableMenu.label;"/>
-        <checkbox preference="addReset" id="addReset" label="&addReset.label;"/>
+        <checkbox preference="enableSyncBtn"
+                  id="chkEnableSyncBtn"
+                  label="&enableSyncBtn.label;"
+                  collapsed="true"/>
+        <checkbox preference="forceBtnImage"
+                  id="chkForceBtnImage"
+                  label="&forceBtnImage.label;"
+                  collapsed="true"/>
+        <checkbox preference="enableMenu"
+                  id="enableMenu"
+                  label="&enableMenu.label;"/>
+        <checkbox preference="addReset"
+                  id="addReset"
+                  label="&addReset.label;"/>
       </groupbox>
       <groupbox>
         <caption label="&abResults.label;"/>
-        <checkbox preference="phoneColLabels" id="phoneColLabels"
+        <checkbox preference="phoneColLabels"
+                  id="phoneColLabels"
                   label="&phoneColLabels.label;"/>
-        <checkbox preference="newColLabels" id="newColLabels"
+        <checkbox preference="newColLabels"
+                  id="newColLabels"
                   label="&newColLabels.label;"/>
       </groupbox>
       <groupbox>
         <caption label="&abCardView.label;"/>
-        <checkbox preference="enableImUrls" id="enableImUrls"
+        <checkbox preference="enableImUrls"
+                  id="enableImUrls"
                   label="&enableImUrls.label;"/>
       </groupbox>
     </groupbox>
   </prefpane>
-  <prefpane id="pane_extended" index="extended" label="&extended.tab;">
+  <prefpane id="pane_extended"
+            index="extended"
+            label="&extended.tab;">
     <preferences>
       <preference id="syncExtended"
                   name="extensions.gContactSync.syncExtended"
@@ -213,7 +248,8 @@
       <label value="&extendedPropertiesDesc2.value;"/>
       <label value="&extendedPropertiesDesc3.value;"/>
       <separator class="thin"/>
-      <checkbox preference="syncExtended" id="syncExtended"
+      <checkbox preference="syncExtended"
+                id="syncExtended"
                 label="&syncExtended.label;"/>
       <separator class="thin"/>
       <vbox align="center">
@@ -268,7 +304,9 @@
       </vbox>
     </groupbox>
   </prefpane>
-  <prefpane id="pane_advanced" index="advanced" label="&advanced.tab;">
+  <prefpane id="pane_advanced"
+            index="advanced"
+            label="&advanced.tab;">
     <preferences>
       <preference id="max_chrome_script_run_time"
                   name="dom.max_chrome_script_run_time"
@@ -292,8 +330,12 @@
           </columns>
           <rows>
             <row align="center">
-              <label control="backupInterval" value="&backupInterval.value;"/>
-              <textbox preference="backupInterval" id="backupInterval" maxlength="6" maxwidth="60"/>
+              <label control="backupInterval"
+                     value="&backupInterval.value;"/>
+              <textbox preference="backupInterval"
+                       id="backupInterval"
+                       maxlength="6"
+                       maxwidth="60"/>
             </row>
           </rows>
         </grid>
@@ -307,28 +349,40 @@
           </columns>
           <rows>
             <row align="center">
-              <label control="chromeTimeBox" value="&chromeTime.value;"/>
+              <label control="chromeTimeBox"
+                     value="&chromeTime.value;"/>
             </row>
             <row align="center">
-              <textbox preference="max_chrome_script_run_time" id="chromeTimeBox" maxlength="5" maxwidth="60"/>
+              <textbox preference="max_chrome_script_run_time"
+                       id="chromeTimeBox"
+                       maxlength="5"
+                       maxwidth="60"/>
             </row>
             <row align="center">
-              <label control="confirmDeleteThreshold" value="&confirmDeleteThreshold.value;"/>
+              <label control="confirmDeleteThreshold"
+                     value="&confirmDeleteThreshold.value;"/>
             </row>
             <row align="center">
-              <textbox preference="confirmDeleteThreshold" id="confirmDeleteThreshold" maxlength="5" maxwidth="60"/>
+              <textbox preference="confirmDeleteThreshold"
+                       id="confirmDeleteThreshold"
+                       maxlength="5"
+                       maxwidth="60"/>
             </row>
             <row>
-              <checkbox preference="syncAddresses" id="syncAddresses" label="&syncAddresses.label;"/>
+              <checkbox preference="syncAddresses"
+                        id="syncAddresses"
+                        label="&syncAddresses.label;"/>
             </row>
           </rows>
         </grid>
       </groupbox>
       <separator class="thin"/>
       <hbox>
-        <button id="resetAll" label="&resetAll.label;"
+        <button id="resetAll"
+                label="&resetAll.label;"
                 oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
-        <button id="cleanOldPrefs" label="&cleanOldPrefs.label;"
+        <button id="cleanOldPrefs"
+                label="&cleanOldPrefs.label;"
                 oncommand="com.gContactSync.Options.cleanOldPrefs(true);"/>
       </hbox>
     </vbox>

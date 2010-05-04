@@ -45,6 +45,11 @@ window.addEventListener("load",
   },
 false);
 
+/**
+ * The Address Book window overlay overrides certain functions to add
+ * gContactSync fields to the address book.
+ * @class
+ */
 com.gContactSync.ABOverlay = {
   /**
    * Special links for various IM protocols
@@ -68,6 +73,10 @@ com.gContactSync.ABOverlay = {
     /** Google Talk link */
     GOOGLE_TALK: "gtalk:chat?jid="
   },
+  /**
+   * Called when the overlay is loaded and overrides some methods to add
+   * gContactSync fields.
+   */
   initialize: function ABOverlay_initialize() {
     // determine if this is before or after Bug 413260 landed
     var card = Components.classes["@mozilla.org/addressbook/cardproperty;1"]
@@ -95,10 +104,6 @@ com.gContactSync.ABOverlay = {
     // override the ab results tree function
     //com.gContactSync.originalSetAbView = SetAbView;
     //SetAbView = com.gContactSync.SetAbView;
-    // call the unload function when the address book window is shut
-    window.addEventListener("unload", function unloadListener(e) {
-          com.gContactSync.Overlay.unload();
-        }, false);
     var elem = document.getElementById("gContactSyncStatusText");
     if (elem) {
       elem.label = com.gContactSync.Preferences.mSyncPrefs.statusBarText.value;

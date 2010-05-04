@@ -82,7 +82,7 @@ com.gContactSync.Preferences = {
     /** String preference */
     CHAR: "char"
   },
-  /** Stores whether the preference observer has been registered*/
+  /** Stores whether the preference observer has been registered */
   mRegistered: false,
   /**
    * Registers the pref observer and gets the initial preference values.
@@ -114,7 +114,14 @@ com.gContactSync.Preferences = {
     if (aTopic != "nsPref:changed") {
       return;
     }
-    com.gContactSync.LOGGER.VERBOSE_LOG("**Observed a preference change: " + aData + " - " + aTopic);
+    // TODO - determine the cause of 'com is not defined' errors
+    // this observer shouldn't be registered when com isn't defined.
+    try {
+      com.gContactSync.LOGGER.VERBOSE_LOG("**Observed a preference change: " + aData + " - " + aTopic);
+    }
+    catch (e) {
+      return;
+    }
     var pref = this.mSyncPrefs[aData];
     if (pref) {
       var oldValue = pref.value;
