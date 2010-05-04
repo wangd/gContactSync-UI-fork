@@ -70,7 +70,7 @@ com.gContactSync.Preferences = {
   mSyncBranch: Components.classes["@mozilla.org/preferences-service;1"]
                          .getService(Components.interfaces.nsIPrefService)
                          .getBranch("extensions.gContactSync.")
-                        .QueryInterface(Components.interfaces.nsIPrefBranch2),
+                         .QueryInterface(Components.interfaces.nsIPrefBranch2),
   /** An array of the extended properties to use with Google contacts */
   mExtendedProperties: [],
   /** Different types of preferences (bool, int, and char) */
@@ -194,7 +194,8 @@ com.gContactSync.Preferences = {
     updateGoogleInConflicts:  new com.gContactSync.Pref("updateGoogleInConflicts",  "bool", true),
     syncAddresses:            new com.gContactSync.Pref("syncAddresses",            "bool", true),
     needRestart:              new com.gContactSync.Pref("needRestart",              "bool", false),
-    synchronizing:            new com.gContactSync.Pref("synchronizing",            "bool", false)
+    synchronizing:            new com.gContactSync.Pref("synchronizing",            "bool", false),
+    overrideGetCardForEmail:  new com.gContactSync.Pref("overrideGetCardForEmail",  "bool", true)
   },
   /**
    * Gets a preference given its branch, name, and type

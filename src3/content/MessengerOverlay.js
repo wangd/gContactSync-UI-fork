@@ -76,6 +76,67 @@ com.gContactSync.MessengerOverlay = {
                                 navigator.userAgent + "\n");
     com.gContactSync.Preferences.setSyncPref("synchronizing", false);
     com.gContactSync.MessengerOverlay.checkAuthentication(); // check if the Auth token is valid
+    if (com.gContactSync.Preferences.mSyncPrefs.overrideGetCardForEmail.value) {
+      com.gContactSync.MessengerOverlay.originalGetCardForEmail = getCardForEmail;
+      getCardForEmail = com.gContactSync.MessengerOverlay.getCardForEmail;
+    }
+  },
+ /**
+  * Returns an object with the first card and AB found with the given e-mail
+  * address.
+  * This is used to also search the ThirdEmail and FourthEmail properties as
+  * added by gContactSync.
+  *
+  * @param aEmail {string} The e-mail address to search for.
+  *
+  * @returns {object} An object with the AB and contact, if found.
+  *                   The object has 2 properties: book, containing the AB; and
+  *                   card, containing the contact.  Both are null if no contact
+  *                   was found with the given e-mail address, or if the e-mail
+  *                   address was empty.
+  */
+  getCardForEmail: function MessengerOverlay_getCardForEmail(aEmail) {
+    var result = { book: null, card: null };
+ 
+    // abmanager should always exist as the original function doesn't exist in
+    // TB 2 (or Seamonkey 2)
+    if (!aEmail || !Components.classes["@mozilla.org/abmanager;1"]) {
+      return result;
+    }
+ 
+    var abs = Components.classes["@mozilla.org/abmanager;1"]
+                        .getService(Components.interfaces.nsIAbManager)
+                        .directories;
+ 
+    while (abs.hasMoreElements()) {
+      var ab = abs.getNext()
+                  .QueryInterface(Components.interfaces.nsIAbDirectory);
+      try {
+        // Search the original PrimaryEmail and SecondEmail fields
+        var card = ab.cardForEmailAddress(aEmail);
+        // Search ThirdEmail
+        if (!card) {
+          card = ab.getCardFromProperty("ThirdEmail", aEmail, false);
+        }
+        // Search FourthEmail
+        if (!card) {
+          card = ab.getCardFromProperty("FourthEmail", aEmail, false);
+        }
+        // If a card was found somewhere, setup result        
+        if (card) {
+          result.book = ab;
+          result.card = card;
+          // used in case ContactPhotos is installed
+          try {
+            com.ContactPhotos.mCurrentAb      = ab;
+            com.ContactPhotos.mCurrentContact = card;
+          } catch (e) {}
+          return result;
+        }
+      }
+      catch (ex) {}
+    }
+    return result;
   },
   /**
    * Checks to see whether or not there is an authentication token in the login

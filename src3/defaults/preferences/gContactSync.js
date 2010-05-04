@@ -82,6 +82,8 @@ pref("extensions.gContactSync.needRestart", false);
 pref("extensions.gContactSync.statusBarText", "");
 // set to true when a synchronization is occurring (to avoid one being run from multiple places at one time)
 pref("extensions.gContactSync.synchronizing", false);
+// override getCardForEmail in mail/base/content/msgHdrViewOverlay.js to add support for the Third and FourthEmail addresses
+pref("extensions.gContactSync.overrideGetCardForEmail", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "PreferMailFormat");
 pref("extensions.gContactSync.extended2", "AllowRemoteContent");
