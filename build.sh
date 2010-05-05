@@ -15,6 +15,15 @@ DEST=$(pwd)/downloads/gContactSync-$VERSION.xpi
 
 # Stop editing here
 
+# Make sure the path to $DEST exists
+if [ ! -d $(dirname $DEST) ]; then
+  echo "The path to $DEST does not exist, trying mkdir"
+  mkdir $(dirname $DEST)
+  if [ "$?" != 0 ]; then
+    exit 1
+  fi
+fi
+
 # remove the existing zip file
 if [ -f $DEST ]; then
   echo "Removing previous zip file at:"
