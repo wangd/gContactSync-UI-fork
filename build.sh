@@ -4,7 +4,7 @@
 # This script builds gContactSync into an xpi that may be installed in
 # compatible applications (Thunderbird, Seamonkey, and Postbox).
 
-# Start editing here
+#***Start editing here***
 
 # NOTE: The VERSION here is just used for the package name
 # Edit install.rdf and content/synonyms.js to change the actual VERSION
@@ -13,7 +13,7 @@ SRC_DIR=./src2
 # Dest should be absolute or relative to SRC_DIR
 DEST=$(pwd)/downloads/gContactSync-$VERSION.xpi
 
-# Stop editing here
+#***Stop editing here***
 
 # Make sure the path to $DEST exists
 if [ ! -d $(dirname $DEST) ]; then
@@ -44,9 +44,6 @@ if [ "$?" != 0 ]; then
   echo "ERROR: zip failed, check '$DEST'"
   exit 1
 fi
-
-# remove CVS folders
-#zip -d $DEST CVS/* */CVS/* */*/CVS/*
 
 echo "Package ready at:"
 echo $DEST
