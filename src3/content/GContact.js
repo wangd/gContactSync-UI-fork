@@ -860,7 +860,14 @@ com.gContactSync.GContact.prototype = {
       // Set the upload data
       outChannel = outChannel.QueryInterface(Components.interfaces.nsIUploadChannel);
       // Set the input stream as the photo URI
-      outChannel.setUploadStream(inChannel.open(), photoInfo.type, -1);
+      // See https://www.mozdev.org/bugs/show_bug.cgi?id=22757 for the try/catch
+      // block, I didn't see a way to tell if the item pointed to by aURI exists
+      try {
+        outChannel.setUploadStream(inChannel.open(), photoInfo.type, -1);
+      }
+      catch (e) {
+        com.gContactSync.LOGGER.LOG_WARNING("The photo at '" + aURI + "' doesn't exist", e);
+      }
       // set the request type to PUT (this has to be after setting the upload data)
       outChannel = outChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
       outChannel.requestMethod = "PUT";
