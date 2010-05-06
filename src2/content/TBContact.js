@@ -71,8 +71,8 @@ TBContact.prototype = {
     if (!aAttribute)
       throw "Error - invalid attribute sent to TBContact_getValue";
     if (aAttribute == "LastModifiedDate" && Preferences.mSyncPrefs.readOnly.value) {
-      LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
-      return 0;
+      LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 1");
+      return 1;
     }
     return AbManager.getCardValue(this.mContact, aAttribute);
   },

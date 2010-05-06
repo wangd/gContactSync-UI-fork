@@ -481,10 +481,14 @@ var Sync = {
     if (aAtom) {
       var ab         = Sync.mCurrentAb;
       var ns         = gdata.namespaces.ATOM;
-      var lastSync   = parseInt(ab.getLastSyncDate());
+      var lastSync   = parseInt(ab.getLastSyncDate(), 10);
       var myContacts = Preferences.mSyncPrefs.myContacts.value;
       var arr        = aAtom.getElementsByTagNameNS(ns.url, "entry");
       var noCatch    = false;
+      if (isNaN(lastSync)) {
+        LOGGER.LOG_WARNING("lastSync was NaN");
+        lastSync = 0;
+      }
       // get the mailing lists if not only synchronizing my contacts
       if (!myContacts) {
         LOGGER.VERBOSE_LOG("***Getting all mailing lists***");

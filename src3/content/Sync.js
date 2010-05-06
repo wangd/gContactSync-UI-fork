@@ -361,6 +361,10 @@ com.gContactSync.Sync = {
         maxContacts = com.gContactSync.Preferences.mSyncPrefs.maxContacts.value,
         // if there are more contacts than returned, increase the pref
         newMax;
+    if (isNaN(lastSync)) {
+      com.gContactSync.LOGGER.LOG_WARNING("lastSync was NaN, setting to 0");
+      lastSync = 0;
+    }
     // mark the AB as not having been reset if it gets this far
     com.gContactSync.Sync.mCurrentAb.savePref("reset", false);
     // have to update the lists or TB 2 won't work properly
@@ -459,7 +463,8 @@ com.gContactSync.Sync = {
           com.gContactSync.LOGGER.LOG(" * Neither contact has changed");
       }
       // if there isn't a match, but the card is new, add it to Google
-      else if (tbContact.getValue("LastModifiedDate") > lastSync / 1000)
+      else if (tbContact.getValue("LastModifiedDate") > lastSync / 1000 ||
+               isNaN(lastSync))
         com.gContactSync.Sync.mContactsToAdd.push(tbContact);
       // otherwise, delete the contact from the address book
       else
@@ -470,9 +475,10 @@ com.gContactSync.Sync = {
     for (var id in gContacts) {
       var gContact = gContacts[id];
       if (gContact) {
-        com.gContactSync.LOGGER.LOG(gContact.getName() + ": " + id);
-        var gCardDate = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 0;
-        if (gCardDate > lastSync) {
+        var gCardDate = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 1;
+        com.gContactSync.LOGGER.LOG(gContact.getName() + " - " + gCardDate +
+                                    "\n" + id);
+        if (gCardDate > lastSync || isNaN(lastSync)) {
           com.gContactSync.LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
           var newCard = ab.newContact();
           com.gContactSync.ContactConverter.makeCard(gContact, newCard);

@@ -510,7 +510,7 @@ com.gContactSync.GContact.prototype = {
   getLastModifiedDate: function GContact_getLastModifiedDate() {
     try {
       if (com.gContactSync.Preferences.mSyncPrefs.writeOnly.value) {
-        return 0;
+        return 1;
       }
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue,
           year      = sModified.substring(0,4),

@@ -79,8 +79,8 @@ com.gContactSync.TBContact.prototype = {
       throw "Error - invalid attribute sent to TBContact.getValue";
     if (aAttribute === "LastModifiedDate" && this.mAddressBook &&
         this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly === "true") {
-      com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 0");
-      return 0;
+      com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 1");
+      return 1;
     }
     // Postbox stores additional e-mail addresses already
     if (this.mPostbox && (aAttribute === "ThirdEmail" || aAttribute === "FourthEmail")) {

@@ -92,8 +92,9 @@ com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPref
   com.gContactSync.LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':");
   var i, val, pref;
   for (i in this.mPrefs) {
+    var isLastSync = (i === "lastSync")
     // all prefs except lastSync have the prefPrefix in from of them
-    val = this.getStringPref((i === "lastSync" ? i : this.prefPrefix + i));
+    val = this.getStringPref(isLastSync ? i : this.prefPrefix + i);
     // getStringPref returns 0 iff the pref doesn't exist
     // if the pref doesn't exist, then use the global gContactSync pref
     // AND set this AB's pref so this doesn't fall through next time
@@ -103,6 +104,11 @@ com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPref
       pref = com.gContactSync.Preferences.mSyncPrefs[i];
       val  = pref ? String(pref.value) : "";
       this.savePref(i, val);
+    }
+    // Bug 22817 - Unexpected behavior when lastSync is NaN
+    // Make sure that lastSync isn't set to NaN
+    else if (isLastSync && isNaN(val)) {
+      val = 0;
     }
     com.gContactSync.LOGGER.VERBOSE_LOG(" * " + i + " = " + val);
     this.mPrefs[i] = val;

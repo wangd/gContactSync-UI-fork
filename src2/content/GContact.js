@@ -343,7 +343,7 @@ GContact.prototype = {
   getLastModifiedDate: function GContact_getLastModifiedDate() {
     try {
       if (Preferences.mSyncPrefs.writeOnly.value) {
-        return 0;
+        return 1;
       }
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue;
       var year = sModified.substring(0,4);
