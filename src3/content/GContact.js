@@ -867,6 +867,7 @@ com.gContactSync.GContact.prototype = {
       }
       catch (e) {
         com.gContactSync.LOGGER.LOG_WARNING("The photo at '" + aURI + "' doesn't exist", e);
+        return;
       }
       // set the request type to PUT (this has to be after setting the upload data)
       outChannel = outChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
