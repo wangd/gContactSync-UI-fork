@@ -371,7 +371,7 @@ com.gContactSync.showLog = function gCS_showLog() {
 };
 
 /**
- * Replaces http://... with https://... in URLs as a permanent workaround for
+ * Replaces https://... with http://... in URLs as a permanent workaround for
  * the issue described here:
  * http://www.google.com/support/forum/p/apps-apis/thread?tid=6fde249ce2ffe7a9&hl=en
  *
