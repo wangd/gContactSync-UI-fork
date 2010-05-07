@@ -95,6 +95,8 @@
           src="chrome://gcontactsync/content/GHttpRequest.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/LoginManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Import.js"/>
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="gContactSyncStringBundle"
@@ -104,7 +106,7 @@
   <toolbarbutton id="button-sync"
                  label="&sync.label;"
                  tooltiptext="&sync.tooltip;"
-                 oncommand="com.gContactSync.Sync.begin()"
+                 oncommand="com.gContactSync.Sync.begin();"
                  class="gContactSync-Button toolbarbutton-1 chromeclass-toolbar-additional"/>
 
   <statusbarpanel id="gContactSyncStatusText"
@@ -160,6 +162,21 @@
                accesskey="&gcMenuItem.accesskey;"
                class="menuitem-iconic icon-mail16 menu-iconic"
                oncommand="com.gContactSync.openURL('extensions.gContactSync.googleContactsURL');"/>
+       <menuseparator/>
+       <menu id="gContactSyncImport" label="&Import.label;" accesskey="Import">
+         <menupopup>
+           <!-- Facebook is temporarily commented out because I haven't
+                implemented support for OAuth 2 yet using the new method -->
+           <!--<menuitem label="&Facebook.label;" oncommand="com.gContactSync.Import.showWindow('facebook');"/>-->
+           <menuitem label="&Google.label;"   oncommand="com.gContactSync.Import.showWindow('google');"/>
+           <menuitem label="&MySpace.label;"  oncommand="com.gContactSync.Import.showWindow('myspace');"/>
+           <menuitem label="&Plaxo.label;"    oncommand="com.gContactSync.Import.showWindow('plaxo');"/>
+           <!-- Yahoo is commented out because it doesn't use the callback correctly (adds an =)
+                and doesn't quite adhere to the spec -->
+           <!--<menuitem label="&Yahoo.label;"    oncommand="com.gContactSync.Import.showWindow('yahoo');"/>-->
+         </menupopup>
+       </menu>
+      <menuitem id="finishImport" label="&FinishImport.label;" oncommand="com.gContactSync.Import.continueImport();"/>
    </menupopup>
   </menu>
 </overlay>

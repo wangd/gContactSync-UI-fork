@@ -72,3 +72,12 @@
 <!ENTITY gcMenuItem.label              "Google Contacts online">
 <!ENTITY gcMenuItem.accesskey          "C">
 
+<!-- Import menu -->
+<!ENTITY Import.label                  "Start Import">
+<!ENTITY FinishImport.label            "Finish Import">
+<!ENTITY Facebook.label                "Facebook">
+<!ENTITY Google.label                  "Google">
+<!ENTITY MySpace.label                 "MySpace">
+<!ENTITY Plaxo.label                   "Plaxo">
+<!ENTITY Yahoo.label                   "Yahoo">
+

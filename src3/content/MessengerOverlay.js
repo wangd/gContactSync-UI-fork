@@ -77,8 +77,10 @@ com.gContactSync.MessengerOverlay = {
     com.gContactSync.Preferences.setSyncPref("synchronizing", false);
     com.gContactSync.MessengerOverlay.checkAuthentication(); // check if the Auth token is valid
     if (com.gContactSync.Preferences.mSyncPrefs.overrideGetCardForEmail.value) {
-      com.gContactSync.MessengerOverlay.originalGetCardForEmail = getCardForEmail;
-      getCardForEmail = com.gContactSync.MessengerOverlay.getCardForEmail;
+      try {
+        com.gContactSync.MessengerOverlay.originalGetCardForEmail = getCardForEmail;
+        getCardForEmail = com.gContactSync.MessengerOverlay.getCardForEmail;
+      } catch (e) {}
     }
   },
  /**
