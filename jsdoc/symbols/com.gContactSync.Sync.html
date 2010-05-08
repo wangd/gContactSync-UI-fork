@@ -195,6 +195,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/com.gContactSync.AbManager.html">com.gContactSync.AbManager</a></li>
 	
+	<li><a href="../symbols/com.gContactSync.ABOverlay.html">com.gContactSync.ABOverlay</a></li>
+	
 	<li><a href="../symbols/com.gContactSync.Accounts.html">com.gContactSync.Accounts</a></li>
 	
 	<li><a href="../symbols/com.gContactSync.AddressBook.html">com.gContactSync.AddressBook</a></li>
@@ -225,13 +227,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/com.gContactSync.HttpRequest.html">com.gContactSync.HttpRequest</a></li>
 	
+	<li><a href="../symbols/com.gContactSync.Import.html">com.gContactSync.Import</a></li>
+	
 	<li><a href="../symbols/com.gContactSync.LOGGER.html">com.gContactSync.LOGGER</a></li>
 	
 	<li><a href="../symbols/com.gContactSync.LoginManager.html">com.gContactSync.LoginManager</a></li>
 	
 	<li><a href="../symbols/com.gContactSync.MailList.html">com.gContactSync.MailList</a></li>
 	
-	<li><a href="../symbols/com.gContactSync.MainOverlay.html">com.gContactSync.MainOverlay</a></li>
+	<li><a href="../symbols/com.gContactSync.MessengerOverlay.html">com.gContactSync.MessengerOverlay</a></li>
 	
 	<li><a href="../symbols/com.gContactSync.Namespace.html">com.gContactSync.Namespace</a></li>
 	
@@ -324,6 +328,16 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mBackup">mBackup</a></b>
+								</div>
+								<div class="description">Temporarily set to true when a backup is necessary for this account</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mContactsToAdd">mContactsToAdd</a></b>
 								</div>
 								<div class="description">New contacts to add to Google</div>
@@ -387,6 +401,16 @@ ul.inheritsList
 								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mCurrentUsername">mCurrentUsername</a></b>
 								</div>
 								<div class="description">The current username</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mFirstBackup">mFirstBackup</a></b>
+								</div>
+								<div class="description">Temporarily set to true when the first backup is necessary</div>
 							</td>
 						</tr>
 					
@@ -467,16 +491,6 @@ ul.inheritsList
 								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mNewPhotoURI">mNewPhotoURI</a></b>
 								</div>
 								<div class="description">The URI of a photo to be added to the newly created Google contact</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mSynced">mSynced</a></b>
-								</div>
-								<div class="description">True if no synchronization is in progress</div>
 							</td>
 						</tr>
 					
@@ -585,7 +599,7 @@ writes the completion status to the status bar.</div>
 							<td class="nameDescription">
 								<div class="fixedFont">com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mOfflineFunction">mOfflineFunction</a></b>(httpReq)
 								</div>
-								<div class="description">An array of commands to execute when offline during an HTTP Request</div>
+								<div class="description">Commands to execute when offline during an HTTP Request</div>
 							</td>
 						</tr>
 					
@@ -744,6 +758,28 @@ and calls com.gContactSync.Sync.getContacts() when finished.</div>
 
 					<hr />
 				
+					<a name=".mBackup"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Sync.</span><b>mBackup</b>
+					
+					</div>
+					<div class="description">
+						Temporarily set to true when a backup is necessary for this account
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".mContactsToAdd"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -885,6 +921,28 @@ and calls com.gContactSync.Sync.getContacts() when finished.</div>
 					</div>
 					<div class="description">
 						The current username
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mFirstBackup"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Sync.</span><b>mFirstBackup</b>
+					
+					</div>
+					<div class="description">
+						Temporarily set to true when the first backup is necessary
 						
 						
 					</div>
@@ -1074,28 +1132,6 @@ and calls com.gContactSync.Sync.getContacts() when finished.</div>
 
 					<hr />
 				
-					<a name=".mSynced"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">com.gContactSync.Sync.</span><b>mSynced</b>
-					
-					</div>
-					<div class="description">
-						True if no synchronization is in progress
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".mSyncScheduled"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1266,13 +1302,13 @@ writes the completion status to the status bar.
 									<b>aError</b>
 									
 								</dt>
-								<dd>{string} Optional.  A string containing the error message.</dd>
+								<dd>{string}   Optional.  A string containing the error message.</dd>
 							
 								<dt>
 									<b>aStartOver</b>
 									
 								</dt>
-								<dd>{boolean}   Also optional.  True if the sync should be restarted.</dd>
+								<dd>{boolean} Also optional.  True if the sync should be restarted.</dd>
 							
 							</dl>
 						
@@ -1347,7 +1383,7 @@ than offline.
 					
 					</div>
 					<div class="description">
-						An array of commands to execute when offline during an HTTP Request
+						Commands to execute when offline during an HTTP Request
 						
 						
 					</div>
@@ -1685,7 +1721,7 @@ and calls com.gContactSync.Sync.getContacts() when finished.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Sun Mar 07 2010 22:27:29 GMT-0500 (EST)
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Sat May 08 2010 08:48:30 GMT-0500 (CDT)
 		</div>
 	</body>
 </html>

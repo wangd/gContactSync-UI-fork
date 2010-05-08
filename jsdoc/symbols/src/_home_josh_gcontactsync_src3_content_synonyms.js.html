@@ -54,7 +54,7 @@
 <span class='line'> 47</span> </span><span class="COMM">/** The attribute where the dummy e-mail address is stored */</span><span class="WHIT">
 <span class='line'> 48</span> </span><span class="NAME">com.gContactSync.dummyEmailName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"PrimaryEmail"</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 49</span> </span><span class="COMM">/** The version of gContactSync */</span><span class="WHIT">
-<span class='line'> 50</span> </span><span class="NAME">com.gContactSync.version</span><span class="WHIT">        </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"0.3.0a3"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="NAME">com.gContactSync.version</span><span class="WHIT">        </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"0.3.0a6"</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 51</span> 
 <span class='line'> 52</span> </span><span class="COMM">/**
 <span class='line'> 53</span>  * Creates an XMLSerializer to serialize the given XML then create a more
@@ -90,222 +90,305 @@
 <span class='line'> 83</span>  * If the verboseLog preference is set as false then this function does nothing.
 <span class='line'> 84</span>  *
 <span class='line'> 85</span>  * @param aString {string} The XML string to serialize.
-<span class='line'> 86</span>  * @returns {string} The serialized text if verboseLog is true; else the original
-<span class='line'> 87</span>  *                  text.
-<span class='line'> 88</span>  */</span><span class="WHIT">
-<span class='line'> 89</span> </span><span class="NAME">com.gContactSync.serializeFromText</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_serializeFromText</span><span class="PUNC">(</span><span class="NAME">aString</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 90</span> </span><span class="WHIT">  </span><span class="COMM">// if verbose logging is disabled, don't replace >&lt; with >\n&lt; because it only</span><span class="WHIT">
-<span class='line'> 91</span> </span><span class="WHIT">  </span><span class="COMM">// wastes time</span><span class="WHIT">
-<span class='line'> 92</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">com.gContactSync.Preferences.mSyncPrefs.verboseLog.value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 93</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aString.split</span><span class="PUNC">(</span><span class="STRN">">&lt;"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 94</span> </span><span class="WHIT">    </span><span class="NAME">aString</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">arr.join</span><span class="PUNC">(</span><span class="STRN">">\n&lt;"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 95</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 96</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aString</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 97</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 98</span> 
-<span class='line'> 99</span> </span><span class="COMM">/**
-<span class='line'>100</span>  * Creates a 'dummy' e-mail for the given contact if possible.
-<span class='line'>101</span>  * The dummy e-mail contains 'nobody' (localized) and '@nowhere.invalid' (not
-<span class='line'>102</span>  * localized) as well as a string of numbers.  The numbers are the ID from
-<span class='line'>103</span>  * Google, if any, or a random sequence.  The numbers are fairly unique because
-<span class='line'>104</span>  * mailing lists require contacts with distinct e-mail addresses otherwise they
-<span class='line'>105</span>  * fail silently.
-<span class='line'>106</span>  *
-<span class='line'>107</span>  * The purpose of the dummy e-mail addresses is to prevent mailing list bugs
-<span class='line'>108</span>  * relating to contacts without e-mail addresses.
-<span class='line'>109</span>  *
-<span class='line'>110</span>  * This function checks the 'dummyEmail' pref and if that pref is set as true
-<span class='line'>111</span>  * then this function will not set the e-mail unless the ignorePref parameter is
-<span class='line'>112</span>  * supplied and evaluates to true.
-<span class='line'>113</span>  *
-<span class='line'>114</span>  * @param aContact A contact from Thunderbird.  It can be one of the following:
-<span class='line'>115</span>  *                 TBContact, GContact, or an nsIAbCard (Thunderbird 2 or 3)
-<span class='line'>116</span>  * @param ignorePref {boolean} Set this as true to ignore the preference
-<span class='line'>117</span>  *                             disabling dummy e-mail addresses.  Use this in
-<span class='line'>118</span>  *                             situations where not adding an address would
-<span class='line'>119</span>  *                             definitely cause problems.
-<span class='line'>120</span>  * @returns {string} A dummy e-mail address.
-<span class='line'>121</span>  */</span><span class="WHIT">
-<span class='line'>122</span> </span><span class="NAME">com.gContactSync.makeDummyEmail</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_makeDummyEmail</span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ignorePref</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>123</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aContact</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Invalid contact sent to makeDummyEmail"</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>124</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">ignorePref</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">com.gContactSync.Preferences.mSyncPrefs.dummyEmail.value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>125</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Not setting dummy e-mail"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>126</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>127</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>128</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">prefix</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"dummy1"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>129</span> </span><span class="WHIT">      </span><span class="NAME">suffix</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"dummy2"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>130</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT">     </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>131</span> </span><span class="WHIT">  </span><span class="COMM">// GContact and TBContact may not be defined</span><span class="WHIT">
-<span class='line'>132</span> </span><span class="WHIT">  </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>133</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.GContact</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>134</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getID</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>135</span> </span><span class="WHIT">    </span><span class="COMM">// otherwise it is from Thunderbird, so try to get the Google ID, if any</span><span class="WHIT">
-<span class='line'>136</span> </span><span class="WHIT">    </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.TBContact</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>137</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getValue</span><span class="PUNC">(</span><span class="STRN">"GoogleID"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>138</span> </span><span class="WHIT">    </span><span class="KEYW">else</span><span class="WHIT">
-<span class='line'>139</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.GAbManager.getCardValue</span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"GoogleID"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>140</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>141</span> </span><span class="WHIT">    </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>142</span> </span><span class="WHIT">      </span><span class="COMM">// try getting the card's value</span><span class="WHIT">
-<span class='line'>143</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aContact.getProperty</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="COMM">// post Bug 413260</span><span class="WHIT">
-<span class='line'>144</span> </span><span class="WHIT">        </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getProperty</span><span class="PUNC">(</span><span class="STRN">"GoogleID"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>145</span> </span><span class="WHIT">      </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="COMM">// pre Bug 413260</span><span class="WHIT">
-<span class='line'>146</span> </span><span class="WHIT">        </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getStringAttribute</span><span class="PUNC">(</span><span class="STRN">"GoogleID"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>147</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>148</span> </span><span class="WHIT">    </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">ex</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>149</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>150</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>151</span> </span><span class="WHIT">    </span><span class="COMM">// take just the ID and not the whole URL</span><span class="WHIT">
-<span class='line'>152</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">prefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">id.substr</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">id.lastIndexOf</span><span class="PUNC">(</span><span class="STRN">"/"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">suffix</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>153</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>154</span> </span><span class="WHIT">  </span><span class="COMM">// if there is no ID make a random number and remove the "0."</span><span class="WHIT">
-<span class='line'>155</span> </span><span class="WHIT">  </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>156</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">prefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">String</span><span class="PUNC">(</span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">replace</span><span class="PUNC">(</span><span class="STRN">"0."</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">suffix</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>157</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>158</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>159</span> 
-<span class='line'>160</span> </span><span class="COMM">/**
-<span class='line'>161</span>  * Returns true if the given e-mail address is a fake 'dummy' address.
-<span class='line'>162</span>  *
-<span class='line'>163</span>  * @param aEmail {string} The e-mail address to check.
-<span class='line'>164</span>  * @returns {boolean} true  if aEmail is a dummy e-mail address
-<span class='line'>165</span>  *                  false otherwise
-<span class='line'>166</span>  */</span><span class="WHIT">
-<span class='line'>167</span> </span><span class="NAME">com.gContactSync.isDummyEmail</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_isDummyEmail</span><span class="PUNC">(</span><span class="NAME">aEmail</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>168</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aEmail</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">aEmail.indexOf</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> 
-<span class='line'>169</span>          </span><span class="NAME">aEmail.indexOf</span><span class="PUNC">(</span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"dummy2"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>170</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>171</span> 
-<span class='line'>172</span> </span><span class="COMM">/**
-<span class='line'>173</span>  * Selects the menuitem with the given value (value or label attribute) in the
-<span class='line'>174</span>  * given menulist.
-<span class='line'>175</span>  * Optionally creates the menuitem if it cannot be found.
-<span class='line'>176</span>  *
-<span class='line'>177</span>  * @param aMenuList {menulist} The menu list element to search.
-<span class='line'>178</span>  * @param aValue    {string}   The value to find in a menuitem.  This can be
-<span class='line'>179</span>  *                             either the 'value' or 'label' attribute of the
-<span class='line'>180</span>  *                             matched item.  Case insensitive.
-<span class='line'>181</span>  * @param aCreate   {boolean}  Set as true to create and select a new menuitem
-<span class='line'>182</span>  *                             if a match cannot be found.
-<span class='line'>183</span>  */</span><span class="WHIT">
-<span class='line'>184</span> </span><span class="NAME">com.gContactSync.selectMenuItem</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_selectMenuItem</span><span class="PUNC">(</span><span class="NAME">aMenuList</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aCreate</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>185</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aMenuList</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">aMenuList.menupopup</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>186</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Invalid parameter sent to selectMenuItem"</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>187</span> 
-<span class='line'>188</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aMenuList.menupopup.childNodes</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>189</span> </span><span class="WHIT">      </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>190</span> </span><span class="WHIT">      </span><span class="NAME">item</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>191</span> </span><span class="WHIT">      </span><span class="NAME">aValueLC</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aValue.toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>192</span> </span><span class="WHIT">  </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">arr.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>193</span> </span><span class="WHIT">    </span><span class="NAME">item</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>194</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">item.getAttribute</span><span class="PUNC">(</span><span class="STRN">"value"</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">aValueLC</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'>195</span> </span><span class="WHIT">        </span><span class="NAME">item.getAttribute</span><span class="PUNC">(</span><span class="STRN">"label"</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">aValueLC</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>196</span> </span><span class="WHIT">      </span><span class="NAME">aMenuList.selectedIndex</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>197</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>198</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>199</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>200</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aCreate</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>201</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>202</span> </span><span class="WHIT">  </span><span class="NAME">item</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aMenuList.appendItem</span><span class="PUNC">(</span><span class="NAME">aValue</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>203</span> </span><span class="WHIT">  </span><span class="COMM">// getIndexOfItem was added in TB/FF 3</span><span class="WHIT">
-<span class='line'>204</span> </span><span class="WHIT">  </span><span class="NAME">aMenuList.selectedIndex</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aMenuList.menupopup.childNodes.length</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>205</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>206</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>207</span> 
-<span class='line'>208</span> </span><span class="COMM">/**
-<span class='line'>209</span>  * Attempts a few basic fixes for 'broken' usernames.
-<span class='line'>210</span>  * In the past, gContactSync didn't check that a username included the domain
-<span class='line'>211</span>  * which would pass authentication and then fail to do anything else.
-<span class='line'>212</span>  * It also didn't make sure there were no spaces in a username which would
-<span class='line'>213</span>  * also pass authentication and break for everything else.
-<span class='line'>214</span>  * See Bug 21567
-<span class='line'>215</span>  *
-<span class='line'>216</span>  * @param aUsername {string} The username to fix.
+<span class='line'> 86</span>  * @param aForce {boolean} Set to true to force a serialization regardless of
+<span class='line'> 87</span>  *                         verboseLog.
+<span class='line'> 88</span>  * @returns {string} The serialized text if verboseLog is true; else the original
+<span class='line'> 89</span>  *                  text.
+<span class='line'> 90</span>  */</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="NAME">com.gContactSync.serializeFromText</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_serializeFromText</span><span class="PUNC">(</span><span class="NAME">aString</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aForce</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">  </span><span class="COMM">// if verbose logging is disabled, don't replace >&lt; with >\n&lt; because it only</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">  </span><span class="COMM">// wastes time</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aForce</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.Preferences.mSyncPrefs.verboseLog.value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aString.split</span><span class="PUNC">(</span><span class="STRN">">&lt;"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">    </span><span class="NAME">aString</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">arr.join</span><span class="PUNC">(</span><span class="STRN">">\n&lt;"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aString</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>100</span> 
+<span class='line'>101</span> </span><span class="COMM">/**
+<span class='line'>102</span>  * Creates a 'dummy' e-mail for the given contact if possible.
+<span class='line'>103</span>  * The dummy e-mail contains 'nobody' (localized) and '@nowhere.invalid' (not
+<span class='line'>104</span>  * localized) as well as a string of numbers.  The numbers are the ID from
+<span class='line'>105</span>  * Google, if any, or a random sequence.  The numbers are fairly unique because
+<span class='line'>106</span>  * mailing lists require contacts with distinct e-mail addresses otherwise they
+<span class='line'>107</span>  * fail silently.
+<span class='line'>108</span>  *
+<span class='line'>109</span>  * The purpose of the dummy e-mail addresses is to prevent mailing list bugs
+<span class='line'>110</span>  * relating to contacts without e-mail addresses.
+<span class='line'>111</span>  *
+<span class='line'>112</span>  * This function checks the 'dummyEmail' pref and if that pref is set as true
+<span class='line'>113</span>  * then this function will not set the e-mail unless the ignorePref parameter is
+<span class='line'>114</span>  * supplied and evaluates to true.
+<span class='line'>115</span>  *
+<span class='line'>116</span>  * @param aContact A contact from Thunderbird.  It can be one of the following:
+<span class='line'>117</span>  *                 TBContact, GContact, or an nsIAbCard (Thunderbird 2 or 3)
+<span class='line'>118</span>  * @param ignorePref {boolean} Set this as true to ignore the preference
+<span class='line'>119</span>  *                             disabling dummy e-mail addresses.  Use this in
+<span class='line'>120</span>  *                             situations where not adding an address would
+<span class='line'>121</span>  *                             definitely cause problems.
+<span class='line'>122</span>  * @returns {string} A dummy e-mail address.
+<span class='line'>123</span>  */</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="NAME">com.gContactSync.makeDummyEmail</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_makeDummyEmail</span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ignorePref</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aContact</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Invalid contact sent to makeDummyEmail"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">ignorePref</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">com.gContactSync.Preferences.mSyncPrefs.dummyEmail.value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Not setting dummy e-mail"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">prefix</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"dummy1"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">      </span><span class="NAME">suffix</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"dummy2"</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT">     </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">  </span><span class="COMM">// GContact and TBContact may not be defined</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">  </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.GContact</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>136</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getID</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">    </span><span class="COMM">// otherwise it is from Thunderbird, so try to get the Google ID, if any</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">    </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.TBContact</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getID</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">    </span><span class="KEYW">else</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">      </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.GAbManager.getCardValue</span><span class="PUNC">(</span><span class="NAME">aContact</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"GoogleID"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">    </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">      </span><span class="COMM">// try getting the card's value</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aContact.getProperty</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="COMM">// post Bug 413260</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">        </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getProperty</span><span class="PUNC">(</span><span class="STRN">"GoogleID"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">      </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="COMM">// pre Bug 413260</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">        </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aContact.getStringAttribute</span><span class="PUNC">(</span><span class="STRN">"GoogleID"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">    </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">ex</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">    </span><span class="COMM">// take just the ID and not the whole URL</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">prefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">id.substr</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">id.lastIndexOf</span><span class="PUNC">(</span><span class="STRN">"/"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">suffix</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">  </span><span class="COMM">// if there is no ID make a random number and remove the "0."</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">  </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">prefix</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">String</span><span class="PUNC">(</span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">replace</span><span class="PUNC">(</span><span class="STRN">"0."</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">suffix</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>161</span> 
+<span class='line'>162</span> </span><span class="COMM">/**
+<span class='line'>163</span>  * Returns true if the given e-mail address is a fake 'dummy' address.
+<span class='line'>164</span>  *
+<span class='line'>165</span>  * @param aEmail {string} The e-mail address to check.
+<span class='line'>166</span>  * @returns {boolean} true  if aEmail is a dummy e-mail address
+<span class='line'>167</span>  *                  false otherwise
+<span class='line'>168</span>  */</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="NAME">com.gContactSync.isDummyEmail</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_isDummyEmail</span><span class="PUNC">(</span><span class="NAME">aEmail</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aEmail</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">aEmail.indexOf</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> 
+<span class='line'>171</span>          </span><span class="NAME">aEmail.indexOf</span><span class="PUNC">(</span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"dummy2"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>173</span> 
+<span class='line'>174</span> </span><span class="COMM">/**
+<span class='line'>175</span>  * Selects the menuitem with the given value (value or label attribute) in the
+<span class='line'>176</span>  * given menulist.
+<span class='line'>177</span>  * Optionally creates the menuitem if it cannot be found.
+<span class='line'>178</span>  *
+<span class='line'>179</span>  * @param aMenuList {menulist} The menu list element to search.
+<span class='line'>180</span>  * @param aValue    {string}   The value to find in a menuitem.  This can be
+<span class='line'>181</span>  *                             either the 'value' or 'label' attribute of the
+<span class='line'>182</span>  *                             matched item.  Case insensitive.
+<span class='line'>183</span>  * @param aCreate   {boolean}  Set as true to create and select a new menuitem
+<span class='line'>184</span>  *                             if a match cannot be found.
+<span class='line'>185</span>  */</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="NAME">com.gContactSync.selectMenuItem</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_selectMenuItem</span><span class="PUNC">(</span><span class="NAME">aMenuList</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aCreate</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aMenuList</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">aMenuList.menupopup</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Invalid parameter sent to selectMenuItem"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>189</span> 
+<span class='line'>190</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aMenuList.menupopup.childNodes</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">      </span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">      </span><span class="NAME">item</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">      </span><span class="NAME">aValueLC</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aValue.toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">  </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">arr.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">    </span><span class="NAME">item</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">arr</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">item.getAttribute</span><span class="PUNC">(</span><span class="STRN">"value"</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">aValueLC</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">        </span><span class="NAME">item.getAttribute</span><span class="PUNC">(</span><span class="STRN">"label"</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">aValueLC</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">      </span><span class="NAME">aMenuList.selectedIndex</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aCreate</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">  </span><span class="NAME">item</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aMenuList.appendItem</span><span class="PUNC">(</span><span class="NAME">aValue</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">  </span><span class="COMM">// getIndexOfItem was added in TB/FF 3</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="WHIT">  </span><span class="NAME">aMenuList.selectedIndex</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aMenuList.menupopup.childNodes.length</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>209</span> 
+<span class='line'>210</span> </span><span class="COMM">/**
+<span class='line'>211</span>  * Attempts a few basic fixes for 'broken' usernames.
+<span class='line'>212</span>  * In the past, gContactSync didn't check that a username included the domain
+<span class='line'>213</span>  * which would pass authentication and then fail to do anything else.
+<span class='line'>214</span>  * It also didn't make sure there were no spaces in a username which would
+<span class='line'>215</span>  * also pass authentication and break for everything else.
+<span class='line'>216</span>  * See Bug 21567
 <span class='line'>217</span>  *
-<span class='line'>218</span>  * @returns {string} A username with a domain and no spaces.
-<span class='line'>219</span>  */</span><span class="WHIT">
-<span class='line'>220</span> </span><span class="NAME">com.gContactSync.fixUsername</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_fixUsername</span><span class="PUNC">(</span><span class="NAME">aUsername</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>221</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aUsername</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>222</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>223</span> </span><span class="WHIT">  </span><span class="COMM">// Add @gmail.com if necessary</span><span class="WHIT">
-<span class='line'>224</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aUsername.indexOf</span><span class="PUNC">(</span><span class="STRN">"@"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>225</span> </span><span class="WHIT">    </span><span class="NAME">aUsername</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"@gmail.com"</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>226</span> </span><span class="WHIT">  </span><span class="COMM">// replace any spaces or tabs</span><span class="WHIT">
-<span class='line'>227</span> </span><span class="WHIT">  </span><span class="NAME">aUsername</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aUsername.replace</span><span class="PUNC">(</span><span class="REGX">/[ \t\n\r]/g</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>228</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aUsername</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>229</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>230</span> 
-<span class='line'>231</span> </span><span class="COMM">/**
-<span class='line'>232</span>  * Displays an alert dialog with the given text and an optional title.
-<span class='line'>233</span>  *
-<span class='line'>234</span>  * @param aText {string} The message to display.
-<span class='line'>235</span>  * @param aTitle {string} The title for the message (optional - default is
-<span class='line'>236</span>  *                        "gContactSync Notification").
-<span class='line'>237</span>  * @param aParent {nsIDOMWindow} The parent window (also optional).
-<span class='line'>238</span>  */</span><span class="WHIT">
-<span class='line'>239</span> </span><span class="NAME">com.gContactSync.alert</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aParent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>240</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aTitle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>241</span> </span><span class="WHIT">    </span><span class="NAME">aTitle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertTitle"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>242</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>243</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">promptService</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Components.classes</span><span class="PUNC">[</span><span class="STRN">"@mozilla.org/embedcomp/prompt-service;1"</span><span class="PUNC">]</span><span class="WHIT">
-<span class='line'>244</span> </span><span class="WHIT">                                </span><span class="PUNC">.</span><span class="NAME">getService</span><span class="PUNC">(</span><span class="NAME">Components.interfaces.nsIPromptService</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>245</span> </span><span class="WHIT">  </span><span class="NAME">promptService.alert</span><span class="PUNC">(</span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aText</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>246</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>247</span> 
-<span class='line'>248</span> </span><span class="COMM">/**
-<span class='line'>249</span>  * Displays an alert dialog titled "gContactSync Error" (in English).
-<span class='line'>250</span>  *
-<span class='line'>251</span>  * @param aText {string} The message to display.
-<span class='line'>252</span>  */</span><span class="WHIT">
-<span class='line'>253</span> </span><span class="NAME">com.gContactSync.alertError</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alertError</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>254</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertError"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>255</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>256</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>257</span> 
-<span class='line'>258</span> </span><span class="COMM">/**
-<span class='line'>259</span>  * Displays an alert dialog titled "gContactSync Warning" (in English).
-<span class='line'>260</span>  *
-<span class='line'>261</span>  * @param aText {string} The message to display.
-<span class='line'>262</span>  */</span><span class="WHIT">
-<span class='line'>263</span> </span><span class="NAME">com.gContactSync.alertWarning</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alertWarning</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>264</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertWarning"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>265</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>266</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>267</span> 
-<span class='line'>268</span> </span><span class="COMM">/**
-<span class='line'>269</span>  * Displays a confirmation dialog with the given text and an optional title.
-<span class='line'>270</span>  *
-<span class='line'>271</span>  * @param aText {string} The message to display.
-<span class='line'>272</span>  * @param aTitle {string} The title for the message (optional - default is
-<span class='line'>273</span>  *                        "gContactSync Confirmation").
-<span class='line'>274</span>  * @param aParent {nsIDOMWindow} The parent window (also optional).
-<span class='line'>275</span>  */</span><span class="WHIT">
-<span class='line'>276</span> </span><span class="NAME">com.gContactSync.confirm</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_confirm</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aParent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>277</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aTitle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>278</span> </span><span class="WHIT">    </span><span class="NAME">aTitle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"confirmTitle"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>279</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>280</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">promptService</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Components.classes</span><span class="PUNC">[</span><span class="STRN">"@mozilla.org/embedcomp/prompt-service;1"</span><span class="PUNC">]</span><span class="WHIT">
-<span class='line'>281</span> </span><span class="WHIT">                                </span><span class="PUNC">.</span><span class="NAME">getService</span><span class="PUNC">(</span><span class="NAME">Components.interfaces.nsIPromptService</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>282</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">promptService.confirm</span><span class="PUNC">(</span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aText</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>283</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>284</span> 
-<span class='line'>285</span> </span><span class="COMM">/**
-<span class='line'>286</span>  * Displays a prompt with the given text and an optional title.
-<span class='line'>287</span>  *
-<span class='line'>288</span>  * @param aText {string} The message to display.
-<span class='line'>289</span>  * @param aTitle {string} The title for the message (optional - default is
-<span class='line'>290</span>  *                        "gContactSync Prompt").
-<span class='line'>291</span>  * @param aParent {nsIDOMWindow} The parent window (also optional).
-<span class='line'>292</span>  * @param aDefault {string} The default value for the textbox.
-<span class='line'>293</span>  */</span><span class="WHIT">
-<span class='line'>294</span> </span><span class="NAME">com.gContactSync.prompt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_prompt</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aDefault</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>295</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aTitle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>296</span> </span><span class="WHIT">    </span><span class="NAME">aTitle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"promptTitle"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>297</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>298</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">promptService</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Components.classes</span><span class="PUNC">[</span><span class="STRN">"@mozilla.org/embedcomp/prompt-service;1"</span><span class="PUNC">]</span><span class="WHIT">
-<span class='line'>299</span> </span><span class="WHIT">                                </span><span class="PUNC">.</span><span class="NAME">getService</span><span class="PUNC">(</span><span class="NAME">Components.interfaces.nsIPromptService</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>300</span> </span><span class="WHIT">      </span><span class="NAME">input</span><span class="WHIT">         </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">aDefault</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>301</span> </span><span class="WHIT">      </span><span class="NAME">response</span><span class="WHIT">      </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">promptService.prompt</span><span class="PUNC">(</span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">input</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>302</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">response</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">input.value</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT"> 
-<span class='line'>303</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>304</span> </span></pre></body></html>
+<span class='line'>218</span>  * @param aUsername {string} The username to fix.
+<span class='line'>219</span>  *
+<span class='line'>220</span>  * @returns {string} A username with a domain and no spaces.
+<span class='line'>221</span>  */</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="NAME">com.gContactSync.fixUsername</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_fixUsername</span><span class="PUNC">(</span><span class="NAME">aUsername</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aUsername</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">  </span><span class="COMM">// Add @gmail.com if necessary</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aUsername.indexOf</span><span class="PUNC">(</span><span class="STRN">"@"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">    </span><span class="NAME">aUsername</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"@gmail.com"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>228</span> </span><span class="WHIT">  </span><span class="COMM">// replace any spaces or tabs</span><span class="WHIT">
+<span class='line'>229</span> </span><span class="WHIT">  </span><span class="NAME">aUsername</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aUsername.replace</span><span class="PUNC">(</span><span class="REGX">/[ \t\n\r]/g</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aUsername</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>232</span> 
+<span class='line'>233</span> </span><span class="COMM">/**
+<span class='line'>234</span>  * Displays an alert dialog with the given text and an optional title.
+<span class='line'>235</span>  *
+<span class='line'>236</span>  * @param aText {string} The message to display.
+<span class='line'>237</span>  * @param aTitle {string} The title for the message (optional - default is
+<span class='line'>238</span>  *                        "gContactSync Notification").
+<span class='line'>239</span>  * @param aParent {nsIDOMWindow} The parent window (also optional).
+<span class='line'>240</span>  */</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="NAME">com.gContactSync.alert</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aParent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aTitle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="WHIT">    </span><span class="NAME">aTitle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertTitle"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>244</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">promptService</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Components.classes</span><span class="PUNC">[</span><span class="STRN">"@mozilla.org/embedcomp/prompt-service;1"</span><span class="PUNC">]</span><span class="WHIT">
+<span class='line'>246</span> </span><span class="WHIT">                                </span><span class="PUNC">.</span><span class="NAME">getService</span><span class="PUNC">(</span><span class="NAME">Components.interfaces.nsIPromptService</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="WHIT">  </span><span class="NAME">promptService.alert</span><span class="PUNC">(</span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aText</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>248</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>249</span> 
+<span class='line'>250</span> </span><span class="COMM">/**
+<span class='line'>251</span>  * Displays an alert dialog titled "gContactSync Error" (in English).
+<span class='line'>252</span>  *
+<span class='line'>253</span>  * @param aText {string} The message to display.
+<span class='line'>254</span>  */</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="NAME">com.gContactSync.alertError</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alertError</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>256</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertError"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>257</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>259</span> 
+<span class='line'>260</span> </span><span class="COMM">/**
+<span class='line'>261</span>  * Displays an alert dialog titled "gContactSync Warning" (in English).
+<span class='line'>262</span>  *
+<span class='line'>263</span>  * @param aText {string} The message to display.
+<span class='line'>264</span>  */</span><span class="WHIT">
+<span class='line'>265</span> </span><span class="NAME">com.gContactSync.alertWarning</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alertWarning</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertWarning"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>269</span> 
+<span class='line'>270</span> </span><span class="COMM">/**
+<span class='line'>271</span>  * Displays a confirmation dialog with the given text and an optional title.
+<span class='line'>272</span>  *
+<span class='line'>273</span>  * @param aText {string} The message to display.
+<span class='line'>274</span>  * @param aTitle {string} The title for the message (optional - default is
+<span class='line'>275</span>  *                        "gContactSync Confirmation").
+<span class='line'>276</span>  * @param aParent {nsIDOMWindow} The parent window (also optional).
+<span class='line'>277</span>  */</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="NAME">com.gContactSync.confirm</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_confirm</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aParent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aTitle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="WHIT">    </span><span class="NAME">aTitle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"confirmTitle"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>282</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">promptService</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Components.classes</span><span class="PUNC">[</span><span class="STRN">"@mozilla.org/embedcomp/prompt-service;1"</span><span class="PUNC">]</span><span class="WHIT">
+<span class='line'>283</span> </span><span class="WHIT">                                </span><span class="PUNC">.</span><span class="NAME">getService</span><span class="PUNC">(</span><span class="NAME">Components.interfaces.nsIPromptService</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>284</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">promptService.confirm</span><span class="PUNC">(</span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aText</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>285</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>286</span> 
+<span class='line'>287</span> </span><span class="COMM">/**
+<span class='line'>288</span>  * Displays a prompt with the given text and an optional title.
+<span class='line'>289</span>  *
+<span class='line'>290</span>  * @param aText {string} The message to display.
+<span class='line'>291</span>  * @param aTitle {string} The title for the message (optional - default is
+<span class='line'>292</span>  *                        "gContactSync Prompt").
+<span class='line'>293</span>  * @param aParent {nsIDOMWindow} The parent window (also optional).
+<span class='line'>294</span>  * @param aDefault {string} The default value for the textbox.
+<span class='line'>295</span>  */</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="NAME">com.gContactSync.prompt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_prompt</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aDefault</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aTitle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">    </span><span class="NAME">aTitle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"promptTitle"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">promptService</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Components.classes</span><span class="PUNC">[</span><span class="STRN">"@mozilla.org/embedcomp/prompt-service;1"</span><span class="PUNC">]</span><span class="WHIT">
+<span class='line'>301</span> </span><span class="WHIT">                                </span><span class="PUNC">.</span><span class="NAME">getService</span><span class="PUNC">(</span><span class="NAME">Components.interfaces.nsIPromptService</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="WHIT">      </span><span class="NAME">input</span><span class="WHIT">         </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">aDefault</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>303</span> </span><span class="WHIT">      </span><span class="NAME">response</span><span class="WHIT">      </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">promptService.prompt</span><span class="PUNC">(</span><span class="NAME">aParent</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTitle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">input</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>304</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">response</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">input.value</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT"> 
+<span class='line'>305</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>306</span> 
+<span class='line'>307</span> </span><span class="COMM">/**
+<span class='line'>308</span>  * Opens the Accounts dialog for gContactSync
+<span class='line'>309</span>  */</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="NAME">com.gContactSync.openAccounts</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_openAccounts</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">    </span><span class="NAME">window.open</span><span class="PUNC">(</span><span class="STRN">"chrome://gcontactsync/content/Accounts.xul"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">                </span><span class="STRN">"gContactSync_Accts"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">                </span><span class="STRN">"chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>315</span> 
+<span class='line'>316</span> </span><span class="COMM">/**
+<span class='line'>317</span>  * Opens the Preferences dialog for gContactSync
+<span class='line'>318</span>  */</span><span class="WHIT">
+<span class='line'>319</span> </span><span class="NAME">com.gContactSync.openPreferences</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_openPreferences</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">  </span><span class="NAME">window.open</span><span class="PUNC">(</span><span class="STRN">"chrome://gcontactsync/content/options.xul"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">              </span><span class="STRN">"gContactSync_Prefs"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">              </span><span class="STRN">"chrome=yes,resizable=yes,toolbar=yes,centerscreen=yes"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>324</span> 
+<span class='line'>325</span> </span><span class="COMM">/**
+<span class='line'>326</span>  * Opens the given URL using the openFormattedURL and
+<span class='line'>327</span>  * openFormattedRegionURL functions.
+<span class='line'>328</span>  *
+<span class='line'>329</span>  * @param aURL {string} THe URL to open.
+<span class='line'>330</span>  */</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="NAME">com.gContactSync.openURL</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_openURL</span><span class="PUNC">(</span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>332</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">"Opening the following URL: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.LOG_WARNING</span><span class="PUNC">(</span><span class="STRN">"Caught an attempt to load a blank URL"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>336</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>337</span> </span><span class="WHIT">  </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">openFormattedURL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">      </span><span class="NAME">openFormattedURL</span><span class="PUNC">(</span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>340</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>343</span> </span><span class="WHIT">  </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>344</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.LOG_WARNING</span><span class="PUNC">(</span><span class="STRN">" - Error in openFormattedURL"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>345</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>346</span> </span><span class="WHIT">  </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>347</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">openFormattedRegionURL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>348</span> </span><span class="WHIT">      </span><span class="NAME">openFormattedRegionURL</span><span class="PUNC">(</span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>352</span> </span><span class="WHIT">  </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>353</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.LOG_WARNING</span><span class="PUNC">(</span><span class="STRN">" - Error in openFormattedURL"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>354</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>355</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.LOGGER.LOG_WARNING</span><span class="PUNC">(</span><span class="STRN">"Could not open the URL: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>356</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>357</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>358</span> 
+<span class='line'>359</span> </span><span class="COMM">/**
+<span class='line'>360</span>  * Opens the "view source" window with the log file.
+<span class='line'>361</span>  */</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="NAME">com.gContactSync.showLog</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_showLog</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">  </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">    </span><span class="NAME">window.open</span><span class="PUNC">(</span><span class="STRN">"view-source:file://"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.FileIO.mLogFile.path</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>365</span> </span><span class="WHIT">                </span><span class="STRN">"gContactSyncLog"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>366</span> </span><span class="WHIT">                </span><span class="STRN">"chrome=yes,resizable=yes,height=480,width=600"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>367</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>368</span> </span><span class="WHIT">  </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>369</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.LOG_WARNING</span><span class="PUNC">(</span><span class="STRN">"Unable to open the log"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>370</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>371</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>372</span> 
+<span class='line'>373</span> </span><span class="COMM">/**
+<span class='line'>374</span>  * Replaces https://... with http://... in URLs as a permanent workaround for
+<span class='line'>375</span>  * the issue described here:
+<span class='line'>376</span>  * http://www.google.com/support/forum/p/apps-apis/thread?tid=6fde249ce2ffe7a9&hl=en
+<span class='line'>377</span>  *
+<span class='line'>378</span>  * @param aURL {string} The URL to fix.
+<span class='line'>379</span>  * @return {string} The URL using https instead of http
+<span class='line'>380</span>  */</span><span class="WHIT">
+<span class='line'>381</span> </span><span class="NAME">com.gContactSync.fixURL</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_fixURL</span><span class="PUNC">(</span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>382</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">aURL</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>383</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aURL</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>384</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>385</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">aURL.replace</span><span class="PUNC">(</span><span class="REGX">/^https:/i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"http:"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>386</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>387</span> </span></pre></body></html>
