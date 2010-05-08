@@ -73,11 +73,16 @@
 <!ENTITY gcMenuItem.accesskey          "C">
 
 <!-- Import menu -->
+<!-- The text for Import.label should match importNotStarted in gcontactsync.properties -->
 <!ENTITY Import.label                  "Start Import">
+<!ENTITY Import.accesskey              "I">
 <!ENTITY FinishImport.label            "Finish Import">
+<!ENTITY FinishImport.accesskey        "F">
 <!ENTITY Facebook.label                "Facebook">
 <!ENTITY Google.label                  "Google">
+<!ENTITY LinkedIn.label                "LinkedIn">
 <!ENTITY MySpace.label                 "MySpace">
 <!ENTITY Plaxo.label                   "Plaxo">
+<!ENTITY Twitter.label                 "Twitter">
 <!ENTITY Yahoo.label                   "Yahoo">
 

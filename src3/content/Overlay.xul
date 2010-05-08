@@ -163,20 +163,35 @@
                class="menuitem-iconic icon-mail16 menu-iconic"
                oncommand="com.gContactSync.openURL('extensions.gContactSync.googleContactsURL');"/>
        <menuseparator/>
-       <menu id="gContactSyncImport" label="&Import.label;" accesskey="Import">
+       <menu id="gContactSyncImport"
+             label="&Import.label;"
+             accesskey="&Import.accesskey;">
          <menupopup>
            <!-- Facebook is temporarily commented out because I haven't
                 implemented support for OAuth 2 yet using the new method -->
-           <!--<menuitem label="&Facebook.label;" oncommand="com.gContactSync.Import.showWindow('facebook');"/>-->
-           <menuitem label="&Google.label;"   oncommand="com.gContactSync.Import.showWindow('google');"/>
-           <menuitem label="&MySpace.label;"  oncommand="com.gContactSync.Import.showWindow('myspace');"/>
-           <menuitem label="&Plaxo.label;"    oncommand="com.gContactSync.Import.showWindow('plaxo');"/>
+           <!--<menuitem label="&Facebook.label;"
+                     oncommand="com.gContactSync.Import.showWindow('facebook');"/>-->
+           <menuitem label="&Google.label;"
+                     oncommand="com.gContactSync.Import.showWindow('google');"/>
+           <menuitem label="&MySpace.label;"
+                     oncommand="com.gContactSync.Import.showWindow('myspace');"/>
+           <!-- Not supported quite yet -->
+           <!--<menuitem label="&LinkedIn.label;"
+                     oncommand="com.gContactSync.Import.showWindow('linkedin');"/>-->
+           <menuitem label="&Plaxo.label;"
+                     oncommand="com.gContactSync.Import.showWindow('plaxo');"/>
+           <!-- Not supported quite yet -->
+           <!--<menuitem label="&Twitter.label;"
+                     oncommand="com.gContactSync.Import.showWindow('twitter');"/>-->
            <!-- Yahoo is commented out because it doesn't use the callback correctly (adds an =)
                 and doesn't quite adhere to the spec -->
-           <!--<menuitem label="&Yahoo.label;"    oncommand="com.gContactSync.Import.showWindow('yahoo');"/>-->
+           <!--<menuitem label="&Yahoo.label;"
+                         oncommand="com.gContactSync.Import.showWindow('yahoo');"/>-->
          </menupopup>
        </menu>
-      <menuitem id="finishImport" label="&FinishImport.label;" oncommand="com.gContactSync.Import.continueImport();"/>
+      <menuitem id="finishImport"
+                label="&FinishImport.label;"
+                oncommand="com.gContactSync.Import.step3();"/>
    </menupopup>
   </menu>
 </overlay>
