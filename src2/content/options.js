@@ -446,11 +446,17 @@ function resetAllSyncedABs(showConfirm) {
     changeDeleteListener(false);
   }
   LOGGER.LOG("Resetting all synchronized directories.");
-  var abs = AbManager.getSyncedAddressBooks();
-  for (var i in abs) {
-    abs[i].primary.reset();
-  }
-  
+  // Bug 22564 - Don't reset ABs whose usernames do not have a valid token
+  // this now only resets directories that appear in the list on the Accounts
+  // tab with an entry under 'Address Book'
+  var logins = LoginManager.getAuthTokens();
+  var abs    = AbManager.getSyncedAddressBooks();
+  for (var i in logins) {
+    if (abs[i] && abs[i].primary && abs[i].primary.mDirectory) {
+      LOGGER.LOG(" - Resetting " + abs[i].primary.getName());
+      abs[i].primary.reset();
+    }
+  }  
   // re-enable the address book listener, if necessary
   if (original) {
     LOGGER.LOG("Re-enabled the listener");
