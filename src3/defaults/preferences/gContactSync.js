@@ -55,7 +55,10 @@ pref("extensions.gContactSync.dummyEmail", false);
 // enable different IM URLs as defined in Overlay.js
 pref("extensions.gContactSync.enableImUrls", true);
 // the last version of gContactSync loaded
-pref("extensions.gContactSync.lastVersion", "0");
+pref("extensions.gContactSync.lastVersionMajor", 0);
+pref("extensions.gContactSync.lastVersionMinor", 0);
+pref("extensions.gContactSync.lastVersionRelease", 0);
+pref("extensions.gContactSync.lastVersionSuffix", "");
 // fix a CSS problem in Duplicate Contacts Manager
 // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
 pref("extensions.gContactSync.fixDupContactManagerCSS", false);

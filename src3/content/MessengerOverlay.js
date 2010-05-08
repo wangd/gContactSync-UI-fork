@@ -69,11 +69,19 @@ com.gContactSync.MessengerOverlay = {
     // log some basic system and application info
     com.gContactSync.LOGGER.LOG("Loading gContactSync at " + new Date());
     com.gContactSync.LOGGER.LOG(" * Version is:       " +
-                                com.gContactSync.version);
+                                com.gContactSync.getVersionString());
     com.gContactSync.LOGGER.LOG(" * Last version was: " +
-                                com.gContactSync.Preferences.mSyncPrefs.lastVersion.value);
+                                com.gContactSync.getVersionString(true));
     com.gContactSync.LOGGER.LOG(" * User Agent:       " +
                                 navigator.userAgent + "\n");
+    com.gContactSync.Preferences.setSyncPref("lastVersionMajor",
+                                             com.gContactSync.versionMajor);
+    com.gContactSync.Preferences.setSyncPref("lastVersionMinor",
+                                             com.gContactSync.versionMinor);
+    com.gContactSync.Preferences.setSyncPref("lastVersionRelease",
+                                             com.gContactSync.versionRelease);
+    com.gContactSync.Preferences.setSyncPref("lastVersionSuffix",
+                                             com.gContactSync.versionSuffix);
     com.gContactSync.Preferences.setSyncPref("synchronizing", false);
     com.gContactSync.MessengerOverlay.checkAuthentication(); // check if the Auth token is valid
     if (com.gContactSync.Preferences.mSyncPrefs.overrideGetCardForEmail.value) {

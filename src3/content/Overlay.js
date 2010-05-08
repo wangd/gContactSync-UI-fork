@@ -53,17 +53,20 @@ false);
  */
 com.gContactSync.Overlay = {
   /** The last version of gContactSync */
-  mLastVersion: "0",
+  mLastVersionMajor:   0,
+  mLastVersionMinor:   0,
+  mLastVersionRelease: 0,
+  mLastVersionSuffix:  "",
   /**
    * Called when the overlay is loaded and initializes everything and begins
    * the authentication check and sync or login prompt.
    */
   initialize: function Overlay_initialize() {
     // Find the last version of gContactSync and set the pref to the current
-    this.mLastVersion = com.gContactSync.Preferences.mSyncPrefs.lastVersion.value;
-    com.gContactSync.Preferences.setSyncPref("lastVersion",
-                                             com.gContactSync.version);
-    
+    this.mLastVersionMajor   = com.gContactSync.Preferences.mSyncPrefs.lastVersionMajor.value;
+    this.mLastVersionMinor   = com.gContactSync.Preferences.mSyncPrefs.lastVersionMinor.value;
+    this.mLastVersionRelease = com.gContactSync.Preferences.mSyncPrefs.lastVersionRelease.value;
+    this.mLastVersionSuffix  = com.gContactSync.Preferences.mSyncPrefs.lastVersionSuffix.value;
     com.gContactSync.AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) {

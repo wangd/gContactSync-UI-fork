@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2009
+ * Portions created by the Initial Developer are Copyright (C) 2008-2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -46,8 +46,48 @@ if (!com.gContactSync) {
 
 /** The attribute where the dummy e-mail address is stored */
 com.gContactSync.dummyEmailName = "PrimaryEmail";
-/** The version of gContactSync */
-com.gContactSync.version        = "0.3.0a6";
+/** The major version of gContactSync (ie 0 in 0.2.18) */
+com.gContactSync.versionMajor   = "0";
+/** The minor version of gContactSync (ie 3 in 0.3.0b1) */
+com.gContactSync.versionMinor   = "3";
+/** The release for the current version of gContactSync (ie 1 in 0.3.1a7) */
+com.gContactSync.versionRelease = "0";
+/** The suffix for the current version of gContactSync (ie a7 for Alpha 7) */
+com.gContactSync.versionSuffix  = "a7pre2";
+
+/**
+ * Returns a string of the current version for logging.  This can print either
+ * the current version (aGetLast == false) or the previous version
+ * (aGetLast == true).
+ * The format is: <major>.<minor>.<release><suffix>
+ * Don't use this to compare versions.
+ *
+ * @param aGetLast {boolean} Set this to true if you want to get the version
+ *                           string for the last version of gContactSync.
+ * @returns {string} A string of the current or previous version of
+ *                   gContactSync in the following form:
+ *                   <major>.<minor>.<release><suffix>
+ */
+com.gContactSync.getVersionString = function gCS_getVersionString(aGetLast) {
+  var major, minor, release, suffix;
+  if (aGetLast) {
+    var prefs = com.gContactSync.Preferences;
+    major   = prefs.mSyncPrefs.lastVersionMajor.value;
+    minor   = prefs.mSyncPrefs.lastVersionMinor.value;
+    release = prefs.mSyncPrefs.lastVersionRelease.value;
+    suffix  = prefs.mSyncPrefs.lastVersionSuffix.value;
+  }
+  else {
+    major   = com.gContactSync.versionMajor;
+    minor   = com.gContactSync.versionMinor;
+    release = com.gContactSync.versionRelease;
+    suffix  = com.gContactSync.versionSuffix;
+  }
+  return major +
+         "." + minor +
+         "." + release +
+         suffix;
+}
 
 /**
  * Creates an XMLSerializer to serialize the given XML then create a more
