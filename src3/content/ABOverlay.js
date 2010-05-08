@@ -104,10 +104,6 @@ com.gContactSync.ABOverlay = {
     // override the ab results tree function
     //com.gContactSync.originalSetAbView = SetAbView;
     //SetAbView = com.gContactSync.SetAbView;
-    var elem = document.getElementById("gContactSyncStatusText");
-    if (elem) {
-      elem.label = com.gContactSync.Preferences.mSyncPrefs.statusBarText.value;
-    }
     // Fix the style for description elements accidentally set in the
     // Duplicate Contacts Manager extension
     // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
