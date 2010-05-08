@@ -807,14 +807,14 @@ com.gContactSync.GContact.prototype = {
    * effect as contacts must be added to Google and then retrieved before a
    * photo can be added.
    *
-   * @param aURI {string} A string with the URI of a contact photo.
+   * @param aURI {string|nsIURI} A string with the URI of a contact photo.
    */
   setPhoto: function GContact_setPhoto(aURI) {
     com.gContactSync.LOGGER.VERBOSE_LOG("Entering GContact.setPhoto:");
     var photoInfo = this.getPhotoInfo();
     // If the URI is empty or a chrome URL remove the photo, if present
     // TODO - this should probably just check if it is the default photo
-    if (!aURI || aURI.indexOf("chrome:") === 0) {
+    if (!aURI) {
       // Easy case: URI is empty and this contact doesn't have a photo
       if (!photoInfo || !(photoInfo.etag)) {
         com.gContactSync.LOGGER.VERBOSE_LOG(" * URI is empty, contact has no photo");
@@ -855,7 +855,9 @@ com.gContactSync.GContact.prototype = {
       var ios = Components.classes["@mozilla.org/network/io-service;1"]
                           .getService(Components.interfaces.nsIIOService),
           outChannel = ios.newChannel(photoInfo.url, null, null),
-          inChannel  = ios.newChannel(aURI, null, null);
+          inChannel  = aURI instanceof Components.interfaces.nsIURI ?
+                         ios.newChannelFromURI(aURI) :
+                         ios.newChannel(aURI, null, null);
       outChannel = outChannel.QueryInterface(Components.interfaces.nsIHttpChannel);
       // Set the upload data
       outChannel = outChannel.QueryInterface(Components.interfaces.nsIUploadChannel);

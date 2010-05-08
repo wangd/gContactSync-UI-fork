@@ -316,7 +316,23 @@ com.gContactSync.ContactConverter = {
     }
     // Upload the photo
     if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value) {
-      aGContact.setPhoto(aTBContact.getValue("PhotoURI"));
+      // Get the profile directory
+      var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                           .getService(Components.interfaces.nsIProperties)
+                           .get("ProfD", Components.interfaces.nsIFile);
+      // Get (or make) the Photos directory
+      file.append("Photos");
+      if (!file.exists() || !file.isDirectory())
+        file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+      file.append(aTBContact.getValue("PhotoName"));
+      if (file.exists() && file.isFile()) {
+        aGContact.setPhoto(Components.classes["@mozilla.org/network/io-service;1"]
+                                     .getService(Components.interfaces.nsIIOService)
+                                     .newFileURI(file));
+      }
+      else {
+        aGContact.setPhoto("");
+      }
     }
     return aGContact;
   },
