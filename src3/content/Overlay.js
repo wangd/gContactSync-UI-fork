@@ -67,8 +67,8 @@ com.gContactSync.Overlay = {
     com.gContactSync.AbListener.add(); // add the address book listener
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) {
-          com.gContactSync.Overlay.unload();
-        }, false);
+      com.gContactSync.Overlay.unload();
+    }, false);
   },
   /**
    * Called when the overlay is unloaded and removes the address book listener.
@@ -96,14 +96,15 @@ com.gContactSync.Overlay = {
    * When the status text is clicked the log file is opened.
    */
   writeTimeToStatusBar: function Overlay_writeTimeToStatusBar() {
-    var hours   = new String(new Date().getHours());
-    hours       = hours.length == 0 ? "00" + hours : hours;
-    hours       = hours.length == 1 ?  "0" + hours : hours;
-    var minutes = new String(new Date().getMinutes());
-    minutes     = minutes.length == 1 ? "0" + minutes : minutes;
-    var seconds = new String(new Date().getSeconds());
-    seconds     = seconds.length == 1 ? "0" + seconds : seconds;
-    var text    = com.gContactSync.StringBundle.getStr("syncFinishedString");
+    var hours   = String(new Date().getHours()),
+        minutes = String(new Date().getMinutes()),
+        seconds = String(new Date().getSeconds()),
+        text    = com.gContactSync.StringBundle.getStr("syncFinishedString");
+    // Add any missing 0's to the times
+    hours       = hours.length   === 0 ? "00" + hours   : hours;
+    hours       = hours.length   === 1 ?  "0" + hours   : hours;
+    minutes     = minutes.length === 1 ?  "0" + minutes : minutes;
+    seconds     = seconds.length === 1 ?  "0" + seconds : seconds;
     this.setStatusBarText(text + " " + hours + ":" + minutes + ":" + seconds);
   }
 };
