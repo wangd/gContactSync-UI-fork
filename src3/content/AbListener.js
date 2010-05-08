@@ -66,8 +66,8 @@ com.gContactSync.AbListener = {
    * Used just to update the lastModifiedDate of cards removed from a mail list.
    * If a mail list is removed nothing needs to be done since the Group will be
    * deleted in Gmail.
-   * @param aParentDir The directory from which an item was removed.  Ignored
-   *                   unless it is a mail list.
+   * @param aParentDir {nsIAbDirectory} The directory from which an item was
+   *                                    removed.  Ignored unless it is a list.
    * @param aItem      The item removed from a directory.  Ignored unless it is
    *                   an Address Book card removed from a mail list.
    */
@@ -142,7 +142,6 @@ com.gContactSync.AbListener = {
     }
   },
   /**
-   * AbListener.remove
    * Removes this listener.
    */
   remove: function AbListener_remove() {
