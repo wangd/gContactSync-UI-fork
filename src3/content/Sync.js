@@ -73,7 +73,7 @@ com.gContactSync.Sync = {
   mBackup:           false,
   /** Temporarily set to true when the first backup is necessary */
   mFirstBackup:      false,
-  /** An array of commands to execute when offline during an HTTP Request */
+  /** Commands to execute when offline during an HTTP Request */
   mOfflineFunction: function Sync_offlineFunc(httpReq) {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
     com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'));
