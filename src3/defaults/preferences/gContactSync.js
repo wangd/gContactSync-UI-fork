@@ -100,7 +100,7 @@ pref("extensions.gContactSync.extended9", "Custom3");
 pref("extensions.gContactSync.extended10", "Custom4");
 pref("extensions.gContactSync.syncExtended", true);
 pref("extensions.gContactSync.wikiURL",  "http://www.pirules.org/tikiwiki/");
-pref("extensions.gContactSync.faqURL",   "http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+FAQs");
+pref("extensions.gContactSync.faqURL",   "http://www.pirules.org/addons/gcontactsync/faq.php");
 pref("extensions.gContactSync.forumURL", "http://www.pirules.org/forum/");
 pref("extensions.gContactSync.errorURL", "http://www.pirules.org/extensions/submit_error.php?ext=gContactSync");
 pref("extensions.gContactSync.googleContactsURL", "http://www.google.com/contacts");
