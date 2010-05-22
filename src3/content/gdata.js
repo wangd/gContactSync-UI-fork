@@ -286,15 +286,16 @@ com.gContactSync.gdata = {
     },
     /** Valid tags in a structuredAddress tag */
     ADDRESS_TAGS: {
-      housename:    "1",
-      street:       "1",
-      poBox:        "1",
-      neighborhood: "1",
-      city:         "1",
-      subregion:    "1",
-      region:       "1",
-      postcode:     "1",
-      country:      "1"
+      housename:        "1",
+      street:           "1",
+      poBox:            "1",
+      neighborhood:     "1",
+      city:             "1",
+      subregion:        "1",
+      region:           "1",
+      postcode:         "1",
+      country:          "1",
+      formattedAddress: "1"
     },
     /**
      * Returns true if the given tag is valid in a structuredAddress tag

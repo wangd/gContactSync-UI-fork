@@ -146,10 +146,6 @@ com.gContactSync.ContactConverter = {
       // Websites
       new com.gContactSync.ConverterElement("website",   "WebPage1", 0, "work"),
       new com.gContactSync.ConverterElement("website",   "WebPage2", 1, "home"),
-      // full (formatted) addresses
-      new com.gContactSync.ConverterElement("formattedAddress", "FullHomeAddress", 0, "home"),
-      new com.gContactSync.ConverterElement("formattedAddress", "FullWorkAddress", 0, "work"),
-      new com.gContactSync.ConverterElement("formattedAddress", "OtherAddress",    0, "other")
     ];
 
     // Only synchronize (if possible) postal addresses if the preference was
@@ -167,6 +163,10 @@ com.gContactSync.ContactConverter = {
       this.mConverterArr.push(new com.gContactSync.ConverterElement("region",   "WorkState",   0, "work"));
       this.mConverterArr.push(new com.gContactSync.ConverterElement("postcode", "WorkZipCode", 0, "work"));
       this.mConverterArr.push(new com.gContactSync.ConverterElement("country",  "WorkCountry", 0, "work"));
+      // full (formatted) addresses at the bottom so they have priority
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("formattedAddress", "FullHomeAddress", 0, "home"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("formattedAddress", "FullWorkAddress", 0, "work"));
+      this.mConverterArr.push(new com.gContactSync.ConverterElement("formattedAddress", "OtherAddress",    0, "other"));
     }
     this.mInitialized = true;
   },
@@ -366,9 +366,9 @@ com.gContactSync.ContactConverter = {
     for (var i = 0, length = arr.length; i < length; i++) {
       var obj = arr[i],
           property = aGContact.getValue(obj.elementName, obj.index, obj.type);
-      com.gContactSync.LOGGER.VERBOSE_LOG(obj.tbName);
       property = property || blankProp;
-      com.gContactSync.LOGGER.VERBOSE_LOG(property.value + " - " + property.type);
+      com.gContactSync.LOGGER.VERBOSE_LOG(obj.tbName + ": '" + property.value +
+                                          "', type: '" + property.type + "'");
       // Thunderbird has problems with contacts who do not have an e-mail addr
       // and are in Mailing Lists.  To avoid problems, use a dummy e-mail addr
       // that is hidden from the user
@@ -376,10 +376,19 @@ com.gContactSync.ContactConverter = {
         property.value = com.gContactSync.makeDummyEmail(aGContact);
         property.type  = "home";
       }
-      aTBContact.setValue(obj.tbName, property.value);
-      // set the type, if it is an attribute with a type
-      if (property.type)
-        aTBContact.setValue(obj.tbName + "Type", property.type);
+      // don't wipe out structured address info
+      if (property.value ||
+           (obj.elementName !== 'street' && obj.elementName !== 'city' &&
+            obj.elementName !== 'region' && obj.elementName !== 'postcode' &&
+            obj.elementName !== 'country')) {
+        aTBContact.setValue(obj.tbName, property.value);
+        // set the type, if it is an attribute with a type
+        if (property.type)
+          aTBContact.setValue(obj.tbName + "Type", property.type);
+      }
+      else {
+        com.gContactSync.LOGGER.VERBOSE_LOG("Going to avoid wiping out " + obj.tbName);
+      }
     }
     // get the extended properties
     arr = com.gContactSync.Preferences.mExtendedProperties;
