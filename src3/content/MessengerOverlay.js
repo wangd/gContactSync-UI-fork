@@ -54,6 +54,11 @@ false);
  */
 com.gContactSync.MessengerOverlay = {
   /**
+   * The original SetBusyCursor function that throws exceptions after
+   * gContactSync synchronizes from messenger.xul.
+   */
+  mOriginalSetBusyCursor: null,
+  /**
    * Initializes the MessengerOverlay class.
    * This consists of setting the needRestart pref to false, removing the old
    * log file, and logging basic TB and gContactSync information.
@@ -65,6 +70,11 @@ com.gContactSync.MessengerOverlay = {
     if (com.gContactSync.FileIO.mLogFile && com.gContactSync.FileIO.mLogFile.exists()) {
       com.gContactSync.FileIO.mLogFile.remove(false); // delete the old log file
     }
+
+    // override SetBusyCursor to wrap it in a try/catch block as it and
+    // this add-on do not get along...
+    com.gContactSync.MessengerOverlay.mOriginalSetBusyCursor = SetBusyCursor;
+    SetBusyCursor = com.gContactSync.MessengerOverlay.SetBusyCursor;
 
     // log some basic system and application info
     com.gContactSync.LOGGER.LOG("Loading gContactSync at " + new Date());
@@ -89,6 +99,21 @@ com.gContactSync.MessengerOverlay = {
         com.gContactSync.MessengerOverlay.originalGetCardForEmail = getCardForEmail;
         getCardForEmail = com.gContactSync.MessengerOverlay.getCardForEmail;
       } catch (e) {}
+    }
+  },
+  /**
+   * Calls the original SetBusyCursor() function from mailCore.js wrapped in a
+   * try/catch block.  For some unknown reason, gContactSync causes
+   * SetBusyCursor to fail after a synchronization with an update from
+   * messenger.xul.
+   * See Bug 22801 for more details.
+   */
+  SetBusyCursor: function MessengerOverlay_SetBusyCursor() {
+    try {
+      com.gContactSync.MessengerOverlay.mOriginalSetBusyCursor.apply(this, arguments);
+    }
+    catch (e) {
+      com.gContactSync.LOGGER.LOG_WARNING("SetBusyCursor failed", e);
     }
   },
  /**
