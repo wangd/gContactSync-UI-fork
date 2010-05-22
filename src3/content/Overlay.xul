@@ -170,23 +170,25 @@
            <!-- Facebook is temporarily commented out because I haven't
                 implemented support for OAuth 2 yet using the new method -->
            <!--<menuitem label="&Facebook.label;"
-                     oncommand="com.gContactSync.Import.showWindow('facebook');"/>-->
-           <menuitem label="&Google.label;"
-                     oncommand="com.gContactSync.Import.showWindow('google');"/>
+                     oncommand="com.gContactSync.Import.step1('facebook');"/>-->
+           <!-- Google is commented out because it isn't behaving...duplicates,
+                missing contacts, contacts w/o IDs, etc. -->
+           <!--<menuitem label="&Google.label;"
+                     oncommand="com.gContactSync.Import.step1('google');"/>-->
            <menuitem label="&MySpace.label;"
-                     oncommand="com.gContactSync.Import.showWindow('myspace');"/>
+                     oncommand="com.gContactSync.Import.step1('myspace');"/>
            <!-- Not supported quite yet -->
            <!--<menuitem label="&LinkedIn.label;"
-                     oncommand="com.gContactSync.Import.showWindow('linkedin');"/>-->
+                     oncommand="com.gContactSync.Import.step1('linkedin');"/>-->
            <menuitem label="&Plaxo.label;"
-                     oncommand="com.gContactSync.Import.showWindow('plaxo');"/>
+                     oncommand="com.gContactSync.Import.step1('plaxo');"/>
            <!-- Not supported quite yet -->
            <!--<menuitem label="&Twitter.label;"
-                     oncommand="com.gContactSync.Import.showWindow('twitter');"/>-->
+                     oncommand="com.gContactSync.Import.step1('twitter');"/>-->
            <!-- Yahoo is commented out because it doesn't use the callback correctly (adds an =)
                 and doesn't quite adhere to the spec -->
            <!--<menuitem label="&Yahoo.label;"
-                         oncommand="com.gContactSync.Import.showWindow('yahoo');"/>-->
+                         oncommand="com.gContactSync.Import.step1('yahoo');"/>-->
          </menupopup>
        </menu>
       <menuitem id="finishImport"

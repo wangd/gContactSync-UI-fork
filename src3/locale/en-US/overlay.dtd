@@ -74,7 +74,7 @@
 
 <!-- Import menu -->
 <!-- The text for Import.label should match importNotStarted in gcontactsync.properties -->
-<!ENTITY Import.label                  "Start Import">
+<!ENTITY Import.label                  "Start Import (EXPERIMENTAL)">
 <!ENTITY Import.accesskey              "I">
 <!ENTITY FinishImport.label            "Finish Import">
 <!ENTITY FinishImport.accesskey        "F">

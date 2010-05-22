@@ -57,7 +57,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
   if (!dragSession)
     return;
   // get the attributes added by this extension
-  var attributes    = com.gContactSync.ContactConverter.getExtraSyncAttributes(),
+  var attributes    = com.gContactSync.ContactConverter.getExtraSyncAttributes(false, true),
       attributesLen = attributes.length,
       trans         = Components.classes["@mozilla.org/widget/transferable;1"]
                                 .createInstance(Components.interfaces.nsITransferable);

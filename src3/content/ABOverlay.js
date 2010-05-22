@@ -149,7 +149,7 @@ com.gContactSync.ABOverlay = {
     if (!this.mBug413260 || !com.gContactSync.Preferences.mSyncPrefs.newColLabels.value)
       return;
     // get the added attributes
-    var ids = com.gContactSync.ContactConverter.getExtraSyncAttributes(false),
+    var ids = com.gContactSync.ContactConverter.getExtraSyncAttributes(false, false),
         id, splitter, treeCol;
     // iterate through every added attribute and add a treecol for it unless
     // it is a postal address
@@ -301,7 +301,7 @@ com.gContactSync.ABOverlay = {
     com.gContactSync.originalDisplayCardViewPane.apply(this, arguments);
     if (aCard.isMailList) {
       // collapse all the attributes added
-      com.gContactSync.ABOverlay.hideNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes());
+      com.gContactSync.ABOverlay.hideNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes(false, true));
       try {
         // then collapse the e-mail boxes
         cvData.cvThirdEmailBox.collapsed = true;
@@ -311,7 +311,7 @@ com.gContactSync.ABOverlay = {
     }
     try {
       var contact = new com.gContactSync.TBContact(aCard, null);
-      com.gContactSync.ABOverlay.showNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes());
+      com.gContactSync.ABOverlay.showNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes(false, true));
       var primaryEmail = com.gContactSync.GAbManager.getCardValue(aCard,
                                                  com.gContactSync.dummyEmailName);
       // if the primary e-mail address is the dummy address, hide it

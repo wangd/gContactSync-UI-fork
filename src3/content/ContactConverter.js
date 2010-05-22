@@ -80,8 +80,7 @@ com.gContactSync.ContactConverter = {
     "HomeFaxNumberType", "OtherNumberType", "Relation0", "Relation0Type",
     "Relation1", "Relation1Type", "Relation2", "Relation2Type", "Relation3",
     "Relation3Type", "CompanySymbol", "JobDescription",
-    "WebPage1Type", "WebPage2Type", "FullHomeAddress", "FullWorkAddress",
-    "OtherAddress"
+    "WebPage1Type", "WebPage2Type"
   ],
   /** Stores whether this object has been initialized yet */
   mInitialized: false,
@@ -175,12 +174,14 @@ com.gContactSync.ContactConverter = {
    * @param aIncludeURLs {boolean} Should be true if the URL-related attributes
    *                               should be returned.
    */
-  getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs) {
+  getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs, aIncludeAddresses) {
     if (!this.mInitialized)
       this.init();
     var arr = this.mAddedAttributes;
     if (aIncludeURLs)
       arr = arr.concat("PhotoURL", "SelfURL", "EditURL", "GoogleID");
+    if (aIncludeAddresses)
+      arr = arr.concat("FullHomeAddress", "FullWorkAddress", "OtherAddress");
     return arr;
   },
   /**

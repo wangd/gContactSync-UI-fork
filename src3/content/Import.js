@@ -140,6 +140,7 @@ com.gContactSync.Import = {
   /** Commands to execute when offline during an HTTP Request */
   mOfflineFunction: function Import_offlineFunc(httpReq) {
     com.gContactSync.alertError(com.gContactSync.StringBundle.getStr('importOffline'));
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineImportStatusText'));
   },
   /**
    * Stores <em>encoded</em> OAuth variables, such as the oauth_token,
@@ -163,10 +164,14 @@ com.gContactSync.Import = {
    * @param aSource {string} The source from which the contacts are obtained,
    *                         in lowercase, as supported by pirules.org.
    */
-  showWindow: function Import_showWindow(aSource) {
-    var imp = com.gContactSync.Import;
+  step1: function Import_step1(aSource) {
+    var imp      = com.gContactSync.Import;
+    if (imp.mStarted) {
+      // TODO warn the user and allow him or her to cancel
+    }
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('startingImport'));
     imp.mStarted = true;
-    imp.mSource = aSource;
+    imp.mSource  = aSource;
     // get an oauth_token and oauth_token_secret
     imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=1&source=" +
                          imp.mSource,
@@ -183,7 +188,9 @@ com.gContactSync.Import = {
         win = imp.mWindow,
         response = win.document ? win.document.getElementById("response") : null;
     if (!response) {
-      com.gContactSync.LOGGER.LOG("***Import failed");
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
+      com.gContactSync.LOGGER.LOG_ERROR("***Import failed to get the auth tokens");
+      com.gContactSync.LOGGER.LOG(win.document ? win.document.innerHTML : "window has no document");
       return;
     }
     response   = response.innerHTML;
@@ -210,11 +217,14 @@ com.gContactSync.Import = {
         win = imp.mWindow,
         response = win.document ? win.document.getElementById("response") : null;
     if (!response) {
-      com.gContactSync.LOGGER.LOG("***Import failed");
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
+      com.gContactSync.LOGGER.LOG_ERROR("***Import failed to get the login URL");
+      com.gContactSync.LOGGER.LOG(win.document ? win.document.innerHTML : "window has no document");
       return;
     }
     response   = String(response.innerHTML).replace(/\&amp\;/g, "&");
     com.gContactSync.LOGGER.LOG("***IMPORT: Step 2a finished: " + win.location + "\nContents:\n" + response);
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importRequestingCredentials'));
     imp.openBrowserWindow(response, imp.logStep2b);
   },
   /**
@@ -225,7 +235,7 @@ com.gContactSync.Import = {
   logStep2b: function Import_logStep2b() {
     var win = com.gContactSync.Import.mWindow;
     com.gContactSync.LOGGER.LOG("***IMPORT: Step 2b finished: " + win.location +
-                                "Please copy/paste the token to continue");
+                                "Please click Finish Import to continue");
   },
   /**
    * Step 3: Gets the new oauth_token then activates the token.
@@ -242,11 +252,13 @@ com.gContactSync.Import = {
     imp.mOAuth.oauth_token = encodeURIComponent(imp.mWindow.document.getElementById('response').innerHTML);
     imp.mWindow.close();
     if (!imp.mOAuth.oauth_token) {
-      // TODO localize
-      alert("Import Canceled");
+      com.gContactSync.alert(com.gContactSync.StringBundle.getStr('importCanceled'),
+                             com.gContactSync.StringBundle.getStr('importCanceledTitle'),
+                             window);
       imp.mStarted = false;
       return;
     }
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importActivatingToken'));
     // activate the token
     // TODO use HttpRequest
     imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=3&source=" +
@@ -271,6 +283,7 @@ com.gContactSync.Import = {
     response = response.innerHTML;
     com.gContactSync.LOGGER.LOG("***IMPORT: Step 3 finished: " + win.location + "\nContents:\n" + response);
     imp.storeResponse(response);
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importRetrievingContacts'));
     // Use the token to fetch the user's contacts
     // TODO use HttpRequest
     imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=4&source=" +
@@ -296,6 +309,7 @@ com.gContactSync.Import = {
     response = response.innerHTML;
     com.gContactSync.LOGGER.LOG("Final response:\n" + response);
     imp.mStarted = false;
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importParsingContacts'));
     // start the import
     imp.beginImport(response);
   },
@@ -350,10 +364,10 @@ com.gContactSync.Import = {
       return;
     }
     try {
-      // TODO remove
-      com.gContactSync.alert(aFeed, "Contact Feed (click OK)", window);
-      // TODO localize
-      var res = com.gContactSync.prompt("Please type a name for the AB to import to.  It can be new (highly recommended) or old.\nClick Cancel to cancel the import", "Import Destination", window);
+      com.gContactSync.LOGGER.VERBOSE_LOG(aFeed);
+      var res = com.gContactSync.prompt(com.gContactSync.StringBundle.getStr("importDestination"),
+                                        com.gContactSync.StringBundle.getStr("importDestinationTitle"),
+                                        window);
       if (!res) {
         return;
       }
@@ -364,7 +378,6 @@ com.gContactSync.Import = {
                               .createInstance(Components.interfaces.nsIJSON);
       var obj = nsIJSON.decode(aFeed);
       var arr = obj.entry || obj.data;
-      // TODO use a map or some better method of conversion
       for (var i in arr) {
         var contact = arr[i],
             id = contact.id;
@@ -411,7 +424,8 @@ com.gContactSync.Import = {
                 // possibly implementation-specific
               }
               else if (j === "thumbnailUrl") {
-                
+                // TODO download the photo...
+                // possibly implementation-specific
               }
               // if it is just a normal property (has a length property =>
               // string) check the map
@@ -438,6 +452,7 @@ com.gContactSync.Import = {
       com.gContactSync.alertError(e);
       return;
     }
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFinished'));
     com.gContactSync.alert(com.gContactSync.StringBundle.getStr("importComplete"),
                            com.gContactSync.StringBundle.getStr("importCompleteTitle"),
                            window);
