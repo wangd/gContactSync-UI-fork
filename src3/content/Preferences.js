@@ -146,16 +146,19 @@ com.gContactSync.Preferences = {
     // if it isn't a sync pref, check if it is a preference for an existing
     // GAddressBook
     else {
-      var ab = com.gContactSync.GAbManager.mABs[this.mBranchName + aData.substring(0, aData.lastIndexOf(".") + 1)];
-      if (ab) {
-        var pref         = aData.substring(aData.lastIndexOf(".") + 1),
-            prefNoPrefix = pref.replace(ab.prefPrefix, "");
-            newPrefValue = ab.getStringPref(pref);
-        com.gContactSync.LOGGER.VERBOSE_LOG("Changing AB pref: " + pref +
-                                            "\nFrom: " + ab.mPrefs[prefNoPrefix] +
-                                            "\nTo: " + newPrefValue);
-        ab.mPrefs[prefNoPrefix] = newPrefValue;
+      try {
+        var ab = com.gContactSync.GAbManager.mABs[this.mBranchName + aData.substring(0, aData.lastIndexOf(".") + 1)];
+        if (ab) {
+          var pref         = aData.substring(aData.lastIndexOf(".") + 1),
+              prefNoPrefix = pref.replace(ab.prefPrefix, "");
+              newPrefValue = ab.getStringPref(pref);
+          com.gContactSync.LOGGER.VERBOSE_LOG("Changing AB pref: " + pref +
+                                              "\nFrom: " + ab.mPrefs[prefNoPrefix] +
+                                              "\nTo: " + newPrefValue);
+          ab.mPrefs[prefNoPrefix] = newPrefValue;
+        }
       }
+      catch (ex) {} // ignore errors (GAbManager may not be defined)
     }
   },
   /**
