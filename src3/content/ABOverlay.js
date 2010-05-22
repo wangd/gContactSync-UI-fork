@@ -164,12 +164,12 @@ com.gContactSync.ABOverlay = {
       // make the new treecol
       treeCol = document.createElement("treecol");
       // then set it up with the ID and other attributes
-      treeCol.setAttribute("id", id);
-      treeCol.setAttribute("class", "sortDirectionIndicator");
-      treeCol.setAttribute("hidden", "true");
+      treeCol.setAttribute("id",      id);
+      treeCol.setAttribute("class",   "sortDirectionIndicator");
+      treeCol.setAttribute("hidden",  "true");
       treeCol.setAttribute("persist", "hidden ordinal width sortDirection");
-      treeCol.setAttribute("flex", "1");
-      treeCol.setAttribute("label", com.gContactSync.StringBundle.getStr(id));
+      treeCol.setAttribute("flex",    "1");
+      treeCol.setAttribute("label",   com.gContactSync.StringBundle.getStr(id));
       // append it to the treecols element
       treeCols.appendChild(treeCol);
     }
@@ -195,10 +195,12 @@ com.gContactSync.ABOverlay = {
       var button      = document.createElement("toolbarbutton");
       button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
                           " chromeclass-toolbar-additional");
-      button.setAttribute("id", "button-sync");
-      button.setAttribute("label", com.gContactSync.StringBundle.getStr("syncButton"));
-      button.setAttribute("oncommand", "com.gContactSync.Sync.begin();");
-      button.setAttribute("tooltiptext", com.gContactSync.StringBundle.getStr("syncTooltip"));
+      button.setAttribute("id",           "button-sync");
+      button.setAttribute("label",
+                          com.gContactSync.StringBundle.getStr("syncButton"));
+      button.setAttribute("oncommand",    "com.gContactSync.Sync.begin();");
+      button.setAttribute("tooltiptext",
+                          com.gContactSync.StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
 
       var deleteButton = document.getElementById("button-delete");
@@ -584,12 +586,12 @@ com.gContactSync.ABOverlay = {
     // setup the third and fourth e-mail addresses
     var xhtml = "http://www.w3.org/1999/xhtml";
     cvData.cvThirdEmailBox = com.gContactSync.ABOverlay.makeDescElement("ThirdEmailBox",
-                                                                      "CardViewLink");
+                                                                        "CardViewLink");
     cvData.cvThirdEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvThirdEmail.setAttribute("id", "ThirdEmail");
     cvData.cvThirdEmailBox.appendChild(cvData.cvThirdEmail);
     cvData.cvFourthEmailBox = com.gContactSync.ABOverlay.makeDescElement("FourthEmailBox",
-                                                                       "CardViewLink");
+                                                                         "CardViewLink");
     cvData.cvFourthEmail = document.createElementNS(xhtml, "html:a");
     cvData.cvFourthEmail.setAttribute("id", "FourthEmail");
     cvData.cvFourthEmailBox.appendChild(cvData.cvFourthEmail);
@@ -599,27 +601,27 @@ com.gContactSync.ABOverlay = {
     // the screennames
     if (com.gContactSync.Preferences.mSyncPrefs.enableImUrls.value) {
       cvData.cvTalkScreenNameBox  = com.gContactSync.ABOverlay.makeDescElement("TalkScreenNameBox",
-                                                                             "CardViewLink");
+                                                                               "CardViewLink");
       cvData.cvTalkScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvTalkScreenName.setAttribute("id", "TalkScreenName");
       cvData.cvTalkScreenNameBox.appendChild(cvData.cvTalkScreenName);
       cvData.cvICQScreenNameBox   = com.gContactSync.ABOverlay.makeDescElement("ICQScreenNameBox",
-                                                                             "CardViewLink");
+                                                                               "CardViewLink");
       cvData.cvICQScreenName      = document.createElementNS(xhtml, "html:a");
       cvData.cvICQScreenName.setAttribute("id", "ICQScreenName");    
       cvData.cvICQScreenNameBox.appendChild(cvData.cvICQScreenName);
       cvData.cvYahooScreenNameBox  = com.gContactSync.ABOverlay.makeDescElement("YahooScreenNameBox",
-                                                                              "CardViewLink");
+                                                                                "CardViewLink");
       cvData.cvYahooScreenName     = document.createElementNS(xhtml, "html:a");
       cvData.cvYahooScreenName.setAttribute("id", "YahooScreenName");    
       cvData.cvYahooScreenNameBox.appendChild(cvData.cvYahooScreenName);
       cvData.cvMSNScreenNameBox    = com.gContactSync.ABOverlay.makeDescElement("MSNScreenNameBox",
-                                                                              "CardViewLink");
+                                                                                "CardViewLink");
       cvData.cvMSNScreenName       = document.createElementNS(xhtml, "html:a");
       cvData.cvMSNScreenName.setAttribute("id", "MSNScreenName");    
       cvData.cvMSNScreenNameBox.appendChild(cvData.cvMSNScreenName);
       cvData.cvJabberScreenNameBox = com.gContactSync.ABOverlay.makeDescElement("JabberScreenNameBox",
-                                                                              "CardViewLink");
+                                                                                "CardViewLink");
       cvData.cvJabberScreenName    = document.createElementNS(xhtml, "html:a");
       cvData.cvJabberScreenName.setAttribute("id", "JabberScreenName");
       cvData.cvJabberScreenNameBox.appendChild(cvData.cvJabberScreenName);
@@ -654,14 +656,16 @@ com.gContactSync.ABOverlay = {
       cvData.cvOtherAddress.setAttribute("style", "white-space: -moz-pre-wrap;");
     // setup the MapIt box
     cvData.cvbOtherMapItBox = document.createElement("vbox");
-    cvData.cvbOtherMapItBox.setAttribute("id", "cvbOtherMapItBox");
+    cvData.cvbOtherMapItBox.setAttribute("id",   "cvbOtherMapItBox");
     cvData.cvbOtherMapItBox.setAttribute("pack", "end");
     cvData.cvOtherMapIt = document.createElement("button");
-    cvData.cvOtherMapIt.setAttribute("label", com.gContactSync.StringBundle.getStr("getMap"));
-    cvData.cvOtherMapIt.setAttribute("url", "");
+    cvData.cvOtherMapIt.setAttribute("label",
+                                     com.gContactSync.StringBundle.getStr("getMap"));
+    cvData.cvOtherMapIt.setAttribute("url",       "");
     cvData.cvOtherMapIt.setAttribute("oncommand", "MapIt('cvOtherMapIt');");
-    cvData.cvOtherMapIt.setAttribute("tooltip", com.gContactSync.StringBundle.getStr("getMapTooltip"));
-    cvData.cvOtherMapIt.setAttribute("id", "cvOtherMapIt");
+    cvData.cvOtherMapIt.setAttribute("tooltip",
+                                     com.gContactSync.StringBundle.getStr("getMapTooltip"));
+    cvData.cvOtherMapIt.setAttribute("id",        "cvOtherMapIt");
     otherVbox.appendChild(cvData.cvOtherAddress);
     cvData.cvbOtherMapItBox.appendChild(cvData.cvOtherMapIt);
     otherHbox.appendChild(otherVbox);
@@ -682,11 +686,13 @@ com.gContactSync.ABOverlay = {
     cvData.cvbFullHomeMapItBox.setAttribute("id", "cvbFullHomeMapItBox");
     cvData.cvbFullHomeMapItBox.setAttribute("pack", "end");
     cvData.cvFullHomeMapIt = document.createElement("button");
-    cvData.cvFullHomeMapIt.setAttribute("label", com.gContactSync.StringBundle.getStr("getMap"));
-    cvData.cvFullHomeMapIt.setAttribute("url", "");
+    cvData.cvFullHomeMapIt.setAttribute("label",
+                                        com.gContactSync.StringBundle.getStr("getMap"));
+    cvData.cvFullHomeMapIt.setAttribute("url",        "");
     cvData.cvFullHomeMapIt.setAttribute("oncommand", "MapIt('cvFullHomeMapIt');");
-    cvData.cvFullHomeMapIt.setAttribute("tooltip", com.gContactSync.StringBundle.getStr("getMapTooltip"));
-    cvData.cvFullHomeMapIt.setAttribute("id", "cvFullHomeMapIt");
+    cvData.cvFullHomeMapIt.setAttribute("tooltip",
+                                        com.gContactSync.StringBundle.getStr("getMapTooltip"));
+    cvData.cvFullHomeMapIt.setAttribute("id",        "cvFullHomeMapIt");
     FullHomeVbox.appendChild(cvData.cvFullHomeAddress);
     cvData.cvbFullHomeMapItBox.appendChild(cvData.cvFullHomeMapIt);
     FullHomeHbox.appendChild(FullHomeVbox);
