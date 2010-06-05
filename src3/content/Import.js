@@ -43,7 +43,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * This requires some interaction with a remote website (pirules.org) for
  * authentication.
  * 
- * pirules.org stores the following infomration for each source
+ * pirules.org stores the following information for each source
  *  - oauth_consumer_key
  *  - oauth_consumer_secret
  *  - base API URL
@@ -53,7 +53,8 @@ if (!com.gContactSync) com.gContactSync = {};
  * It also reorganizes and signs the parameters.
  * 
  * TODO List:
- *  - Support OAuth 2.0 (Facebook)
+ *  - Download photos
+ *  - For certain sources attempt to get more information
  * 
  * @class
  */
@@ -64,6 +65,13 @@ com.gContactSync.Import = {
   mStarted: false,
   /** A reference to the window TODO remove */
   mWindow: {},
+  /** Map for Facebook only */
+  mMapfacebook: {
+    /** Name is a simple attribute */
+    name: "DisplayName",
+    /** ID is also a simple attribute */
+    id:   "FacebookID"
+  },
   /** Maps Portable Contacts attributes to TB nsIAbCard attributes */
   mMap: {
     /**
@@ -152,7 +160,11 @@ com.gContactSync.Import = {
     /** The OAuth token secret to use in signing request parameters */
     oauth_token_secret: "",
     /** The OAuth verifier for OAuth version 1.0a */
-    oauth_verifier:     ""
+    oauth_verifier:     "",
+    /** The access token (OAuth version 2.0) */
+    access_token:       "",
+    /** The expiration time (OAuth version 2.0) */
+    expires:            ""
   },
   /**
    * Step 1: Get an initial, unauthorized oauth_token and oauth_token_secret.
@@ -165,7 +177,8 @@ com.gContactSync.Import = {
    *                         in lowercase, as supported by pirules.org.
    */
   step1: function Import_step1(aSource) {
-    var imp      = com.gContactSync.Import;
+    var imp      = com.gContactSync.Import,
+        callback = aSource == "facebook" ? imp.step2b : imp.step2a;
     if (imp.mStarted) {
       // TODO warn the user and allow him or her to cancel
     }
@@ -174,14 +187,15 @@ com.gContactSync.Import = {
     imp.mSource  = aSource;
     // get an oauth_token and oauth_token_secret
     imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=1&source=" +
-                         imp.mSource,
-                         imp.step2a);
+                          imp.mSource,
+                          callback);
   },
   /**
    * Step 2a: The first of two substeps where the user is prompted for his or
    * her credentials on the third-party website.
    * In this substep, gContactSync gets the login URL from pirules.org with
    * all it's parameters and the oauth_signature.
+   * This is done in step 1 for OAuth 2.0 (Facebook only at the moment).
    */
   step2a: function Import_step2a() {
     var imp = com.gContactSync.Import,
@@ -286,11 +300,20 @@ com.gContactSync.Import = {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importRetrievingContacts'));
     // Use the token to fetch the user's contacts
     // TODO use HttpRequest
-    imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=4&source=" +
-                         imp.mSource +
-                         "&oauth_token=" + imp.mOAuth.oauth_token +
-                         "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret,
-                         imp.finish);
+    // access_token is used instead of the oauth_token in OAuth 2.0
+    if (imp.mOAuth.access_token) {
+      imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=4&source=" +
+                           imp.mSource +
+                           "&access_token=" + imp.mOAuth.access_token,
+                           imp.finish);
+    }
+    else {
+      imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=4&source=" +
+                           imp.mSource +
+                           "&oauth_token=" + imp.mOAuth.oauth_token +
+                           "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret,
+                           imp.finish);
+    }
   },
   /**
    * Gets the response from step 4 and calls beginImport to parse the JSON feed
@@ -382,10 +405,16 @@ com.gContactSync.Import = {
         var contact = arr[i],
             id = contact.id;
         if (id) {
-          var newCard = ab.newContact();
+          var newCard = ab.newContact(),
+              attr    = "";
           // TODO this could be moved into a recursive function...
           for (var j in contact) {
-            var attr = this.mMap[j];
+            // If there is a map for just this source, check it for the
+            // attribute first, otherwise just use the default map.
+            if (this["mMap" + this.mSource])
+              attr = this["mMap" + this.mSource][j] || this.mMap[j];
+            else
+              attr = this.mMap[j];
             if (attr) {
               // when contact[j] is an Array things are a bit more
               // complicated

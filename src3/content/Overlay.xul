@@ -167,10 +167,8 @@
              label="&Import.label;"
              accesskey="&Import.accesskey;">
          <menupopup>
-           <!-- Facebook is temporarily commented out because I haven't
-                implemented support for OAuth 2 yet using the new method -->
-           <!--<menuitem label="&Facebook.label;"
-                     oncommand="com.gContactSync.Import.step1('facebook');"/>-->
+           <menuitem label="&Facebook.label;"
+                     oncommand="com.gContactSync.Import.step1('facebook');"/>
            <!-- Google is commented out because it isn't behaving...duplicates,
                 missing contacts, contacts w/o IDs, etc. -->
            <!--<menuitem label="&Google.label;"
