@@ -53,9 +53,9 @@ if (!com.gContactSync) com.gContactSync = {};
  * It also reorganizes and signs the parameters.
  * 
  * TODO List:
- *  - Download photos
  *  - For certain sources attempt to get more information
  *  - Add error detection and handling
+ *  - Use HttpRequest
  * 
  * @class
  */
@@ -66,11 +66,12 @@ com.gContactSync.Import = {
   mStarted: false,
   /** A reference to the window TODO remove */
   mWindow: {},
+  /** Map for Plaxo only */
   mMapplaxo: {
     /** The user's ID */
-    id: "PlaxoID",
+    id:            "PlaxoID",
     /** An array of the user's photos */
-    photos: "PlaxoPhotos"
+    photos:        "PlaxoPhotos"
   },
   /** Map for MySpace only */
   mMapmyspace: {
@@ -199,6 +200,9 @@ com.gContactSync.Import = {
       type:        "",
       formatted:   "<type>Address"
     },
+    /**
+     * Links to a user's websites.
+     */
     urls: {
       0:           "WebPage1",
       1:           "WebPage2",
