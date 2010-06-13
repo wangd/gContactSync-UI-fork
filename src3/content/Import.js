@@ -55,6 +55,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * TODO List:
  *  - Download photos
  *  - For certain sources attempt to get more information
+ *  - Add error detection and handling
  * 
  * @class
  */
@@ -65,20 +66,76 @@ com.gContactSync.Import = {
   mStarted: false,
   /** A reference to the window TODO remove */
   mWindow: {},
-  /** Map for Facebook only */
-  mMapfacebook: {
-    /** Name is a simple attribute */
-    name: "DisplayName",
-    /** ID is also a simple attribute */
-    id:   "FacebookID"
+  mMapplaxo: {
+    /** The user's ID */
+    id: "PlaxoID",
+    /** An array of the user's photos */
+    photos: "PlaxoPhotos"
   },
-  /** Maps Portable Contacts attributes to TB nsIAbCard attributes */
-  mMap: {
+  /** Map for MySpace only */
+  mMapmyspace: {
+    /** The user's MySpace ID */
+    id:            "MySpaceID",
     /**
      * The 'nickname' (MySpace only).  This is mapped w/ DisplayName because it
      * is basically all that MySpace gives.
      */
     nickname:      "DisplayName",
+    /** The user's thumbnail */
+    thumbnailUrl:  "MySpaceThumbnail",
+    /** The URL to the contact's profile */
+    profileUrl:    "WebPage2"
+  },
+  /** Map for Facebook only */
+  mMapfacebook: {
+    /** Name is a simple attribute */
+    name:          "DisplayName",
+    /** ID is also a simple attribute */
+    id:            "FacebookID",
+    /** A link to the user's Facebook profile */
+    link:          "WebPage1",
+    /** A link to the user's website */
+    website:       "WebPage2",
+    /** The user's 'About' text */
+    about:         "Notes",
+    /** The user's public profile photo */
+    //picture:       "FacebookProfilePhoto",
+    /** The user's hometown */
+    hometown: {
+      /** The name of the contact's hometown */
+      name: "Hometown"
+    },
+    /** The contact's current location */
+    location: {
+      /** The name of the contact's current location */
+      name: "Location"
+    },
+    /** An array of a user's job history */
+    work: {
+      /** The most recent job */
+      0: "",
+      /** The second most recent job */
+      1: "Second",
+      /** The third most recent job */
+      2: "Third",
+      /** Employer information (name and Facebook ID) */
+      employer: {
+        /** The name of the company */
+        name:      "Company"
+      },
+      /** Contact's position in the company */
+      position: {
+        /** The name of the contact's position in the company */
+        name:      "JobTitle"
+      },
+      /** The date when the contact started working for the company */
+      start_date:  "WorkStartDate",
+      /** The date when the contact stopped working for the company */
+      end_date:    "WorkEndDate"
+    }
+  },
+  /** Maps Portable Contacts attributes to TB nsIAbCard attributes */
+  mMap: {
     /** name is complex */
     name: {
       /** The given name for a contact */
@@ -90,12 +147,16 @@ com.gContactSync.Import = {
       /** A contact's display name */
       displayName: "DisplayName"
     },
+    /** The gender of the contact */
+    gender:        "Gender",
+    /** The contact's first (given) name */
+    first_name:    "FirstName",
+    /** The contact's last (family) name */
+    last_name:     "LastName",
     /** A contact's display name */
-    displayName: "DisplayName",
+    displayName:   "DisplayName",
     /** The contact's nickname (alias) */
     nickName:      "NickName",
-    /** The URL to the contact's profile */
-    profileUrl:    "ProfileURL",
     /** emails is an array of a contact's e-mail addresses */
     emails: {
       /** The prefix for the first e-mail address */
@@ -399,7 +460,13 @@ com.gContactSync.Import = {
       // decode the JSON and get the array of cards
       var nsIJSON = Components.classes["@mozilla.org/dom/json;1"]
                               .createInstance(Components.interfaces.nsIJSON);
-      var obj = nsIJSON.decode(aFeed);
+      try {
+        var obj = nsIJSON.decode(aFeed);
+      }
+      catch (e) {
+        com.gContactSync.alertError(aFeed);
+        return;
+      }
       var arr = obj.entry || obj.data;
       for (var i in arr) {
         var contact = arr[i],
@@ -407,7 +474,22 @@ com.gContactSync.Import = {
         if (id) {
           var newCard = ab.newContact(),
               attr    = "";
-          // TODO this could be moved into a recursive function...
+          // Download FB photos
+          if (this.mSource === "facebook") {
+            var file = com.gContactSync.writePhoto("https://graph.facebook.com/" + id + "/picture?type=large",
+                                                   id + "_" + (new Date()).getTime());
+            if (file) {
+              com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+              newCard.setValue("PhotoName", file.leafName);
+              newCard.setValue("PhotoType", "file");
+              newCard.setValue("PhotoURI",
+                               Components.classes["@mozilla.org/network/io-service;1"]
+                                         .getService(Components.interfaces.nsIIOService)
+                                         .newFileURI(file)
+                                         .spec);
+            }
+          }
+          // Iterate through each attribute in the JSON contact
           for (var j in contact) {
             // If there is a map for just this source, check it for the
             // attribute first, otherwise just use the default map.
@@ -416,9 +498,25 @@ com.gContactSync.Import = {
             else
               attr = this.mMap[j];
             if (attr) {
+              // Download a photo of the user, if available.
+              if (j === "picture" || j === "thumbnailUrl" || j === "photos") {
+                var file = com.gContactSync.writePhoto((j === "photos" ? contact[j][0].value : contact[j]),
+                                                       this.mSource + "_" + id,
+                                                       0);
+                if (file) {
+                  com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+                  newCard.setValue("PhotoName", file.leafName);
+                  newCard.setValue("PhotoType", "file");
+                  newCard.setValue("PhotoURI",
+                                   Components.classes["@mozilla.org/network/io-service;1"]
+                                             .getService(Components.interfaces.nsIIOService)
+                                             .newFileURI(file)
+                                             .spec);
+                }
+              }
               // when contact[j] is an Array things are a bit more
               // complicated
-              if (contact[j] instanceof Array) {
+              else if (contact[j] instanceof Array) {
                 // emails: [
                 //   {email: somebody@somwhere, type: work},
                 //   {email: somebody2@somwhere, type: work}
@@ -442,7 +540,7 @@ com.gContactSync.Import = {
                       // mMap[j][[k] is the prefix (Primary, Second, etc.)
                       // mMap[j][l] is the suffix (Email)
                       com.gContactSync.LOGGER.VERBOSE_LOG(" - (Array): " + tbAttribute + "=" + contact[j][k][l]);
-                      newCard.setValue(decodeURIComponent(tbAttribute), decodeURIComponent(contact[j][k][l]));
+                      newCard.setValue(tbAttribute, this.decode(contact[j][k][l]));
                     }
                   }
                   
@@ -452,22 +550,18 @@ com.gContactSync.Import = {
                 // TODO download the photo...
                 // possibly implementation-specific
               }
-              else if (j === "thumbnailUrl") {
-                // TODO download the photo...
-                // possibly implementation-specific
-              }
               // if it is just a normal property (has a length property =>
               // string) check the map
               else if (attr.length) {
                 com.gContactSync.LOGGER.VERBOSE_LOG(" - (String): " + attr + "=" + contact[j])
-                newCard.setValue(attr, decodeURIComponent(contact[j]));
+                newCard.setValue(attr, this.decode(contact[j]));
               }
               // else it is an object with subproperties
               else {
                 for (var k in contact[j]) {
                   if (attr[k]) {
                     com.gContactSync.LOGGER.VERBOSE_LOG(" - (Object): " + attr[k] + "/" + j + "=" + contact[j][k]);
-                    newCard.setValue(attr[k], decodeURIComponent(contact[j][k]));
+                    newCard.setValue(attr[k], this.decode(contact[j][k]));
                   }
                 }
               }
@@ -481,9 +575,33 @@ com.gContactSync.Import = {
       com.gContactSync.alertError(e);
       return;
     }
+    // refresh the ab results pane
+    try {
+      if (SetAbView !== undefined) {
+        SetAbView(GetSelectedDirectory(), false);
+      }
+      
+      // select the first card, if any
+      if (gAbView && gAbView.getCardFromRow(0))
+        SelectFirstCard();
+    }
+    catch (e) {}
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFinished'));
     com.gContactSync.alert(com.gContactSync.StringBundle.getStr("importComplete"),
                            com.gContactSync.StringBundle.getStr("importCompleteTitle"),
                            window);
+  },
+  /**
+   * Decodes text returned in a JSON feed.
+   * @param aString {string} The text to decode.
+   * @returns {string} The decoded text.
+   */
+  decode: function Import_decode(aString) {
+    return aString ?
+            decodeURIComponent(aString).replace(/&lt;/g,   "<")
+                                       .replace(/&gt;/g,   ">")
+                                       .replace(/&amp;/g,  "&")
+                                       .replace(/&quot;/g, '"') :
+            "";
   }
 };

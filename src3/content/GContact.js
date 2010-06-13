@@ -921,6 +921,8 @@ com.gContactSync.GContact.prototype = {
    * Fetches and saves a local copy of this contact's photo, if present.
    * NOTE: Portions of this code are from Thunderbird written by me (Josh Geenen)
    * See https://bugzilla.mozilla.org/show_bug.cgi?id=119459
+   *
+   * TODO - merge w/ com.gContactSync.writePhoto
    * @param aAuthToken {string} The authentication token for the account to
    *                            which this contact belongs.
    */
@@ -959,7 +961,7 @@ com.gContactSync.GContact.prototype = {
     // Create a name for the photo with the contact's ID and the photo extension
     var filename = this.getID(false);
     try {
-      var ext = this.findPhotoExt(ch);
+      var ext = com.gContactSync.findPhotoExt(ch);
       filename = filename + (ext ? "." + ext : "");
     }
     catch (e) {
@@ -994,29 +996,5 @@ com.gContactSync.GContact.prototype = {
     // Close the input stream
     istream.close();
     return file;
-  },
-  /**
-   * NOTE: This function was originally from Thunderbird in abCardOverlay.js
-   * Finds the file extension of the photo identified by the URI, if possible.
-   * This function can be overridden (with a copy of the original) for URIs that
-   * do not identify the extension or when the Content-Type response header is
-   * either not set or isn't 'image/png', 'image/jpeg', or 'image/gif'.
-   * The original function can be called if the URI does not match.
-   *
-   * @param aChannel {nsIHttpChannel} The opened channel for the URI.
-   *
-   * @return The extension of the file, if any, excluding the period.
-   */
-  findPhotoExt: function GContact_finishWritePhoto(aChannel) {
-    var mimeSvc = Components.classes["@mozilla.org/mime;1"]
-                            .getService(Components.interfaces.nsIMIMEService),
-        ext = "",
-        uri = aChannel.URI;
-    if (uri instanceof Components.interfaces.nsIURL)
-      ext = uri.fileExtension;
-    try {
-      return mimeSvc.getPrimaryExtension(aChannel.contentType, ext);
-    } catch (e) {}
-    return ext === "jpe" ? "jpeg" : ext;
   }
 };

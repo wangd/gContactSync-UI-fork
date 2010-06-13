@@ -424,3 +424,116 @@ com.gContactSync.fixURL = function gCS_fixURL(aURL) {
   }
   return aURL.replace(/^https:/i, "http:");
 };
+
+/**
+ * Fetches and saves a local copy of this contact's photo, if present.
+ * NOTE: Portions of this code are from Thunderbird written by me (Josh Geenen)
+ * See https://bugzilla.mozilla.org/show_bug.cgi?id=119459
+ * @param aURL {string} The URL of the photo to download
+ * @param aFilename {string} The name of the file to which the photo will be
+ *                           written.  The extenion of the photo will be
+ *                           appended to this name, and the photo will be in the
+ *                           TB profile folder under the "Photos" directory.
+ * @param aRedirect {string} The number of times the request was redirected.
+ *                           If > 5 then the download attempt will be aborted.
+ */
+com.gContactSync.writePhoto = function gCS_writePhoto(aURL, aFilename, aRedirect) {
+  if (!aURL) {
+    com.gContactSync.LOGGER.LOG_WARNING("No aURL passed to writePhoto");
+    return null;
+  }
+  if (aRedirect > 5) {
+    com.gContactSync.LOGGER.LOG_WARNING("Caught > 5 redirection attempts, aborting photo download");
+    return null;
+  }
+
+  // Get the profile directory
+  var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                       .getService(Components.interfaces.nsIProperties)
+                       .get("ProfD", Components.interfaces.nsIFile);
+  // Get (or make) the Photos directory
+  file.append("Photos");
+  if (!file.exists() || !file.isDirectory())
+    file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+  var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                      .getService(Components.interfaces.nsIIOService);
+  var ch = ios.newChannel(aURL, null, null);
+  ch.QueryInterface(Components.interfaces.nsIHttpChannel);
+  //ch.setRequestHeader("Authorization", aAuthToken, false);
+  var istream = ch.open();
+  // Quit if the request failed
+  if (!ch.requestSucceeded) {
+    // At least Facebook returns a 302 with a new Location for the photo.
+    if (ch.responseStatus == 302) {
+      var newURL = ch.getResponseHeader("Location");
+      com.gContactSync.LOGGER.VERBOSE_LOG("Received a 302, Location: " + newURL);
+      return com.gContactSync.writePhoto(newURL, aFilename, aRedirect + 1);
+    }
+    com.gContactSync.LOGGER.LOG_WARNING("The request to retrive the photo returned with a status ",
+                                        ch.responseStatus);
+    return null;
+  }
+
+  // Create a name for the photo with the contact's ID and the photo extension
+  try {
+    var ext = com.gContactSync.findPhotoExt(ch);
+    aFilename += (ext ? "." + ext : "");
+  }
+  catch (e) {
+    com.gContactSync.LOGGER.LOG_WARNING("Couldn't find an extension for the photo");
+  }
+  file.append(aFilename);
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * Writing the photo to " + file.path);
+
+  var output = Components.classes["@mozilla.org/network/file-output-stream;1"]
+                         .createInstance(Components.interfaces.nsIFileOutputStream);
+
+  // Now write that input stream to the file
+  var fstream = Components.classes["@mozilla.org/network/safe-file-output-stream;1"]
+                          .createInstance(Components.interfaces.nsIFileOutputStream);
+  var buffer = Components.classes["@mozilla.org/network/buffered-output-stream;1"]
+                         .createInstance(Components.interfaces.nsIBufferedOutputStream);
+  fstream.init(file, 0x04 | 0x08 | 0x20, 0600, 0); // write, create, truncate
+  buffer.init(fstream, 8192);
+  while (istream.available() > 0) {
+    buffer.writeFrom(istream, istream.available());
+  }
+
+  // Close the output streams
+  if (buffer instanceof Components.interfaces.nsISafeOutputStream)
+      buffer.finish();
+  else
+      buffer.close();
+  if (fstream instanceof Components.interfaces.nsISafeOutputStream)
+      fstream.finish();
+  else
+      fstream.close();
+  // Close the input stream
+  istream.close();
+  return file;
+};
+
+/**
+ * NOTE: This function was originally from Thunderbird in abCardOverlay.js
+ * Finds the file extension of the photo identified by the URI, if possible.
+ * This function can be overridden (with a copy of the original) for URIs that
+ * do not identify the extension or when the Content-Type response header is
+ * either not set or isn't 'image/png', 'image/jpeg', or 'image/gif'.
+ * The original function can be called if the URI does not match.
+ *
+ * @param aChannel {nsIHttpChannel} The opened channel for the URI.
+ *
+ * @return The extension of the file, if any, excluding the period.
+ */
+com.gContactSync.findPhotoExt = function gCS_findPhotoExt(aChannel) {
+  var mimeSvc = Components.classes["@mozilla.org/mime;1"]
+                          .getService(Components.interfaces.nsIMIMEService),
+      ext = "",
+      uri = aChannel.URI;
+  if (uri instanceof Components.interfaces.nsIURL)
+    ext = uri.fileExtension;
+  try {
+    return mimeSvc.getPrimaryExtension(aChannel.contentType, ext);
+  } catch (e) {}
+  return ext === "jpe" ? "jpeg" : ext;
+};
