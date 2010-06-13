@@ -328,6 +328,36 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.mMapfacebook">mMapfacebook</a></b>
+								</div>
+								<div class="description">Map for Facebook only</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.mMapmyspace">mMapmyspace</a></b>
+								</div>
+								<div class="description">Map for MySpace only</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.mMapplaxo">mMapplaxo</a></b>
+								</div>
+								<div class="description">Map for Plaxo only</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.mOAuth">mOAuth</a></b>
 								</div>
 								<div class="description">Stores <em>encoded</em> OAuth variables, such as the oauth_token,
@@ -392,6 +422,15 @@ oauth_token_secret, and oauth_verifier</div>
 								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.beginImport">beginImport</a></b>(aFeed)
 								</div>
 								<div class="description">Begins the actual import given a JSON feed of contacts.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.decode">decode</a></b>(aString)
+								</div>
+								<div class="description">Decodes text returned in a JSON feed.</div>
 							</td>
 						</tr>
 					
@@ -516,7 +555,7 @@ param1=value1&amp;param2=value2&amp;param3=value3.</div>
 This requires some interaction with a remote website (pirules.org) for
 authentication.
 
-pirules.org stores the following infomration for each source
+pirules.org stores the following information for each source
  - oauth_consumer_key
  - oauth_consumer_secret
  - base API URL
@@ -526,7 +565,9 @@ etc.
 It also reorganizes and signs the parameters.
 
 TODO List:
- - Support OAuth 2.0 (Facebook)
+ - For certain sources attempt to get more information
+ - Add error detection and handling
+ - Use HttpRequest
 					
 				</div>
 				
@@ -559,6 +600,72 @@ TODO List:
 					</div>
 					<div class="description">
 						Maps Portable Contacts attributes to TB nsIAbCard attributes
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mMapfacebook"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Import.</span><b>mMapfacebook</b>
+					
+					</div>
+					<div class="description">
+						Map for Facebook only
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mMapmyspace"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Import.</span><b>mMapmyspace</b>
+					
+					</div>
+					<div class="description">
+						Map for MySpace only
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mMapplaxo"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Import.</span><b>mMapplaxo</b>
+					
+					</div>
+					<div class="description">
+						Map for Plaxo only
 						
 						
 					</div>
@@ -700,6 +807,49 @@ It promps the user for a name for the destination AB (can be new or old).
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".decode"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{string}</span>
+					<span class="light">com.gContactSync.Import.</span><b>decode</b>(aString)
+					
+					</div>
+					<div class="description">
+						Decodes text returned in a JSON feed.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>aString</b>
+									
+								</dt>
+								<dd>{string} The text to decode.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{string}</span> The decoded text.</dd>
+							
+							</dl>
 						
 						
 						
@@ -892,6 +1042,7 @@ oauth_token=1234&oauth_token_secret=5678
 her credentials on the third-party website.
 In this substep, gContactSync gets the login URL from pirules.org with
 all it's parameters and the oauth_signature.
+This is done in step 1 for OAuth 2.0 (Facebook only at the moment).
 						
 						
 					</div>
@@ -1041,7 +1192,7 @@ com.gContactSync.Import.mOAuth[param] = value;
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Sat May 22 2010 15:12:14 GMT-0500 (CDT)
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Sun Jun 13 2010 16:42:20 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>
