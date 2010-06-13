@@ -177,7 +177,7 @@ com.gContactSync.ContactConverter = {
   getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs, aIncludeAddresses) {
     if (!this.mInitialized)
       this.init();
-    var arr = this.mAddedAttributes;
+    var arr = this.mAddedAttributes.slice();
     if (aIncludeURLs)
       arr = arr.concat("PhotoURL", "SelfURL", "EditURL", "GoogleID");
     if (aIncludeAddresses)
