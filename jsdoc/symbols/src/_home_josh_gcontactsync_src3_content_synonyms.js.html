@@ -60,7 +60,7 @@
 <span class='line'> 53</span> </span><span class="COMM">/** The release for the current version of gContactSync (ie 1 in 0.3.1a7) */</span><span class="WHIT">
 <span class='line'> 54</span> </span><span class="NAME">com.gContactSync.versionRelease</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"0"</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 55</span> </span><span class="COMM">/** The suffix for the current version of gContactSync (ie a7 for Alpha 7) */</span><span class="WHIT">
-<span class='line'> 56</span> </span><span class="NAME">com.gContactSync.versionSuffix</span><span class="WHIT">  </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"b1"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="NAME">com.gContactSync.versionSuffix</span><span class="WHIT">  </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">"b2"</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'> 57</span> 
 <span class='line'> 58</span> </span><span class="COMM">/**
 <span class='line'> 59</span>  * Returns a string of the current version for logging.  This can print either
@@ -301,7 +301,7 @@
 <span class='line'>294</span>  */</span><span class="WHIT">
 <span class='line'>295</span> </span><span class="NAME">com.gContactSync.alertError</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alertError</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>296</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertError"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>297</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>298</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>299</span> 
 <span class='line'>300</span> </span><span class="COMM">/**
@@ -311,7 +311,7 @@
 <span class='line'>304</span>  */</span><span class="WHIT">
 <span class='line'>305</span> </span><span class="NAME">com.gContactSync.alertWarning</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_alertWarning</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>306</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">title</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"alertWarning"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>307</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>307</span> </span><span class="WHIT">  </span><span class="NAME">com.gContactSync.alert</span><span class="PUNC">(</span><span class="NAME">aText</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">title</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">window</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>308</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>309</span> 
 <span class='line'>310</span> </span><span class="COMM">/**

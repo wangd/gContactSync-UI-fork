@@ -234,9 +234,9 @@
 <span class='line'>227</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>228</span> 
 <span class='line'>229</span> </span><span class="COMM">/**
-<span class='line'>230</span>  * Returns an object filled with GAddressBook objects.
-<span class='line'>231</span>  * The properties are the names of those address books.
-<span class='line'>232</span>  * @param aDirType {int} The type of directory (2 is the usual Mork AB)
+<span class='line'>230</span>  * Returns an object filled with GAddressBook objects keyed by URI.
+<span class='line'>231</span>  * @param aDirType {int} The type of directory (2 is the usual Mork AB)
+<span class='line'>232</span>  * @returns {object} An object filled with GAddressBook objects keyed by URI.
 <span class='line'>233</span>  */</span><span class="WHIT">
 <span class='line'>234</span> </span><span class="NAME">com.gContactSync.GAbManager.getAllAddressBooks</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GAbManager_getAllAddressBooks</span><span class="PUNC">(</span><span class="NAME">aDirType</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>235</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">iter</span><span class="PUNC">,</span><span class="WHIT">
@@ -267,7 +267,7 @@
 <span class='line'>260</span> </span><span class="WHIT">      </span><span class="NAME">dirType</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ab.getDirType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>261</span> </span><span class="WHIT">      </span><span class="COMM">// If no dir type was passed or the type matches then add it to abs</span><span class="WHIT">
 <span class='line'>262</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.mVersion</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">3</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">aDirType</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">dirType</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">aDirType</span><span class="PUNC">)</span><span class="WHIT">
-<span class='line'>263</span> </span><span class="WHIT">        </span><span class="NAME">abs</span><span class="PUNC">[</span><span class="NAME">ab.getName</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ab</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>263</span> </span><span class="WHIT">        </span><span class="NAME">abs</span><span class="PUNC">[</span><span class="NAME">ab.mURI</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ab</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>264</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>265</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>266</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">abs</span><span class="PUNC">;</span><span class="WHIT">

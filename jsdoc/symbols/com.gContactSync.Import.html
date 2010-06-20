@@ -437,10 +437,19 @@ oauth_token_secret, and oauth_verifier</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.finish">finish</a></b>()
+								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.finish">finish</a></b>(httpReq)
 								</div>
 								<div class="description">Gets the response from step 4 and calls beginImport to parse the JSON feed
 of contacts.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.httpReqWrapper">httpReqWrapper</a></b>(aURL, aCallback)
+								</div>
+								<div class="description">A wrapper for HttpRequest for use when importing contacts.</div>
 							</td>
 						</tr>
 					
@@ -485,7 +494,7 @@ listener.</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.step2a">step2a</a></b>()
+								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.step2a">step2a</a></b>(httpReq)
 								</div>
 								<div class="description">Step 2a: The first of two substeps where the user is prompted for his or
 her credentials on the third-party website.</div>
@@ -495,9 +504,9 @@ her credentials on the third-party website.</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.step2b">step2b</a></b>()
+								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.step2b">step2b</a></b>(httpReq)
 								</div>
-								<div class="description">Step 2a: The second of two substeps where the user is prompted for his or
+								<div class="description">Step 2b: The second of two substeps where the user is prompted for his or
 her credentials on the third-party website.</div>
 							</td>
 						</tr>
@@ -514,7 +523,7 @@ her credentials on the third-party website.</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.step4">step4</a></b>()
+								<div class="fixedFont">com.gContactSync.Import.<b><a href="../symbols/com.gContactSync.Import.html#.step4">step4</a></b>(httpReq)
 								</div>
 								<div class="description">Step 4: Use the token to fetch the user's contacts.</div>
 							</td>
@@ -565,9 +574,7 @@ etc.
 It also reorganizes and signs the parameters.
 
 TODO List:
- - For certain sources attempt to get more information
- - Add error detection and handling
- - Use HttpRequest
+ - Attempt to get more contact info from MySpace
 					
 				</div>
 				
@@ -860,7 +867,7 @@ It promps the user for a name for the destination AB (can be new or old).
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">com.gContactSync.Import.</span><b>finish</b>()
+					<span class="light">com.gContactSync.Import.</span><b>finish</b>(httpReq)
 					
 					</div>
 					<div class="description">
@@ -872,6 +879,59 @@ of contacts.
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>httpReq</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".httpReqWrapper"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Import.</span><b>httpReqWrapper</b>(aURL, aCallback)
+					
+					</div>
+					<div class="description">
+						A wrapper for HttpRequest for use when importing contacts.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>aURL</b>
+									
+								</dt>
+								<dd>{string} The URL to send the GET request to.</dd>
+							
+								<dt>
+									<b>aCallback</b>
+									
+								</dt>
+								<dd>{function} The callback function if the request succeeds.</dd>
+							
+							</dl>
 						
 						
 						
@@ -1034,7 +1094,7 @@ oauth_token=1234&oauth_token_secret=5678
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">com.gContactSync.Import.</span><b>step2a</b>()
+					<span class="light">com.gContactSync.Import.</span><b>step2a</b>(httpReq)
 					
 					</div>
 					<div class="description">
@@ -1050,6 +1110,17 @@ This is done in step 1 for OAuth 2.0 (Facebook only at the moment).
 					
 					
 						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>httpReq</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
 						
 						
 						
@@ -1063,11 +1134,11 @@ This is done in step 1 for OAuth 2.0 (Facebook only at the moment).
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">com.gContactSync.Import.</span><b>step2b</b>()
+					<span class="light">com.gContactSync.Import.</span><b>step2b</b>(httpReq)
 					
 					</div>
 					<div class="description">
-						Step 2a: The second of two substeps where the user is prompted for his or
+						Step 2b: The second of two substeps where the user is prompted for his or
 her credentials on the third-party website.
 In this substep, gContactSync opens a browser to the login page for the
 particular source.
@@ -1077,6 +1148,17 @@ particular source.
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>httpReq</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -1118,7 +1200,7 @@ TODO - find a way to automatically start step3 when possible.
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">com.gContactSync.Import.</span><b>step4</b>()
+					<span class="light">com.gContactSync.Import.</span><b>step4</b>(httpReq)
 					
 					</div>
 					<div class="description">
@@ -1131,6 +1213,17 @@ signs and sends the request to the source's @me/@friend URL.
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>httpReq</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -1192,7 +1285,7 @@ com.gContactSync.Import.mOAuth[param] = value;
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Sun Jun 13 2010 16:42:20 GMT-0400 (EDT)
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Sun Jun 20 2010 17:06:30 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>
