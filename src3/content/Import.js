@@ -53,9 +53,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * It also reorganizes and signs the parameters.
  * 
  * TODO List:
- *  - For certain sources attempt to get more information
- *  - Add error detection and handling
- *  - Use HttpRequest
+ *  - Attempt to get more contact info from MySpace
  * 
  * @class
  */
@@ -247,13 +245,21 @@ com.gContactSync.Import = {
     if (imp.mStarted) {
       // TODO warn the user and allow him or her to cancel
     }
+    
+    // Reset mOAuth
+    imp.mOAuth.oauth_token        = "";
+    imp.mOAuth.oauth_token_secret = "";
+    imp.mOAuth.oauth_verifier     = "";
+    imp.mOAuth.access_token       = "";
+    imp.mOAuth.expires            = "";
+    
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('startingImport'));
     imp.mStarted = true;
     imp.mSource  = aSource;
     // get an oauth_token and oauth_token_secret
-    imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=1&source=" +
-                          imp.mSource,
-                          callback);
+    imp.httpReqWrapper("http://www.pirules.org/oauth/index2.php?quiet&silent&step=1&source=" +
+                       imp.mSource,
+                       callback);
   },
   /**
    * Step 2a: The first of two substeps where the user is prompted for his or
@@ -262,47 +268,41 @@ com.gContactSync.Import = {
    * all it's parameters and the oauth_signature.
    * This is done in step 1 for OAuth 2.0 (Facebook only at the moment).
    */
-  step2a: function Import_step2a() {
+  step2a: function Import_step2a(httpReq) {
     var imp = com.gContactSync.Import,
-        win = imp.mWindow,
-        response = win.document ? win.document.getElementById("response") : null;
+        response = httpReq.responseText;
     if (!response) {
       com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
       com.gContactSync.LOGGER.LOG_ERROR("***Import failed to get the auth tokens");
-      com.gContactSync.LOGGER.LOG(win.document ? win.document.innerHTML : "window has no document");
       return;
     }
-    response   = response.innerHTML;
-    com.gContactSync.LOGGER.LOG("***IMPORT: Step 1 finished: " + win.location +
-                                "\nContents:\n" + response);
+    com.gContactSync.LOGGER.LOG("***IMPORT: Step 1 finished:\nContents:\n" +
+                                response);
     // parse and store the parameters from step 1 (oauth_token &
     // oauth_token_secret)
-    imp.storeResponse(response);
-    // TODO use HttpRequest
-    imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=2&source=" +
-                         imp.mSource +
-                         "&oauth_token=" + imp.mOAuth.oauth_token +
-                         "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret,
-                         imp.step2b);
+    imp.storeResponse(response.replace("&", "&amp;"));
+    imp.httpReqWrapper("http://www.pirules.org/oauth/index2.php?quiet&silent&step=2&source=" +
+                       imp.mSource +
+                       "&oauth_token=" + imp.mOAuth.oauth_token +
+                       "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret,
+                       imp.step2b);
   },
   /**
-   * Step 2a: The second of two substeps where the user is prompted for his or
+   * Step 2b: The second of two substeps where the user is prompted for his or
    * her credentials on the third-party website.
    * In this substep, gContactSync opens a browser to the login page for the
    * particular source.
    */
-  step2b: function Import_step2b() {
+  step2b: function Import_step2b(httpReq) {
     var imp = com.gContactSync.Import,
-        win = imp.mWindow,
-        response = win.document ? win.document.getElementById("response") : null;
+        response = httpReq.responseText;
     if (!response) {
       com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
       com.gContactSync.LOGGER.LOG_ERROR("***Import failed to get the login URL");
-      com.gContactSync.LOGGER.LOG(win.document ? win.document.innerHTML : "window has no document");
       return;
     }
-    response   = String(response.innerHTML).replace(/\&amp\;/g, "&");
-    com.gContactSync.LOGGER.LOG("***IMPORT: Step 2a finished: " + win.location + "\nContents:\n" + response);
+    response = String(response).replace(/\&amp\;/g, "&");
+    com.gContactSync.LOGGER.LOG("***IMPORT: Step 2a finished:\nContents:\n" + response);
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importRequestingCredentials'));
     imp.openBrowserWindow(response, imp.logStep2b);
   },
@@ -329,6 +329,10 @@ com.gContactSync.Import = {
     }
     // Get the new oauth_token from the window.
     imp.mOAuth.oauth_token = encodeURIComponent(imp.mWindow.document.getElementById('response').innerHTML);
+    // Get the oauth_verifier, if any
+    if (imp.mWindow.document.getElementById("oauth_verifier")) {
+      imp.mOAuth.oauth_verifier = encodeURIComponent(imp.mWindow.document.getElementById('oauth_verifier').innerHTML);
+    }
     imp.mWindow.close();
     if (!imp.mOAuth.oauth_token) {
       com.gContactSync.alert(com.gContactSync.StringBundle.getStr('importCanceled'),
@@ -339,11 +343,11 @@ com.gContactSync.Import = {
     }
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importActivatingToken'));
     // activate the token
-    // TODO use HttpRequest
-    imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=3&source=" +
+    imp.httpReqWrapper("http://www.pirules.org/oauth/index2.php?quiet&silent&step=3&source=" +
                          imp.mSource +
                          "&oauth_token=" + imp.mOAuth.oauth_token +
-                         "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret,
+                         "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret +
+                         (imp.mOAuth.oauth_verifier ? "&oauth_verifier=" + imp.mOAuth.oauth_verifier : ""),
                          imp.step4);
   },
   /**
@@ -351,33 +355,30 @@ com.gContactSync.Import = {
    * This sends a request and the token/token secret to pirules.org which
    * signs and sends the request to the source's @me/@friend URL.
    */
-  step4: function Import_step4() {
+  step4: function Import_step4(httpReq) {
     var imp = com.gContactSync.Import,
-        win = imp.mWindow,
-        response = win.document ? win.document.getElementById("response") : null;
+        response = httpReq.responseText;
     if (!response) {
       com.gContactSync.LOGGER.LOG("***Import failed on step 3");
       return;
     }
-    response = response.innerHTML;
-    com.gContactSync.LOGGER.LOG("***IMPORT: Step 3 finished: " + win.location + "\nContents:\n" + response);
-    imp.storeResponse(response);
+    com.gContactSync.LOGGER.LOG("***IMPORT: Step 3 finished:\nContents:\n" + response);
+    imp.storeResponse(response.replace("&", "&amp;"));
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importRetrievingContacts'));
     // Use the token to fetch the user's contacts
-    // TODO use HttpRequest
     // access_token is used instead of the oauth_token in OAuth 2.0
     if (imp.mOAuth.access_token) {
-      imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=4&source=" +
-                           imp.mSource +
-                           "&access_token=" + imp.mOAuth.access_token,
-                           imp.finish);
+      imp.httpReqWrapper("http://www.pirules.org/oauth/index2.php?quiet&silent&step=4&source=" +
+                         imp.mSource +
+                         "&access_token=" + imp.mOAuth.access_token,
+                         imp.finish);
     }
     else {
-      imp.openBrowserWindow("http://www.pirules.org/oauth/index2.php?quiet&step=4&source=" +
-                           imp.mSource +
-                           "&oauth_token=" + imp.mOAuth.oauth_token +
-                           "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret,
-                           imp.finish);
+      imp.httpReqWrapper("http://www.pirules.org/oauth/index2.php?quiet&silent&step=4&source=" +
+                         imp.mSource +
+                         "&oauth_token=" + imp.mOAuth.oauth_token +
+                         "&oauth_token_secret=" + imp.mOAuth.oauth_token_secret,
+                         imp.finish);
     }
   },
   /**
@@ -385,16 +386,13 @@ com.gContactSync.Import = {
    * of contacts.
    */
   // Get the contact feed and import it into an AB
-  finish: function Import_finish() {
+  finish: function Import_finish(httpReq) {
     var imp = com.gContactSync.Import,
-        win = imp.mWindow;
-    // get the contacts feed
-    var response = win.document ? win.document.getElementById("response") : null;
+        response = httpReq.responseText;
     if (!response) {
       com.gContactSync.LOGGER.LOG("***Import failed on step 4");
       return;
     }
-    response = response.innerHTML;
     com.gContactSync.LOGGER.LOG("Final response:\n" + response);
     imp.mStarted = false;
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importParsingContacts'));
@@ -453,6 +451,18 @@ com.gContactSync.Import = {
     }
     try {
       com.gContactSync.LOGGER.VERBOSE_LOG(aFeed);
+      // decode the JSON and get the array of cards
+      var nsIJSON = Components.classes["@mozilla.org/dom/json;1"]
+                              .createInstance(Components.interfaces.nsIJSON);
+      try {
+        var obj = nsIJSON.decode(aFeed);
+      }
+      catch (e) {
+        com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("importFailedMsg"));
+        com.gContactSync.LOGGER.LOG_ERROR("Import failed: ", aFeed);
+        com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
+        return;
+      }
       var res = com.gContactSync.prompt(com.gContactSync.StringBundle.getStr("importDestination"),
                                         com.gContactSync.StringBundle.getStr("importDestinationTitle"),
                                         window);
@@ -461,16 +471,6 @@ com.gContactSync.Import = {
       }
       var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByName(res),
                                                  true);
-      // decode the JSON and get the array of cards
-      var nsIJSON = Components.classes["@mozilla.org/dom/json;1"]
-                              .createInstance(Components.interfaces.nsIJSON);
-      try {
-        var obj = nsIJSON.decode(aFeed);
-      }
-      catch (e) {
-        com.gContactSync.alertError(aFeed);
-        return;
-      }
       var arr = obj.entry || obj.data;
       for (var i in arr) {
         var contact = arr[i],
@@ -607,5 +607,23 @@ com.gContactSync.Import = {
                                        .replace(/&amp;/g,  "&")
                                        .replace(/&quot;/g, '"') :
             "";
-  }
+  },
+  /**
+   * A wrapper for HttpRequest for use when importing contacts.
+   * @param aURL {string} The URL to send the GET request to.
+   * @param aCallback {function} The callback function if the request succeeds.
+   */
+  httpReqWrapper: function Import_httpReqWrapper(aURL, aCallback) {
+    var httpReq   = new com.gContactSync.HttpRequest();
+    httpReq.mUrl  = aURL;
+    httpReq.mType = "GET";
+    httpReq.mOnSuccess = aCallback;
+    httpReq.mOnOffline = this.mOfflineFunction;
+    httpReq.mOnError = function import_onError(httpReq) {
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("importFailedMsg"));
+      com.gContactSync.LOGGER.LOG_ERROR("Import failed: ", httpReq.responseText);
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
+    }
+    httpReq.send();
+  },
 };

@@ -294,7 +294,7 @@ com.gContactSync.alert = function gCS_alert(aText, aTitle, aParent) {
  */
 com.gContactSync.alertError = function gCS_alertError(aText) {
   var title = com.gContactSync.StringBundle.getStr("alertError");
-  com.gContactSync.alert(aText, title, null);
+  com.gContactSync.alert(aText, title, window);
 };
 
 /**
@@ -304,7 +304,7 @@ com.gContactSync.alertError = function gCS_alertError(aText) {
  */
 com.gContactSync.alertWarning = function gCS_alertWarning(aText) {
   var title = com.gContactSync.StringBundle.getStr("alertWarning");
-  com.gContactSync.alert(aText, title, null);
+  com.gContactSync.alert(aText, title, window);
 };
 
 /**

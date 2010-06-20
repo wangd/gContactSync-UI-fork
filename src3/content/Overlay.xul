@@ -183,8 +183,7 @@
            <!-- Not supported quite yet -->
            <!--<menuitem label="&Twitter.label;"
                      oncommand="com.gContactSync.Import.step1('twitter');"/>-->
-           <!-- Yahoo is commented out because it doesn't use the callback correctly (adds an =)
-                and doesn't quite adhere to the spec -->
+           <!-- Yahoo is commented out because of an "Internal Error" -->
            <!--<menuitem label="&Yahoo.label;"
                          oncommand="com.gContactSync.Import.step1('yahoo');"/>-->
          </menupopup>
