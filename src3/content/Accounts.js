@@ -394,56 +394,6 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Deletes the selected address book
-   * This function is commented out as the associated button was removed
-   */
-  /*
-  deleteSelectedAB: function Accounts_deleteSelectedAB() {
-    var ab = this.getSelectedAb();
-    if (!ab) {
-      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("noABSelected"));
-      return ab;
-    }
-    // Make sure sure the user doesn't try to delete the CAB or PAB
-    var uri = ab.mURI;
-    if (!uri || uri.indexOf("abook.mab") !== -1 || uri.indexOf("history.mab") !== -1) {
-      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("deletePAB"));
-      return false;
-    }
-    if (!com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("deleteAB")))
-      return false;
-    // This function also checks that the AB isn't the PAB or CAB
-    ab.deleteAB();
-    this.fillAbTree();
-    return true;
-  },
-  */
-  /**
-   * Removes the synchronization settings from the selected address book.
-   * @return {boolean} True if the synchronization settings were removed.
-   */
-  /*
-  removeSyncSettings: function Accounts_removeSelectedLogin() {  
-    var ab = this.getSelectedAb();
-    if (!ab) {
-      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("noABSelected"));
-      return false;
-    }
-    if (!com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("removeSyncSettings"))) {
-      return false;
-    }
-    // remove the saved prefs from the address book
-    ab.savePref("Username", "");
-    ab.setLastSyncDate(0);
-    ab.savePref("myContactsName", "");
-    ab.savePref("myContacts",     "");
-    this.fillUsernames();
-    this.selectedAbChange();
-    this.fillAbTree();
-    return true;
-  },
-  */
-  /**
    * Shows an alert dialog that briefly explains the synchronization direction
    * preference.
    */
