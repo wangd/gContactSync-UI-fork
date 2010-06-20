@@ -51,11 +51,14 @@ false);
  * @class
  */
 com.gContactSync.Accounts = {
+  /** Stores whether there are any unsaved changes in the Accounts dialog */
   mUnsavedChange: false,
   /** The column index of the address book name
    * change this if adding a column before the AB name
    */
   mAbNameIndex:  0,
+  /** Stores the URIs of the ABs displayed in the Accounts dialog's tree */
+  mAbURIs: [],
   /** Element IDs used when enabling/disabling the preferences */
   mPrefElemIDs: [
     "Username",
@@ -140,7 +143,7 @@ com.gContactSync.Accounts = {
     return true;
   },
   /**
-   * Returns a new GAddressBook corresponding to the currently-selected address
+   * Returns the GAddressBook corresponding to the currently-selected address
    * book in the accounts tree.
    * @returns {com.gContactSync.GAddressBook} A GAddressBook if one is selected, else false.
    */
@@ -151,13 +154,13 @@ com.gContactSync.Accounts = {
       return false;
     }
     this.enablePreferences(true);
-    var abName = tree.view.getCellText(tree.currentIndex,
-                                       tree.columns.getColumnAt(this.mAbNameIndex)),
-        ab     = com.gContactSync.GAbManager.getAbByName(abName);
+    var ab = tree.currentIndex > -1 && tree.currentIndex < this.mAbURIs.length ?
+              com.gContactSync.GAbManager.mABs[this.mAbURIs[tree.currentIndex]] :
+              null;
     if (!ab) {
       return false;
     }
-    return new com.gContactSync.GAddressBook(ab);    
+    return ab;
   },
   /**
    * Creates and returns a new address book after requesting a name for it.
@@ -267,11 +270,8 @@ com.gContactSync.Accounts = {
         updateGElem   = document.getElementById("updateGoogleInConflicts"),
         ab            = this.getSelectedAb();
     this.restoreGroups();
-    if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem) {
+    if (!usernameElem || !groupElem || !directionElem || !pluginElem || !disableElem || !ab) {
       return false;
-    }
-    if (!ab) {
-      return ab;
     }
     // Username/Account
     this.fillUsernames(ab.mPrefs.Username);
@@ -354,6 +354,7 @@ com.gContactSync.Accounts = {
     if (treechildren) {
       try { tree.removeChild(treechildren); } catch (e) {}
     }
+    this.mAbURIs = [];
     newTreeChildren = document.createElement("treechildren");
     newTreeChildren.setAttribute("id", "loginTreeChildren");
     tree.appendChild(newTreeChildren);
@@ -384,12 +385,15 @@ com.gContactSync.Accounts = {
         synced      = document.createElement("treecell");
 
     addressbook.setAttribute("label", aAB.getName());
-    synced.setAttribute("label", aAB.mPrefs.Username ? aAB.mPrefs.Username : com.gContactSync.StringBundle.getStr("noAccount"));
+    synced.setAttribute("label",      aAB.mPrefs.Username ||
+                                      com.gContactSync.StringBundle.getStr("noAccount"));
 
     treerow.appendChild(addressbook);
     treerow.appendChild(synced);
     treeitem.appendChild(treerow);
     aTreeChildren.appendChild(treeitem);
+    
+    this.mAbURIs.push(aAB.mURI);
 
     return true;
   },
@@ -508,6 +512,8 @@ com.gContactSync.Accounts = {
    *                        description for more details.
    */
   needsReset: function Accounts_needsReset(aAB, aUsername, aSyncGroups, aMyContacts, aMyContactsName) {
+    // This should not be necessary, but it's better to be safe
+    aAB.getPrefs();
     com.gContactSync.LOGGER.VERBOSE_LOG
       (
        "**Determining if the address book '" + aAB.getName() +
@@ -518,8 +524,6 @@ com.gContactSync.Accounts = {
       "  * " + aMyContactsName + " <- " + aAB.mPrefs.myContactsName + "\n" +
       "  * Last sync date: " + aAB.mPrefs.lastSync
      );
-    // TODO - remove once this is no longer necessary
-    aAB.getPrefs();
     // NOTE: mUnsavedChange is reset to false before this method is called
     if ((aAB.mPrefs.Username && aAB.mPrefs.Username !== "none") &&
          aUsername !== "none" &&
