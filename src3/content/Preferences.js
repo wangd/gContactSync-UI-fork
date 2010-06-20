@@ -186,6 +186,7 @@ com.gContactSync.Preferences = {
     forceBtnImage:            new com.gContactSync.Pref("forceBtnImage",            "bool", false),
     myContacts:               new com.gContactSync.Pref("myContacts",               "bool", false),
     parseNames:               new com.gContactSync.Pref("parseNames",               "bool", true),
+    parseAsianNames:          new com.gContactSync.Pref("parseAsianNames",          "bool", false),
     phoneColLabels:           new com.gContactSync.Pref("phoneColLabels",           "bool", true),
     phoneTypes:               new com.gContactSync.Pref("phoneTypes",               "bool", true),
     newColLabels:             new com.gContactSync.Pref("newColLabels",             "bool", true),

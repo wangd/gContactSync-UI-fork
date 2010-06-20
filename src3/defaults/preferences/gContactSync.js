@@ -41,6 +41,8 @@ pref("extensions.gContactSync.myContacts", false);
 pref("extensions.gContactSync.myContactsName", "Contacts");
 // try to parse display names from Google into First and Last names
 pref("extensions.gContactSync.parseNames", true);
+// assume that names with DBCS characters are Asian (last first)
+pref("extensions.gContactSync.parseAsianNames", false);
 // true = new phone labels in the abResultsTreeCols (column labels in the AB)
 pref("extensions.gContactSync.phoneColLabels", true);
 // set to true to add types to phone numbers (Work, Home, Mobile, etc.)

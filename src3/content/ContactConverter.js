@@ -420,9 +420,10 @@ com.gContactSync.ContactConverter = {
             // now fix the DisplayName
             aTBContact.setValue("DisplayName", tmpArr[1] + " " + tmpArr[0]);
           }
-          // If are there any DBCS characters in name, That's an asian name,
+          // If are there any DBCS characters in name, assume it's an Asian name,
           // <last> <first>
-          else if (encodeURI(name).replace(/%../g,"x").length != name.length) {
+          else if (com.gContactSync.Preferences.mSyncPrefs.parseAsianNames &&
+                   encodeURI(name).replace(/%../g,"x").length != name.length) {
             var tmpArr = name.split(" ");
             if (tmpArr.length > 1) {
               nameArr.push(tmpArr[1]);
