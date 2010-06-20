@@ -97,10 +97,10 @@ com.gContactSync.Options = {
     var intervalElem = document.getElementById("refreshIntervalBox");
     var initialElem  = document.getElementById("initialDelayMinutesBox");
     if (!disableElem) return false;
-    if (intervalElem)
-      intervalElem.disabled = !disableElem.value;
-    if (initialElem)
-      initialElem.disabled  = !disableElem.value;
+    if (intervalElem && intervalElem.previousSibling)
+      intervalElem.disabled = intervalElem.previousSibling.disabled = !disableElem.value;
+    if (initialElem && initialElem.previousSibling)
+      initialElem.disabled  = initialElem.previousSibling.disabled  = !disableElem.value;
     return true;
   },
   /**
