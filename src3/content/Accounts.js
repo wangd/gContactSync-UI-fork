@@ -459,6 +459,7 @@ com.gContactSync.Accounts = {
     }
     arr = aAtom.getElementsByTagNameNS(com.gContactSync.gdata.namespaces.ATOM.url, "entry");
     com.gContactSync.LOGGER.VERBOSE_LOG("Adding groups from username: " + aUsername);
+    var names = [];
     for (i = 0; i < arr.length; i++) {
       group = new com.gContactSync.Group(arr[i]);
       title = group.getTitle();
@@ -466,9 +467,18 @@ com.gContactSync.Accounts = {
       // don't add system groups again
       if (!title || group.isSystemGroup()) {
         com.gContactSync.LOGGER.VERBOSE_LOG("    - Skipping system group");
-        continue;
       }
-      menulistElem.appendItem(title, title);
+      else {
+        names.push(title);
+      }
+    }
+    
+    // Sort the group names, but only the non-system groups similar to how
+    // Google Contacts sorts them.
+    names.sort();
+    // Now add the group names to the Groups menulist
+    for (i = 0; i < names.length; i++) {
+      menulistElem.appendItem(names[i], names[i]);
     }
     return true;
   },
