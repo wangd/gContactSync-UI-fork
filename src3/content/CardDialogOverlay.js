@@ -175,35 +175,34 @@ com.gContactSync.CardDialogOverlay = {
     catch (ex1) {
       com.gContactSync.alertError("Unable to setup screen name protocol menus\n" + ex1);
     }
-    var pager;
-    try {
-      // swap pager and mobile phone textboxes and values
-      pager = document.getElementById("PagerNumber");
-      pager.setAttribute("id", "tmp");
-      var pagerValue = pager.value,
-          mobile     = document.getElementById("CellularNumber");
-      mobile.setAttribute("id", "PagerNumber");
-      pager.setAttribute("id", "CellularNumber");
-      pager.value = mobile.value;
-      mobile.value = pagerValue;
-    }
-    catch (e1) {
-      com.gContactSync.alertError("Unable to swap pager and mobile number values\n" + e1);
-    }
     var newDialog      = false, // post-Mailnews Core Bug 63941
         showPhoneTypes = com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value,
         work           = document.getElementById("WorkPhone"),
         home           = document.getElementById("HomePhone"),
-        fax            = document.getElementById("FaxNumber");
-    mobile             = document.getElementById("CellularNumber");
-    pager              = document.getElementById("PagerNumber");
+        fax            = document.getElementById("FaxNumber"),
+        pager          = document.getElementById("PagerNumber"),
+        mobile         = document.getElementById("CellularNumber"),
+        workLabel      = work.parentNode.previousSibling;
     // then replace all phone labels and remove the access keys
-    var workLabel = work.parentNode.previousSibling;
     if (!workLabel) {
       newDialog = true;
       workLabel = work.previousSibling;
     }
     if (showPhoneTypes) {
+      try {
+        // swap pager and mobile phone textboxes and values
+        pager = document.getElementById("PagerNumber");
+        pager.setAttribute("id", "tmp");
+        var pagerValue = pager.value,
+            mobile     = document.getElementById("CellularNumber");
+        mobile.setAttribute("id", "PagerNumber");
+        pager.setAttribute("id", "CellularNumber");
+        pager.value = mobile.value;
+        mobile.value = pagerValue;
+      }
+      catch (e1) {
+        com.gContactSync.alertError("Unable to swap pager and mobile number values\n" + e1);
+      }
       try {
         workLabel.value = com.gContactSync.StringBundle.getStr("first");
         workLabel.setAttribute("accesskey", "");
