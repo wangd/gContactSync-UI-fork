@@ -397,6 +397,7 @@ com.gContactSync.Sync = {
     }
     // re-initialize the contact converter (in case a pref changed)
     com.gContactSync.ContactConverter.init();
+
     // Step 2: iterate through TB Contacts and check for matches
     for (i = 0, length = abCards.length; i < length; i++) {
       var tbContact  = abCards[i],
@@ -466,15 +467,25 @@ com.gContactSync.Sync = {
       else if (tbContact.getValue("LastModifiedDate") > lastSync / 1000 ||
                isNaN(lastSync))
         com.gContactSync.Sync.mContactsToAdd.push(tbContact);
-      // otherwise, delete the contact from the address book
-      else
+      // Otherwise, delete the contact from the address book if writeOnly
+      // mode isn't on
+      else if (ab.mPrefs.writeOnly !== "true") {
         cardsToDelete.push(tbContact);
+      } else {
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * Contact deleted from Google, " +
+                                            "ignoring since write-only mode " +
+                                            "is enabled");
+      }
     }
+    
     // STEP 3: Check for old Google contacts to delete and new contacts to add to TB
     com.gContactSync.LOGGER.LOG("**Looking for unmatched Google contacts**");
     for (var id in gContacts) {
       var gContact = gContacts[id];
       if (gContact) {
+      
+        // If writeOnly is on, then set the last modified date to 1 so TB grabs
+        // all the contacts from Google during the first sync.
         var gCardDate = ab.mPrefs.writeOnly != "true" ? gContact.lastModified : 1;
         com.gContactSync.LOGGER.LOG(gContact.getName() + " - " + gCardDate +
                                     "\n" + id);
