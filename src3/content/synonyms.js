@@ -53,7 +53,7 @@ com.gContactSync.versionMinor   = "3";
 /** The release for the current version of gContactSync (ie 1 in 0.3.1a7) */
 com.gContactSync.versionRelease = "0";
 /** The suffix for the current version of gContactSync (ie a7 for Alpha 7) */
-com.gContactSync.versionSuffix  = "b2";
+com.gContactSync.versionSuffix  = "b3";
 
 /**
  * Returns a string of the current version for logging.  This can print either
