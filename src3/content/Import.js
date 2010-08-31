@@ -256,9 +256,18 @@ com.gContactSync.Import = {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('startingImport'));
     imp.mStarted = true;
     imp.mSource  = aSource;
-    // get an oauth_token and oauth_token_secret
+    // get an oauth_token and oauth_token_secret and give pirules.org some
+    // strings
     imp.httpReqWrapper("http://www.pirules.org/oauth/index2.php?quiet&silent&step=1&source=" +
-                       imp.mSource,
+                       imp.mSource +
+                       "&title=" +
+                       encodeURIComponent(com.gContactSync.StringBundle.getStr('importTitle')) +
+                       "&instructions_title=" +
+                       encodeURIComponent(com.gContactSync.StringBundle.getStr('importInstructionsTitle')) +
+                       "&instructions_0=" +
+                       encodeURIComponent(com.gContactSync.StringBundle.getStr('importInstructions0')) +
+                       "&instructions_1=" +
+                       encodeURIComponent(com.gContactSync.StringBundle.getStr('importInstructions1')),
                        callback);
   },
   /**
@@ -475,11 +484,11 @@ com.gContactSync.Import = {
       for (var i in arr) {
         var contact = arr[i],
             id = contact.id;
-        if (id) {
+        if (id || contact.name || contact.displayName) {
           var newCard = ab.newContact(),
               attr    = "";
           // Download FB photos
-          if (this.mSource === "facebook") {
+          if (this.mSource === "facebook" && id) {
             var file = com.gContactSync.writePhoto("https://graph.facebook.com/" + id + "/picture?type=large",
                                                    id + "_" + (new Date()).getTime());
             if (file) {

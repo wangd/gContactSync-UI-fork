@@ -169,10 +169,10 @@
          <menupopup>
            <menuitem label="&Facebook.label;"
                      oncommand="com.gContactSync.Import.step1('facebook');"/>
-           <!-- Google is commented out because it isn't behaving...duplicates,
-                missing contacts, contacts w/o IDs, etc. -->
-           <!--<menuitem label="&Google.label;"
-                     oncommand="com.gContactSync.Import.step1('google');"/>-->
+           <!-- Google shows duplicates (with different IDs) but it is here for
+                now...-->
+           <menuitem label="&Google.label;"
+                     oncommand="com.gContactSync.Import.step1('google');"/>
            <menuitem label="&MySpace.label;"
                      oncommand="com.gContactSync.Import.step1('myspace');"/>
            <!-- Not supported quite yet -->
