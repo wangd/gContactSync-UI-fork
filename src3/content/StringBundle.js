@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2009
+ * Portions created by the Initial Developer are Copyright (C) 2008-2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -46,21 +46,25 @@ if (!com.gContactSync) com.gContactSync = {};
  * @class
  */
 com.gContactSync.StringBundle = {
+  /** Stores all string bundle elements */
   mBundles:     {},
+  /** Stores whether this class has been initialized */
   mInitialized: false,
   /**
    * Initializes the string bundle.
    */
   init: function StringBundle_init() {
-    if (this.mInitialized)
+    if (com.gContactSync.StringBundle.mInitialized) {
       return true;
-    this.mBundles.mStrings = document.getElementById("gContactSyncStringBundle");
-    if (!this.mBundles.mStrings) {
+    }
+    com.gContactSync.StringBundle.mBundles.mStrings =
+      document.getElementById("gContactSyncStringBundle");
+    if (!com.gContactSync.StringBundle.mBundles.mStrings) {
       var err = "Error - com.gContactSync.StringBundle could not be initialized\n";
       com.gContactSync.alertError(err);
       throw err;
     }
-    this.mInitialized = true;
+    com.gContactSync.StringBundle.mInitialized = true;
     return true;
   },
   /**
@@ -69,17 +73,18 @@ com.gContactSync.StringBundle = {
    * @returns {string} The translated string.
    */
   getStr: function StringBundle_getStr(aName) {
+    var str = aName, i;
     // initialize the string bundle if it wasn't already done
-    if (!this.mInitialized)
-      this.init();
-    for (var i in this.mBundles) {
-      try {
-        return this.mBundles[i].getString(aName);
-      } catch(e) { continue; } // if the bundle doesn't exist or if the string
-                               // isn't in it skip to the next
+    if (!com.gContactSync.StringBundle.mInitialized) {
+      com.gContactSync.StringBundle.init();
     }
-    // if it gets this far the string wasn't found...
-    com.gContactSync.alertError("Could not get the string named: " + aName);
-    return "";
+    for (i in com.gContactSync.StringBundle.mBundles) {
+      try {
+        str = com.gContactSync.StringBundle.mBundles[i].getString(aName);
+        break;
+      } catch (e) {} // if the bundle doesn't exist or if the string
+                     // isn't in it skip to the next
+    }
+    return str;
   }
 };
