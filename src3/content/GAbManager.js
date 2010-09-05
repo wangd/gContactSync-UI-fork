@@ -256,7 +256,13 @@ com.gContactSync.GAbManager.getAllAddressBooks = function GAbManager_getAllAddre
     data = iter.getNext();
     if (data instanceof Components.interfaces.nsIAbDirectory && (this.mVersion === 3 ||
         data instanceof Components.interfaces.nsIAbMDBDirectory)) {
-      ab = this.getGAb(data);
+
+      // If data isn't a valid AB then skip to the next one.
+      try {
+        ab = this.getGAb(data);
+      } catch (e) {
+        continue;
+      }
       dirType = ab.getDirType();
       // If no dir type was passed or the type matches then add it to abs
       if (this.mVersion < 3 || aDirType === undefined || dirType === aDirType)
