@@ -231,6 +231,77 @@ com.gContactSync.gdata = {
       this.postcode            = new GElement(parentTyped, "postcode",         gd);
       this.country             = new GElement(parentTyped, "country",          gd);
     },
+    /**
+     * Updates the given element's type by setting the rel or label attribute
+     * and removing the other attribute, if present.
+     *
+     * @param aElement {XMLElement} The XML element to update.
+     * @param aType    {string}     The type to set.
+     */
+    setRelOrLabel: function gdata_setRelOrLabel(aElement, aType) {
+      if (!aElement || !aElement.setAttribute) {
+        throw "Invalid arguments passed to gdata.contacts.setRelOrLabel";
+      }
+      
+      var arr,
+          relAttr = "rel";
+      switch (aElement.tagName) {
+        case "email":
+        case "gd:email":
+          arr = this.EMAIL_TYPES;
+          break;
+        case "im":
+        case "gd:im":
+          arr = this.IM_TYPES;
+          aElement.setAttribute("label", "CUSTOM");
+          relAttr = "protocol";
+          break;
+        case "phoneNumber":
+        case "gd:phoneNumber":
+          arr = this.PHONE_TYPES;
+          break;
+        case "structuredPostalAddress":
+        case "gd:structuredPostalAddress":
+          arr = this.POSTAL_ADDRESS_TYPES
+          break;
+        case "relation":
+        case "gd:relation":
+          arr = this.RELATION_TYPES;
+          break;
+        case "website":
+        case "gContact:website":
+          arr = this.WEBSITE_TYPES;
+          break;
+        default:
+          throw "Unrecognized tagName '" + aElement.tagName + "' in setRelOrLabel";
+          alert("Unrecognized tagName '" + aElement.tagName + "' in setRelOrLabel");
+      }
+      
+      // If it is NOT a custom type it should show up in arr.
+      if (!aType || (arr instanceof Array && arr.indexOf(aType) > -1 || arr[aType])) {
+      
+        // Set a rel; website and relation elements need the rel to just be the
+        // type, everything else has a prefix and im elements need a protocol.
+        if (aElement.tagName == "website" || aElement.tagName == "relation") {
+          aElement.setAttribute(relAttr, aType);
+        } else {
+          aElement.setAttribute(relAttr, com.gContactSync.gdata.contacts.rel + "#" + aType);
+        }
+        // Remove a label, if present
+        if (aElement.hasAttribute("label")) {
+          aElement.removeAttribute("label");
+        }
+        
+      // Otherwise it IS a custom type so it should be a label
+      } else {
+        // Set a label
+        this.mCurrentElement.setAttribute("label", aType);
+        // Remove a rel, if present
+        if (this.mCurrentElement.hasAttribute("rel")) {
+          this.mCurrentElement.removeAttribute("rel");
+        }
+      }
+    },
     /** Different types for a website */
     WEBSITE_TYPES: [
       "home-page", "blog", "profile", "home", "work", "other", "ftp"

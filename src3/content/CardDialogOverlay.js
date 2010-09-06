@@ -529,6 +529,15 @@ com.gContactSync.CardDialogOverlay = {
           // the card's value for the attribute isn't null or blank
           if (attr.indexOf("Type") == -1 || (value && value != "")) {
             elem.value = value;
+            // If it is a menulist and the label is still blank (ie custom label)
+            // then add it as a new menuitem
+            if (elem.tagName === "menulist" && !elem.label) {
+              var item = document.createElement("menuitem");
+              item.setAttribute("value", value);
+              item.setAttribute("label", value);
+              elem.menupopup.appendChild(item);
+              elem.value = value;
+            }
           }
         }
       } catch (e) { com.gContactSync.alertError("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
@@ -562,7 +571,12 @@ com.gContactSync.CardDialogOverlay = {
     // put the default value first in the menupopup, if possible
     var index = aArray.indexOf(aValue);
     var elem;
-    if (index != -1) {
+    // Make sure the default value is in aArray
+    if (index == -1) {
+      aArray.push(aValue);
+      index = aArray.length - 1;
+    }
+    if (index > -1 && index < aArray.length) {
       elem = document.createElement("menuitem");
       elem.setAttribute("value", aValue);
       elem.setAttribute("label", com.gContactSync.StringBundle.getStr(aValue ? aValue : "blank"));

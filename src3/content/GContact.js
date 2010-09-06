@@ -312,8 +312,13 @@ com.gContactSync.GContact.prototype = {
       return null;
 
     for (; i < addresses.length; i++) {
-      if (addresses[i].getAttribute("rel").indexOf(aType) !== -1)
+      var type = addresses[i].hasAttribute("rel") ?
+        addresses[i].getAttribute("rel") :
+        addresses[i].getAttribute("label");
+      if (type && type.indexOf(aType) !== -1) {
         address = addresses[i];
+        break;
+      }
     }
     // TODO how will this work w/ multiple addresses...
     this.getElementValue(aElement, (aIndex ? aIndex : 0), aType);
@@ -350,8 +355,8 @@ com.gContactSync.GContact.prototype = {
     // if it gets here, the node must be added, so add <structuredPostalAddress> if necessary
     if (!address) {
       address = document.createElementNS(com.gContactSync.gdata.namespaces.GD.url,
-                                              "structuredPostalAddress");
-      address.setAttribute("rel", "http://schemas.google.com/g/2005#" + aType);
+                                         "structuredPostalAddress");
+      com.gContactSync.gdata.setRelOrLabel(address, aType);
       this.xml.appendChild(address);
     }
     var elem = document.createElementNS(aElement.namespace.url,
@@ -383,18 +388,7 @@ com.gContactSync.GContact.prototype = {
     if (value == aValue) {
       if (value && property.type != aType) {
         com.gContactSync.LOGGER.VERBOSE_LOG("Value is already good, changing type to: " + aType);
-        if (aElement.tagName == "im")
-          this.mCurrentElement.setAttribute("protocol", com.gContactSync.gdata.contacts.rel + "#" + aType);
-        else if (aElement.tagName == "relation") {
-          if (com.gContactSync.gdata.contacts.RELATION_TYPES[aType])
-            this.mCurrentElement.setAttribute("rel", aType);
-          else
-            this.mCurrentElement.setAttribute("label", aType);
-        }
-        else if (aElement.tagName == "website")
-          this.mCurrentElement.setAttribute("rel", aType);
-        else
-          this.mCurrentElement.setAttribute("rel", com.gContactSync.gdata.contacts.rel + "#" + aType);
+        com.gContactSync.gdata.contacts.setRelOrLabel(this.mCurrentElement, aType);
       }
       else if (value)
         com.gContactSync.LOGGER.VERBOSE_LOG("   - value " + value + " and type " + property.type + " are good");
@@ -432,16 +426,8 @@ com.gContactSync.GContact.prototype = {
                                               document.createElementNS
                                                        (aElement.namespace.url,
                                                         aElement.tagName);
-            if (elem.tagName == "relation") {
-              if (com.gContactSync.gdata.contacts.RELATION_TYPES[aType])
-                elem.setAttribute("rel", aType);
-              else
-                elem.setAttribute("label", aType);
-            }
-            else
-              elem.setAttribute("rel", com.gContactSync.gdata.contacts.rel + "#" + aType);
-            var text = document.createTextNode(aValue);
-            elem.appendChild(text);
+            com.gContactSync.gdata.contacts.setRelOrLabel(elem, aType);
+            elem.appendChild(document.createTextNode(aValue));
             this.xml.appendChild(elem);
           }
           break;
@@ -451,14 +437,7 @@ com.gContactSync.GContact.prototype = {
           else {
             var elem = document.createElementNS(aElement.namespace.url,
                                                 aElement.tagName);
-            if (aElement.tagName == "im") {
-              elem.setAttribute("label", "CUSTOM");
-              elem.setAttribute("protocol", com.gContactSync.gdata.contacts.rel + "#" + aType);
-            }
-            else if (elem.tagName == "website")
-              elem.setAttribute("rel", aType);
-            else
-              elem.setAttribute("rel", com.gContactSync.gdata.contacts.rel + "#" + aType);
+            com.gContactSync.gdata.contacts.setRelOrLabel(elem, aType);
             elem.setAttribute(aElement.attribute, aValue);
             this.xml.appendChild(elem);
           }
