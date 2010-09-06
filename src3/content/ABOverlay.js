@@ -99,8 +99,9 @@ com.gContactSync.ABOverlay = {
     com.gContactSync.originalDisplayCardViewPane = DisplayCardViewPane;
     DisplayCardViewPane = this.myDisplayCardViewPane;
     // Add a reset menuitem to the directory tree context menu
-    if (com.gContactSync.Preferences.mSyncPrefs.addReset.value)
+    if (com.gContactSync.Preferences.mSyncPrefs.addReset.value) {
       this.addResetContext();
+    }
     // override the ab results tree function
     //com.gContactSync.originalSetAbView = SetAbView;
     //SetAbView = com.gContactSync.SetAbView;
@@ -773,12 +774,19 @@ com.gContactSync.ABOverlay = {
    * the left side of the Address Book window.
    */
   addResetContext: function ABOverlay_addResetContext() {
-    var item = document.createElement("menuitem");
-    item.id  = "dirTreeContext-reset";
-    item.setAttribute("label",     com.gContactSync.StringBundle.getStr("reset"));
-    item.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("resetKey"));
-    item.setAttribute("oncommand", "com.gContactSync.ABOverlay.resetSelectedAB()");
-    document.getElementById("dirTreeContext").appendChild(item);
+    var replaceFrom = document.createElement("menuitem"),
+        replaceTo   = document.createElement("menuitem");
+
+    replaceFrom.id  = "dirTreeContext-replaceFrom";
+    replaceTo.id    = "dirTreeContext-replaceTo";
+    replaceFrom.setAttribute("label",     com.gContactSync.StringBundle.getStr("reset"));
+    replaceFrom.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("resetKey"));
+    replaceFrom.setAttribute("oncommand", "com.gContactSync.ABOverlay.resetSelectedAB()");
+    replaceTo.setAttribute("label",       com.gContactSync.StringBundle.getStr("replaceTo"));
+    replaceTo.setAttribute("accesskey",   com.gContactSync.StringBundle.getStr("replaceToKey"));
+    replaceTo.setAttribute("oncommand",   "com.gContactSync.ABOverlay.replaceToSelectedAB()");
+    document.getElementById("dirTreeContext").appendChild(replaceFrom);
+    document.getElementById("dirTreeContext").appendChild(replaceTo);
   },
   /**
    * Resets the currently selected address book after showing a confirmation
@@ -802,6 +810,16 @@ com.gContactSync.ABOverlay = {
         com.gContactSync.alertError(restartStr);
       }
     }
+  },
+  /**
+   * Updates the LastModifiedDate of all contacts in the selected AB.
+   */
+  replaceToSelectedAB: function ABOverlay_replaceToSelectedAB() {
+    var dirTree  = document.getElementById("dirTree");
+    var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
+    var ab = new com.gContactSync.GAbManager.getGAbByURI(selected.Value);
+    ab.replaceToServer();
+    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("replaceToComplete"));
   },
   /**
    * Fixes the description style as set (accidentally?) by the

@@ -189,6 +189,22 @@ com.gContactSync.GAddressBook.prototype.reset = function GAddressBook_reset() {
   this.savePref("reset", true);
   return true;
 };
+
+/**
+ * Updates the LastModifiedDate of every contact in this address book so
+ * it gets updated during the next sync.
+ */
+com.gContactSync.GAddressBook.prototype.replaceToServer = function GAddressBook_replaceToServer() {
+  var contacts = this.getAllContacts(),
+      time     = (new Date()).getTime();
+  
+  // Set the LastModifiedDate to right now so each contact will get sent to
+  // Google during the next sync.  Also update the card in the AB.
+  for (var i = 0; i < contacts.length; i++) {
+    contacts[i].setValue("LastModifiedDate", time, true);
+  }
+};
+
 /**
  * Returns a new GMailList object given the same parameters as the GMailList
  * constructor.

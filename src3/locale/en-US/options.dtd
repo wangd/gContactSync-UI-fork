@@ -23,7 +23,7 @@
 <!ENTITY forceBtnImage.label            "Fix the Sync toolbar button">
 <!ENTITY enableMenu.label               "Enable the gContactSync Menu">
 <!ENTITY enableMenuLinks.label          "Add some links (Wiki, FAQ, etc.) to the gContactSync Menu">
-<!ENTITY addReset.label                 "Add a Reset link to the Address Book context menu">
+<!ENTITY addReset.label                 "Add Replace to and Replace from Server links to the Address Book context menu">
 <!ENTITY abResults.label                "Contacts List">
 <!ENTITY phoneColLabels.label           "Rename the phone column labels">
 <!ENTITY newColLabels.label             "Add the new fields to the column labels (Thunderbird 3 Only)">
