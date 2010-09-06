@@ -400,6 +400,7 @@ com.gContactSync.ContactConverter = {
     }
 
     // parse the DisplayName into FirstName and LastName
+    /*
     if (com.gContactSync.Preferences.mSyncPrefs.parseNames.value) {
       var name  = aTBContact.getValue("DisplayName"),
           first = aTBContact.getValue("FirstName"),
@@ -446,7 +447,7 @@ com.gContactSync.ContactConverter = {
         aTBContact.setValue("FirstName", first);
         aTBContact.setValue("LastName", last);
       }
-    }
+    }*/
     
     // Get the birthday info
     var bday = aGContact.getValue("birthday", 0, com.gContactSync.gdata.contacts.types.UNTYPED),

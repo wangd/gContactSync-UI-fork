@@ -55,8 +55,11 @@
       <preference id="initialDelayMinutes"
                   name="extensions.gContactSync.initialDelayMinutes"
                   type="int"/>
-      <preference id="parseNames"
+      <!--<preference id="parseNames"
                   name="extensions.gContactSync.parseNames"
+                  type="bool"/>-->
+      <preference id="alertSummary"
+                  name="extensions.gContactSync.alertSummary"
                   type="bool"/>
       <preference id="phoneTypes"
                   name="extensions.gContactSync.phoneTypes"
@@ -70,9 +73,6 @@
       <preference id="verboseLog"
                   name="extensions.gContactSync.verboseLog"
                   type="bool"/>
-      <preference id="backupInterval"
-                  name="extensions.gContactSync.backupInterval"
-                  type="int"/>
     </preferences>
     <groupbox flex="1">
       <label href="http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences"
@@ -110,9 +110,12 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&syncBehavior.label;"/>
-        <checkbox preference="parseNames"
+        <checkbox preference="alertSummary"
+                  id="alertSummary"
+                  label="&alertSummary.label;"/>
+        <!--<checkbox preference="parseNames"
                   id="parseNames"
-                  label="&parseNames.label;"/>
+                  label="&parseNames.label;"/>-->
         <checkbox preference="phoneTypes"
                   id="phoneTypes"
                   label="&phoneTypes.label;"/>
@@ -308,15 +311,18 @@
             index="advanced"
             label="&advanced.tab;">
     <preferences>
+      <preference id="backupInterval"
+                  name="extensions.gContactSync.backupInterval"
+                  type="int"/>
       <preference id="max_chrome_script_run_time"
                   name="dom.max_chrome_script_run_time"
+                  type="int"/>
+      <preference id="confirmDeleteThreshold"
+                  name="extensions.gContactSync.confirmDeleteThreshold"
                   type="int"/>
       <preference id="syncAddresses"
                   name="extensions.gContactSync.syncAddresses"
                   type="bool"/>
-      <preference id="confirmDeleteThreshold"
-                  name="extensions.gContactSync.confirmDeleteThreshold"
-                  type="int"/>
     </preferences>
     <vbox>
       <label value="&warning.value;"/>

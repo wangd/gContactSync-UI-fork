@@ -10,7 +10,8 @@
 <!ENTITY abName.value                   "Name of the Address Book to sync with (old or new)">
 <!ENTITY syncBehavior.label             "Sync Behavior">
 <!ENTITY removeOldAddresses.label       "Remove the old Thunderbird addresses after converting to the new format">
-<!ENTITY parseNames.label               "Parse names from Google contacts into First and Last names.">
+<!ENTITY alertSummary.label             "Display a summary after every manual sync">
+<!--<!ENTITY parseNames.label               "Parse names from Google contacts into First and Last names.">-->
 <!ENTITY phoneTypes.label               "Add phone number type fields (ignore TB's field names)">
 <!ENTITY accountDelay.value             "Delay between accounts (ms) [5000]">
 <!ENTITY logging.label                  "Logging">

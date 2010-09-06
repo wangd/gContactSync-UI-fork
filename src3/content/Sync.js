@@ -73,6 +73,10 @@ com.gContactSync.Sync = {
   mBackup:           false,
   /** Temporarily set to true when the first backup is necessary */
   mFirstBackup:      false,
+  /** Summary data from the current sync */
+  mCurrentSummary:   {},
+  /** Summary data from the entire synchronization */
+  mOverallSummary:   {},
   /** Commands to execute when offline during an HTTP Request */
   mOfflineFunction: function Sync_offlineFunc(httpReq) {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
@@ -86,10 +90,13 @@ com.gContactSync.Sync = {
   mLists:         {},
   /** override for the contact feed URL.  Intended for syncing one group only */
   mContactsUrl:   null,
+  /** This should be set to true if the sync was run manually */
+  mManualSync:    false,
   /**
    * Performs the first steps of the sync process.
+   * @param aManualSync {boolean} Set this to true if the sync was run manually.
    */
-  begin: function Sync_begin() {
+  begin: function Sync_begin(aManualSync) {
     if (!com.gContactSync.gdata.isAuthValid()) {
       com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseAuth"));
       return;
@@ -98,6 +105,13 @@ com.gContactSync.Sync = {
     if (com.gContactSync.Preferences.mSyncPrefs.synchronizing.value) {
       return;
     }
+    
+    com.gContactSync.Sync.mManualSync = (aManualSync === true);
+    
+    // Reset the overall summary
+    com.gContactSync.Sync.mOverallSummary = new com.gContactSync.SyncSummaryData();
+    com.gContactSync.Sync.mCurrentSummary = new com.gContactSync.SyncSummaryData();
+    
     com.gContactSync.Sync.mSyncScheduled = false;
     com.gContactSync.Preferences.setSyncPref("synchronizing", true);
     com.gContactSync.Sync.mBackup        = false;
@@ -105,6 +119,7 @@ com.gContactSync.Sync = {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mIndex         = 0;
     com.gContactSync.Sync.mAddressBooks  = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
+    com.gContactSync.Sync.mCurrentAb     = {};
     com.gContactSync.Sync.syncNextUser();
   },
   /**
@@ -112,6 +127,18 @@ com.gContactSync.Sync = {
    * If all ABs were synchronized, then this continues with com.gContactSync.Sync.finish();
    */
   syncNextUser: function Sync_syncNextUser() {
+
+    // Log some summary data if an AB was just synchronized
+    if (com.gContactSync.Sync.mCurrentAb &&
+        com.gContactSync.Sync.mCurrentAb instanceof com.gContactSync.GAddressBook) {
+      com.gContactSync.Sync.mCurrentSummary.print(false);
+    }
+
+    // Add the current summary to the overall summary then reset the current
+    // summary
+    com.gContactSync.Sync.mOverallSummary.addSummary(com.gContactSync.Sync.mCurrentSummary);
+    com.gContactSync.Sync.mCurrentSummary = new com.gContactSync.SyncSummaryData();
+    
     var obj = com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex++];
     if (!obj) {
       com.gContactSync.Sync.finish();
@@ -319,6 +346,13 @@ com.gContactSync.Sync = {
       com.gContactSync.Overlay.writeTimeToStatusBar();
       com.gContactSync.LOGGER.LOG("Finished Synchronization at: " + Date());
     }
+    
+    // Print a summary and alert the user if it was a manual sync and
+    // alertSummary is set to true.
+    com.gContactSync.Sync.mOverallSummary.print(
+        com.gContactSync.Sync.mManualSync &&
+        com.gContactSync.Preferences.mSyncPrefs.alertSummary.value);
+    
     // reset some variables
     com.gContactSync.ContactConverter.mCurrentCard = {};
     com.gContactSync.Preferences.setSyncPref("synchronizing", false);
@@ -367,6 +401,7 @@ com.gContactSync.Sync = {
     }
     // mark the AB as not having been reset if it gets this far
     com.gContactSync.Sync.mCurrentAb.savePref("reset", false);
+    
     // have to update the lists or TB 2 won't work properly
     com.gContactSync.Sync.mLists = ab.getAllLists();
     com.gContactSync.LOGGER.LOG("Last sync was at: " + lastSync);
@@ -410,9 +445,13 @@ com.gContactSync.Sync = {
         if (ab.mPrefs.readOnly === "true") {
           com.gContactSync.LOGGER.LOG(" * The contact is new. " +
                                       "Ignoring since read-only mode is on.");
+          this.mCurrentSummary.mLocal.mIgnored++;
         }
         else {
+          // this.mCurrentSummary.mRemote.mAdded++; This is done after the contact is
+          // successfully added
           com.gContactSync.LOGGER.LOG(" * This contact is new and will be added to Google.");
+          this.mCurrentSummary.mRemote.mAdded++;
           com.gContactSync.Sync.mContactsToAdd.push(tbContact);
         }
       }
@@ -422,7 +461,7 @@ com.gContactSync.Sync = {
         // remove it from gContacts
         gContacts[id]  = null;
         // note that this returns 0 if readOnly is set
-            gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0;
+        gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0;
         // 4 options
         // if both were updated
         com.gContactSync.LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
@@ -431,23 +470,27 @@ com.gContactSync.Sync = {
         // preference and updates Google if it's true, or Thunderbird if false
         if (gCardDate > lastSync && tbCardDate > lastSync / 1000) {
           com.gContactSync.LOGGER.LOG(bothChanged);
+          this.mCurrentSummary.mConflicted++;
           if (ab.mPrefs.writeOnly  === "true" || ab.mPrefs.updateGoogleInConflicts === "true") {
             com.gContactSync.LOGGER.LOG(bothGoogle);
             var toUpdate = {};
             toUpdate.gContact = gContact;
             toUpdate.abCard   = tbContact;
+            this.mCurrentSummary.mRemote.mUpdated++;
             com.gContactSync.Sync.mContactsToUpdate.push(toUpdate);
           }
           // update Thunderbird if writeOnly is off and updateGoogle is off
           else {
             com.gContactSync.LOGGER.LOG(bothTB);
+            this.mCurrentSummary.mLocal.mUpdated++;
             com.gContactSync.ContactConverter.makeCard(gContact, tbContact);
           }
         }
-        // if the contact from google is newer update the TB card
+        // if the contact from Google is newer update the TB card
         else if (gCardDate > lastSync) {
           com.gContactSync.LOGGER.LOG(" * The contact from Google is newer...Updating the" +
                                       " contact from Thunderbird");
+          this.mCurrentSummary.mLocal.mUpdated++;
           com.gContactSync.ContactConverter.makeCard(gContact, tbContact);
         }
         // if the TB card is newer update Google
@@ -457,27 +500,36 @@ com.gContactSync.Sync = {
           var toUpdate = {};
           toUpdate.gContact = gContact;
           toUpdate.abCard   = tbContact;
+          this.mCurrentSummary.mRemote.mUpdated++;
           com.gContactSync.Sync.mContactsToUpdate.push(toUpdate);
         }
         // otherwise nothing needs to be done
-        else
+        else {
           com.gContactSync.LOGGER.LOG(" * Neither contact has changed");
+          this.mCurrentSummary.mNotChanged++;
+        }
       }
       // if there isn't a match, but the card is new, add it to Google
       else if (tbContact.getValue("LastModifiedDate") > lastSync / 1000 ||
-               isNaN(lastSync))
+               isNaN(lastSync)) {
+        com.gContactSync.LOGGER.LOG(" * Contact is new, adding to Google.");
+        this.mCurrentSummary.mRemote.mAdded++;
         com.gContactSync.Sync.mContactsToAdd.push(tbContact);
+      }
       // Otherwise, delete the contact from the address book if writeOnly
       // mode isn't on
       else if (ab.mPrefs.writeOnly !== "true") {
+        com.gContactSync.LOGGER.LOG(" * Contact deleted from Google, " +
+                                    "deleting local copy");
+        this.mCurrentSummary.mLocal.mRemoved++;
         cardsToDelete.push(tbContact);
       } else {
-        com.gContactSync.LOGGER.VERBOSE_LOG(" * Contact deleted from Google, " +
-                                            "ignoring since write-only mode " +
-                                            "is enabled");
+        this.mCurrentSummary.mRemote.mIgnored++;
+        com.gContactSync.LOGGER.LOG(" * Contact deleted from Google, ignoring" +
+                                    " since write-only mode is enabled");
       }
     }
-    
+
     // STEP 3: Check for old Google contacts to delete and new contacts to add to TB
     com.gContactSync.LOGGER.LOG("**Looking for unmatched Google contacts**");
     for (var id in gContacts) {
@@ -491,16 +543,19 @@ com.gContactSync.Sync = {
                                     "\n" + id);
         if (gCardDate > lastSync || isNaN(lastSync)) {
           com.gContactSync.LOGGER.LOG(" * The contact is new and will be added to Thunderbird");
+          this.mCurrentSummary.mLocal.mAdded++;
           var newCard = ab.newContact();
           com.gContactSync.ContactConverter.makeCard(gContact, newCard);
         }
         else if (ab.mPrefs.readOnly != "true") {
-          com.gContactSync.LOGGER.LOG(" * The contact is old will be deleted");
+          com.gContactSync.LOGGER.LOG(" * The contact is old and will be deleted");
+          this.mCurrentSummary.mLocal.mRemoved++;
           com.gContactSync.Sync.mContactsToDelete.push(gContact);
         }
         else {
           com.gContactSync.LOGGER.LOG (" * The contact was deleted in Thunderbird.  " +
                                        "Ignoring since read-only mode is on.");
+          this.mCurrentSummary.mLocal.mIgnored++;
         }
       }
     }
@@ -513,7 +568,12 @@ com.gContactSync.Sync = {
           (cardsToDelete.length >= threshold ||
            com.gContactSync.Sync.mContactsToDelete.length >= threshold) &&
           !com.gContactSync.Sync.requestDeletePermission(cardsToDelete.length,
-                                                       com.gContactSync.Sync.mContactsToDelete.length)) {
+                                                         com.gContactSync.Sync.mContactsToDelete.length)) {
+        // If canceled here then reset most remote counts and local deleted to 0
+        this.mCurrentSummary.mLocal.mRemoved  = 0;
+        this.mCurrentSummary.mRemote.mAdded   = 0;
+        this.mCurrentSummary.mRemote.mRemoved = 0;
+        this.mCurrentSummary.mRemote.mUpdated = 0;
         com.gContactSync.Sync.syncNextUser();
         return;
     }
@@ -658,8 +718,7 @@ com.gContactSync.Sync = {
   /**
    * Updates all cards to Google included in the mContactsToUpdate array one at
    * a time to avoid timing conflicts.  Calls
-   * com.gContactSync.Sync.syncNextUser() when done if there is at least one
-   * more AB to sync, otherwise calls com.gContactSync.Sync.finish().
+   * com.gContactSync.Sync.syncNextUser() when done.
    */
   processUpdateQueue: function Sync_processUpdateQueue() {
     var ab = com.gContactSync.Sync.mCurrentAb;
@@ -679,7 +738,7 @@ com.gContactSync.Sync = {
         setTimeout(com.gContactSync.Sync.syncNextUser, delay);
       }
       else {
-        com.gContactSync.Sync.finish();
+        com.gContactSync.Sync.syncNextUser();
       }
       return;
     }

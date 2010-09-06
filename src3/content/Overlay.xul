@@ -44,6 +44,8 @@
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/StringBundle.js"/>
   <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/SyncSummaryData.js"/>
+  <script type="application/x-javascript"
           src="chrome://gcontactsync/content/Namespace.js"/>
   <script type="application/x-javascript"
           src="chrome://gcontactsync/content/GElement.js"/>
@@ -106,7 +108,7 @@
   <toolbarbutton id="button-sync"
                  label="&sync.label;"
                  tooltiptext="&sync.tooltip;"
-                 oncommand="com.gContactSync.Sync.begin();"
+                 oncommand="com.gContactSync.Sync.begin(true);"
                  class="gContactSync-Button toolbarbutton-1 chromeclass-toolbar-additional"/>
 
   <statusbarpanel id="gContactSyncStatusText"
@@ -121,7 +123,7 @@
                label="&syncMenuItem.label;"
                accesskey="&syncMenuItem.accesskey;"
                class="menuitem-iconic icon-mail16 menu-iconic"
-               oncommand="com.gContactSync.Sync.begin();"/>
+               oncommand="com.gContactSync.Sync.begin(true);"/>
      <menuitem id="acctMenuItem"
                label="&acctMenuItem.label;"
                accesskey="&acctMenuItem.accesskey;"

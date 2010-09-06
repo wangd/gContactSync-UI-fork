@@ -40,9 +40,9 @@ pref("extensions.gContactSync.myContacts", false);
 // this must be the system group or title of the group
 pref("extensions.gContactSync.myContactsName", "Contacts");
 // try to parse display names from Google into First and Last names
-pref("extensions.gContactSync.parseNames", true);
+//pref("extensions.gContactSync.parseNames", true);
 // assume that names with DBCS characters are Asian (last first)
-pref("extensions.gContactSync.parseAsianNames", false);
+//pref("extensions.gContactSync.parseAsianNames", false);
 // true = new phone labels in the abResultsTreeCols (column labels in the AB)
 pref("extensions.gContactSync.phoneColLabels", true);
 // set to true to add types to phone numbers (Work, Home, Mobile, etc.)
@@ -70,6 +70,8 @@ pref("extensions.gContactSync.getPhotos", true);
 pref("extensions.gContactSync.sendPhotos", true);
 // add a 'reset' menuitem to the AB context menu
 pref("extensions.gContactSync.addReset", true);
+// Show an alert dialog with a summary after manual syncs
+pref("extensions.gContactSync.alertSummary", true);
 // default plugin for new synchronization accounts
 pref("extensions.gContactSync.Plugin", "Google");
 // disable synchronization with all address books--even those setup to sync--by default
