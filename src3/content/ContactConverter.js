@@ -398,56 +398,6 @@ com.gContactSync.ContactConverter = {
       value = value ? value.value : null;
       aTBContact.setValue(arr[i], value);
     }
-
-    // parse the DisplayName into FirstName and LastName
-    /*
-    if (com.gContactSync.Preferences.mSyncPrefs.parseNames.value) {
-      var name  = aTBContact.getValue("DisplayName"),
-          first = aTBContact.getValue("FirstName"),
-          last  = aTBContact.getValue("LastName");
-      // only parse if the contact has a name and there isn't already a first
-      // or last name set
-      if (name && !first && !last) {
-        var nameArr = [],
-            commaIndex;
-        if (name.split && name.indexOf) {
-          // If the name has a comma, it is probably <last>, <first>
-          commaIndex = name.indexOf(",");
-          if (commaIndex !== -1) {
-            name = name.replace(", ", ",");
-            var tmpArr = name.split(",");
-            nameArr.push(tmpArr[1]);
-            nameArr.push(tmpArr[0]);
-            // now fix the DisplayName
-            aTBContact.setValue("DisplayName", tmpArr[1] + " " + tmpArr[0]);
-          }
-          // If are there any DBCS characters in name, assume it's an Asian name,
-          // <last> <first>
-          else if (com.gContactSync.Preferences.mSyncPrefs.parseAsianNames &&
-                   encodeURI(name).replace(/%../g,"x").length != name.length) {
-            var tmpArr = name.split(" ");
-            if (tmpArr.length > 1) {
-              nameArr.push(tmpArr[1]);
-              nameArr.push(tmpArr[0]);
-            }
-            else
-              nameArr = [name];
-          }
-          // Otherwise assume it is <first> <last>
-          else
-            nameArr = name.split(" ");
-        }
-        else
-          nameArr = [name];
-        // take the first part of the name and set it as the first name
-        // then take the last and set it as the last name
-        first = nameArr.shift();
-        last  = nameArr.join(" ");
-        com.gContactSync.LOGGER.VERBOSE_LOG("FirstName\n" + first + "\nLastName\n" + last);
-        aTBContact.setValue("FirstName", first);
-        aTBContact.setValue("LastName", last);
-      }
-    }*/
     
     // Get the birthday info
     var bday = aGContact.getValue("birthday", 0, com.gContactSync.gdata.contacts.types.UNTYPED),

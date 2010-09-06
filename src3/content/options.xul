@@ -55,9 +55,6 @@
       <preference id="initialDelayMinutes"
                   name="extensions.gContactSync.initialDelayMinutes"
                   type="int"/>
-      <!--<preference id="parseNames"
-                  name="extensions.gContactSync.parseNames"
-                  type="bool"/>-->
       <preference id="alertSummary"
                   name="extensions.gContactSync.alertSummary"
                   type="bool"/>
@@ -113,9 +110,6 @@
         <checkbox preference="alertSummary"
                   id="alertSummary"
                   label="&alertSummary.label;"/>
-        <!--<checkbox preference="parseNames"
-                  id="parseNames"
-                  label="&parseNames.label;"/>-->
         <checkbox preference="phoneTypes"
                   id="phoneTypes"
                   label="&phoneTypes.label;"/>
