@@ -214,14 +214,14 @@ com.gContactSync.CardDialogOverlay = {
                                  : fax.parentNode.previousSibling;
         faxLabel.value = com.gContactSync.StringBundle.getStr("third");
         faxLabel.setAttribute("accesskey", "");
-        var mobileLabel = newDialog ? mobile.previousSibling
-                                    : mobile.parentNode.previousSibling;
-        mobileLabel.value = com.gContactSync.StringBundle.getStr("fourth");
-        mobileLabel.setAttribute("accesskey", "");
         var pagerLabel = newDialog ? pager.previousSibling
                                    : pager.parentNode.previousSibling;
-        pagerLabel.value = com.gContactSync.StringBundle.getStr("fifth");
+        pagerLabel.value = com.gContactSync.StringBundle.getStr("fourth");
         pagerLabel.setAttribute("accesskey", "");
+        var mobileLabel = newDialog ? mobile.previousSibling
+                                    : mobile.parentNode.previousSibling;
+        mobileLabel.value = com.gContactSync.StringBundle.getStr("fifth");
+        mobileLabel.setAttribute("accesskey", "");
       }
       catch (ex2) {
         com.gContactSync.alertError("Unable to replace phone labels and remove access keys\n" + ex2);
