@@ -125,26 +125,6 @@ com.gContactSync.ABOverlay = {
     var treeCols = document.getElementById("abResultsTreeCols");
     if (!treeCols || !treeCols.appendChild)
       return;
-    if (com.gContactSync.Preferences.mSyncPrefs.phoneColLabels.value) {
-      // fix the existing phone numbers
-      var arr = ["WorkPhone", "HomePhone", "FaxNumber"," CellularNumber",
-                 "PagerNumber"
-                ];
-      // the strings from the string bundle
-      //var arr2 = ["first", "second", "third", "fourth", "fifth"];
-      var elem;
-      for (var i = 0; i < arr.length; i++) {
-        elem = document.getElementById(arr[i]);
-        if (!elem) {
-          continue;
-        }
-        // remove it
-        treeCols.removeChild(elem);
-        elem.setAttribute("label", com.gContactSync.StringBundle.getStr(arr[i]));
-        // and then add it to the end of the treecols element
-        treeCols.appendChild(elem);
-      }
-    }
     // if Bug 413260 isn't applied in this version of TB, or if the pref was
     // changed to false, then stop here
     if (!this.mBug413260 || !com.gContactSync.Preferences.mSyncPrefs.newColLabels.value)
@@ -173,6 +153,30 @@ com.gContactSync.ABOverlay = {
       treeCol.setAttribute("label",   com.gContactSync.StringBundle.getStr(id));
       // append it to the treecols element
       treeCols.appendChild(treeCol);
+    }
+    
+    // Fix/rename phone number columns if the phoneColLabels is on AND phone
+    // number types have been added.
+    if (com.gContactSync.Preferences.mSyncPrefs.phoneColLabels.value &&
+        com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value) {
+      // fix/rename the existing phone numbers
+      var arr = ["WorkPhone", "HomePhone", "FaxNumber", "CellularNumber",
+                 "PagerNumber", "HomeFaxNumber", "OtherNumber"];
+      // the strings from the string bundle
+      var arr2 = ["firstNumber", "secondNumber", "thirdNumber", "fourthNumber",
+                  "fifthNumber", "sixthNumber", "seventhNumber"];
+      var elem;
+      for (var i = 0; i < arr.length; i++) {
+        elem = document.getElementById(arr[i]);
+        if (!elem) {
+          continue;
+        }
+        // remove it
+        treeCols.removeChild(elem);
+        elem.setAttribute("label", com.gContactSync.StringBundle.getStr(arr2[i]));
+        // and then add it to the end of the treecols element
+        treeCols.appendChild(elem);
+      }
     }
   },
   /**
