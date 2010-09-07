@@ -274,7 +274,6 @@ com.gContactSync.gdata = {
           break;
         default:
           throw "Unrecognized tagName '" + aElement.tagName + "' in setRelOrLabel";
-          alert("Unrecognized tagName '" + aElement.tagName + "' in setRelOrLabel");
       }
       
       // If it is NOT a custom type it should show up in arr.
