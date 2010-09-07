@@ -251,6 +251,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/com.gContactSync.Sync.html">com.gContactSync.Sync</a></li>
 	
+	<li><a href="../symbols/com.gContactSync.SyncSummaryData.html">com.gContactSync.SyncSummaryData</a></li>
+	
 	<li><a href="../symbols/com.gContactSync.TBContact.html">com.gContactSync.TBContact</a></li>
 	
 </ul>
@@ -398,6 +400,16 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mCurrentSummary">mCurrentSummary</a></b>
+								</div>
+								<div class="description">Summary data from the current sync</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mCurrentUsername">mCurrentUsername</a></b>
 								</div>
 								<div class="description">The current username</div>
@@ -488,9 +500,29 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mManualSync">mManualSync</a></b>
+								</div>
+								<div class="description">This should be set to true if the sync was run manually</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mNewPhotoURI">mNewPhotoURI</a></b>
 								</div>
 								<div class="description">The URI of a photo to be added to the newly created Google contact</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.mOverallSummary">mOverallSummary</a></b>
+								</div>
+								<div class="description">Summary data from the entire synchronization</div>
 							</td>
 						</tr>
 					
@@ -549,7 +581,7 @@ this group was created so the two can be matched during the next sync.</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.begin">begin</a></b>()
+								<div class="fixedFont">com.gContactSync.Sync.<b><a href="../symbols/com.gContactSync.Sync.html#.begin">begin</a></b>(aManualSync)
 								</div>
 								<div class="description">Performs the first steps of the sync process.</div>
 							</td>
@@ -912,6 +944,28 @@ and calls com.gContactSync.Sync.getContacts() when finished.</div>
 
 					<hr />
 				
+					<a name=".mCurrentSummary"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Sync.</span><b>mCurrentSummary</b>
+					
+					</div>
+					<div class="description">
+						Summary data from the current sync
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".mCurrentUsername"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1110,6 +1164,28 @@ and calls com.gContactSync.Sync.getContacts() when finished.</div>
 
 					<hr />
 				
+					<a name=".mManualSync"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Sync.</span><b>mManualSync</b>
+					
+					</div>
+					<div class="description">
+						This should be set to true if the sync was run manually
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".mNewPhotoURI"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1119,6 +1195,28 @@ and calls com.gContactSync.Sync.getContacts() when finished.</div>
 					</div>
 					<div class="description">
 						The URI of a photo to be added to the newly created Google contact
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mOverallSummary"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">com.gContactSync.Sync.</span><b>mOverallSummary</b>
+					
+					</div>
+					<div class="description">
+						Summary data from the entire synchronization
 						
 						
 					</div>
@@ -1230,7 +1328,7 @@ this group was created so the two can be matched during the next sync.
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">com.gContactSync.Sync.</span><b>begin</b>()
+					<span class="light">com.gContactSync.Sync.</span><b>begin</b>(aManualSync)
 					
 					</div>
 					<div class="description">
@@ -1241,6 +1339,17 @@ this group was created so the two can be matched during the next sync.
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>aManualSync</b>
+									
+								</dt>
+								<dd>{boolean} Set this to true if the sync was run manually.</dd>
+							
+							</dl>
 						
 						
 						
@@ -1475,8 +1584,7 @@ com.gContactSync.Sync.processAddQueue() when finished.
 					<div class="description">
 						Updates all cards to Google included in the mContactsToUpdate array one at
 a time to avoid timing conflicts.  Calls
-com.gContactSync.Sync.syncNextUser() when done if there is at least one
-more AB to sync, otherwise calls com.gContactSync.Sync.finish().
+com.gContactSync.Sync.syncNextUser() when done.
 						
 						
 					</div>
@@ -1721,7 +1829,7 @@ and calls com.gContactSync.Sync.getContacts() when finished.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Thu Jul 22 2010 19:15:33 GMT-0400 (EDT)
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Mon Sep 06 2010 20:24:48 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>
