@@ -390,7 +390,36 @@ com.gContactSync.openURL = function gCS_openURL(aURL) {
     }
   }
   catch (e) {
-    com.gContactSync.LOGGER.LOG_WARNING(" - Error in openFormattedURL", e);
+    com.gContactSync.LOGGER.LOG_WARNING(" - Error in openFormattedRegionURL", e);
+  }
+  try {
+    if (openTopWin) {
+      var url = Components.classes["@mozilla.org/toolkit/URLFormatterService;1"]
+                          .getService(Components.interfaces.nsIURLFormatter)
+                          .formatURLPref(aURL);
+      openTopWin(url);
+      return;
+    }
+  }
+  catch (e) {
+    com.gContactSync.LOGGER.LOG_WARNING(" - Error in openTopWin", e);
+  }
+  // If all else fails try doing it manually
+  try {
+    var url = Components.classes["@mozilla.org/toolkit/URLFormatterService;1"]
+                        .getService(Components.interfaces.nsIURLFormatter)
+                        .formatURLPref(aURL);
+    var uri = Components.classes["@mozilla.org/network/io-service;1"]
+                        .getService(Components.interfaces.nsIIOService)
+                        .newURI(url, null, null);
+
+    Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
+              .getService(Components.interfaces.nsIExternalProtocolService)
+              .loadURI(uri);
+    return;
+  }
+  catch (e) {
+    com.gContactSync.LOGGER.LOG_WARNING(" - Error opening the URL", e);
   }
   com.gContactSync.LOGGER.LOG_WARNING("Could not open the URL: " + aURL);
   return;
