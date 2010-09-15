@@ -8,10 +8,10 @@
 
 # NOTE: The VERSION here is just used for the package name
 # Edit install.rdf and content/synonyms.js to change the actual VERSION
-#VERSION=0.2.17
-#SRC_DIR=./src2
-VERSION=0.3.0rc1
-SRC_DIR=./src3
+VERSION=0.2.18
+SRC_DIR=./src2
+#VERSION=0.3.0rc1
+#SRC_DIR=./src3
 # Dest should be absolute or relative to SRC_DIR
 DEST=$(pwd)/downloads/gContactSync-$VERSION.xpi
 
