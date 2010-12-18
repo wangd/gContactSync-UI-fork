@@ -731,6 +731,11 @@ com.gContactSync.ABOverlay = {
     cvData.cvbFullWorkMapItBox.appendChild(cvData.cvFullWorkMapIt);
     FullWorkHbox.appendChild(FullWorkVbox);
     FullWorkHbox.appendChild(cvData.cvbFullWorkMapItBox);
+    var WorkWebPageBox = document.getElementById("cvWorkWebPageBox");
+    if (WorkWebPageBox)
+      vbox.insertBefore(FullWorkHbox, WorkWebPageBox);
+    else
+      vbox.appendChild(FullWorkHbox);
 
     // Work section
     cvData.cvJobDescription = com.gContactSync.ABOverlay.makeDescElement("JobDescription", "CardViewText");
