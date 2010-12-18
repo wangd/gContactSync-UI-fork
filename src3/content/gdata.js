@@ -253,7 +253,6 @@ com.gContactSync.gdata = {
         case "im":
         case "gd:im":
           arr = this.IM_TYPES;
-          aElement.setAttribute("label", "CUSTOM");
           relAttr = "protocol";
           break;
         case "phoneNumber":
@@ -283,6 +282,9 @@ com.gContactSync.gdata = {
         // type, everything else has a prefix and im elements need a protocol.
         if (aElement.tagName == "website" || aElement.tagName == "relation") {
           aElement.setAttribute(relAttr, aType);
+        } else if (aElement.tagName == "im") {
+          aElement.setAttribute("protocol", com.gContactSync.gdata.contacts.rel + "#" + aType);
+          aElement.setAttribute("rel",      com.gContactSync.gdata.contacts.rel + "#other");
         } else {
           aElement.setAttribute(relAttr, com.gContactSync.gdata.contacts.rel + "#" + aType);
         }
