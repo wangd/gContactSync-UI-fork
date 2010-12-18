@@ -635,4 +635,30 @@ com.gContactSync.Import = {
     }
     httpReq.send();
   },
+  /**
+   * Attempts to import from the Mozilla Labs Contacts add-on.
+   * https://wiki.mozilla.org/Labs/Contacts/ContentAPI
+   */
+  mozillaLabsContactsImporter: function Import_mozLabsImporter() {
+  
+    if (com.gContactSync.Import.mStarted) {
+      // TODO warn the user and allow him or her to cancel
+    }
+    
+    com.gContactSync.Import.mSource = "mozLabsContacts";
+    var fields  = [];
+    var options = [];
+    for (var i in this.mMap) {
+      fields.push(i);
+    }
+    try {
+      window.navigator.service.contacts(fields,
+                                        com.gContactSync.Import.mozLabsImportSuccess,
+                                        com.gContactSync.Import.beginImport,
+                                        options);
+    } catch (e) {
+      com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("mozLabsContactsImportFailed"));
+      com.gContactSync.LOGGER.LOG_ERROR("Mozilla Labs Contacts Import Failed", e);
+    }
+  }
 };

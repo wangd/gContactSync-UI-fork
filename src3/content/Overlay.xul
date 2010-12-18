@@ -175,11 +175,14 @@
                 now...-->
            <menuitem label="&Google.label;"
                      oncommand="com.gContactSync.Import.step1('google');"/>
-           <menuitem label="&MySpace.label;"
-                     oncommand="com.gContactSync.Import.step1('myspace');"/>
            <!-- Not supported quite yet -->
            <!--<menuitem label="&LinkedIn.label;"
                      oncommand="com.gContactSync.Import.step1('linkedin');"/>-->
+           <menuitem label="&MozLabsContacts.label;"
+                     id="MozLabsContactsMenuitem"
+                     oncommand="com.gContactSync.Import.mozillaLabsContactsImporter();"/>
+           <menuitem label="&MySpace.label;"
+                     oncommand="com.gContactSync.Import.step1('myspace');"/>
            <menuitem label="&Plaxo.label;"
                      oncommand="com.gContactSync.Import.step1('plaxo');"/>
            <!-- Not supported quite yet -->
