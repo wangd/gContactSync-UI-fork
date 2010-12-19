@@ -30,7 +30,7 @@
 <!ENTITY addressDesc.box           "Description">
 <!-- LOCALIZATION NOTE: Please try to keep the number of characters down (around 60) to avoid making the window too wide -->
 <!ENTITY addressDesc1.value        "Google uses 'formatted' address fields like these.">
-<!ENTITY addressDesc2.value        "You can add an address to Google with Thunderbird's">
+<!ENTITY addressDesc2.value        "You can add an address to Google with the existing">
 <!ENTITY addressDesc3.value        "default fields, but all subsequent changes are only">
 <!ENTITY addressDesc4.value        "applied to these fields.">
 <!ENTITY addressDesc5.value        "">

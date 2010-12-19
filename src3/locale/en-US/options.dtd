@@ -9,9 +9,9 @@
 <!ENTITY initialDelayMinutes.value      "Initial sync delay (minutes) [Default is 5]">
 <!ENTITY abName.value                   "Name of the Address Book to sync with (old or new)">
 <!ENTITY syncBehavior.label             "Sync Behavior">
-<!ENTITY removeOldAddresses.label       "Remove the old Thunderbird addresses after converting to the new format">
+<!ENTITY removeOldAddresses.label       "Remove the old addresses after converting to the new format">
 <!ENTITY alertSummary.label             "Display a summary after every manual sync">
-<!ENTITY phoneTypes.label               "Add phone number type fields (ignore TB's field names)">
+<!ENTITY phoneTypes.label               "Add phone number type fields (ignore existing field names)">
 <!ENTITY accountDelay.value             "Delay between accounts (ms) [5000]">
 <!ENTITY logging.label                  "Logging">
 <!ENTITY enableLogging.label            "Enable Logging">
@@ -26,7 +26,7 @@
 <!ENTITY addReset.label                 "Add Replace to and Replace from Server links to the Address Book context menu">
 <!ENTITY abResults.label                "Contacts List">
 <!ENTITY phoneColLabels.label           "Rename the phone column labels">
-<!ENTITY newColLabels.label             "Add the new fields to the column labels (Thunderbird 3 Only)">
+<!ENTITY newColLabels.label             "Add the new fields to the column labels (TB 3/SM 2 Only)">
 <!ENTITY abCardView.label               "Address Book Contact Details">
 <!ENTITY enableImUrls.label             "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
 
