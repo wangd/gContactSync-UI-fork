@@ -69,12 +69,6 @@ com.gContactSync.Overlay = {
     this.mLastVersionSuffix  = com.gContactSync.Preferences.mSyncPrefs.lastVersionSuffix.value;
     com.gContactSync.AbListener.add(); // add the address book listener
 
-    // Hide the Mozilla Labs Contacts import menuitem if it cannot be used
-    if (!("service" in window.navigator) ||
-        !("contacts" in window.navigator.service)) {
-      document.getElementById("MozLabsContactsMenuitem").setAttribute("collapsed", "true");
-    }
-
     // call the unload function when the address book window is shut
     window.addEventListener("unload", function unloadListener(e) {
       com.gContactSync.Overlay.unload();

@@ -87,6 +87,7 @@ com.gContactSync.Import = {
   },
   /** Map for Facebook only */
   mMapfacebook: {
+    // TODO birthday
     /** Name is a simple attribute */
     name:          "DisplayName",
     /** ID is also a simple attribute */
@@ -206,6 +207,19 @@ com.gContactSync.Import = {
       1:           "WebPage2",
       type:        "Type",
       value:       ""
+    },
+    /** An array of a user's job history */
+    organizations: {
+      /** The most recent job */
+      0:           "",
+      /** The second most recent job */
+      1:           "Second",
+      /** The third most recent job */
+      2:           "Third",
+      /** The person's job title */
+      title:       "JobTitle",
+      /** The person's company */
+      name:        "Company"
     }
   },
   /** Commands to execute when offline during an HTTP Request */
@@ -460,11 +474,12 @@ com.gContactSync.Import = {
     }
     try {
       com.gContactSync.LOGGER.VERBOSE_LOG(aFeed);
+      var obj = aFeed;
       // decode the JSON and get the array of cards
       var nsIJSON = Components.classes["@mozilla.org/dom/json;1"]
                               .createInstance(Components.interfaces.nsIJSON);
       try {
-        var obj = nsIJSON.decode(aFeed);
+        obj = nsIJSON.decode(aFeed);
       }
       catch (e) {
         com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("importFailedMsg"));
@@ -481,9 +496,10 @@ com.gContactSync.Import = {
       var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByName(res),
                                                  true);
       var arr = obj.entry || obj.data;
+
       for (var i in arr) {
         var contact = arr[i],
-            id = contact.id;
+            id = contact.id || contact.guid;
         if (id || contact.name || contact.displayName) {
           var newCard = ab.newContact(),
               attr    = "";
@@ -510,6 +526,7 @@ com.gContactSync.Import = {
               attr = this["mMap" + this.mSource][j] || this.mMap[j];
             else
               attr = this.mMap[j];
+
             if (attr) {
               // Download a photo of the user, if available.
               if (j === "picture" || j === "thumbnailUrl" || j === "photos") {
@@ -537,10 +554,13 @@ com.gContactSync.Import = {
                 // contact[j]    = emails[]
                 // contact[j][k] = emails[k]
                 for (var k = 0; k < contact[j].length; k++) {
-                  if (!attr[k]) break;
+                  // quit if k is too large/shouldn't be stored
+                  if (!(k in attr)) {
+                    break;
+                  }
                   // contact[j][k][l] = sombody@somewhere
                   for (var l in contact[j][k]) {
-                    if (attr[l]) {
+                    if (l in attr) {
                       var type = contact[j][k].type;
                       // not all arrays can be mapped to TB fields by index
                       // TODO - support using original phone # fields
@@ -572,7 +592,7 @@ com.gContactSync.Import = {
               // else it is an object with subproperties
               else {
                 for (var k in contact[j]) {
-                  if (attr[k]) {
+                  if (k in attr) {
                     com.gContactSync.LOGGER.VERBOSE_LOG(" - (Object): " + attr[k] + "/" + j + "=" + contact[j][k]);
                     newCard.setValue(attr[k], this.decode(contact[j][k]));
                   }
@@ -640,22 +660,56 @@ com.gContactSync.Import = {
    * https://wiki.mozilla.org/Labs/Contacts/ContentAPI
    */
   mozillaLabsContactsImporter: function Import_mozLabsImporter() {
-  
     if (com.gContactSync.Import.mStarted) {
       // TODO warn the user and allow him or her to cancel
     }
     
     com.gContactSync.Import.mSource = "mozLabsContacts";
-    var fields  = [];
-    var options = [];
-    for (var i in this.mMap) {
-      fields.push(i);
-    }
     try {
-      window.navigator.service.contacts(fields,
-                                        com.gContactSync.Import.mozLabsImportSuccess,
-                                        com.gContactSync.Import.beginImport,
-                                        options);
+    
+      // Import the Mozilla Labs Contacts module that loads the contacts DB
+      Components.utils.import("resource://people/modules/people.js");
+
+      var nsIJSON = Components.classes["@mozilla.org/dom/json;1"]
+                              .createInstance(Components.interfaces.nsIJSON);
+
+      // TODO - this needs to be much more efficient
+      var json = JSON.stringify({data: People.find({})});
+      var toEncode = {data: []};
+      var people = [];
+      
+      // decode the JSON and get the array of cards
+      try {
+        people = nsIJSON.decode(json);
+      }
+      catch (e) {
+        com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("importFailedMsg"));
+        com.gContactSync.LOGGER.LOG_ERROR("Import failed: ", aFeed);
+        com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
+        return;
+      }
+      
+      // Iterate through each person add add them to the JSON
+      // This loop essentially just converts the people into a portable contacts
+      // format for beginImport()
+      for (var i in people.data) {
+        var person = people.data[i].obj;
+        if (person && person.documents) {
+          var personInfo = {};
+          
+          // People can have the same info in multiple documents, this just
+          // iterates through each document and copies the details over.
+          for (var j in person.documents) {
+            for (var k in person.documents[j]) {
+              for (var l in person.documents[j][k])
+              personInfo[l] = person.documents[j][k][l];
+              com.gContactSync.LOGGER.LOG(j + "." + k + "." + l + " - " + person.documents[j][k][l])
+            }
+          }
+          toEncode.data.push(personInfo);
+        }
+      }
+      com.gContactSync.Import.beginImport(JSON.stringify(toEncode));
     } catch (e) {
       com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("mozLabsContactsImportFailed"));
       com.gContactSync.LOGGER.LOG_ERROR("Mozilla Labs Contacts Import Failed", e);
