@@ -191,7 +191,7 @@ com.gContactSync.MessengerOverlay = {
       }
       return;
     }
-    com.gContactSync.MessengerOverlay.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
     com.gContactSync.MessengerOverlay.promptLogin();
   },
   /**
@@ -250,7 +250,7 @@ com.gContactSync.MessengerOverlay = {
    */
   login: function MessengerOverlay_login(aUsername, aAuthToken) {
     com.gContactSync.LoginManager.addAuthToken(aUsername, 'GoogleLogin ' + aAuthToken);
-    com.gContactSync.MessengerOverlay.setStatusBarText(com.gContactSync.StringBundle.getStr("initialSetup"));
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("initialSetup"));
     var setup = window.open("chrome://gcontactsync/content/FirstLogin.xul",
                             "SetupWindow",
                             "chrome,resizable=yes,scrollbars=no,status=no");
