@@ -1,0 +1,78 @@
+<!-- The name of the extension (should just be gContactSync) -->
+<!ENTITY gContactSyncTab.label "gContactSync">
+<!-- Ordinal numbers -->
+<!ENTITY first.label "Första">
+<!ENTITY second.label "Andra">
+<!ENTITY third.label "Tredje">
+<!ENTITY fourth.label "Fjärde">
+<!ENTITY fifth.label "Femte">
+<!ENTITY sixth.label "Sjätte">
+<!ENTITY seventh.label "Sjunde">
+<!ENTITY eighth.label "Åttonde">
+<!-- Different address types -->
+<!ENTITY home.label "Hem">
+<!ENTITY work.label "Arbete">
+<!ENTITY other.label "Övrigt">
+<!-- A label for extra screenname fields -->
+<!ENTITY screenname.box "Ytterligare skärmnamn">
+<!-- A label for extra e-mail address fields -->
+<!ENTITY email.box "Ytterligare e-postadresser">
+<!-- A label for extra phone number fields -->
+<!ENTITY numbers.box "Ytterligare nummer">
+<!-- A label for extra postal address fields -->
+<!ENTITY gContactSyncAddrTab.label "Adresser">
+<!ENTITY address.box "Formaterade adresser">
+<!-- Note: these are only displayed in Thunderbird 3/Seamonkey 2 (not Postbox or TB 2) -->
+<!ENTITY addressDesc.box "Beskrivning">
+<!-- LOCALIZATION NOTE: Please try to keep the number of characters down (around 60) to avoid making the window too wide -->
+<!ENTITY addressDesc1.value "Google använder &quot;formaterade&quot; adressfält som dessa.">
+<!ENTITY addressDesc2.value "Du kan lägga till en adress i Google via Thunderbirds">
+<!ENTITY addressDesc3.value "standardfält, men alla efterföljande ändringar tillämpas">
+<!ENTITY addressDesc4.value "endast på de här fälten.">
+<!ENTITY addressDesc5.value "">
+<!ENTITY addressDesc6.value "Dessa fält har prioritet vid synkronisering och">
+<!ENTITY addressDesc7.value "granskning av adresser.">
+<!-- This can be blank or something like "Click on Sync to begin" -->
+<!ENTITY initialStatus.label "">
+<!-- People who are somehow related to or associated with the contact -->
+<!ENTITY relations.box "Kontaktnät">
+<!-- Used for the Sync button on the Address Book toolbar -->
+<!ENTITY sync.label "Synka">
+<!ENTITY sync.tooltip "Synkronisera dina kontakter med gContactSync">
+<!-- A tooltip on the status bar -->
+<!ENTITY status.tooltip "Klicka här för att granska loggfilen">
+<!-- The gContactSync menu -->
+<!ENTITY gContactSyncMenu.label "gContactSync">
+<!ENTITY gContactSyncMenu.accesskey "C">
+<!ENTITY syncMenuItem.label "Synka">
+<!ENTITY syncMenuItem.accesskey "S">
+<!ENTITY acctMenuItem.label "Konton">
+<!ENTITY acctMenuItem.accesskey "K">
+<!ENTITY prefMenuItem.label "Inställningar">
+<!ENTITY prefMenuItem.accesskey "I">
+<!ENTITY forumMenuItem.label "Supportforum">
+<!ENTITY forumMenuItem.accesskey "u">
+<!ENTITY wikiMenuItem.label "Wiki">
+<!ENTITY wikiMenuItem.accesskey "W">
+<!ENTITY faqMenuItem.label "Vanliga frågor och svar (FAQ)">
+<!ENTITY faqMenuItem.accesskey "Q">
+<!ENTITY errorMenuItem.label "Felrapportformulär">
+<!ENTITY errorMenuItem.accesskey "r">
+<!ENTITY logMenuItem.label "Logg">
+<!ENTITY logMenuItem.accesskey "L">
+<!ENTITY gcMenuItem.label "Google Kontakter på nätet">
+<!ENTITY gcMenuItem.accesskey "G">
+<!-- Import menu -->
+<!-- The text for Import.label should match importNotStarted in gcontactsync.properties -->
+<!ENTITY Import.label "Starta import (EXPERIMENTELL)">
+<!ENTITY Import.accesskey "i">
+<!ENTITY FinishImport.label "Avsluta import">
+<!ENTITY FinishImport.accesskey "A">
+<!ENTITY Facebook.label "Facebook">
+<!ENTITY Google.label "Google">
+<!ENTITY LinkedIn.label "LinkedIn">
+<!ENTITY MySpace.label "MySpace">
+<!ENTITY MozLabsContacts.label "Mozilla Labs Contacts">
+<!ENTITY Plaxo.label "Plaxo">
+<!ENTITY Twitter.label "Twitter">
+<!ENTITY Yahoo.label "Yahoo">

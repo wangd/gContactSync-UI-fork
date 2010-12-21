@@ -7,6 +7,7 @@
         <em:name>gContactSync</em:name>
         <em:description>Synchronizes your Google Contacts with Thunderbird</em:description>
         <em:creator>Josh Geenen</em:creator>
+        <em:translator>Mikael Hiort af Ornäs - sv-SE</em:translator>
         <em:optionsURL>chrome://gcontactsync/content/options.xul</em:optionsURL>
         <em:iconURL>chrome://gcontactsync/skin/logo_main.png</em:iconURL>
         <em:homepageURL>http://gcontactsync.mozdev.org/</em:homepageURL>

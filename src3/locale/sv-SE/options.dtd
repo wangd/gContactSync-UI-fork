@@ -1,0 +1,62 @@
+<!ENTITY title.label "Inställningar för gContactSync">
+<!ENTITY main.tab "Allmänt">
+<!ENTITY help.value "Hjälp">
+<!ENTITY gettingStarted1.value "Innan du börjar synkronisera dina kontakter, var vänlig granska dessa inställningar">
+<!ENTITY autoSync.value "Automatisk synkronisering">
+<!ENTITY autoSync.label "Synkronisera kontakter automatiskt">
+<!ENTITY refreshInterval.value "Synkroniseringsintervall (minuter) [Standard är 120 (2 timmar)]">
+<!ENTITY initialDelayMinutes.value "Inledande synkroniseringsfördröjning (minuter) [Standard är 5]">
+<!ENTITY abName.value "Namn på adressbok att synka med (befintligt eller nytt)">
+<!ENTITY syncBehavior.label "Synkroniseringsbeteende">
+<!ENTITY removeOldAddresses.label "Ta bort de gamla Thunderbird-adresserna efter konvertering till det nya formatet">
+<!ENTITY alertSummary.label "Visa en sammanfattning efter varje manuell synkning">
+<!ENTITY phoneTypes.label "Lägg till fält av telefonnummertyp (ignorera TB:s fältnamn)">
+<!ENTITY accountDelay.value "Fördröjning mellan konton (ms) [5000]">
+<!ENTITY logging.label "Loggning">
+<!ENTITY enableLogging.label "Aktivera loggning">
+<!ENTITY verboseLog.label "Aktivera utförlig loggning (för felsökning)">
+<!ENTITY interface.tab "Gränssnitt">
+<!ENTITY buttons.label "Knappar och menyer">
+<!ENTITY enableSyncBtn.label "Aktivera verktygsfältsknappen &quot;Synka&quot;">
+<!ENTITY forceBtnImage.label "Åtgärda verktygsfältsknappen &quot;Synka&quot;">
+<!ENTITY enableMenu.label "Aktivera gContactSync-menyn">
+<!ENTITY enableMenuLinks.label "Lägg till länkar (Wiki, Vanliga frågor och svar etc.) i gContactSync-menyn">
+<!ENTITY addReset.label "Lägg till länkarna &quot;Ersätt till server&quot; och &quot;Ersätt från server&quot; i Adressbokens snabbmeny">
+<!ENTITY abResults.label "Kontaktlista">
+<!ENTITY phoneColLabels.label "Byt namn på telefonkolumnetiketterna">
+<!ENTITY newColLabels.label "Lägg till de nya fälten för kolumnetiketterna (endast Thunderbird 3)">
+<!ENTITY abCardView.label "Detaljer för adressbokskontakt">
+<!ENTITY enableImUrls.label "Aktivera länkar för olika snabbmeddelandeprotokoll (AIM, Yahoo!, MSN etc.)">
+<!ENTITY extended.tab "Övrigt">
+<!ENTITY syncExtended.label "Synka utökade egenskaper">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "Egenskap 1  ">
+<!ENTITY extended2.value "Egenskap 2  ">
+<!ENTITY extended3.value "Egenskap 3  ">
+<!ENTITY extended4.value "Egenskap 4  ">
+<!ENTITY extended5.value "Egenskap 5  ">
+<!ENTITY extended6.value "Egenskap 6  ">
+<!ENTITY extended7.value "Egenskap 7  ">
+<!ENTITY extended8.value "Egenskap 8  ">
+<!ENTITY extended9.value "Egenskap 9  ">
+<!ENTITY extended10.value "Egenskap 10">
+<!ENTITY extendedPropertiesDesc1.value "10 extra egenskaper att synka.  Exempel:">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc2.value " * Custom1, Custom2, Custom3, Custom4">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc3.value " * AnniversayDay, AnniversayMonth, AnniversaryYear">
+<!ENTITY advanced.tab "Avancerat">
+<!ENTITY warning.value "Varning - det här är endast avsett för avancerade användare">
+<!ENTITY backup.label "Säkerhetskopieringsprinciper för adressbok">
+<!ENTITY backupInterval.value "Säkerhetskopieringsintervall (dagar, -1 för att inaktivera) [14]">
+<!ENTITY other.label "Övrigt">
+<!ENTITY chromeTime.value "Fördröjning av varningen &quot;Skriptet svarar inte&quot; (0 för att inaktivera)">
+<!ENTITY confirmDeleteThreshold.value "Lägsta antal kontakter att ta bort innan förfrågan om behörighet">
+<!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
+<!ENTITY syncAddresses.label "Synkronisera postala adresser (EXPERIMENTELL)">
+<!ENTITY resetAll.label "Återställ alla synkade AB:er">
+<!ENTITY cleanOldPrefs.label "Rensa gamla AB-inställningar">
+<!-- FirstLogin.xul only -->
+<!ENTITY myContacts.label "Synkronisera endast gruppen &quot;Mina kontakter&quot;">
+<!ENTITY openAccounts.value "Avancerade kontoinställningar">
+<!ENTITY openPreferences.value "Avancerade inställningar">
