@@ -43,6 +43,9 @@ pref("extensions.gContactSync.myContactsName", "Contacts");
 pref("extensions.gContactSync.phoneColLabels", true);
 // set to true to add types to phone numbers (Work, Home, Mobile, etc.)
 pref("extensions.gContactSync.phoneTypes", true);
+// swap the mobile and pager fields in the new/edit contact dialog
+// ignored if phoneTypes == false
+pref("extensions.gContactSync.swapMobilePager", true);
 // whether or not gContactSync should add new tree column labels
 // in Thunderbird 3 (it can't work in 2)
 pref("extensions.gContactSync.newColLabels", true);

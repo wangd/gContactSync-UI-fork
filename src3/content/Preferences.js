@@ -188,6 +188,7 @@ com.gContactSync.Preferences = {
     parseAsianNames:          new com.gContactSync.Pref("parseAsianNames",          "bool", false),
     phoneColLabels:           new com.gContactSync.Pref("phoneColLabels",           "bool", true),
     phoneTypes:               new com.gContactSync.Pref("phoneTypes",               "bool", true),
+    swapMobilePager:          new com.gContactSync.Pref("swapMobilePager",          "bool", true),
     newColLabels:             new com.gContactSync.Pref("newColLabels",             "bool", true),
     dummyEmail:               new com.gContactSync.Pref("dummyEmail",               "bool", true),
     enableImUrls:             new com.gContactSync.Pref("enableImUrls",             "bool", true),

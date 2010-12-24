@@ -177,6 +177,7 @@ com.gContactSync.CardDialogOverlay = {
     }
     var newDialog      = false, // post-Mailnews Core Bug 63941
         showPhoneTypes = com.gContactSync.Preferences.mSyncPrefs.phoneTypes.value,
+        swap           = com.gContactSync.Preferences.mSyncPrefs.swapMobilePager.value,
         work           = document.getElementById("WorkPhone"),
         home           = document.getElementById("HomePhone"),
         fax            = document.getElementById("FaxNumber"),
@@ -189,20 +190,23 @@ com.gContactSync.CardDialogOverlay = {
       workLabel = work.previousSibling;
     }
     if (showPhoneTypes) {
-      try {
-        // swap pager and mobile phone textboxes and values
-        pager = document.getElementById("PagerNumber");
-        pager.setAttribute("id", "tmp");
-        var pagerValue = pager.value,
-            mobile     = document.getElementById("CellularNumber");
-        mobile.setAttribute("id", "PagerNumber");
-        pager.setAttribute("id", "CellularNumber");
-        pager.value = mobile.value;
-        mobile.value = pagerValue;
+      if (swap) {
+        try {
+          // swap pager and mobile phone textboxes and values
+          pager = document.getElementById("PagerNumber");
+          pager.setAttribute("id", "tmp");
+          var pagerValue = pager.value,
+              mobile     = document.getElementById("CellularNumber");
+          mobile.setAttribute("id", "PagerNumber");
+          pager.setAttribute("id", "CellularNumber");
+          pager.value = mobile.value;
+          mobile.value = pagerValue;
+        }
+        catch (e1) {
+          com.gContactSync.alertError("Unable to swap pager and mobile number values\n" + e1);
+        }
       }
-      catch (e1) {
-        com.gContactSync.alertError("Unable to swap pager and mobile number values\n" + e1);
-      }
+
       try {
         workLabel.value = com.gContactSync.StringBundle.getStr("first");
         workLabel.setAttribute("accesskey", "");
@@ -214,13 +218,15 @@ com.gContactSync.CardDialogOverlay = {
                                  : fax.parentNode.previousSibling;
         faxLabel.value = com.gContactSync.StringBundle.getStr("third");
         faxLabel.setAttribute("accesskey", "");
+        pager = document.getElementById("PagerNumber");
         var pagerLabel = newDialog ? pager.previousSibling
                                    : pager.parentNode.previousSibling;
-        pagerLabel.value = com.gContactSync.StringBundle.getStr("fourth");
+        pagerLabel.value = com.gContactSync.StringBundle.getStr(swap ? "fifth" : "fourth");
         pagerLabel.setAttribute("accesskey", "");
+        mobile = document.getElementById("CellularNumber");
         var mobileLabel = newDialog ? mobile.previousSibling
                                     : mobile.parentNode.previousSibling;
-        mobileLabel.value = com.gContactSync.StringBundle.getStr("fifth");
+        mobileLabel.value = com.gContactSync.StringBundle.getStr(swap ? "fourth" : "fifth");
         mobileLabel.setAttribute("accesskey", "");
       }
       catch (ex2) {
@@ -232,6 +238,9 @@ com.gContactSync.CardDialogOverlay = {
     }
     var phoneTypes = com.gContactSync.gdata.contacts.PHONE_TYPES;
     try {
+      // Add a Google Voice menuitem
+      phoneTypes.push("grandcentral");
+      
       // setup the types for the phone numbers
       var workBox = work.parentNode;
       this.addMenuItems(workBox, phoneTypes, "WorkPhoneType", "work")
