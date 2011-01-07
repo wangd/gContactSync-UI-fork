@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2009
+ * Portions created by the Initial Developer are Copyright (C) 2008-2009, 2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -64,6 +64,7 @@ com.gContactSync.MailList = function gCS_MailList(aList, aParentDirectory, aNew)
   this.mList   = aList;
   this.mList.QueryInterface(Components.interfaces.nsIAbMDBDirectory);
   this.mNew    = aNew;
+  this.mIgnoreIfBroken = false;
   if (!aNew)
     this.getAllContacts();
 };
@@ -223,14 +224,27 @@ com.gContactSync.MailList.prototype = {
         }
       }
       catch (e) {
-        com.gContactSync.LOGGER.LOG_ERROR("A mailing list is not working:", e);
-        if (com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("resetConfirm"))) {
-          if (this.mParent.reset()) {
-            com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
+      
+        // If enumeration fails and the error shouldn't be ignored then offer
+        // to reset this AB for the user.
+        if (!this.mIgnoreIfBroken) {
+          com.gContactSync.LOGGER.LOG_ERROR("A mailing list is not working:", e);
+          if (com.gContactSync.confirm(com.gContactSync.StringBundle.getStr("resetConfirm"))) {
+            if (this.mParent.reset()) {
+              com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseRestart"));
+            }
           }
+          // Throw an error to stop the sync
+          throw com.gContactSync.StringBundle.getStr("mailListBroken");
+          
+        // If ignoring this broken mailing list (such as when enumerating
+        // through a list immediately after adding a contact to it) then quit.
+        // This is a VERBOSE_LOG instead of LOG_WARNING or ERROR to avoid
+        // unnecessary e-mail/forum posts.
+        } else {
+          com.gContactSync.LOGGER.VERBOSE_LOG("A mailing list is not working:", e);
+          return this.mContacts;
         }
-        // Throw an error to stop the sync
-        throw com.gContactSync.StringBundle.getStr("mailListBroken");
       }
     }
     else if (iter instanceof Components.interfaces.nsIEnumerator) { // TB 2
@@ -248,7 +262,7 @@ com.gContactSync.MailList.prototype = {
         // TODO find a way to distinguish between the usual errors and the
         // broken list errors
         // error is expected when finished
-        com.gContactSync.LOGGER.VERBOSE_LOG("This error is expected:\n" + ex);
+        com.gContactSync.LOGGER.VERBOSE_LOG("This error is (sometimes) expected:\n" + ex);
       }
     }
     else {
@@ -329,5 +343,14 @@ com.gContactSync.MailList.prototype = {
     catch (e) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to update mail list", e);
     }
+  },
+  /**
+   * Tells this mailing list whether it should avoid asking the user to confirm
+   * a reset if broken.
+   * @param aIgnore {boolean} Set this to true to avoid notifying the user of
+   *                          a problem if this list is broken.
+   */
+  setIgnoreIfBroken: function MailList_setIgnoreIfBroken(aIgnore) {
+    this.mIgnoreIfBroken = aIgnore;
   }
 };

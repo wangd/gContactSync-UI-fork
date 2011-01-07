@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2010
+ * Portions created by the Initial Developer are Copyright (C) 2008-2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -317,7 +317,49 @@ com.gContactSync.ABOverlay = {
       return; // and quit, nothing was added for mail lists
     }
     try {
-      var contact = new com.gContactSync.TBContact(aCard, null);
+      var contact;
+      
+      // If able to get the selected directory then show the lists this contact
+      // is in
+      if (GetSelectedDirectory === undefined || !cvData.cvLists) {
+        contact = new com.gContactSync.TBContact(aCard, null);
+      } else if (GetSelectedDirectory()) {
+        
+        var ab = (com.gContactSync.GAbManager.getAllAddressBooks(2))[GetSelectedDirectory()];
+        
+        if (!ab) {
+          // It is a mailing list, truncate everything from the last "/" to
+          // get the AB's URI.
+          ab = (com.gContactSync.GAbManager.getAllAddressBooks(2))
+                  [GetSelectedDirectory().substring(0,GetSelectedDirectory().lastIndexOf("/"))];
+        }
+        
+        if (!ab) {
+          cvData.cvLists.parentNode.collapsed = true;
+          contact = new com.gContactSync.TBContact(aCard, null);
+        } else {
+          cvData.cvLists.parentNode.collapsed = false;
+          contact = new com.gContactSync.TBContact(aCard, ab);
+          
+          // Get all lists in this AB, but do NOT get it's contacts yet
+          var lists = ab.getAllLists(true);
+          var listsWithContact = [];
+          
+          // Iterate through each list in this AB
+          // If the list is "broken" (enumeration through it's contacts fails)
+          // then just ignore the error and move on.
+          for (var i in lists) {
+            lists[i].setIgnoreIfBroken(true);
+            lists[i].getAllContacts();
+            if (lists[i].hasContact(contact)) {
+              listsWithContact.push(lists[i].getName());
+            }
+            lists[i].setIgnoreIfBroken(false);
+          }
+          
+          cvData.cvLists.data = listsWithContact.join(" | ");
+        }
+      }
       com.gContactSync.ABOverlay.showNodes(com.gContactSync.ContactConverter.getExtraSyncAttributes(false, true));
       var primaryEmail = com.gContactSync.GAbManager.getCardValue(aCard,
                                                  com.gContactSync.dummyEmailName);
@@ -763,6 +805,19 @@ com.gContactSync.ABOverlay = {
     vbox = document.getElementById("cvbPhone");
     vbox.appendChild(cvData.cvHomeFaxNumber);
     vbox.appendChild(cvData.cvOtherNumber);
+    
+    // Add a description where the mailing lists the selected contact is in
+    // will appear, if possible
+    if (GetSelectedDirectory !== undefined) {
+      var desc = document.createElement("description");
+      cvData.cvLists = document.createTextNode("1");
+      desc.style.paddingTop = "6px";
+      desc.appendChild(cvData.cvLists);
+      vbox = document.getElementById("CardViewInnerBox");
+      vbox.insertBefore(desc, document.getElementById("CardTitle").nextSibling);
+    } else {
+      cvData.cvLists = null;
+    }
   },
   /**
    * Makes and returns a <description> element of the given class and with an ID
