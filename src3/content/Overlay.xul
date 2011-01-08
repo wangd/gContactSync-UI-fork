@@ -185,9 +185,8 @@
                      oncommand="com.gContactSync.Import.step1('myspace');"/>
            <menuitem label="&Plaxo.label;"
                      oncommand="com.gContactSync.Import.step1('plaxo');"/>
-           <!-- Not supported quite yet -->
-           <!--<menuitem label="&Twitter.label;"
-                     oncommand="com.gContactSync.Import.step1('twitter');"/>-->
+           <menuitem label="&Twitter.label;"
+                     oncommand="com.gContactSync.Import.step1('twitter');"/>
            <!-- Yahoo is commented out because of an "Internal Error" -->
            <!--<menuitem label="&Yahoo.label;"
                          oncommand="com.gContactSync.Import.step1('yahoo');"/>-->

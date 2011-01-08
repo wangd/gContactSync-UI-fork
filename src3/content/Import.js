@@ -134,6 +134,21 @@ com.gContactSync.Import = {
       end_date:    "WorkEndDate"
     }
   },
+  /** Maps Twitter attributes to TB */
+  mMaptwitter: {
+    /** The actual name of the user */
+    name:              "DisplayName",
+    /** The screenname */
+    screen_name:       "NickName",
+    /** The internal Twitter ID */
+    id:                "TwitterID",
+    /** The user's profile image */
+    profile_image_url: "TwitterImageURL",
+    /** The user's homepage */
+    url:               "WebPage2",
+    /** The user's description */
+    description:       "Notes"
+  },
   /** Maps Portable Contacts attributes to TB nsIAbCard attributes */
   mMap: {
     /** name is complex */
@@ -495,7 +510,7 @@ com.gContactSync.Import = {
       }
       var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByName(res),
                                                  true);
-      var arr = obj.entry || obj.data;
+      var arr = obj.entry || obj.data || obj;
 
       for (var i in arr) {
         var contact = arr[i],
@@ -529,7 +544,8 @@ com.gContactSync.Import = {
 
             if (attr) {
               // Download a photo of the user, if available.
-              if (j === "picture" || j === "thumbnailUrl" || j === "photos") {
+              if (j === "picture" || j === "thumbnailUrl" || j === "photos" ||
+                  j === "profile_image_url") {
                 var file = com.gContactSync.writePhoto((j === "photos" ? contact[j][0].value : contact[j]),
                                                        this.mSource + "_" + id,
                                                        0);
