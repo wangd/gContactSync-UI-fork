@@ -153,8 +153,8 @@ com.gContactSync.Sync = {
     }
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mCurrentUsername = obj.username;
-    com.gContactSync.LOGGER.LOG("Starting Synchronization for " + com.gContactSync.Sync.mCurrentUsername +
-                                " at: " + Date() + "\n");
+    com.gContactSync.LOGGER.LOG("Starting synchronization for " + com.gContactSync.Sync.mCurrentUsername +
+                                " at: " + new Date().getTime() + " (" + Date() + ")\n");
     com.gContactSync.Sync.mCurrentAb        = obj.ab;
     com.gContactSync.Sync.mCurrentAuthToken = com.gContactSync.LoginManager.getAuthTokens()[com.gContactSync.Sync.mCurrentUsername];
     com.gContactSync.Sync.mContactsUrl      = null;
@@ -404,7 +404,8 @@ com.gContactSync.Sync = {
     
     // have to update the lists or TB 2 won't work properly
     com.gContactSync.Sync.mLists = ab.getAllLists();
-    com.gContactSync.LOGGER.LOG("Last sync was at: " + lastSync);
+    com.gContactSync.LOGGER.LOG("Last sync was at: " + lastSync +
+                                " (" + new Date(lastSync) + ")");
     if ((newMax = com.gContactSync.gdata.contacts.getNumberOfContacts(aAtom)) >= maxContacts.value) {
       com.gContactSync.Preferences.setPref(com.gContactSync.Preferences.mSyncBranch, maxContacts.label,
                                            maxContacts.type, newMax + 50);
@@ -416,7 +417,7 @@ com.gContactSync.Sync = {
     com.gContactSync.Sync.mContactsToUpdate = [];
     var gContact,
      // get the strings outside of the loop so they are only found once
-        found       = " * Found a match Last Modified Dates:",
+        found       = " * Found a match, last modified:",
         bothChanged = " * Conflict detected: the contact has been updated in " +
                       "both Google and Thunderbird",
         bothGoogle  = " * The contact from Google will be updated",
@@ -438,7 +439,7 @@ com.gContactSync.Sync = {
       var tbContact  = abCards[i],
           id         = tbContact.getID(),
           tbCardDate = tbContact.getValue("LastModifiedDate");
-      com.gContactSync.LOGGER.LOG(tbContact.getName() + ": " + id + " - " + tbCardDate);
+      com.gContactSync.LOGGER.LOG(tbContact.getName() + ": " + id);
       tbContact.id = id;
       // no ID = new contact
       if (!id) {
@@ -464,7 +465,11 @@ com.gContactSync.Sync = {
         gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0;
         // 4 options
         // if both were updated
-        com.gContactSync.LOGGER.LOG(found + "  -  " + gCardDate + " - " + tbCardDate);
+        com.gContactSync.LOGGER.LOG(found +
+                                    "\n   - Google:      " + gCardDate +
+                                    " (" + new Date(gCardDate) + ")" +
+                                    "\n   - Thunderbird: " + (tbCardDate * 1000) +
+                                    " (" + new Date(tbCardDate * 1000) + ")");
         com.gContactSync.LOGGER.VERBOSE_LOG(" * Google ID: " + id);
         // If there is a conflict, looks at the updateGoogleInConflicts
         // preference and updates Google if it's true, or Thunderbird if false
