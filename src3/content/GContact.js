@@ -356,7 +356,7 @@ com.gContactSync.GContact.prototype = {
     if (!address) {
       address = document.createElementNS(com.gContactSync.gdata.namespaces.GD.url,
                                          "structuredPostalAddress");
-      com.gContactSync.gdata.setRelOrLabel(address, aType);
+      com.gContactSync.gdata.contacts.setRelOrLabel(address, aType);
       this.xml.appendChild(address);
     }
     var elem = document.createElementNS(aElement.namespace.url,
