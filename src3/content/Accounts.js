@@ -200,8 +200,8 @@ com.gContactSync.Accounts = {
     // the simple preferences
     ab.savePref("Username",                usernameElem.value);
     ab.savePref("Plugin",                  pluginElem.value);
-    ab.savePref("Disabled",                disableElem.checked);
-    ab.savePref("updateGoogleInConflicts", updateGElem.checked);
+    ab.savePref("Disabled",                String(disableElem.checked));
+    ab.savePref("updateGoogleInConflicts", String(updateGElem.checked));
     // this is for backward compatibility
     ab.savePref("Primary",  "true");
     // Group to sync
@@ -209,14 +209,14 @@ com.gContactSync.Accounts = {
     ab.savePref("myContacts",     myContacts);
     ab.savePref("myContactsName", groupElem.value);
     // Sync Direction
-    ab.savePref("writeOnly", directionElem.value === "WriteOnly");
-    ab.savePref("readOnly",  directionElem.value === "ReadOnly");
+    ab.savePref("writeOnly", String(directionElem.value === "WriteOnly"));
+    ab.savePref("readOnly",  String(directionElem.value === "ReadOnly"));
     // this is done before the needsReset call in case something happens
     // reset the unsaved change
     this.mUnsavedChange = false;
     this.fillUsernames();
-    this.selectedAbChange();
     this.fillAbTree();
+    this.selectedAbChange();
     // check if the AB should be reset based on the new values
     needsReset = this.needsReset(ab, usernameElem.value, syncGroups, myContacts, groupElem.value);
     if (needsReset) {
