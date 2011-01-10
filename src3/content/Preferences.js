@@ -210,7 +210,8 @@ com.gContactSync.Preferences = {
     syncAddresses:            new com.gContactSync.Pref("syncAddresses",            "bool", true),
     needRestart:              new com.gContactSync.Pref("needRestart",              "bool", false),
     synchronizing:            new com.gContactSync.Pref("synchronizing",            "bool", false),
-    overrideGetCardForEmail:  new com.gContactSync.Pref("overrideGetCardForEmail",  "bool", true)
+    overrideGetCardForEmail:  new com.gContactSync.Pref("overrideGetCardForEmail",  "bool", true),
+    syncPhoneticNames:        new com.gContactSync.Pref("syncPhoneticNames",        "bool", true)
   },
   /**
    * Gets a preference given its branch, name, and type

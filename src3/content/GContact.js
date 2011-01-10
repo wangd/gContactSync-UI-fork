@@ -877,7 +877,7 @@ com.gContactSync.GContact.prototype = {
    * If there was no photo found (no etag) the etag is blank.
    * If this contact is new then this function returns null.
    */
-  getPhotoInfo: function GContact_hasPhoto(a) {
+  getPhotoInfo: function GContact_hasPhoto() {
     // Sample photo XML:
     // <link rel='http://schemas.google.com/contacts/2008/rel#photo' type='image/*'
     //  href='http://google.com/m8/feeds/photos/media/liz%40gmail.com/c9012de'
@@ -975,5 +975,45 @@ com.gContactSync.GContact.prototype = {
     // Close the input stream
     istream.close();
     return file;
+  },
+  /**
+   * Sets the value of a given attribute for the ith element with the given
+   * tag name and namespace.
+   *
+   * @param aTagName       {string} The name of the tag.
+   * @param aNamespace     {string} The namespace of the tag.
+   * @param aIndex         {int}    The index of the element whose attribute is
+   *                                to be set.
+   * @param aAttributeName {string} The name of the attribute to set.
+   * @param aValue         {string} The value to set.
+   *
+   * @returns {boolean} True if the element was found and the attribute was set.
+   */
+  setAttribute: function GContact_setAttribute(aTagName, aNamespace, aIndex, aAttributeName, aValue) {
+    var elems = this.xml.getElementsByTagNameNS(aNamespace, aTagName);
+    if (elems.length > aIndex && aIndex >= 0) {
+      elems[aIndex].setAttribute(aAttributeName, aValue);
+      return true;
+    }
+    return false;
+  },
+  /**
+   * Gets the value of a given attribute for the ith element with the given
+   * tag name and namespace.
+   *
+   * @param aTagName       {string} The name of the tag.
+   * @param aNamespace     {string} The namespace of the tag.
+   * @param aIndex         {int}    The index of the element whose attribute is
+   *                                to be returned.
+   * @param aAttributeName {string} The name of the attribute to get.
+   *
+   * @returns {boolean} The value of the attribute for the described element.
+   */
+  getAttribute: function GContact_getAttribute(aTagName, aNamespace, aIndex, aAttributeName) {
+    var elems = this.xml.getElementsByTagNameNS(aNamespace, aTagName);
+    if (elems.length > aIndex && aIndex >= 0) {
+      return elems[aIndex].getAttribute(aAttributeName);
+    }
+    return null;
   }
 };

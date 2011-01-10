@@ -90,6 +90,8 @@ pref("extensions.gContactSync.statusBarText", "");
 pref("extensions.gContactSync.synchronizing", false);
 // override getCardForEmail in mail/base/content/msgHdrViewOverlay.js to add support for the Third and FourthEmail addresses
 pref("extensions.gContactSync.overrideGetCardForEmail", true);
+// synchronize phonetic first and last names
+pref("extensions.gContactSync.syncPhoneticNames", true);
 // extended properties to sync
 pref("extensions.gContactSync.extended1", "PreferMailFormat");
 pref("extensions.gContactSync.extended2", "AllowRemoteContent");

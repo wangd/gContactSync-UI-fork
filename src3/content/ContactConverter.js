@@ -335,6 +335,21 @@ com.gContactSync.ContactConverter = {
         aGContact.setPhoto("");
       }
     }
+    
+    // Add the phonetic first and last names
+    if (com.gContactSync.Preferences.mSyncPrefs.syncPhoneticNames.value) {
+      aGContact.setAttribute("givenName",
+                             com.gContactSync.gdata.namespaces.GD.url,
+                             0,
+                             "yomi",
+                             aTBContact.getValue("PhoneticFirstName"));
+      aGContact.setAttribute("familyName",
+                             com.gContactSync.gdata.namespaces.GD.url,
+                             0,
+                             "yomi",
+                             aTBContact.getValue("PhoneticLastName"));
+    }
+    
     return aGContact;
   },
   /**
@@ -451,6 +466,20 @@ com.gContactSync.ContactConverter = {
         aTBContact.setValue("PhotoURI",  "");
         aTBContact.setValue("PhotoEtag", "");
       }
+    }
+    
+    // Add the phonetic first and last names
+    if (com.gContactSync.Preferences.mSyncPrefs.syncPhoneticNames.value) {
+      aTBContact.setValue("PhoneticFirstName",
+                          aGContact.getAttribute("givenName",
+                          com.gContactSync.gdata.namespaces.GD.url,
+                          0,
+                          "yomi"));
+      aTBContact.setValue("PhoneticLastName",
+                          aGContact.getAttribute("familyName",
+                          com.gContactSync.gdata.namespaces.GD.url,
+                          0,
+                          "yomi"));
     }
 
     aTBContact.update();
