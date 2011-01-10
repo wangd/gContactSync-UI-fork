@@ -505,7 +505,7 @@ com.gContactSync.CardDialogOverlay = {
           // empty
           if (lists[i].hasContact(contact)) {
             primEmailElem.value = com.gContactSync.makeDummyEmail(contact.mContact, true);
-            com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
+            com.gContactSync.alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
             break;
           }
         }
