@@ -176,8 +176,8 @@
            <!--<menuitem label="&Google.label;"
                      oncommand="com.gContactSync.Import.step1('google');"/>-->
            <!-- Not supported quite yet -->
-           <menuitem label="&LinkedIn.label;"
-                     oncommand="com.gContactSync.Import.step1('linkedin');"/>
+           <!--<menuitem label="&LinkedIn.label;"
+                     oncommand="com.gContactSync.Import.step1('linkedin');"/>-->
            <menuitem label="&MozLabsContacts.label;"
                      id="MozLabsContactsMenuitem"
                      oncommand="com.gContactSync.Import.mozillaLabsContactsImporter();"/>
