@@ -1,0 +1,23 @@
+<!ENTITY gContactSync.tab "gContactSync">
+<!ENTITY screenname.box "Screennames Aggiuntivi">
+<!ENTITY email.box "Indirizzi Email Aggiuntivi">
+<!ENTITY first.label "Primo">
+<!ENTITY second.label "Secondo">
+<!ENTITY third.label "Terzo">
+<!ENTITY fourth.label "Quarto">
+<!ENTITY fifth.label "Quinto">
+<!ENTITY sixth.label "Sesto">
+<!ENTITY seventh.label "Settimo">
+<!ENTITY eighth.label "Ottavo">
+<!ENTITY numbers.box "Numeri Aggiuntivi">
+<!ENTITY homeFax.label "Fax Casa">
+<!ENTITY address.box "Indirizzi Aggiuntivi">
+<!ENTITY home.label "Casa">
+<!ENTITY work.label "Ufficio">
+<!ENTITY mobile.label "Cellulare">
+<!ENTITY pager.label "Cercapersone">
+<!ENTITY workFax.label "Fax Ufficio">
+<!ENTITY other.label "Altro">
+<!ENTITY initialStatus.label "">
+<!ENTITY preferences.label "Preferenze">
+<!ENTITY status.tooltip "Clicca qui per visualizzare il file di log">

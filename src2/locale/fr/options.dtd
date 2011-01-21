@@ -1,0 +1,77 @@
+<!ENTITY title.label "gContactSync Préférences">
+<!ENTITY main.tab "Général">
+<!ENTITY help.value "Aide">
+<!ENTITY gettingStarted1.value "Avant de commencer la synchronisation des contacts, vérifiez ces paramètres">
+<!ENTITY autoSync.value "Synchronisation automatique">
+<!ENTITY autoSync.label "Synchroniser les contacts automatiquement">
+<!ENTITY refreshInterval.value "Intervalle entre les synchronisation (en minutes)">
+<!ENTITY initialDelay.value "Delai maximum pour contacter le serveur (en ms)">
+<!ENTITY abName.value "Nom du carnet d&apos;adresses à synchroniser avec (vieux ou nouveau)">
+<!ENTITY groups.label "Groupes et listes de diffusion">
+<!ENTITY myContacts.label "Synchroniser seulement le groupe &apos;Mes Contacts&apos;">
+<!ENTITY syncGroups.label "Synchroniser les Groupes Gmail avec les listes de diffusions de Thunderbird">
+<!ENTITY syncBehavior.label "Comportement de la Synchronisation">
+<!ENTITY removeOldAddresses.label "Supprimer la vieille adresse après qu&apos;elle ait été convertie au nouveau format">
+<!ENTITY updateGoogle.label "Toujours mettre à jour quand un contact est changé dans thunderbird ou dans GMail">
+<!ENTITY readOnly.label "Activer la reception seulement (Pas de modification du Carnet distant)">
+<!ENTITY writeOnly.label "Activer l&apos;émission seulement (Le carnet distant est une copie du carnet local)">
+<!ENTITY listenerDeleteFromGoogle.label "Repercuter immédiatement les suppressions de contacts">
+<!ENTITY parseNames.label "Séparer les noms des contacts Google en prénom et nom de famille">
+<!ENTITY interface.tab "Interface">
+<!ENTITY logging.label "Rapports">
+<!ENTITY enableLogging.label "Activer les rapports">
+<!ENTITY verboseLog.label "Activer les rapports verbeux">
+<!ENTITY buttons.label "Boutons et menus">
+<!ENTITY enableSyncBtn.label "Activer la barre d&apos;outils de sync">
+<!ENTITY forceBtnImage.label "Forcer la taille des bouton de la barre d&apos;outils de sync (en grand et horrible)">
+<!ENTITY enableMenu.label "Activer le menu gContactSync dans la fenêtre du carnet d&apos;adresses">
+<!ENTITY enableMenuLinks.label "Activer les liens dans le menu de gContactSync">
+<!ENTITY abResults.label "Paneau de résultat du carnet d&apos;adresses">
+<!ENTITY phoneColLabels.label "Renommer les intitulés des colonnes Téléphone">
+<!ENTITY newColLabels.label "Ajouter de nouveaux champs aux intitulés de colonnes (Thunderbird 3 seulement)">
+<!ENTITY abCardView.label "Details du contact du carnet d&apos;adresse">
+<!ENTITY enableImUrls.label "Activer les liens pour les mésanges (AIM, Yahoo, MSN, etc...)">
+<!ENTITY accounts.tab "Comptes">
+<!ENTITY emailAddress.label "Adresse courriel">
+<!ENTITY addressBook.label "Carnet d&apos;adresses">
+<!ENTITY removeLogin.label "Supprimer">
+<!ENTITY addLogin.label "Ajouter">
+<!ENTITY changeAbName.label "Modifier">
+<!ENTITY refreshTree.label "Rafraichir">
+<!ENTITY resetAll.label "Remise à zéro de tous">
+<!ENTITY addresses.tab "Adresses">
+<!--  LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating  -->
+<!ENTITY addDesc1.label "Google et Thunderbird stockent les adresses postales différement, du coup gContactSync convertit">
+<!ENTITY addDesc2.label "les champs d&apos;adresses multiples de thunderbird en une zone de texte à ligne multiples.">
+<!ENTITY addDesc3.label "">
+<!ENTITY addDesc4.label "Par defaut, la conversion des adresses est faite seulement quand un contact Thunderbird est">
+<!ENTITY addDesc5.label "synchronisé pour la première fois, et cette conversion supprime les valeurs des vieux champs">
+<!ENTITY addDesc6.label "(Ligne d&apos;adresse postale 1 et 2, Ville, État, Zip, et Pays)">
+<!--  LOCALIZATION NOTE: Use this if necessary if you need more room to translate customAdd1 and 2  -->
+<!ENTITY customAdd0.label "">
+<!ENTITY customAdd1.label "Vous pouvez choisir comment gContactSync remplit les champs des nouvelles adresses.">
+<!ENTITY customAdd2.label "Entourez le nom des attributs avec []. Espaces, mots, etc.. hors des [], sont autorisés.">
+<!--  LOCALIZATION NOTE: The words enclosed in [] should not be translated  -->
+<!ENTITY customAdd3.label "Exemples: [DisplayName] [HomeAddress] [HomeAddress2] [HomeCity] [HomeState]">
+<!ENTITY customAdd4.label "[HomeZipCode] [HomeCountry]">
+<!ENTITY homeAddress.label "Domicile ">
+<!ENTITY workAddress.label "Boulot   ">
+<!ENTITY otherAddress.label "Autre    ">
+<!ENTITY extended.tab "Avancé">
+<!ENTITY syncExtended.label "Propriétés étendues de sync">
+<!--  LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9  -->
+<!ENTITY extended1.value "Propriété 1  ">
+<!ENTITY extended2.value "Propriété 2  ">
+<!ENTITY extended3.value "Propriété 3  ">
+<!ENTITY extended4.value "Propriété 4  ">
+<!ENTITY extended5.value "Propriété 5  ">
+<!ENTITY extended6.value "Propriété 6  ">
+<!ENTITY extended7.value "Propriété 7  ">
+<!ENTITY extended8.value "Propriété 8  ">
+<!ENTITY extended9.value "Propriété 9  ">
+<!ENTITY extended10.value "Propriété 10">
+<!ENTITY extendedPropertiesDesc1.value "10 propriétés supplémentaires de sync.    Exemples:">
+<!--  LOCALIZATION NOTE: These 3 lines cannot change  -->
+<!ENTITY extendedPropertiesDesc2.value " * WebPage1, WebPage2, FirstName, LastName, NickName, PreferMailFormat">
+<!ENTITY extendedPropertiesDesc3.value " * Department, AllowRemoteContent, Custom1, Custom2, Custom3">
+<!ENTITY extendedPropertiesDesc4.value " * Custom4, BirthYear, BirthMonth, BirthDay, AnniversaryYear">

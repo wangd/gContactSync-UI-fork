@@ -1,0 +1,26 @@
+<!-- This is used in the new/edit contact dialog -->
+<!ENTITY gContactSync.tab "gContactSync">
+<!ENTITY screenname.box "추가 화면이름">
+<!ENTITY email.box "추가 이메일 주소">
+<!ENTITY first.label "첫 번째">
+<!ENTITY second.label "두 번째">
+<!ENTITY third.label "세 번째">
+<!ENTITY fourth.label "네 번째">
+<!ENTITY fifth.label "다섯 번째">
+<!ENTITY sixth.label "여섯 번째">
+<!ENTITY seventh.label "일곱 번째">
+<!ENTITY eighth.label "여덣 번째">
+<!-- Phone numbers -->
+<!ENTITY numbers.box "추가 번호">
+<!ENTITY homeFax.label "자택 팩스">
+<!ENTITY address.box "추가 주소">
+<!ENTITY home.label "자택">
+<!ENTITY work.label "직장">
+<!ENTITY mobile.label "휴대전화">
+<!ENTITY pager.label "호출기">
+<!ENTITY workFax.label "직장 팩스">
+<!ENTITY other.label "기타">
+<!-- This can be blank -->
+<!ENTITY initialStatus.label "">
+<!ENTITY preferences.label "환경설정">
+<!ENTITY status.tooltip "로그 파일을 보려면 여기를 클릭">

@@ -1,0 +1,92 @@
+<!-- This is the locale file for the Preferences dialog.
+     For more information about this dialog, read the wiki article here:
+     http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences
+
+-->
+<!ENTITY title.label "gContactSync 환경설정">
+<!-- The 'Main' tab of the Preferences dialog -->
+<!ENTITY main.tab "일반">
+<!ENTITY help.value "도움말">
+<!ENTITY gettingStarted1.value "주소록과 동기화하기 전에 다음의 설정값을 확인">
+<!ENTITY autoSync.value "자동 동기화">
+<!ENTITY autoSync.label "주소록을 자동으로 동기화">
+<!ENTITY refreshInterval.value "동기화 간격 (분) [기본: 30]">
+<!ENTITY initialDelay.value "초기 동기 지연 시간 (ms) [기본: 500]">
+<!ENTITY abName.value "다음의 주소록과 동기화 할 Thunderbird (새 또는 기존) 주소록 이름">
+<!ENTITY groups.label "그룹과 메일링 목록">
+<!ENTITY myContacts.label "'내 주소록' 그룹만 동기화">
+<!ENTITY syncGroups.label "Thunderbird 메일링 목록과 Gmail의 그룹을 동기화">
+<!ENTITY syncBehavior.label "동기화 동작 방식">
+<!ENTITY removeOldAddresses.label "주소를 새로운 형식으로 변환한 후 기존 개별 필드 주소값은 지우기">
+<!ENTITY updateGoogle.label "명함 내용이 서로 다르면 항상 Gmail (비활성: Thunderbird) 업데이트">
+<!ENTITY readOnly.label "가져오기 전용 모드 활성화 (Thunderbird는 업데이트 내용을 받기만 함)">
+<!ENTITY writeOnly.label "보내기 전용 모드 활성화 (Thunderbird에서 업데이트 내용을 보내기만 함)">
+<!ENTITY listenerDeleteFromGoogle.label "Thunderbird에서 명함이 제거되면 Google 주소록에서도 바로 제거">
+<!ENTITY parseNames.label "Google에서 가져온 명함의 이름을 성과 이름으로 구분해서 읽기">
+<!-- The 'Interface' tab of the Preferences dialog -->
+<!ENTITY interface.tab "인터페이스">
+<!ENTITY logging.label "로그">
+<!ENTITY enableLogging.label "로그 활성화">
+<!ENTITY verboseLog.label "자세한 로그 활성화">
+<!ENTITY buttons.label "버튼과 메뉴">
+<!ENTITY enableSyncBtn.label "도구 목록에 동기화 버튼 활성화">
+<!ENTITY forceBtnImage.label "도구 목록에 동기화 버튼 이미지 고정">
+<!ENTITY enableMenu.label "주소록 창에 gContactSync 메뉴 활성화">
+<!ENTITY enableMenuLinks.label "gContactSync 메뉴에 링크 활성화">
+<!ENTITY abResults.label "주소록 결과 창">
+<!ENTITY phoneColLabels.label "전화번호 열 레이블 이름 바꾸기">
+<!ENTITY newColLabels.label "열 레이블에 새로운 필드를 추가 (Thunderbird 3 전용)">
+<!ENTITY abCardView.label "주소록의 명함 세부사항">
+<!ENTITY enableImUrls.label "메신저 프로토콜에 대해 링크 활성화 (AIM, Yahoo!, MSN, 등)">
+<!-- The 'Accounts' tab of the Preferences dialog -->
+<!ENTITY accounts.tab "계정">
+<!ENTITY emailAddress.label "이메일 주소">
+<!ENTITY addressBook.label "주소록">
+<!ENTITY removeLogin.label "로그인 제거">
+<!ENTITY addLogin.label "로그인 추가">
+<!ENTITY changeAbName.label "주소록 변경">
+<!ENTITY refreshTree.label "새로 고침">
+<!-- This option will 'reset' all accounts.  This erases all contacts and lists
+     from TB and starts over with the contacts from Google.
+
+-->
+<!ENTITY resetAll.label "모든 계정 초기화">
+<!-- The 'Addresses' tab of the Preferences dialog -->
+<!ENTITY addresses.tab "주소">
+<!-- LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating -->
+<!ENTITY addDesc1.label "Google과 Thunderbird는 우편 주소를 서로 다른 식으로 저장합니다. gContactSync는">
+<!ENTITY addDesc2.label "Thunderbird의 개별 주소 필드를 여러 행을 허용하는 텍스트 박스로 변환합니다.">
+<!ENTITY addDesc3.label "">
+<!ENTITY addDesc4.label "기본적으로 Thunderbird의 명함이 처음 동기화될 때 한 번 변환되며, 이 때 기존의">
+<!ENTITY addDesc5.label "개별 필드(주소 1과 2, 시/군/구, 시/도, 우편번호, 국가)의 값은 제거됩니다.">
+<!ENTITY addDesc6.label "">
+<!-- LOCALIZATION NOTE: Use this if necessary if you need more room to translate customAdd1 and 2 -->
+<!ENTITY customAdd0.label "">
+<!ENTITY customAdd1.label "gContactSync이 새 주소 필드를 어떻게 체워 넣을지를 설정할 수 있습니다.">
+<!ENTITY customAdd2.label "속성의 이름을 []안에 넣어주시면 됩니다.  []안에 들어있지 않은 공백문자와 단어, ">
+<!-- LOCALIZATION NOTE: The words enclosed in [] should not be translated -->
+<!ENTITY customAdd3.label "문장부호, 등이 허용됩니다. 예시: [DisplayName] [HomeAddress] [HomeAddress2]">
+<!ENTITY customAdd4.label "[HomeCity] [HomeState] [HomeZipCode] [HomeCountry]">
+<!ENTITY homeAddress.label "자택">
+<!ENTITY workAddress.label "직장">
+<!ENTITY otherAddress.label "기타">
+<!-- The 'Advanced' tab of the Preferences dialog -->
+<!ENTITY extended.tab "고급">
+<!-- Google allows syncing up to 10 custom properties which they call 'Extended Properties' -->
+<!ENTITY syncExtended.label "확장 속성 동기화">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "속성 1  ">
+<!ENTITY extended2.value "속성 2  ">
+<!ENTITY extended3.value "속성 3  ">
+<!ENTITY extended4.value "속성 4  ">
+<!ENTITY extended5.value "속성 5  ">
+<!ENTITY extended6.value "속성 6  ">
+<!ENTITY extended7.value "속성 7  ">
+<!ENTITY extended8.value "속성 8  ">
+<!ENTITY extended9.value "속성 9  ">
+<!ENTITY extended10.value "속성 10">
+<!ENTITY extendedPropertiesDesc1.value "Thunderbird 확장 속성 10개를 동기화 합니다.  예:">
+<!-- LOCALIZATION NOTE: These 3 lines cannot change -->
+<!ENTITY extendedPropertiesDesc2.value " * WebPage[1-2], FirstName, LastName, NickName, PreferMailFormat">
+<!ENTITY extendedPropertiesDesc3.value " * Department, AllowRemoteContent, Custom[1-4], BirthYear, BirthMonth">
+<!ENTITY extendedPropertiesDesc4.value " * BirthDay, AnniversaryYear, AnniversaryMonth, AnniversaryDay">

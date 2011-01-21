@@ -1,0 +1,90 @@
+<!-- This is the locale file for the Preferences dialog.
+     For more information about this dialog, read the wiki article here:
+     http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences 
+-->
+<!ENTITY title.label "Preferencias gContactSync">
+<!-- The 'Main' tab of the Preferences dialog -->
+<!ENTITY main.tab "Principal">
+<!ENTITY help.value "Ayuda">
+<!ENTITY gettingStarted1.value "Antes de sincronizar contactos, compruebe estas configuraciones">
+<!ENTITY autoSync.value "Sincronización automática">
+<!ENTITY autoSync.label "Sincronizar contactos automáticamente">
+<!ENTITY refreshInterval.value "Intervalo entre sincronizaciones [Predeterminado: 30min]">
+<!ENTITY initialDelay.value "Retraso inicial en sincronización [Predeterminado: 500ms]">
+<!ENTITY abName.value "Nombre de la libreta de direcciones con la que sincronizar (vieja o nueva)">
+<!ENTITY groups.label "Grupos y Listas de Correo">
+<!ENTITY myContacts.label "Sólo sincronizar el grupo 'Mis Contactos'">
+<!ENTITY syncGroups.label "Sincronizar Grupos en GMail con Listas de correo en Thunderbird">
+<!ENTITY syncBehavior.label "Funcionamiento de Sincronización">
+<!ENTITY removeOldAddresses.label "Eliminar las direcciones viejas después de convertirlas al nuevo formato">
+<!ENTITY updateGoogle.label "Actualizar siempre GMail cuando un contacto es actualizado en GMail o Thunderbird">
+<!ENTITY readOnly.label "Activar modo descendente (Thunderbird sólo recibe actualizaciones; nunca las manda)">
+<!ENTITY writeOnly.label "Activar modo ascendente (Thunderbird manda actualizaciones, pero nunca las recibe)">
+<!ENTITY listenerDeleteFromGoogle.label "Eliminar contactos en Google después de ser eliminados en Thunderbird">
+<!ENTITY parseNames.label "Desglosar nombres de los contactos Google como Nombre y Apellido.">
+<!-- The 'Interface' tab of the Preferences dialog -->
+<!ENTITY interface.tab "Interfaz">
+<!ENTITY logging.label "Registro">
+<!ENTITY enableLogging.label "Activar Registro">
+<!ENTITY verboseLog.label "Activar Registro Detallado">
+<!ENTITY buttons.label "Botones y Menús">
+<!ENTITY enableSyncBtn.label "Activar botón de Sincronización en la barra de herramientas">
+<!ENTITY forceBtnImage.label "Incluir imagen en el icono de la barra de sincronización">
+<!ENTITY enableMenu.label "Activar el menú de gContactSync en la ventana de la libreta de direcciones">
+<!ENTITY enableMenuLinks.label "Activar enlaces en el menú de gContactSync">
+<!ENTITY abResults.label "Panel de resultados de la libreta de direcciones">
+<!ENTITY phoneColLabels.label "Renombrar las etiquetas de la columna de teléfono">
+<!ENTITY newColLabels.label "Añadir nuevos campos a las etiquetas de columna (sólo Thunderbird 3)">
+<!ENTITY abCardView.label "Detalles de contacto de la libreta de direcciones">
+<!ENTITY enableImUrls.label "Activar enlaces para varios protocolos IM (AIM, Yahoo!, MSN, etc.)">
+<!-- The 'Accounts' tab of the Preferences dialog -->
+<!ENTITY accounts.tab "Cuentas">
+<!ENTITY emailAddress.label "Dirección E-Mail">
+<!ENTITY addressBook.label "Libreta de direcciones">
+<!ENTITY removeLogin.label "Eliminar Cuenta">
+<!ENTITY addLogin.label "Añadir Cuenta">
+<!ENTITY changeAbName.label "Cambiar Libreta de direcciones">
+<!ENTITY refreshTree.label "Actualizar">
+<!-- This option will 'reset' all accounts.  This erases all contacts and lists
+     from TB and starts over with the contacts from Google. 
+-->
+<!ENTITY resetAll.label "Resetear Todas las Cuentas">
+<!-- The 'Addresses' tab of the Preferences dialog -->
+<!ENTITY addresses.tab "Direcciones">
+<!-- LOCALIZATION NOTE: Let me know if you need a better description or more labels when translating -->
+<!ENTITY addDesc1.label "Google y Thunderbird almacenan las direcciones de modo diferente, así que gContactSync convierte los">
+<!ENTITY addDesc2.label "múltiples campos de dirección de Thunderbird en un campo de texto que permite múltiples lineas.">
+<!ENTITY addDesc3.label "">
+<!ENTITY addDesc4.label "Como predeterminado, convertir la dirección sólo cuando la tarjeta de Thunderbird esta sincronizada primero y">
+<!ENTITY addDesc5.label "eliminar los valores en los campos viejos (Dirección linea 1 y 2, Ciudad, Estado, C.P. y País)">
+<!ENTITY addDesc6.label "">
+<!-- LOCALIZATION NOTE: Use this if necessary if you need more room to translate customAdd1 and 2 -->
+<!ENTITY customAdd0.label "Puede personalizar como gContactSync completa los nuevo campos de dirección.">
+<!ENTITY customAdd1.label "Tan sólo rodea el nombre del atributo entre [].">
+<!ENTITY customAdd2.label "Espacios, palabras fuera de los [], signos de puntuación, etc. están permitidos.">
+<!-- LOCALIZATION NOTE: The words enclosed in [] should not be translated -->
+<!ENTITY customAdd3.label "Ejemplos: [NombreAMostrar] [DirecciónCasa] [DirecciónCasa2] [CiudadCasa] [EstadoCasa]">
+<!ENTITY customAdd4.label "[Casa Cód.Postal] [Casa País]">
+<!ENTITY homeAddress.label "Casa">
+<!ENTITY workAddress.label "Trabajo">
+<!ENTITY otherAddress.label "Otro">
+<!-- The 'Advanced' tab of the Preferences dialog -->
+<!ENTITY extended.tab "Avanzado">
+<!-- Google allows syncing up to 10 custom properties which they call 'Extended Properties' -->
+<!ENTITY syncExtended.label "Propiedad Extra de Sincronización">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "Propiedad 1">
+<!ENTITY extended2.value "Propiedad 2">
+<!ENTITY extended3.value "Propiedad 3">
+<!ENTITY extended4.value "Propiedad 4">
+<!ENTITY extended5.value "Propiedad 5">
+<!ENTITY extended6.value "Propiedad 6">
+<!ENTITY extended7.value "Propiedad 7">
+<!ENTITY extended8.value "Propiedad 8">
+<!ENTITY extended9.value "Propiedad 9">
+<!ENTITY extended10.value "Propiedad 10">
+<!ENTITY extendedPropertiesDesc1.value "10 propiedades extra a sincronizar. Ejemplos:">
+<!-- LOCALIZATION NOTE: These 3 lines cannot change -->
+<!ENTITY extendedPropertiesDesc2.value "* PáginaWeb1, PáginaWeb2, Nombre, Apellido, Apodo, FormatoPreferidoCorreo">
+<!ENTITY extendedPropertiesDesc3.value "* Departamento, PermitirContenidoRemoto, Presonalizado1, Presonalizado2, Presonalizado3, Presonalizado4, Cumpleaños">
+<!ENTITY extendedPropertiesDesc4.value "* Departamento, Cumpleaños, AniversarioAño, AniversarioMes, AniversarioDía">
