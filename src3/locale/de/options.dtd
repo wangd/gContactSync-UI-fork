@@ -1,0 +1,62 @@
+<!ENTITY title.label "gContactSync Einstellungen">
+<!ENTITY main.tab "Allgemein">
+<!ENTITY help.value "Hilfe">
+<!ENTITY gettingStarted1.value "Bevor Sie mit der Synchronisierung Ihrer Kontakte anfangen, überprüfen Sie bitte diese Einstellungen">
+<!ENTITY autoSync.value "Automatische Synchronisation">
+<!ENTITY autoSync.label "Kontakte automatisch synchronisieren">
+<!ENTITY refreshInterval.value "Synchronisierungsuntervall (Minuten) [Standard: 120 (2 Stunden)]">
+<!ENTITY initialDelayMinutes.value "Synchronisationsverzögerung (in Minuten) [Standard: 5]">
+<!ENTITY abName.value "Name des zu synchronisierenden Adressbuchs (alt oder neu)">
+<!ENTITY syncBehavior.label "Synchronisationsverhalten">
+<!ENTITY removeOldAddresses.label "Alte Thunderbird Adressen löschen nachdem sie in das neue Format konvertiert wurden">
+<!ENTITY alertSummary.label "Zusammenfassung nach jeder manuellen Synchronisierung anzeigen">
+<!ENTITY phoneTypes.label "Telefonnummer Typfelder hinzufügen (TBs Feldnamen ignorieren)">
+<!ENTITY accountDelay.value "Verzögerung zwischen Konten (ms) [Standard: 5000]">
+<!ENTITY logging.label "Protokollierung">
+<!ENTITY enableLogging.label "Protokollierung aktivieren">
+<!ENTITY verboseLog.label "Ausführliche Protokollierung aktivieren (zum Debugging)">
+<!ENTITY interface.tab "Schnittstelle">
+<!ENTITY buttons.label "Schaltflächen und Menüs">
+<!ENTITY enableSyncBtn.label "Symbolleistenschaltfläche zur Synchronisierung aktivieren">
+<!ENTITY forceBtnImage.label "Symbolleistenschaltfläche zur Synchronisierung fixieren">
+<!ENTITY enableMenu.label "gContactSync Menü aktivieren">
+<!ENTITY enableMenuLinks.label "Einige Links (Wiki, FAQ, etc.) zum gContactSync Menü hinzufügen">
+<!ENTITY addReset.label "Link zum Zurücksetzen zum Adressbuch Kontextmenü hinzufügen">
+<!ENTITY abResults.label "Kontaktliste">
+<!ENTITY phoneColLabels.label "Telefon Spaltennamen umbenennen">
+<!ENTITY newColLabels.label "Die neuen Felder zu den Spaltenbezeichnern hinzufügen (nur Thunderbird 3)">
+<!ENTITY abCardView.label "Adressbuch Kontaktdetails">
+<!ENTITY enableImUrls.label "Links für verschiedene IM-Protokolle (AIM, Yahoo!, MSN, etc.) aktivieren">
+<!ENTITY extended.tab "Andere">
+<!ENTITY syncExtended.label "Erweiterte Eigenschaften synchronisieren">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "Eigenschaft 1">
+<!ENTITY extended2.value "Eigenschaft 2">
+<!ENTITY extended3.value "Eigenschaft 3">
+<!ENTITY extended4.value "Eigenschaft 4">
+<!ENTITY extended5.value "Eigenschaft 5">
+<!ENTITY extended6.value "Eigenschaft 6">
+<!ENTITY extended7.value "Eigenschaft 7">
+<!ENTITY extended8.value "Eigenschaft 8">
+<!ENTITY extended9.value "Eigenschaft 9">
+<!ENTITY extended10.value "Eigenschaft 10">
+<!ENTITY extendedPropertiesDesc1.value "10 weitere Eigenschaften zu synchronisieren. Beispiele:">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc2.value "* Custom1, Custom2, Custom3, Custom4">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc3.value "* AnniversayDay, AnniversayMonth, AnniversaryYear">
+<!ENTITY advanced.tab "Erweitert">
+<!ENTITY warning.value "Warnung - dies ist ausschließlich für erfahrene Benutzer gedacht">
+<!ENTITY backup.label "Adressbuch Sicherungsrichtlinie">
+<!ENTITY backupInterval.value "Sicherungsintervall (Tage, -1 zum Deaktivieren) [Standard: 14]">
+<!ENTITY other.label "Andere">
+<!ENTITY chromeTime.value "Verzögerung für 'Nicht reagierendes Skript' Warnung (0 zum Deaktivieren)">
+<!ENTITY confirmDeleteThreshold.value "Minimale Anzahl an zu löschenden Kontakten bevor nach Erlaubnis gefragt wird">
+<!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
+<!ENTITY syncAddresses.label "Postanschriften synchronisieren (EXPERIMENTELL)">
+<!ENTITY resetAll.label "Alle synchronisierten Adressbücher zurücksetzen">
+<!ENTITY cleanOldPrefs.label "Alte Adressbucheinstellungen säubern">
+<!-- FirstLogin.xul only -->
+<!ENTITY myContacts.label "Nur die Gruppe &quot;Meine Kontakte&quot; synchronisieren">
+<!ENTITY openAccounts.value "Erweiterte Kontoeinstellungen">
+<!ENTITY openPreferences.value "Erweiterte Einstellungen">

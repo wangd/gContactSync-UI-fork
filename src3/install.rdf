@@ -3,11 +3,13 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
     <Description about="urn:mozilla:install-manifest">
         <em:id>gContactSync@pirules.net</em:id>
-        <em:version>0.3.1pre</em:version>
+        <em:version>0.3.1</em:version>
         <em:name>gContactSync</em:name>
         <em:description>Synchronizes Google Contacts with Thunderbird</em:description>
         <em:creator>Josh Geenen</em:creator>
         <em:translator>Mikael Hiort af Ornäs - sv-SE</em:translator>
+        <em:translator>Michal Stanke (michal.stanke@mikk.cz) - cs</em:translator>
+        <em:translator>Sebastian Zartner - de</em:translator>
         <em:optionsURL>chrome://gcontactsync/content/options.xul</em:optionsURL>
         <em:iconURL>chrome://gcontactsync/skin/logo_main.png</em:iconURL>
         <em:homepageURL>http://www.pirules.org/addons/gcontactsync/</em:homepageURL>
