@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2010
+ * Portions created by the Initial Developer are Copyright (C) 2008-2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -51,9 +51,9 @@ com.gContactSync.versionMajor   = "0";
 /** The minor version of gContactSync (ie 3 in 0.3.0b1) */
 com.gContactSync.versionMinor   = "3";
 /** The release for the current version of gContactSync (ie 1 in 0.3.1a7) */
-com.gContactSync.versionRelease = "0";
+com.gContactSync.versionRelease = "1";
 /** The suffix for the current version of gContactSync (ie a7 for Alpha 7) */
-com.gContactSync.versionSuffix  = "";
+com.gContactSync.versionSuffix  = "pre";
 
 /**
  * Returns a string of the current version for logging.  This can print either
@@ -168,7 +168,9 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
     return "";
   }
   var prefix = com.gContactSync.StringBundle.getStr("dummy1"),
-      suffix = com.gContactSync.StringBundle.getStr("dummy2"),
+      suffix = "@nowhere.invalid", // Note - this is hard-coded so locales can
+                                   // be switched without gContactSync failing
+                                   // to recognize a dummy e-mail address
       id     = null;
   // GContact and TBContact may not be defined
   try {
@@ -207,8 +209,12 @@ com.gContactSync.makeDummyEmail = function gCS_makeDummyEmail(aContact, ignorePr
  *                  false otherwise
  */
 com.gContactSync.isDummyEmail = function gCS_isDummyEmail(aEmail) {
-  return aEmail && aEmail.indexOf && 
-         aEmail.indexOf(com.gContactSync.StringBundle.getStr("dummy2")) !== -1;
+  return aEmail && aEmail.indexOf &&
+         (aEmail.indexOf("@nowhere.invalid") !== -1 ||
+          // This is here for when the sv-SE locale had a translated string
+          // for the dummy e-mail suffix in 0.3.0 so gContactSync recognizes any
+          // dummy e-mail addresses created in that version and locale.
+          aEmail.indexOf("@ingenstans.ogiltig") !== -1);
 };
 
 /**
