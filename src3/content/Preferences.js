@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2010
+ * Portions created by the Initial Developer are Copyright (C) 2008-2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -294,12 +294,19 @@ com.gContactSync.Preferences = {
       com.gContactSync.LOGGER.LOG(" * " + i + ": " + this.mSyncPrefs[i].value);
     }
     com.gContactSync.LOGGER.LOG("***Finished Loading Preferences***\n");
-    // only add these extended properties if the pref to sync them is true
+    
+    // Only add these extended properties if the pref to sync them is true
     this.mExtendedProperties = [];
-    if (this.mSyncPrefs.syncExtended.value)
-      for (var i = 1; i <= 10; i++)
+    if (this.mSyncPrefs.syncExtended.value) {
+      for (var i = 1; i <= 10; i++) {
         this.mExtendedProperties.push(this.getPref(this.mSyncBranch,
                                                    "extended" + i,
                                                    this.mTypes.CHAR));
+      }
+    }
+    if (!com.gContactSync.Preferences.mSyncPrefs.enableMenu.value &&
+          document.getElementById("gContactSyncMenu")) {
+      document.getElementById("gContactSyncMenu").collapsed = true;
+    }
   }
 };

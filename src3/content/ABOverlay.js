@@ -87,8 +87,6 @@ com.gContactSync.ABOverlay = {
     OnLoadCardView = this.myOnLoadCardView;
     if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
       this.setupButton();    // insert the Sync button
-    if (!com.gContactSync.Preferences.mSyncPrefs.enableMenu.value)
-      document.getElementById("gContactSyncMenu").collapsed = true;
     // add the extra attributes as tree columns to show and
     this.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver
