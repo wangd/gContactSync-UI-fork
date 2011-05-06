@@ -399,6 +399,16 @@ http://pi3141.wordpress.com/2008/07/30/update-2/</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/com.gContactSync.GContact.html#getAttribute">getAttribute</a></b>(aTagName, aNamespace, aIndex, aAttributeName)
+								</div>
+								<div class="description">Gets the value of a given attribute for the ith element with the given
+tag name and namespace.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/com.gContactSync.GContact.html#getElementValue">getElementValue</a></b>(aElement, aIndex, aType)
 								</div>
 								<div class="description">Returns the value of an element with a type where the value is in the
@@ -456,7 +466,7 @@ representation.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/com.gContactSync.GContact.html#getPhotoInfo">getPhotoInfo</a></b>(a)
+								<div class="fixedFont"><b><a href="../symbols/com.gContactSync.GContact.html#getPhotoInfo">getPhotoInfo</a></b>()
 								</div>
 								<div class="description">Returns an object with information about this contact's photo.</div>
 							</td>
@@ -507,6 +517,16 @@ and the type (ie home, work, other, etc.</div>
 								</div>
 								<div class="description">Google's contacts schema puts several components of an address into a
 separate element, so this function handles those attributes separately.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/com.gContactSync.GContact.html#setAttribute">setAttribute</a></b>(aTagName, aNamespace, aIndex, aAttributeName, aValue)
+								</div>
+								<div class="description">Sets the value of a given attribute for the ith element with the given
+tag name and namespace.</div>
 							</td>
 						</tr>
 					
@@ -807,6 +827,69 @@ http://pi3141.wordpress.com/2008/07/30/update-2/
 
 					<hr />
 				
+					<a name="getAttribute"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{boolean}</span>
+					<b>getAttribute</b>(aTagName, aNamespace, aIndex, aAttributeName)
+					
+					</div>
+					<div class="description">
+						Gets the value of a given attribute for the ith element with the given
+tag name and namespace.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>aTagName</b>
+									
+								</dt>
+								<dd>{string} The name of the tag.</dd>
+							
+								<dt>
+									<b>aNamespace</b>
+									
+								</dt>
+								<dd>{string} The namespace of the tag.</dd>
+							
+								<dt>
+									<b>aIndex</b>
+									
+								</dt>
+								<dd>{int}    The index of the element whose attribute is
+                               to be returned.</dd>
+							
+								<dt>
+									<b>aAttributeName</b>
+									
+								</dt>
+								<dd>{string} The name of the attribute to get.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> The value of the attribute for the described element.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="getElementValue"> </a>
 					<div class="fixedFont">
 					
@@ -1044,7 +1127,7 @@ representation.
 					<div class="fixedFont">
 					
 					
-					<b>getPhotoInfo</b>(a)
+					<b>getPhotoInfo</b>()
 					
 					</div>
 					<div class="description">
@@ -1055,17 +1138,6 @@ representation.
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>a</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -1317,6 +1389,75 @@ separate element, so this function handles those attributes separately.
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setAttribute"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{boolean}</span>
+					<b>setAttribute</b>(aTagName, aNamespace, aIndex, aAttributeName, aValue)
+					
+					</div>
+					<div class="description">
+						Sets the value of a given attribute for the ith element with the given
+tag name and namespace.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>aTagName</b>
+									
+								</dt>
+								<dd>{string} The name of the tag.</dd>
+							
+								<dt>
+									<b>aNamespace</b>
+									
+								</dt>
+								<dd>{string} The namespace of the tag.</dd>
+							
+								<dt>
+									<b>aIndex</b>
+									
+								</dt>
+								<dd>{int}    The index of the element whose attribute is
+                               to be set.</dd>
+							
+								<dt>
+									<b>aAttributeName</b>
+									
+								</dt>
+								<dd>{string} The name of the attribute to set.</dd>
+							
+								<dt>
+									<b>aValue</b>
+									
+								</dt>
+								<dd>{string} The value to set.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> True if the element was found and the attribute was set.</dd>
+							
+							</dl>
 						
 						
 						
@@ -1698,7 +1839,7 @@ TODO - merge w/ com.gContactSync.writePhoto
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Tue Dec 21 2010 17:57:01 GMT-0500 (EST)
+			Documentation generated by <a href="http://www.jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 2.1.0 on Fri May 06 2011 09:24:18 GMT-0400 (EDT)
 		</div>
 	</body>
 </html>

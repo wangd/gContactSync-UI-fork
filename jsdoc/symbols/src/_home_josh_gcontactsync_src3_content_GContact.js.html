@@ -363,7 +363,7 @@
 <span class='line'>356</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">address</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>357</span> </span><span class="WHIT">      </span><span class="NAME">address</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">document.createElementNS</span><span class="PUNC">(</span><span class="NAME">com.gContactSync.gdata.namespaces.GD.url</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>358</span> </span><span class="WHIT">                                         </span><span class="STRN">"structuredPostalAddress"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>359</span> </span><span class="WHIT">      </span><span class="NAME">com.gContactSync.gdata.setRelOrLabel</span><span class="PUNC">(</span><span class="NAME">address</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aType</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>359</span> </span><span class="WHIT">      </span><span class="NAME">com.gContactSync.gdata.contacts.setRelOrLabel</span><span class="PUNC">(</span><span class="NAME">address</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aType</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>360</span> </span><span class="WHIT">      </span><span class="NAME">this.xml.appendChild</span><span class="PUNC">(</span><span class="NAME">address</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>361</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>362</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">elem</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">document.createElementNS</span><span class="PUNC">(</span><span class="NAME">aElement.namespace.url</span><span class="PUNC">,</span><span class="WHIT">
@@ -884,7 +884,7 @@
 <span class='line'>877</span>    * If there was no photo found (no etag) the etag is blank.
 <span class='line'>878</span>    * If this contact is new then this function returns null.
 <span class='line'>879</span>    */</span><span class="WHIT">
-<span class='line'>880</span> </span><span class="WHIT">  </span><span class="NAME">getPhotoInfo</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GContact_hasPhoto</span><span class="PUNC">(</span><span class="NAME">a</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>880</span> </span><span class="WHIT">  </span><span class="NAME">getPhotoInfo</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GContact_hasPhoto</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>881</span> </span><span class="WHIT">    </span><span class="COMM">// Sample photo XML:</span><span class="WHIT">
 <span class='line'>882</span> </span><span class="WHIT">    </span><span class="COMM">// &lt;link rel='http://schemas.google.com/contacts/2008/rel#photo' type='image/*'</span><span class="WHIT">
 <span class='line'>883</span> </span><span class="WHIT">    </span><span class="COMM">//  href='http://google.com/m8/feeds/photos/media/liz%40gmail.com/c9012de'</span><span class="WHIT">
@@ -982,6 +982,46 @@
 <span class='line'>975</span> </span><span class="WHIT">    </span><span class="COMM">// Close the input stream</span><span class="WHIT">
 <span class='line'>976</span> </span><span class="WHIT">    </span><span class="NAME">istream.close</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>977</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">file</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>978</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>979</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>980</span> </span></pre></body></html>
+<span class='line'>978</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>979</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>980</span>    * Sets the value of a given attribute for the ith element with the given
+<span class='line'>981</span>    * tag name and namespace.
+<span class='line'>982</span>    *
+<span class='line'>983</span>    * @param aTagName       {string} The name of the tag.
+<span class='line'>984</span>    * @param aNamespace     {string} The namespace of the tag.
+<span class='line'>985</span>    * @param aIndex         {int}    The index of the element whose attribute is
+<span class='line'>986</span>    *                                to be set.
+<span class='line'>987</span>    * @param aAttributeName {string} The name of the attribute to set.
+<span class='line'>988</span>    * @param aValue         {string} The value to set.
+<span class='line'>989</span>    *
+<span class='line'>990</span>    * @returns {boolean} True if the element was found and the attribute was set.
+<span class='line'>991</span>    */</span><span class="WHIT">
+<span class='line'>992</span> </span><span class="WHIT">  </span><span class="NAME">setAttribute</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GContact_setAttribute</span><span class="PUNC">(</span><span class="NAME">aTagName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aNamespace</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aIndex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aAttributeName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>993</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">elems</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.xml.getElementsByTagNameNS</span><span class="PUNC">(</span><span class="NAME">aNamespace</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTagName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>994</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">elems.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">aIndex</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">aIndex</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>995</span> </span><span class="WHIT">      </span><span class="NAME">elems</span><span class="PUNC">[</span><span class="NAME">aIndex</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">setAttribute</span><span class="PUNC">(</span><span class="NAME">aAttributeName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>996</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>997</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>998</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>999</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>1000</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>1001</span>    * Gets the value of a given attribute for the ith element with the given
+<span class='line'>1002</span>    * tag name and namespace.
+<span class='line'>1003</span>    *
+<span class='line'>1004</span>    * @param aTagName       {string} The name of the tag.
+<span class='line'>1005</span>    * @param aNamespace     {string} The namespace of the tag.
+<span class='line'>1006</span>    * @param aIndex         {int}    The index of the element whose attribute is
+<span class='line'>1007</span>    *                                to be returned.
+<span class='line'>1008</span>    * @param aAttributeName {string} The name of the attribute to get.
+<span class='line'>1009</span>    *
+<span class='line'>1010</span>    * @returns {boolean} The value of the attribute for the described element.
+<span class='line'>1011</span>    */</span><span class="WHIT">
+<span class='line'>1012</span> </span><span class="WHIT">  </span><span class="NAME">getAttribute</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">GContact_getAttribute</span><span class="PUNC">(</span><span class="NAME">aTagName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aNamespace</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aIndex</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aAttributeName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>1013</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">elems</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.xml.getElementsByTagNameNS</span><span class="PUNC">(</span><span class="NAME">aNamespace</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aTagName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>1014</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">elems.length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">aIndex</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">aIndex</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>1015</span> </span><span class="WHIT">      </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">elems</span><span class="PUNC">[</span><span class="NAME">aIndex</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">getAttribute</span><span class="PUNC">(</span><span class="NAME">aAttributeName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>1016</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>1017</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>1018</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>1019</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>1020</span> </span></pre></body></html>
