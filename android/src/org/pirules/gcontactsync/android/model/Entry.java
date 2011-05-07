@@ -22,7 +22,7 @@ import com.google.api.client.util.Data;
 import com.google.api.client.util.Key;
 import com.google.api.client.http.xml.atom.AtomContent;
 
-import org.pirules.gcontactsync.android.util.RedirectHandler;
+import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
 
 import java.io.IOException;
@@ -50,38 +50,34 @@ public class Entry implements Cloneable {
     return Data.clone(this);
   }
 
-  public void executeDelete(HttpTransport transport) throws IOException {
-    HttpRequest request = transport.buildDeleteRequest();
-    request.setUrl(getEditLink());
-    RedirectHandler.execute(request).ignore();
+  public void executeDelete(HttpTransport transport, GoogleUrl url) throws IOException {
+    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildDeleteRequest(url);
+    HttpRequestWrapper.execute(request).ignore();
   }
 
   protected Entry executeInsert(HttpTransport transport, GoogleUrl url) throws IOException {
-    HttpRequest request = transport.buildPostRequest();
-    request.url = url;
     AtomContent content = new AtomContent();
     content.namespaceDictionary = Util.DICTIONARY;
+    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
     content.entry = this;
-    request.content = content;
-    return RedirectHandler.execute(request).parseAs(getClass());
+    return HttpRequestWrapper.execute(request).parseAs(getClass());
   }
 
   protected Entry executePatchRelativeToOriginal(HttpTransport transport, Entry original) throws IOException {
-    HttpRequest request = transport.buildPatchRequest();
-    request.setUrl(getEditLink());
     AtomPatchRelativeToOriginalContent content = new AtomPatchRelativeToOriginalContent();
     content.namespaceDictionary = Util.DICTIONARY;
     content.originalEntry = original;
     content.patchedEntry = this;
-    request.content = content;
-    return RedirectHandler.execute(request).parseAs(getClass());
+    GoogleUrl url = new GoogleUrl(getEditLink());
+    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
+    return HttpRequestWrapper.execute(request).parseAs(getClass());
   }
 
-  private String getEditLink() {
+  public String getEditLink() {
     return Link.find(links, "edit");
   }
   
-  protected String getSelfLink() {
+  public String getSelfLink() {
     return Link.find(links, "self");
   }
 }

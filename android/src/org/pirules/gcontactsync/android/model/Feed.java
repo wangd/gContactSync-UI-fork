@@ -19,7 +19,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
-import org.pirules.gcontactsync.android.util.RedirectHandler;
+import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,8 +41,7 @@ public class Feed {
 
   protected static Feed executeGet(HttpTransport transport, GoogleUrl url, Class<? extends Feed> feedClass)
       throws IOException {
-    HttpRequest request = transport.buildGetRequest();
-    request.url = url;
-    return RedirectHandler.execute(request).parseAs(feedClass);
+    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildGetRequest(url);
+    return HttpRequestWrapper.execute(request).parseAs(feedClass);
   }
 }

@@ -15,6 +15,7 @@
 package org.pirules.gcontactsync.android;
 
 import com.google.api.client.googleapis.GoogleHeaders;
+import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -26,6 +27,7 @@ import org.pirules.gcontactsync.android.model.contact.ContactUrl;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
 import org.pirules.gcontactsync.android.model.group.GroupFeed;
 import org.pirules.gcontactsync.android.model.group.GroupUrl;
+import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
 
 import com.google.api.client.util.DateTime;
@@ -76,7 +78,10 @@ public final class gContactSync extends ListActivity {
   
   private static final int VERSION_MAJOR = 0;
   private static final int VERSION_MINOR = 0;
+  @SuppressWarnings("unused")
   private static final int VERSION_RELEASE = 1;
+  
+  private static final String GDATA_VERSION = "3"; 
 
   private static final boolean LOGGING_DEFAULT = false;
 
@@ -118,11 +123,11 @@ public final class gContactSync extends ListActivity {
     }
     GoogleHeaders headers = new GoogleHeaders();
     headers.setApplicationName(TAG + "/" + VERSION_MAJOR + "." + VERSION_MINOR);
-    headers.gdataVersion = "3";
-    transport.defaultHeaders = headers;
+    headers.gdataVersion = GDATA_VERSION;
+    HttpRequestWrapper.defaultHeaders = headers;
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = Util.DICTIONARY;
-    transport.addParser(parser);
+    HttpRequestWrapper.parser = parser;
   }
 
   @Override
@@ -232,7 +237,7 @@ public final class gContactSync extends ListActivity {
 
   void authenticated(String authToken) {
     this.authToken = authToken;
-    ((GoogleHeaders) transport.defaultHeaders).setGoogleLogin(authToken);
+    HttpRequestWrapper.defaultHeaders.setGoogleLogin(authToken);
     //RedirectHandler.resetSessionId(transport);
     executeRefreshContacts();
   }
@@ -327,7 +332,7 @@ public final class gContactSync extends ListActivity {
           executeRefreshContacts();
           return true;
         case CONTEXT_DELETE:
-          contact.executeDelete(transport);
+          contact.executeDelete(transport, new GoogleUrl(contact.getEditLink()));
           executeRefreshContacts();
           return true;
         case CONTEXT_LOGGING:
@@ -377,7 +382,6 @@ public final class gContactSync extends ListActivity {
       else {
         ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
         contactUrl.group = currentGroup.getContactFeedLink();
-        //new ContactUrl(currentGroup.getContactFeedLink());
         ContactFeed contactFeed = ContactFeed.executeGet(transport, contactUrl);
         if (contactFeed.contacts != null) {
           contacts.addAll(contactFeed.contacts);
