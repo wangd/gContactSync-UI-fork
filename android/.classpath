@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/code/gson/gson/1.6/gson-1.6.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/guava/guava/r08/guava-r08.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="/home/josh/dev/google-api-java-client/google-api-client/target/google-api-client-1.4.2-beta-SNAPSHOT.jar" sourcepath="/home/josh/dev/google-api-java-client/google-api-client/target/google-api-client-1.4.2-beta-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="/home/josh/dev/google-api-java-client/google-api-client-googleapis/target/google-api-client-googleapis-1.4.2-beta-SNAPSHOT.jar" sourcepath="/home/josh/dev/google-api-java-client/google-api-client-googleapis/target/google-api-client-googleapis-1.4.2-beta-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
