@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Google Inc.
+ * Copyright (c) 2011 Josh Geenen
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,42 +14,50 @@
 
 package org.pirules.gcontactsync.android.util;
 
+import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleUrl;
-import com.google.api.client.http.HttpExecuteIntercepter;
+import com.google.api.client.http.HttpExecuteInterceptor;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.xml.atom.AtomParser;
 
 import java.io.IOException;
 
 /**
- * @author Yaniv Inbar
+ * @author Josh Geenen
  */
-public class RedirectHandler {
-
+public class HttpRequestWrapper {
+ 
+  private static HttpRequestFactory factory = null;
+  public static GoogleHeaders defaultHeaders = null;
+  public static AtomParser parser = null;
+  
+  public static HttpRequestFactory getFactory(HttpTransport transport, GoogleUrl url) {
+    if (factory == null) {
+      factory = createRequestFactory(transport, url);
+    }
+    return factory;
+  }
+  
   /**
    * See <a href="http://code.google.com/apis/calendar/faq.html#redirect_handling">How do I handle
    * redirects...?</a>.
    */
-  static class SessionIntercepter implements HttpExecuteIntercepter {
+  static class SessionInterceptor implements HttpExecuteInterceptor {
 
     private String gsessionid;
 
-    SessionIntercepter(HttpTransport transport, GoogleUrl locationUrl) {
-      resetSessionId(transport);
+    SessionInterceptor(HttpTransport transport, GoogleUrl locationUrl) {
       this.gsessionid = (String) locationUrl.getFirst("gsessionid");
-      transport.intercepters.add(0, this); // must be first
     }
 
     public void intercept(HttpRequest request) {
       request.url.set("gsessionid", this.gsessionid);
     }
-  }
-
-  /** Resets the session ID stored for the HTTP transport. */
-  public static void resetSessionId(HttpTransport transport) {
-    transport.removeIntercepters(SessionIntercepter.class);
   }
 
   public static HttpResponse execute(HttpRequest request) throws IOException {
@@ -59,11 +67,22 @@ public class RedirectHandler {
       if (e.response.statusCode == 302) {
         GoogleUrl url = new GoogleUrl(e.response.headers.location);
         request.url = url;
-        new SessionIntercepter(request.transport, url);
-        e.response.ignore(); // force the connection to close
-        return request.execute();
+        factory = createRequestFactory(request.transport, url);
+        e.response.ignore(); // close the connection
+        return request.execute(); // re-execute the request
       }
       throw e;
     }
+  }
+  
+  public static HttpRequestFactory createRequestFactory(HttpTransport transport, GoogleUrl locationUrl) {
+    final SessionInterceptor interceptor = new SessionInterceptor(transport, locationUrl);
+    return transport.createRequestFactory(new HttpRequestInitializer() {
+      public void initialize(HttpRequest request) {
+        request.interceptor = interceptor;
+        request.headers = defaultHeaders;
+        request.addParser(parser);
+      }
+    });
   }
 }

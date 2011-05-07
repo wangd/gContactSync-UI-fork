@@ -44,6 +44,10 @@ public class Entry implements Cloneable {
 
   @Key("link")
   public List<Link> links;
+  
+  public String getName() {
+    return title != null ? title : "";
+  }
 
   @Override
   protected Entry clone() {

@@ -21,14 +21,21 @@ import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
+
+import org.pirules.gcontactsync.android.model.GCSExpandableListAdapter;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 import org.pirules.gcontactsync.android.model.contact.ContactFeed;
 import org.pirules.gcontactsync.android.model.contact.ContactUrl;
+import org.pirules.gcontactsync.android.model.contact.tags.GroupMembershipInfo;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
 import org.pirules.gcontactsync.android.model.group.GroupFeed;
 import org.pirules.gcontactsync.android.model.group.GroupUrl;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
+
+import android.app.ExpandableListActivity;
+
+import android.widget.ExpandableListAdapter;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.client.http.xml.atom.AtomParser;
@@ -38,7 +45,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,10 +57,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ArrayAdapter;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,7 +76,7 @@ import java.util.logging.Logger;
  *
  * @author Yaniv Inbar, Josh Geenen
  */
-public final class gContactSync extends ListActivity {
+public final class gContactSync extends ExpandableListActivity {
 
   private static final String AUTH_TOKEN_TYPE = "cp";
 
@@ -94,8 +100,6 @@ public final class gContactSync extends ListActivity {
   private static final int CONTEXT_DELETE = 1;
 
   private static final int CONTEXT_LOGGING = 2;
-  
-  private static final int CONTEXT_SELECT_GROUP = 3;
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
@@ -107,13 +111,15 @@ public final class gContactSync extends ListActivity {
 
   private String authToken;
 
-  private final List<ContactEntry> contacts = Lists.newArrayList();
-  private final List<GroupEntry> groups = Lists.newArrayList();
+  private List<ContactEntry> contacts = Lists.newArrayList();
+  private List<GroupEntry> groups = Lists.newArrayList();
   
-  private GroupEntry currentGroup = null;
+  private Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();   
 
   /** SDK 2.2 ("FroYo") version build number. */
   private static final int FROYO = 8;
+  
+  private ExpandableListAdapter mAdapter = null; 
 
   public gContactSync() {
     if (Build.VERSION.SDK_INT <= FROYO) {
@@ -121,6 +127,7 @@ public final class gContactSync extends ListActivity {
     } else {
       transport = new NetHttpTransport();
     }
+    //
     GoogleHeaders headers = new GoogleHeaders();
     headers.setApplicationName(TAG + "/" + VERSION_MAJOR + "." + VERSION_MINOR);
     headers.gdataVersion = GDATA_VERSION;
@@ -128,6 +135,8 @@ public final class gContactSync extends ListActivity {
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = Util.DICTIONARY;
     HttpRequestWrapper.parser = parser;
+    
+    mAdapter = new GCSExpandableListAdapter(gContactSync.this);
   }
 
   @Override
@@ -135,8 +144,8 @@ public final class gContactSync extends ListActivity {
     super.onCreate(savedInstanceState);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     setLogging(settings.getBoolean("logging", LOGGING_DEFAULT));
-    getListView().setTextFilterEnabled(true);
-    registerForContextMenu(getListView());
+    getExpandableListView().setTextFilterEnabled(true);
+    registerForContextMenu(getExpandableListView());
     gotAccount(false);
   }
 
@@ -244,9 +253,8 @@ public final class gContactSync extends ListActivity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    if (currentGroup != null) {
-      menu.add(0, MENU_ADD, 0, "New contact");
-    }
+    // TODO implement
+    //menu.add(0, MENU_ADD, 0, "New contact");
     menu.add(0, MENU_ACCOUNTS, 0, "Switch Account");
     return true;
   }
@@ -266,7 +274,6 @@ public final class gContactSync extends ListActivity {
         executeRefreshContacts();
         return true;
       case MENU_ACCOUNTS:
-        currentGroup = null;
         showDialog(DIALOG_ACCOUNTS);
         return true;
     }
@@ -275,21 +282,9 @@ public final class gContactSync extends ListActivity {
 
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-    if (currentGroup == null) {
-      AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
-      currentGroup = groups.get((int) info.id);
-      executeRefreshContacts();
-      return;
-    }
-    // TODO cleanup
     super.onCreateContextMenu(menu, v, menuInfo);
-    //menu.add(0, CONTEXT_EDIT, 0, "Update Title");
-    if (currentGroup == null) {
-      menu.add(0, CONTEXT_SELECT_GROUP, 0, "Select Group");
-    } else {
-      // Only allow deletion of contacts for now
-      menu.add(0, CONTEXT_DELETE, 0, "Delete");
-    }
+    // TODO implement
+    //menu.add(0, CONTEXT_DELETE, 0, "Delete");
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     boolean logging = settings.getBoolean("logging", false);
     menu.add(0, CONTEXT_LOGGING, 0, "Logging").setCheckable(true).setChecked(logging);
@@ -311,20 +306,9 @@ public final class gContactSync extends ListActivity {
   public boolean onContextItemSelected(MenuItem item) {
     AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     
-    // For now if there's no current group then select the group
-    if (currentGroup == null) {
-      currentGroup = groups.get((int) info.id);
-      executeRefreshContacts();
-      return true;
-    }
-    
     ContactEntry contact = contacts.get((int) info.id);
     try {
       switch (item.getItemId()) {
-        case CONTEXT_SELECT_GROUP:
-          currentGroup = groups.get((int) info.id);
-          executeRefreshContacts();
-          return true;
         case CONTEXT_EDIT:
           ContactEntry patchedContact = contact.clone();
           patchedContact.title = contact.title + " UPDATED " + new DateTime(new Date());
@@ -349,46 +333,63 @@ public final class gContactSync extends ListActivity {
     return false;
   }
   
-  // When back is pressed go back to the list of groups, if already there then
+  // When back is pressed go back to the list of contacts, if already there then
   // fallback on the superclass' default action
   @Override
   public void onBackPressed () {
-    if (currentGroup != null) {
-      currentGroup = null;
-      executeRefreshContacts();
-    }
-    else {
-      super.onBackPressed();
-    }
+    // TODO update when contact activity is working
+    super.onBackPressed();
   }
 
   private void executeRefreshContacts() {
     String[] names;
     contacts.clear();
     groups.clear();
+    groupsMap.clear();
     try {
-      if (currentGroup == null) {
-        GroupUrl groupUrl = GroupUrl.forAllGroupsFeed();
-        GroupFeed groupFeed = GroupFeed.executeGet(transport, groupUrl);
-        GroupEntry allContacts = new GroupEntry();
-        allContacts.id = null;
-        allContacts.title = "All Contacts";
-        groups.add(allContacts);
-        if (groupFeed.groups != null) {
-          groups.addAll(groupFeed.groups);
-        }
+
         
+      ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
+      ContactFeed contactFeed = ContactFeed.executeGet(transport, contactUrl);
+      if (contactFeed.contacts != null) {
+        contacts.addAll(contactFeed.contacts);
       }
-      else {
-        ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
-        contactUrl.group = currentGroup.getContactFeedLink();
-        ContactFeed contactFeed = ContactFeed.executeGet(transport, contactUrl);
-        if (contactFeed.contacts != null) {
-          contacts.addAll(contactFeed.contacts);
+      
+      GroupUrl groupUrl = GroupUrl.forAllGroupsFeed();
+      GroupFeed groupFeed = GroupFeed.executeGet(transport, groupUrl);
+      GroupEntry allContacts = new GroupEntry();
+      allContacts.id = null;
+      allContacts.title = "All Contacts";
+      allContacts.contacts = contacts;
+      groups.add(allContacts);
+      if (groupFeed.groups != null) {
+        groups.addAll(groupFeed.groups);
+      }
+      
+      // Create the group map
+      for (GroupEntry group : groups) {
+        if (group.id != null) {
+          groupsMap.put(group.id, group);
         }
       }
+      
+       for (ContactEntry contact : contacts) {
+        if (contact.groupMembership == null) {
+          continue;
+        }
+        for (GroupMembershipInfo info : contact.groupMembership) {
+          if (!info.deleted && info.href != null) {
+            GroupEntry group = groupsMap.get(info.href);
+            if (group != null) {
+              group.addContact(contact);
+            }
+          }
+        }
+      }
+
       int numGroups = groups.size();
-      int numContacts = contacts.size();
+      int numContacts = contacts.size(); 
+      
       names = new String[numContacts + numGroups];
       for (int i = 0; i < numGroups; i++) {
         names[i] = groups.get(i).title;
@@ -402,8 +403,9 @@ public final class gContactSync extends ListActivity {
       names = new String[] {e.getMessage()};
       contacts.clear();
     }
-    setListAdapter(
-        new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names));
+    ((GCSExpandableListAdapter) mAdapter).setGroups(groups);
+    setListAdapter(mAdapter);
+        //new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names));
   }
 
   private void setLogging(boolean logging) {

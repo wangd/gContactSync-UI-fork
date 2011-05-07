@@ -18,8 +18,11 @@ import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.http.HttpTransport;
 
 import org.pirules.gcontactsync.android.model.Entry;
+import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -27,12 +30,26 @@ import java.io.IOException;
  */
 public class GroupEntry extends Entry {
 
+  public List<ContactEntry> contacts;
+  
+  public void addContact(ContactEntry contact) {
+    if (contacts == null) {
+      contacts = new LinkedList<ContactEntry>();
+    }
+    contacts.add(contact);
+  }
+  
+  @Override
+  public String getName() {
+    return title != null ? title.replaceFirst("System Group: ", "") : "";
+  }
   public String getContactFeedLink() {
     return id;
   }
 
   @Override
   public GroupEntry clone() {
+    // TODO - need to copy contacts?
     return (GroupEntry) super.clone();
   }
 

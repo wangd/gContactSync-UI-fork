@@ -16,11 +16,15 @@ package org.pirules.gcontactsync.android.model.contact;
 
 import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.util.Key;
 
 import org.pirules.gcontactsync.android.model.Entry;
 import org.pirules.gcontactsync.android.model.Link;
+import org.pirules.gcontactsync.android.model.contact.tags.Email;
+import org.pirules.gcontactsync.android.model.contact.tags.GroupMembershipInfo;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -28,8 +32,26 @@ import java.io.IOException;
  */
 public class ContactEntry extends Entry {
 
+  @Key("gd:email")
+  public List<Email> email;
+  
+  @Key("gContact:groupMembershipInfo")
+  public List<GroupMembershipInfo> groupMembership;
+  
   public String getEventFeedLink() {
     return Link.find(links, "http://schemas.google.com/contact/2008#contact");
+  }
+  
+  @Override
+  public String getName() {
+    String name = title != null ? title.replaceFirst("System Group: ", "") : "";
+    if (name == "" && email != null && email.size() > 0) {
+      name = email.get(0).address;
+      if (name == null) {
+        name = "";
+      }
+    }
+    return name;
   }
 
   @Override
