@@ -26,11 +26,10 @@ import org.pirules.gcontactsync.android.model.contact.ContactUrl;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
 import org.pirules.gcontactsync.android.model.group.GroupFeed;
 import org.pirules.gcontactsync.android.model.group.GroupUrl;
-import org.pirules.gcontactsync.android.util.RedirectHandler;
 import org.pirules.gcontactsync.android.util.Util;
 
 import com.google.api.client.util.DateTime;
-import com.google.api.client.xml.atom.AtomParser;
+import com.google.api.client.http.xml.atom.AtomParser;
 import com.google.common.collect.Lists;
 
 import android.accounts.Account;

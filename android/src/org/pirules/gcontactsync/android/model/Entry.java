@@ -18,7 +18,7 @@ import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.googleapis.xml.atom.AtomPatchRelativeToOriginalContent;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.util.DataUtil;
+import com.google.api.client.util.Data;
 import com.google.api.client.util.Key;
 import com.google.api.client.http.xml.atom.AtomContent;
 
@@ -47,7 +47,7 @@ public class Entry implements Cloneable {
 
   @Override
   protected Entry clone() {
-    return DataUtil.clone(this);
+    return Data.clone(this);
   }
 
   public void executeDelete(HttpTransport transport) throws IOException {
