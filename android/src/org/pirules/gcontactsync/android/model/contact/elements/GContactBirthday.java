@@ -19,51 +19,24 @@ import com.google.api.client.util.Key;
 import org.pirules.gcontactsync.android.model.elements.Element;
 
 /**
- * http://code.google.com/apis/gdata/docs/2.0/elements.html#gdName
- * TODO - yomi (phonetic)
- * @author Josh Geenen
+ * http://code.google.com/apis/contacts/docs/3.0/reference.html#gcBirthday
+ * @author joshgeenen@gmail.com (Josh Geenen)
  */
-public class GdName extends Element {
-
-  /**
-   * Person's given name.
-   */
-  @Key("gd:givenName")
-  public String givenName;
+public class GContactBirthday extends Element {
   
   /**
-   * Additional name of the person, eg. middle name.
+   * Birthday date, given in format YYYY-MM-DD (with the year), or --MM-DD
+   * (without the year).
    */
-  @Key("gd:additionalName")
-  public String additionalName;
+  @Key("@when")
+  public String birthday;
   
   /**
-   * Person's family name.
+   * Prints the birthday as a string.
+   * @return The birthday string.
    */
-  @Key("gd:familyName")
-  public String familyName;
-  
-  /**
-   * Honorific prefix, eg. 'Mr' or 'Mrs'.
-   */
-  @Key("gd:namePrefix")
-  public String namePrefix;
-  
-  /**
-   * Honorific suffix, eg. 'san' or 'III'.
-   */
-  @Key("gd:nameSuffix")
-  public String nameSuffix;
-  
-  /**
-   * Unstructured representation of the name.
-   */
-  @Key("gd:fullName")
-  public String fullName;
-  
   @Override
   public String toString() {
-    return fullName;
+    return birthday;
   }
-  
 }

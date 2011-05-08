@@ -56,8 +56,15 @@ public class ShowContactActivity extends Activity {
       ArrayAdapter<String> adapter = new ContactEntryListViewAdapter(this, R.layout.contact_detail_layout);
       
       Object [] detailElements = {
+        contact.nickname,
+        contact.occupation,
         contact.email,
-        contact.phoneNumber
+        contact.phoneNumber,
+        contact.ims,
+        contact.birthday,
+        contact.hobbies,
+        contact.websites,
+        contact.relations
       };
       
       for (Object element : detailElements) {

@@ -16,7 +16,6 @@ package org.pirules.gcontactsync.android.model.elements;
 
 import com.google.api.client.util.Key;
 
-import org.pirules.gcontactsync.android.model.Element;
 
 import java.util.List;
 

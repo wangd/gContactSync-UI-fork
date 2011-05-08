@@ -16,7 +16,7 @@ package org.pirules.gcontactsync.android.model.contact.elements;
 
 import com.google.api.client.util.Key;
 
-import org.pirules.gcontactsync.android.model.Element;
+import org.pirules.gcontactsync.android.model.elements.Element;
 
 /**
  * http://code.google.com/apis/contacts/docs/2.0/reference.html#gContactNamespace

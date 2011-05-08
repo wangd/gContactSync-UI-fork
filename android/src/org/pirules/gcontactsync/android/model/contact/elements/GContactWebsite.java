@@ -19,51 +19,29 @@ import com.google.api.client.util.Key;
 import org.pirules.gcontactsync.android.model.elements.Element;
 
 /**
- * http://code.google.com/apis/gdata/docs/2.0/elements.html#gdName
- * TODO - yomi (phonetic)
- * @author Josh Geenen
+ * http://code.google.com/apis/contacts/docs/3.0/reference.html#gcWebsite
+ * @author joshgeenen@gmail.com (Josh Geenen)
  */
-public class GdName extends Element {
-
-  /**
-   * Person's given name.
-   */
-  @Key("gd:givenName")
-  public String givenName;
+public class GContactWebsite extends Element {
   
   /**
-   * Additional name of the person, eg. middle name.
+   * A link to the website.
    */
-  @Key("gd:additionalName")
-  public String additionalName;
+  @Key("@href")
+  public String address;
+  
+  /***
+   * When multiple websites appear in an entry, indicates which is primary.
+   * At most one website may be primary. Default value is false.
+   */
+  @Key("@primary")
+  public boolean primary;
   
   /**
-   * Person's family name.
+   * Prints this website address
    */
-  @Key("gd:familyName")
-  public String familyName;
-  
-  /**
-   * Honorific prefix, eg. 'Mr' or 'Mrs'.
-   */
-  @Key("gd:namePrefix")
-  public String namePrefix;
-  
-  /**
-   * Honorific suffix, eg. 'san' or 'III'.
-   */
-  @Key("gd:nameSuffix")
-  public String nameSuffix;
-  
-  /**
-   * Unstructured representation of the name.
-   */
-  @Key("gd:fullName")
-  public String fullName;
-  
   @Override
   public String toString() {
-    return fullName;
+    return getLabel(null) + address;
   }
-  
 }

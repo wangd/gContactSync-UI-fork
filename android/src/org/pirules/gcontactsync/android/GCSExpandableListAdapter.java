@@ -19,6 +19,7 @@ import org.pirules.gcontactsync.android.model.group.GroupEntry;
 
 import android.view.LayoutInflater;
 
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
