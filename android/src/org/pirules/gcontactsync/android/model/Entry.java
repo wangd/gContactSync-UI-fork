@@ -22,6 +22,7 @@ import com.google.api.client.util.Data;
 import com.google.api.client.util.Key;
 import com.google.api.client.http.xml.atom.AtomContent;
 
+import org.pirules.gcontactsync.android.model.elements.Link;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
 
@@ -45,7 +46,8 @@ public class Entry implements Cloneable {
   @Key("link")
   public List<Link> links;
   
-  public String getName() {
+  @Override
+  public String toString() {
     return title != null ? title : "";
   }
 

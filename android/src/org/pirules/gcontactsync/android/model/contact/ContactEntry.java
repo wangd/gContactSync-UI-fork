@@ -19,9 +19,10 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
 import org.pirules.gcontactsync.android.model.Entry;
-import org.pirules.gcontactsync.android.model.Link;
-import org.pirules.gcontactsync.android.model.contact.tags.Email;
-import org.pirules.gcontactsync.android.model.contact.tags.GroupMembershipInfo;
+import org.pirules.gcontactsync.android.model.contact.elements.GdEmail;
+import org.pirules.gcontactsync.android.model.contact.elements.GContactGroupMembershipInfo;
+import org.pirules.gcontactsync.android.model.contact.elements.GdName;
+import org.pirules.gcontactsync.android.model.elements.Link;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,17 +34,20 @@ import java.util.List;
 public class ContactEntry extends Entry {
 
   @Key("gd:email")
-  public List<Email> email;
+  public List<GdEmail> email;
+  
+  @Key("gd:name")
+  public GdName name;
   
   @Key("gContact:groupMembershipInfo")
-  public List<GroupMembershipInfo> groupMembership;
+  public List<GContactGroupMembershipInfo> groupMembership;
   
   public String getEventFeedLink() {
     return Link.find(links, "http://schemas.google.com/contact/2008#contact");
   }
   
   @Override
-  public String getName() {
+  public String toString() {    
     String name = title != null ? title.replaceFirst("System Group: ", "") : "";
     if (name == "" && email != null && email.size() > 0) {
       name = email.get(0).address;

@@ -15,25 +15,27 @@
 package org.pirules.gcontactsync.android;
 
 import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-import org.pirules.gcontactsync.android.model.GCSExpandableListAdapter;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 import org.pirules.gcontactsync.android.model.contact.ContactFeed;
 import org.pirules.gcontactsync.android.model.contact.ContactUrl;
-import org.pirules.gcontactsync.android.model.contact.tags.GroupMembershipInfo;
+import org.pirules.gcontactsync.android.model.contact.elements.GContactGroupMembershipInfo;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
 import org.pirules.gcontactsync.android.model.group.GroupFeed;
 import org.pirules.gcontactsync.android.model.group.GroupUrl;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
 
-import android.app.ExpandableListActivity;
+import android.widget.ExpandableListView.OnChildClickListener;
+
+import android.app.Activity;
+
+import android.widget.ExpandableListView;
 
 import android.widget.ExpandableListAdapter;
 
@@ -56,7 +58,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import java.io.IOException;
 import java.util.Date;
@@ -76,7 +77,7 @@ import java.util.logging.Logger;
  *
  * @author Yaniv Inbar, Josh Geenen
  */
-public final class gContactSync extends ExpandableListActivity {
+public final class ContactListActivity extends Activity {
 
   private static final String AUTH_TOKEN_TYPE = "cp";
 
@@ -91,15 +92,15 @@ public final class gContactSync extends ExpandableListActivity {
 
   private static final boolean LOGGING_DEFAULT = false;
 
+  // Menu IDs
   private static final int MENU_ADD = 0;
 
   private static final int MENU_ACCOUNTS = 1;
+  
+  private static final int MENU_REFRESH = 2;
 
-  private static final int CONTEXT_EDIT = 0;
-
-  private static final int CONTEXT_DELETE = 1;
-
-  private static final int CONTEXT_LOGGING = 2;
+  // Context menu IDs
+  private static final int CONTEXT_LOGGING = 0;
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
@@ -112,22 +113,25 @@ public final class gContactSync extends ExpandableListActivity {
   private String authToken;
 
   private List<ContactEntry> contacts = Lists.newArrayList();
-  private List<GroupEntry> groups = Lists.newArrayList();
+  List<GroupEntry> groups = Lists.newArrayList();
   
-  private Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();   
+  private Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();
 
   /** SDK 2.2 ("FroYo") version build number. */
   private static final int FROYO = 8;
   
-  private ExpandableListAdapter mAdapter = null; 
+  // UI Elements
+  private ExpandableListView mListView = null;
+  private ExpandableListAdapter mAdapter = null;
+  
+  public static ContactEntry mSelectedContact = null; 
 
-  public gContactSync() {
+  public ContactListActivity() {
     if (Build.VERSION.SDK_INT <= FROYO) {
       transport = new ApacheHttpTransport();
     } else {
       transport = new NetHttpTransport();
     }
-    //
     GoogleHeaders headers = new GoogleHeaders();
     headers.setApplicationName(TAG + "/" + VERSION_MAJOR + "." + VERSION_MINOR);
     headers.gdataVersion = GDATA_VERSION;
@@ -136,7 +140,7 @@ public final class gContactSync extends ExpandableListActivity {
     parser.namespaceDictionary = Util.DICTIONARY;
     HttpRequestWrapper.parser = parser;
     
-    mAdapter = new GCSExpandableListAdapter(gContactSync.this);
+    mAdapter = new GCSExpandableListAdapter(ContactListActivity.this);
   }
 
   @Override
@@ -144,8 +148,23 @@ public final class gContactSync extends ExpandableListActivity {
     super.onCreate(savedInstanceState);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     setLogging(settings.getBoolean("logging", LOGGING_DEFAULT));
-    getExpandableListView().setTextFilterEnabled(true);
-    registerForContextMenu(getExpandableListView());
+    
+    setContentView(R.layout.contact_groups);
+    
+    mListView = (ExpandableListView)findViewById(R.id.expandableListView1);
+    
+    mListView.setTextFilterEnabled(true);
+    registerForContextMenu(mListView);
+    
+    mListView.setOnChildClickListener(new OnChildClickListener() {     
+      @Override
+      public boolean onChildClick(ExpandableListView listView, View view, int groupPosition, int childPosition, long arg4) {
+        mSelectedContact = groups.get(groupPosition).contacts.get(childPosition);
+        launchShowContact();
+        return false;
+      }
+    });
+    
     gotAccount(false);
   }
 
@@ -154,7 +173,7 @@ public final class gContactSync extends ExpandableListActivity {
     switch (id) {
       case DIALOG_ACCOUNTS:
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select a Google account");
+        builder.setTitle("Select a Google Account");
         final AccountManager manager = AccountManager.get(this);
         final Account[] accounts = manager.getAccountsByType("com.google");
         final int size = accounts.length;
@@ -256,6 +275,7 @@ public final class gContactSync extends ExpandableListActivity {
     // TODO implement
     //menu.add(0, MENU_ADD, 0, "New contact");
     menu.add(0, MENU_ACCOUNTS, 0, "Switch Account");
+    menu.add(0, MENU_REFRESH, 0, "Refresh");
     return true;
   }
 
@@ -271,6 +291,9 @@ public final class gContactSync extends ExpandableListActivity {
         } catch (IOException e) {
           handleException(e);
         }
+        executeRefreshContacts();
+        return true;
+      case MENU_REFRESH:
         executeRefreshContacts();
         return true;
       case MENU_ACCOUNTS:
@@ -289,56 +312,28 @@ public final class gContactSync extends ExpandableListActivity {
     boolean logging = settings.getBoolean("logging", false);
     menu.add(0, CONTEXT_LOGGING, 0, "Logging").setCheckable(true).setChecked(logging);
   }
-  
-  /*
-  @Override
-  public boolean onMenuItemSelected(int featureId, MenuItem item) {
-    if (currentGroup == null) {
-      currentGroup = groups.get(featureId);
-      executeRefreshContacts();
-      return true;
-    }
-    return super.onMenuItemSelected(featureId, item);
-  }
-  */
 
   @Override
   public boolean onContextItemSelected(MenuItem item) {
-    AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-    
-    ContactEntry contact = contacts.get((int) info.id);
-    try {
-      switch (item.getItemId()) {
-        case CONTEXT_EDIT:
-          ContactEntry patchedContact = contact.clone();
-          patchedContact.title = contact.title + " UPDATED " + new DateTime(new Date());
-          patchedContact.executePatchRelativeToOriginal(transport, contact);
-          executeRefreshContacts();
-          return true;
-        case CONTEXT_DELETE:
-          contact.executeDelete(transport, new GoogleUrl(contact.getEditLink()));
-          executeRefreshContacts();
-          return true;
-        case CONTEXT_LOGGING:
-          SharedPreferences settings = getSharedPreferences(PREF, 0);
-          boolean logging = settings.getBoolean("logging", LOGGING_DEFAULT);
-          setLogging(!logging);
-          return true;
-        default:
-          return super.onContextItemSelected(item);
-      }
-    } catch (IOException e) {
-      handleException(e);
+    switch (item.getItemId()) {
+      case CONTEXT_LOGGING:
+        SharedPreferences settings = getSharedPreferences(PREF, 0);
+        boolean logging = settings.getBoolean("logging", LOGGING_DEFAULT);
+        setLogging(!logging);
+        return true;
+      default:
+        return super.onContextItemSelected(item);
     }
-    return false;
   }
   
-  // When back is pressed go back to the list of contacts, if already there then
-  // fallback on the superclass' default action
-  @Override
-  public void onBackPressed () {
-    // TODO update when contact activity is working
-    super.onBackPressed();
+  /**
+   * Launches the ShowContactActivity with the currently selected contact.
+   */
+  protected void launchShowContact() {
+    if (mSelectedContact != null) {
+      Intent i = new Intent(this, ShowContactActivity.class);
+      startActivity(i);
+    }
   }
 
   private void executeRefreshContacts() {
@@ -377,7 +372,7 @@ public final class gContactSync extends ExpandableListActivity {
         if (contact.groupMembership == null) {
           continue;
         }
-        for (GroupMembershipInfo info : contact.groupMembership) {
+        for (GContactGroupMembershipInfo info : contact.groupMembership) {
           if (!info.deleted && info.href != null) {
             GroupEntry group = groupsMap.get(info.href);
             if (group != null) {
@@ -404,8 +399,7 @@ public final class gContactSync extends ExpandableListActivity {
       contacts.clear();
     }
     ((GCSExpandableListAdapter) mAdapter).setGroups(groups);
-    setListAdapter(mAdapter);
-        //new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names));
+    mListView.setAdapter(mAdapter);
   }
 
   private void setLogging(boolean logging) {

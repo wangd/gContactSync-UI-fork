@@ -19,6 +19,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
+import org.pirules.gcontactsync.android.model.elements.Link;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 
 import java.io.IOException;

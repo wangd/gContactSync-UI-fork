@@ -12,10 +12,12 @@
  * the License.
  */
 
-package org.pirules.gcontactsync.android.model;
+package org.pirules.gcontactsync.android;
 
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
+
+import android.view.LayoutInflater;
 
 import java.util.List;
 
@@ -75,7 +77,7 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
   public Object getChild(int groupPosition, int childPosition) {
     GroupEntry group = groups.get(groupPosition);
     ContactEntry contact = group != null && group.contacts != null ? group.contacts.get(childPosition) : null;
-    return contact != null ? contact.getName() : "";
+    return contact != null ? contact.toString() : "";
   }
 
   /* (non-Javadoc)
@@ -91,9 +93,16 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
    */
   @Override
   public View getChildView(int groupPosition, int childPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-    TextView textView = getGenericView();
-    textView.setText(getChild(groupPosition, childPosition).toString());
-    return textView;
+    String childName = getChild(groupPosition, childPosition).toString();
+    if (convertView == null) {
+      LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      convertView = inflater.inflate(R.layout.expandable_child_layout, null);
+    }
+    TextView textView = (TextView)convertView.findViewById(R.id.tvChildName);
+    if (textView != null) {
+      textView.setText(childName);
+    }
+    return convertView;
   }
 
   /* (non-Javadoc)
@@ -111,7 +120,7 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
   @Override
   public Object getGroup(int groupPosition) {
     GroupEntry group = groups.get(groupPosition);
-    return group != null ? group.getName() : "";
+    return group != null ? group.toString() : "";
   }
 
   /* (non-Javadoc)
@@ -135,9 +144,16 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
    */
   @Override
   public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-    TextView textView = getGenericView();
-    textView.setText(getGroup(groupPosition).toString());
-    return textView;
+    String groupName = getGroup(groupPosition).toString();
+    if (convertView == null) {
+      LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      convertView = inflater.inflate(R.layout.expandable_group_layout, null);
+    }
+    TextView textView = (TextView)convertView.findViewById(R.id.tvGroupName);
+    if (textView != null) {
+      textView.setText(groupName);
+    }
+    return convertView;
   }
 
   /* (non-Javadoc)

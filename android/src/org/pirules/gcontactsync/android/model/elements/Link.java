@@ -12,7 +12,7 @@
  * the License.
  */
 
-package org.pirules.gcontactsync.android.model;
+package org.pirules.gcontactsync.android.model.elements;
 
 import com.google.api.client.util.Key;
 

@@ -21,7 +21,7 @@ import org.pirules.gcontactsync.android.model.Entry;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,13 +34,13 @@ public class GroupEntry extends Entry {
   
   public void addContact(ContactEntry contact) {
     if (contacts == null) {
-      contacts = new LinkedList<ContactEntry>();
+      contacts = new ArrayList<ContactEntry>();
     }
     contacts.add(contact);
   }
   
   @Override
-  public String getName() {
+  public String toString() {
     return title != null ? title.replaceFirst("System Group: ", "") : "";
   }
   public String getContactFeedLink() {

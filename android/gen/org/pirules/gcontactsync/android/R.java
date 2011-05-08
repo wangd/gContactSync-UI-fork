@@ -14,10 +14,22 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int expandableListView1=0x7f050000;
+        public static final int expandableListView1=0x7f050001;
+        public static final int listViewDetails=0x7f050008;
+        public static final int tableLayout1=0x7f050004;
+        public static final int tableRowDetails=0x7f050007;
+        public static final int tableRowName=0x7f050005;
+        public static final int textViewName=0x7f050006;
+        public static final int tvChildName=0x7f050002;
+        public static final int tvContactDetailItem=0x7f050000;
+        public static final int tvGroupName=0x7f050003;
     }
     public static final class layout {
-        public static final int contact_groups=0x7f030000;
+        public static final int contact_detail_layout=0x7f030000;
+        public static final int contact_groups=0x7f030001;
+        public static final int expandable_child_layout=0x7f030002;
+        public static final int expandable_group_layout=0x7f030003;
+        public static final int show_contact=0x7f030004;
     }
     public static final class string {
         public static final int app_name=0x7f040000;
