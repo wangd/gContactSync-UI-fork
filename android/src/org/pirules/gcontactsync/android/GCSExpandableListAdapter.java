@@ -23,10 +23,6 @@ import java.util.List;
 
 import android.content.Context;
 
-import android.view.Gravity;
-
-import android.widget.AbsListView;
-
 import android.widget.TextView;
 
 import android.view.View;
@@ -47,27 +43,9 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
   }
   
   private List<GroupEntry> groups;
-  //private String[] groups = {};
-  //private String[][] children = {};
   
   public void setGroups(List<GroupEntry> groups) {
     this.groups = groups;
-    /*
-    this.groups   = new String[groups.size()];
-    this.children = new String[groups.size()][];
-    int i = 0;
-    for (GroupEntry group : groups) {
-      this.groups[i] = group.title;
-      if ()
-      this.children[i] = new String[group.contacts == null ? 0 : group.contacts.size()];
-      int j = 0;
-      for (ContactEntry contact : group.contacts) {
-        this.children[i][j] = contact.title;
-        ++j;
-      }
-      ++i;
-    }
-    */
   }
 
   /* (non-Javadoc)
@@ -171,20 +149,4 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
   public boolean isChildSelectable(int groupPosition, int childPosition) {
     return true;
   }
-  
-  public TextView getGenericView() {
-    // Layout parameters for the ExpandableListView
-    AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 64);
-
-    TextView textView = new TextView(context);
-    textView.setLayoutParams(lp);
-    // Center the text vertically
-    textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-    // Set the text starting position
-    textView.setPadding(36, 0, 0, 0);
-    return textView;
-  }
-
-
 }

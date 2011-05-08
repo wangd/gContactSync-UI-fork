@@ -337,13 +337,11 @@ public final class ContactListActivity extends Activity {
   }
 
   private void executeRefreshContacts() {
-    String[] names;
     contacts.clear();
     groups.clear();
     groupsMap.clear();
     try {
 
-        
       ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
       ContactFeed contactFeed = ContactFeed.executeGet(transport, contactUrl);
       if (contactFeed.contacts != null) {
@@ -381,29 +379,15 @@ public final class ContactListActivity extends Activity {
           }
         }
       }
-
-      int numGroups = groups.size();
-      int numContacts = contacts.size(); 
-      
-      names = new String[numContacts + numGroups];
-      for (int i = 0; i < numGroups; i++) {
-        names[i] = groups.get(i).title;
-        names[i] = names[i].replaceFirst("System Group: ", "");
-      }
-      for (int i = 0; i < numContacts; i++) {
-        names[i + numGroups] = contacts.get(i).title;
-      }
     } catch (IOException e) {
       handleException(e);
-      names = new String[] {e.getMessage()};
-      contacts.clear();
     }
     ((GCSExpandableListAdapter) mAdapter).setGroups(groups);
     mListView.setAdapter(mAdapter);
   }
 
   private void setLogging(boolean logging) {
-    Logger.getLogger("com.google.api.client").setLevel(logging ? Level.CONFIG : Level.OFF);
+    Logger.getLogger("org.pirules.gcontactsync.android").setLevel(logging ? Level.CONFIG : Level.OFF);
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     boolean currentSetting = settings.getBoolean("logging", false);
     if (currentSetting != logging) {
