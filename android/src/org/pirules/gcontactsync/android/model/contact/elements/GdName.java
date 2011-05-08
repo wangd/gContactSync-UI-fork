@@ -16,12 +16,14 @@ package org.pirules.gcontactsync.android.model.contact.elements;
 
 import com.google.api.client.util.Key;
 
+import org.pirules.gcontactsync.android.model.Element;
+
 /**
  * http://code.google.com/apis/gdata/docs/2.0/elements.html#gdName
  * TODO - yomi (phonetic)
  * @author Josh Geenen
  */
-public class GdName {
+public class GdName extends Element {
 
   /**
    * Person's given name.

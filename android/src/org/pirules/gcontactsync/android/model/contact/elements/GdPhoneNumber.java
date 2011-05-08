@@ -19,23 +19,18 @@ import com.google.api.client.util.Key;
 import org.pirules.gcontactsync.android.model.Element;
 
 /**
- * http://code.google.com/apis/contacts/docs/2.0/reference.html#gContactNamespace
- * @author Josh Geenen
+ * http://code.google.com/apis/gdata/docs/2.0/elements.html#gdPhoneNumber
+ * @author joshgeenen@gmail.com (Josh Geenen)
  */
-public class GContactGroupMembershipInfo extends Element {
+public class GdPhoneNumber extends Element {
   
   /**
-   * Identifies the group to which the contact belongs or belonged.
+   * An optional "tel URI" used to represent the number in a formal way,
+   * useful for programmatic access, such as a VoIP/PSTN bridge.
+   * See RFC 3966 for more information on tel URIs.
    */
-  @Key("@href")
-  public String href;
-  
-  /**
-   * If 'true' means that the group membership was removed for the contact.
-   * This attribute will only be included if showdeleted is specified as query parameter,
-   * otherwise groupMembershipInfo for groups in which a contact is no longer
-   * contained is simply not returned.
-   */
-  @Key("@deleted")
-  public boolean deleted;
+  @Key("@uri")
+  public String uri;
+
+  // Note - the text() value is already in Element as is an acceptable toString method
 }

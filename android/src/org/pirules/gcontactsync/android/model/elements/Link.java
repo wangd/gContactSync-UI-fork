@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Google Inc.
+ * Copyright (c) 2010 Google Inc., 2011 Josh Geenen
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,18 +16,17 @@ package org.pirules.gcontactsync.android.model.elements;
 
 import com.google.api.client.util.Key;
 
+import org.pirules.gcontactsync.android.model.Element;
+
 import java.util.List;
 
 /**
- * @author Yaniv Inbar
+ * @author Yaniv Inbar, Josh Geenen
  */
-public class Link {
+public class Link extends Element {
 
   @Key("@href")
   public String href;
-
-  @Key("@rel")
-  public String rel;
 
   public static String find(List<Link> links, String rel) {
     if (links != null) {

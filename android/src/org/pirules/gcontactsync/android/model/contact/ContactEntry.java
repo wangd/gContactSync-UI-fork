@@ -22,6 +22,7 @@ import org.pirules.gcontactsync.android.model.Entry;
 import org.pirules.gcontactsync.android.model.contact.elements.GdEmail;
 import org.pirules.gcontactsync.android.model.contact.elements.GContactGroupMembershipInfo;
 import org.pirules.gcontactsync.android.model.contact.elements.GdName;
+import org.pirules.gcontactsync.android.model.contact.elements.GdPhoneNumber;
 import org.pirules.gcontactsync.android.model.elements.Link;
 
 import java.io.IOException;
@@ -36,6 +37,9 @@ public class ContactEntry extends Entry {
   @Key("gd:email")
   public List<GdEmail> email;
   
+  @Key("gd:phoneNumber")
+  public List<GdPhoneNumber> phoneNumber;
+  
   @Key("gd:name")
   public GdName name;
   
@@ -48,7 +52,7 @@ public class ContactEntry extends Entry {
   
   @Override
   public String toString() {    
-    String name = title != null ? title.replaceFirst("System Group: ", "") : "";
+    String name = title != null ? title : "";
     if (name == "" && email != null && email.size() > 0) {
       name = email.get(0).address;
       if (name == null) {

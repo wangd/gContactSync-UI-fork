@@ -16,24 +16,13 @@ package org.pirules.gcontactsync.android.model.contact.elements;
 
 import com.google.api.client.util.Key;
 
+import org.pirules.gcontactsync.android.model.Element;
+
 /**
  * http://code.google.com/apis/gdata/docs/2.0/elements.html#gdEmail
  * @author Josh Geenen
  */
-public class GdEmail {
-  
-  /**
-   * A simple string value used to name this email address.
-   * It allows UIs to display a label such as "Work", "Personal", "Preferred", etc.
-   */
-  @Key("@label")
-  public String label;
-  
-  /**
-   * A programmatic value that identifies the type of email {home,other,work}
-   */
-  @Key("@rel")
-  public String rel;
+public class GdEmail extends Element {
   
   /**
    * A display name of the entity (e.g. a person) the email address belongs
@@ -57,9 +46,10 @@ public class GdEmail {
   
   @Override
   public String toString() {
+    String label = getLabel(null);
     if (displayName != null) {
-      return displayName + "<" + address + ">";
+      return label + displayName + "<" + address + ">";
     }
-    return address;
+    return label + address;
   }
 }

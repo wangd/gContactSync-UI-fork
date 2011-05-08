@@ -3,8 +3,8 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_height="match_parent" android:layout_width="match_parent">
     <TableLayout android:id="@+id/tableLayout1" android:layout_height="match_parent" android:layout_gravity="top" android:layout_width="match_parent">
-        <TableRow android:id="@+id/tableRowName" android:layout_height="wrap_content" android:layout_width="match_parent">
-            <TextView android:id="@+id/textViewName" android:layout_height="wrap_content" android:text="TextView" android:inputType="textPersonName" android:layout_width="match_parent" android:clickable="false" android:textSize="30sp"></TextView>
+        <TableRow android:id="@+id/tableRowName" android:layout_height="wrap_content" android:layout_width="match_parent"  android:background="#08849f" android:paddingBottom="2dip" android:paddingTop="2dip">
+            <TextView android:id="@+id/textViewName" android:layout_height="wrap_content" android:text="Name" android:textColor="#ffffff" android:textStyle="bold" android:inputType="textPersonName" android:layout_width="match_parent" android:clickable="false" android:textSize="30sp" android:paddingLeft="5dip"></TextView>
         </TableRow>
         <TableRow android:id="@+id/tableRowDetails" android:layout_height="wrap_content" android:layout_width="match_parent">
             <ListView android:layout_height="wrap_content" android:id="@+id/listViewDetails" android:layout_width="match_parent"></ListView>
