@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">gContactSync</string>
+    <string name="app_name">gContactSync Alpha</string>
+    <string name="switch_account">Switch Account</string>
+    <string name="switch_account_condensed">Account</string><string name="refresh">Refresh</string>
+    <string name="about">About</string>
+    
 </resources>

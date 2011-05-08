@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/miSwitchAccount" android:titleCondensed="@string/switch_account_condensed" android:title="@string/switch_account" android:icon="@drawable/ic_menu_account_list"></item>
+    <item android:id="@+id/miRefresh" android:title="@string/refresh" android:icon="@drawable/ic_menu_refresh"></item>
+    <item android:id="@+id/miAbout" android:title="@string/about" android:icon="@drawable/ic_menu_info_details"></item>
+</menu>

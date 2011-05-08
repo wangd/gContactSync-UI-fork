@@ -31,6 +31,14 @@ import org.pirules.gcontactsync.android.model.group.GroupUrl;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
 
+import android.content.pm.PackageManager;
+
+import android.view.MenuInflater;
+
+import android.content.pm.PackageManager.NameNotFoundException;
+
+import android.content.pm.PackageInfo;
+
 import android.widget.ExpandableListView.OnChildClickListener;
 
 import android.app.Activity;
@@ -39,7 +47,6 @@ import android.widget.ExpandableListView;
 
 import android.widget.ExpandableListAdapter;
 
-import com.google.api.client.util.DateTime;
 import com.google.api.client.http.xml.atom.AtomParser;
 import com.google.common.collect.Lists;
 
@@ -60,7 +67,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
@@ -79,52 +85,56 @@ import java.util.logging.Logger;
  */
 public final class ContactListActivity extends Activity {
 
+  /** The type of auth token (cp = contacts) */
   private static final String AUTH_TOKEN_TYPE = "cp";
-
-  private static final String TAG = "gContactSync-Android";
   
-  private static final int VERSION_MAJOR = 0;
-  private static final int VERSION_MINOR = 0;
-  @SuppressWarnings("unused")
-  private static final int VERSION_RELEASE = 1;
-  
+  /** The gdata version of the API */
   private static final String GDATA_VERSION = "3"; 
 
+  /** Whether to enable logging by default */
   private static final boolean LOGGING_DEFAULT = false;
-
-  // Menu IDs
-  private static final int MENU_ADD = 0;
-
-  private static final int MENU_ACCOUNTS = 1;
   
-  private static final int MENU_REFRESH = 2;
+  // Dialog IDs
+  private static final int DIALOG_ACCOUNTS = 0;
+  private static final int DIALOG_ABOUT = 1;
 
   // Context menu IDs
   private static final int CONTEXT_LOGGING = 0;
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
-  private static final String PREF = "MyPrefs";
+  private static final String PREF = "org.pirules.gcontactsync.android.prefs";
 
-  private static final int DIALOG_ACCOUNTS = 0;
 
   private static HttpTransport transport;
 
   private String authToken;
 
+  /** All the contacts */
   private List<ContactEntry> contacts = Lists.newArrayList();
+  
+  /** All the groups */
   List<GroupEntry> groups = Lists.newArrayList();
   
+  /** Maps groups by their identifiers */
   private Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();
+  
+  /** The contact that was last selected for viewing */
+  public static ContactEntry mSelectedContact = null;
 
   /** SDK 2.2 ("FroYo") version build number. */
   private static final int FROYO = 8;
+  
+  // These are both overwritten at runtime with manifest info
+  private String mAppVersion = "Unknown Version";
+  private String mPackageName = "Unknown Package";
+  private String mActivityName = "Unknown Activity";
   
   // UI Elements
   private ExpandableListView mListView = null;
   private ExpandableListAdapter mAdapter = null;
   
-  public static ContactEntry mSelectedContact = null; 
+  
 
   public ContactListActivity() {
     if (Build.VERSION.SDK_INT <= FROYO) {
@@ -132,22 +142,39 @@ public final class ContactListActivity extends Activity {
     } else {
       transport = new NetHttpTransport();
     }
+  }
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    
+    // Get the logging settings
+    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    setLogging(settings.getBoolean("logging", LOGGING_DEFAULT));
+
+    // Get the basic application data
+    try {
+      PackageManager pm = getPackageManager();
+      PackageInfo packageInfo = pm.getPackageInfo(getPackageName(), 0);
+      mAppVersion = packageInfo.versionName;
+      mPackageName = packageInfo.packageName;
+      mActivityName = (String) pm.getApplicationLabel(pm.getApplicationInfo(mPackageName, PackageManager.GET_META_DATA));
+    }
+    catch (NameNotFoundException e) {
+      handleException(e);
+    }
+    
+    // Setup the default headers for this application
     GoogleHeaders headers = new GoogleHeaders();
-    headers.setApplicationName(TAG + "/" + VERSION_MAJOR + "." + VERSION_MINOR);
+    headers.setApplicationName(mPackageName + "/" + mAppVersion);
     headers.gdataVersion = GDATA_VERSION;
     HttpRequestWrapper.defaultHeaders = headers;
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = Util.DICTIONARY;
     HttpRequestWrapper.parser = parser;
     
+    // Adapter for the list of groups and contacts
     mAdapter = new GCSExpandableListAdapter(ContactListActivity.this);
-  }
-
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
-    setLogging(settings.getBoolean("logging", LOGGING_DEFAULT));
     
     setContentView(R.layout.contact_groups);
     
@@ -187,6 +214,18 @@ public final class ContactListActivity extends Activity {
           }
         });
         return builder.create();
+      case DIALOG_ABOUT:
+        new AlertDialog.Builder(ContactListActivity.this)
+          .setTitle("About " + mActivityName).setMessage(
+            "Author: Josh Geenen\n" +
+            "Support: joshgeenen@gmail.com\n" +
+            "Version: " + mAppVersion
+          )
+          .setPositiveButton("OK",
+            new DialogInterface.OnClickListener() {
+             public void onClick(DialogInterface dialog, int which) {}
+            })
+          .show();
     }
     return null;
   }
@@ -272,17 +311,16 @@ public final class ContactListActivity extends Activity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    // TODO implement
-    //menu.add(0, MENU_ADD, 0, "New contact");
-    menu.add(0, MENU_ACCOUNTS, 0, "Switch Account");
-    menu.add(0, MENU_REFRESH, 0, "Refresh");
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.contact_groups_menu, menu);
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-      case MENU_ADD:
+      /*
+      case R.id.miAdd:
         ContactUrl url = ContactUrl.forAllContactsFeed();
         ContactEntry contact = new ContactEntry();
         contact.title = "Contact " + new DateTime(new Date());
@@ -293,11 +331,15 @@ public final class ContactListActivity extends Activity {
         }
         executeRefreshContacts();
         return true;
-      case MENU_REFRESH:
+      */
+      case R.id.miRefresh:
         executeRefreshContacts();
         return true;
-      case MENU_ACCOUNTS:
+      case R.id.miSwitchAccount:
         showDialog(DIALOG_ACCOUNTS);
+        return true;
+      case R.id.miAbout:
+        showDialog(DIALOG_ABOUT);
         return true;
     }
     return false;
@@ -415,14 +457,14 @@ public final class ContactListActivity extends Activity {
       }
       if (log) {
         try {
-          Log.e(TAG, response.parseAsString());
+          Log.e(mActivityName, response.parseAsString());
         } catch (IOException parseException) {
           parseException.printStackTrace();
         }
       }
     }
     if (log) {
-      Log.e(TAG, e.getMessage(), e);
+      Log.e(mActivityName, e.getMessage(), e);
     }
   }
 }
