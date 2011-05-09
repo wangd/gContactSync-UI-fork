@@ -31,6 +31,10 @@ import org.pirules.gcontactsync.android.model.group.GroupUrl;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
 
+import android.view.Window;
+
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
+
 import android.content.pm.PackageManager;
 
 import android.view.MenuInflater;
@@ -100,30 +104,34 @@ public final class ContactListActivity extends Activity {
 
   // Context menu IDs
   private static final int CONTEXT_LOGGING = 0;
+  private static final int CONTEXT_SHOW_CONTACT = 1;
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
   private static final String PREF = "org.pirules.gcontactsync.android.prefs";
 
 
-  private static HttpTransport transport;
+  static HttpTransport transport;
 
   private String authToken;
+  
+  boolean mUpdateInProgress = false;
 
   /** All the contacts */
-  private List<ContactEntry> contacts = Lists.newArrayList();
+  List<ContactEntry> contacts = Lists.newArrayList();
   
   /** All the groups */
   List<GroupEntry> groups = Lists.newArrayList();
   
   /** Maps groups by their identifiers */
-  private Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();
+  Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();
   
   /** The contact that was last selected for viewing */
   public static ContactEntry mSelectedContact = null;
 
   /** SDK 2.2 ("FroYo") version build number. */
   private static final int FROYO = 8;
+
   
   // These are both overwritten at runtime with manifest info
   private String mAppVersion = "Unknown Version";
@@ -131,8 +139,8 @@ public final class ContactListActivity extends Activity {
   private String mActivityName = "Unknown Activity";
   
   // UI Elements
-  private ExpandableListView mListView = null;
-  private ExpandableListAdapter mAdapter = null;
+  ExpandableListView mListView = null;
+  ExpandableListAdapter mAdapter = null;
   
   
 
@@ -147,6 +155,10 @@ public final class ContactListActivity extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    setProgressBarIndeterminate(true);
+    setProgressBarIndeterminateVisibility(true);
     
     // Get the logging settings
     SharedPreferences settings = getSharedPreferences(PREF, 0);
@@ -186,13 +198,17 @@ public final class ContactListActivity extends Activity {
     mListView.setOnChildClickListener(new OnChildClickListener() {     
       @Override
       public boolean onChildClick(ExpandableListView listView, View view, int groupPosition, int childPosition, long arg4) {
+        if (mUpdateInProgress) {
+          return true;
+        }
         mSelectedContact = groups.get(groupPosition).contacts.get(childPosition);
         launchShowContact();
-        return false;
+        return true;
       }
     });
     
     gotAccount(false);
+
   }
 
   @Override
@@ -318,6 +334,9 @@ public final class ContactListActivity extends Activity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    if (mUpdateInProgress) {
+      return true;
+    }
     switch (item.getItemId()) {
       /*
       case R.id.miAdd:
@@ -341,27 +360,51 @@ public final class ContactListActivity extends Activity {
       case R.id.miAbout:
         showDialog(DIALOG_ABOUT);
         return true;
+      default:
+        return super.onOptionsItemSelected(item);
     }
-    return false;
   }
 
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    
+    if (mUpdateInProgress) {
+      return;
+    }
     super.onCreateContextMenu(menu, v, menuInfo);
+    
+    long packedPosition = ((ExpandableListContextMenuInfo) menuInfo).packedPosition;
+    int type = ExpandableListView.getPackedPositionType(packedPosition);
+    
+    if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+      int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
+      int childIndex = ExpandableListView.getPackedPositionChild(packedPosition);
+      
+      mSelectedContact = groups.get(groupIndex).contacts.get(childIndex);
+      menu.setHeaderTitle(mSelectedContact.toString());
+      menu.add(0, CONTEXT_SHOW_CONTACT, 0, "Show Contact Details");
+    }
+    
     // TODO implement
     //menu.add(0, CONTEXT_DELETE, 0, "Delete");
     SharedPreferences settings = getSharedPreferences(PREF, 0);
     boolean logging = settings.getBoolean("logging", false);
-    menu.add(0, CONTEXT_LOGGING, 0, "Logging").setCheckable(true).setChecked(logging);
+    menu.add(0, CONTEXT_LOGGING, 0, "Enable Logging").setCheckable(true).setChecked(logging);
   }
 
   @Override
   public boolean onContextItemSelected(MenuItem item) {
+    if (mUpdateInProgress) {
+      return true;
+    }
     switch (item.getItemId()) {
       case CONTEXT_LOGGING:
         SharedPreferences settings = getSharedPreferences(PREF, 0);
         boolean logging = settings.getBoolean("logging", LOGGING_DEFAULT);
         setLogging(!logging);
+        return true;
+      case CONTEXT_SHOW_CONTACT:
+        launchShowContact();
         return true;
       default:
         return super.onContextItemSelected(item);
@@ -372,60 +415,83 @@ public final class ContactListActivity extends Activity {
    * Launches the ShowContactActivity with the currently selected contact.
    */
   protected void launchShowContact() {
-    if (mSelectedContact != null) {
+    if (!mUpdateInProgress && mSelectedContact != null) {
       Intent i = new Intent(this, ShowContactActivity.class);
       startActivity(i);
     }
   }
 
   private void executeRefreshContacts() {
-    contacts.clear();
-    groups.clear();
-    groupsMap.clear();
-    try {
+    
+    mUpdateInProgress = true;
+    
+    setProgressBarIndeterminateVisibility(mUpdateInProgress);
 
-      ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
-      ContactFeed contactFeed = ContactFeed.executeGet(transport, contactUrl);
-      if (contactFeed.contacts != null) {
-        contacts.addAll(contactFeed.contacts);
-      }
-      
-      GroupUrl groupUrl = GroupUrl.forAllGroupsFeed();
-      GroupFeed groupFeed = GroupFeed.executeGet(transport, groupUrl);
-      GroupEntry allContacts = new GroupEntry();
-      allContacts.id = null;
-      allContacts.title = "All Contacts";
-      allContacts.contacts = contacts;
-      groups.add(allContacts);
-      if (groupFeed.groups != null) {
-        groups.addAll(groupFeed.groups);
-      }
-      
-      // Create the group map
-      for (GroupEntry group : groups) {
-        if (group.id != null) {
-          groupsMap.put(group.id, group);
-        }
-      }
-      
-       for (ContactEntry contact : contacts) {
-        if (contact.groupMembership == null) {
-          continue;
-        }
-        for (GContactGroupMembershipInfo info : contact.groupMembership) {
-          if (!info.deleted && info.href != null) {
-            GroupEntry group = groupsMap.get(info.href);
-            if (group != null) {
-              group.addContact(contact);
+    new Thread() {
+
+      @Override
+      public void run() {
+        contacts.clear();
+        groups.clear();
+        groupsMap.clear();
+        try {
+
+          ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
+          ContactFeed contactFeed = ContactFeed.executeGet(transport, contactUrl);
+          if (contactFeed.contacts != null) {
+            contacts.addAll(contactFeed.contacts);
+          }
+
+          GroupUrl groupUrl = GroupUrl.forAllGroupsFeed();
+          GroupFeed groupFeed = GroupFeed.executeGet(transport, groupUrl);
+          GroupEntry allContacts = new GroupEntry();
+          allContacts.id = null;
+          allContacts.title = "All Contacts";
+          groups.add(allContacts);
+          if (groupFeed.groups != null) {
+            groups.addAll(groupFeed.groups);
+          }
+
+          // Create the group map
+          for (GroupEntry group : groups) {
+            if (group.id != null) {
+              groupsMap.put(group.id, group);
             }
           }
+
+          for (ContactEntry contact : contacts) {
+            allContacts.addContact(contact);
+            if (contact.groupMembership == null) {
+              continue;
+            }
+            for (GContactGroupMembershipInfo info : contact.groupMembership) {
+              if (!info.deleted && info.href != null) {
+                GroupEntry group = groupsMap.get(info.href);
+                if (group != null) {
+                  group.addContact(contact);
+                }
+              }
+            }
+          }
+        } catch (IOException e) {
+          handleException(e);
         }
+
+        runOnUiThread(new Runnable() {
+
+          public void run() {
+            ((GCSExpandableListAdapter) mAdapter).setGroups(groups);
+            mListView.setAdapter(mAdapter);
+            
+            mUpdateInProgress = false;
+
+            setProgressBarIndeterminateVisibility(mUpdateInProgress);
+          }
+        });
+
       }
-    } catch (IOException e) {
-      handleException(e);
-    }
-    ((GCSExpandableListAdapter) mAdapter).setGroups(groups);
-    mListView.setAdapter(mAdapter);
+    }.start();
+
   }
 
   private void setLogging(boolean logging) {

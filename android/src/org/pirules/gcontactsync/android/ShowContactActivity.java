@@ -34,10 +34,6 @@ import android.app.Activity;
  */
 public class ShowContactActivity extends Activity {
   
-  // UI Elements
-  private TextView mTextViewName;
-  private ListView mListViewDetails;
-  
   @Override
   public void onCreate(Bundle savedInstanceState) {
     ContactEntry contact = ContactListActivity.mSelectedContact;
@@ -45,13 +41,13 @@ public class ShowContactActivity extends Activity {
     
     setContentView(R.layout.show_contact);
     
-    mTextViewName = (TextView)findViewById(R.id.textViewName);
-    mListViewDetails = (ListView)findViewById(R.id.listViewDetails);
+    TextView textViewName = (TextView)findViewById(R.id.textViewName);
+    ListView listViewDetails = (ListView)findViewById(R.id.listViewDetails);
     
-    mListViewDetails.setTextFilterEnabled(true);
+    listViewDetails.setTextFilterEnabled(true);
 
     if (contact != null) {
-      mTextViewName.setText(ContactListActivity.mSelectedContact.toString());
+      textViewName.setText(ContactListActivity.mSelectedContact.toString());
       
       ArrayAdapter<String> adapter = new ContactEntryListViewAdapter(this, R.layout.contact_detail_layout);
       
@@ -81,7 +77,7 @@ public class ShowContactActivity extends Activity {
         }
       }
       
-      mListViewDetails.setAdapter(adapter);
+      listViewDetails.setAdapter(adapter);
     }
     
   }
