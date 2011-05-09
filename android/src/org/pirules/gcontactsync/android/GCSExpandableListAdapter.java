@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Google Inc.
+ * Copyright (c) 2011 Josh Geenen.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -36,13 +36,12 @@ import android.widget.BaseExpandableListAdapter;
  */
 public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
   
-  Context context;
+  private Context context;
   
   public ArrayList<GroupEntry> groups;
   
   public GCSExpandableListAdapter(Context context) {
     this.context = context;
-    //this.groups = new ArrayList<GroupEntry>();
   }
   
   public void setGroups(ArrayList<GroupEntry> groups) {
