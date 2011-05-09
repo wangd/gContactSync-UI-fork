@@ -31,6 +31,8 @@ import org.pirules.gcontactsync.android.model.group.GroupUrl;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
 
+import android.content.Context;
+
 import android.view.Window;
 
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
@@ -48,8 +50,6 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.app.Activity;
 
 import android.widget.ExpandableListView;
-
-import android.widget.ExpandableListAdapter;
 
 import com.google.api.client.http.xml.atom.AtomParser;
 import com.google.common.collect.Lists;
@@ -71,6 +71,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
@@ -116,15 +117,6 @@ public final class ContactListActivity extends Activity {
   private String authToken;
   
   boolean mUpdateInProgress = false;
-
-  /** All the contacts */
-  List<ContactEntry> contacts = Lists.newArrayList();
-  
-  /** All the groups */
-  List<GroupEntry> groups = Lists.newArrayList();
-  
-  /** Maps groups by their identifiers */
-  Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();
   
   /** The contact that was last selected for viewing */
   public static ContactEntry mSelectedContact = null;
@@ -140,7 +132,7 @@ public final class ContactListActivity extends Activity {
   
   // UI Elements
   ExpandableListView mListView = null;
-  ExpandableListAdapter mAdapter = null;
+  GCSExpandableListAdapter mAdapter = null;
   
   
 
@@ -201,7 +193,7 @@ public final class ContactListActivity extends Activity {
         if (mUpdateInProgress) {
           return true;
         }
-        mSelectedContact = groups.get(groupPosition).contacts.get(childPosition);
+        mSelectedContact = mAdapter.groups.get(groupPosition).contacts.get(childPosition);
         launchShowContact();
         return true;
       }
@@ -380,7 +372,7 @@ public final class ContactListActivity extends Activity {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       int childIndex = ExpandableListView.getPackedPositionChild(packedPosition);
       
-      mSelectedContact = groups.get(groupIndex).contacts.get(childIndex);
+      mSelectedContact = mAdapter.groups.get(groupIndex).contacts.get(childIndex);
       menu.setHeaderTitle(mSelectedContact.toString());
       menu.add(0, CONTEXT_SHOW_CONTACT, 0, "Show Contact Details");
     }
@@ -426,14 +418,23 @@ public final class ContactListActivity extends Activity {
     mUpdateInProgress = true;
     
     setProgressBarIndeterminateVisibility(mUpdateInProgress);
+    
+    final Context context = this;
 
     new Thread() {
 
       @Override
       public void run() {
-        contacts.clear();
-        groups.clear();
-        groupsMap.clear();
+
+        /** All the contacts */
+        List<ContactEntry> contacts = Lists.newArrayList();
+        
+        /** All the groups */
+        final ArrayList<GroupEntry> groups = Lists.newArrayList();
+
+        /** Maps groups by their identifiers */
+        Hashtable<String, GroupEntry> groupsMap = new Hashtable<String, GroupEntry>();
+
         try {
 
           ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
@@ -474,13 +475,27 @@ public final class ContactListActivity extends Activity {
             }
           }
         } catch (IOException e) {
+          runOnUiThread(new Runnable() {
+
+            public void run() {
+              new AlertDialog.Builder(context)
+                .setTitle("Error")
+                .setMessage("Unable to retrieve your contacts.  Make sure you have a valid Internet connection.")
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    }
+                  })
+                .show();
+            }
+          });
           handleException(e);
         }
 
         runOnUiThread(new Runnable() {
 
           public void run() {
-            ((GCSExpandableListAdapter) mAdapter).setGroups(groups);
+            mAdapter.setGroups(groups);
             mListView.setAdapter(mAdapter);
             
             mUpdateInProgress = false;

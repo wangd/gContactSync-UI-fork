@@ -20,7 +20,6 @@ import org.pirules.gcontactsync.android.model.group.GroupEntry;
 import android.view.LayoutInflater;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Context;
 
@@ -39,17 +38,15 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
   
   Context context;
   
-  private ArrayList<GroupEntry> groups;
+  public ArrayList<GroupEntry> groups;
   
   public GCSExpandableListAdapter(Context context) {
     this.context = context;
-    this.groups = new ArrayList<GroupEntry>();
+    //this.groups = new ArrayList<GroupEntry>();
   }
   
-  public void setGroups(List<GroupEntry> groups) {
-    for (GroupEntry group : groups) {
-      this.groups.add(group);
-    }
+  public void setGroups(ArrayList<GroupEntry> groups) {
+    this.groups = groups;
   }
 
   /* (non-Javadoc)
