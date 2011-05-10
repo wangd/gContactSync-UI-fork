@@ -33,6 +33,9 @@ import java.util.List;
  * @author Yaniv Inbar, Josh Geenen
  */
 public class Entry implements Cloneable {
+  
+  @Key("@gd:etag")
+  public String etag;
 
   @Key
   public String id;
@@ -56,8 +59,9 @@ public class Entry implements Cloneable {
     return Data.clone(this);
   }
 
-  public void executeDelete(HttpTransport transport, GoogleUrl url) throws IOException {
+  public void executeDelete(HttpTransport transport, GoogleUrl url, String match) throws IOException {
     HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildDeleteRequest(url);
+    request.headers.ifMatch = match;
     HttpRequestWrapper.execute(request).ignore();
   }
 

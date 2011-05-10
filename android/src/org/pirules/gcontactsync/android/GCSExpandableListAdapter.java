@@ -47,6 +47,15 @@ public class GCSExpandableListAdapter extends BaseExpandableListAdapter {
   public void setGroups(ArrayList<GroupEntry> groups) {
     this.groups = groups;
   }
+  
+  public void removeContact(ContactEntry contact) {
+    for (GroupEntry group : groups) {
+      if (group.contacts != null) {
+        group.contacts.remove(contact);
+      }
+    }
+    notifyDataSetChanged();
+  }
 
   /* (non-Javadoc)
    * @see android.widget.ExpandableListAdapter#getChild(int, int)

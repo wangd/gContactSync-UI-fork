@@ -123,4 +123,14 @@ public class ContactEntry extends Entry {
       HttpTransport transport, ContactEntry original) throws IOException {
     return (ContactEntry) super.executePatchRelativeToOriginal(transport, original);
   }
+  
+  public boolean deleteContact(HttpTransport transport) {
+    try {
+      executeDelete(transport, new GoogleUrl(getEditLink()), etag);
+      return true;
+    } catch (IOException exception) {
+      exception.printStackTrace();
+      return false;
+    }
+  }
 }

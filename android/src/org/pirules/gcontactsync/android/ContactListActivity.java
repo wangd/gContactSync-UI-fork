@@ -106,6 +106,7 @@ public final class ContactListActivity extends Activity {
   // Context menu IDs
   private static final int CONTEXT_LOGGING = 0;
   private static final int CONTEXT_SHOW_CONTACT = 1;
+  private static final int CONTEXT_DELETE_CONTACT = 2;
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
@@ -125,6 +126,8 @@ public final class ContactListActivity extends Activity {
   private static final int FROYO = 8;
 
   
+
+  
   // These are both overwritten at runtime with manifest info
   private String mAppVersion = "Unknown Version";
   private String mPackageName = "Unknown Package";
@@ -132,7 +135,7 @@ public final class ContactListActivity extends Activity {
   
   // UI Elements
   ExpandableListView mListView = null;
-  GCSExpandableListAdapter mAdapter = null;
+  static GCSExpandableListAdapter mAdapter = null;
   
   
 
@@ -375,6 +378,7 @@ public final class ContactListActivity extends Activity {
       mSelectedContact = mAdapter.groups.get(groupIndex).contacts.get(childIndex);
       menu.setHeaderTitle(mSelectedContact.toString());
       menu.add(0, CONTEXT_SHOW_CONTACT, 0, "Show Contact Details");
+      menu.add(0, CONTEXT_DELETE_CONTACT, 0, "Delete Contact");
     }
     
     // TODO implement
@@ -395,11 +399,47 @@ public final class ContactListActivity extends Activity {
         boolean logging = settings.getBoolean("logging", LOGGING_DEFAULT);
         setLogging(!logging);
         return true;
+      case CONTEXT_DELETE_CONTACT:
+        deleteSelectedContact(this, null);
+        return true;
       case CONTEXT_SHOW_CONTACT:
         launchShowContact();
         return true;
       default:
         return super.onContextItemSelected(item);
+    }
+  }
+  
+  public static void deleteSelectedContact(final Context context, final ShowContactActivity activity) {
+    if (ContactListActivity.mSelectedContact != null) {
+      new AlertDialog.Builder(context)
+      .setIcon(android.R.drawable.ic_dialog_alert)
+      .setTitle(context.getString(R.string.delete_confirm_title) + " '" + mSelectedContact + "'")
+      .setMessage(R.string.delete_confirm_message)
+      .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            if (!ContactListActivity.mSelectedContact.deleteContact(transport)) {
+              new AlertDialog.Builder(context)
+              .setIcon(android.R.drawable.ic_dialog_alert)
+              .setTitle(R.string.error)
+              .setMessage(R.string.delete_failed)
+              .setNeutralButton(R.string.ok, null)
+              .show();
+            }
+            else {
+              ContactListActivity.mAdapter.removeContact(mSelectedContact);
+              ContactListActivity.mSelectedContact = null;
+              
+              if (activity != null) {
+                activity.finish();
+              }
+            }
+          }
+
+      })
+      .setNegativeButton(R.string.no, null)
+      .show();
     }
   }
   
