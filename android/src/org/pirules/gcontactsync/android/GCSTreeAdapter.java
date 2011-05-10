@@ -16,6 +16,7 @@ package org.pirules.gcontactsync.android;
 
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 import org.pirules.gcontactsync.android.model.group.GroupCursor;
+import org.pirules.gcontactsync.android.model.group.GroupEntry;
 
 import android.content.Context;
 
@@ -47,8 +48,11 @@ public class GCSTreeAdapter extends SimpleCursorTreeAdapter {
     return ((GroupCursor) groupCursor).groups.get(groupCursor.getPosition()).getContactsCursor();
   }
   
+  public GroupEntry getGroupEntry(int groupPosition) {
+    return ((GroupCursor) this.getCursor()).groups.get(groupPosition);
+  }
   public ContactEntry getContact(int groupPosition, int childPosition) {
-    return ((GroupCursor) this.getCursor()).groups.get(groupPosition).contacts.get(childPosition);
+    return getGroupEntry(groupPosition).contacts.get(childPosition);
   }
 
 }

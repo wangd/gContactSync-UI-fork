@@ -53,11 +53,13 @@ public final class R {
         public static final int delete_failed=0x7f040008;
         public static final int error=0x7f040005;
         public static final int no=0x7f04000a;
-        public static final int no_email_address=0x7f04000e;
+        public static final int no_email_address=0x7f04000f;
+        public static final int no_group_email=0x7f040010;
         public static final int ok=0x7f04000b;
         public static final int refresh=0x7f040003;
-        public static final int send_email=0x7f04000c;
-        public static final int send_email_condensed=0x7f04000d;
+        public static final int send_email=0x7f04000d;
+        public static final int send_email_condensed=0x7f04000e;
+        public static final int send_group_email=0x7f04000c;
         public static final int switch_account=0x7f040001;
         public static final int switch_account_condensed=0x7f040002;
         public static final int yes=0x7f040009;

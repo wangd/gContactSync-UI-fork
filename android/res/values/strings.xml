@@ -11,8 +11,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
+    <string name="send_group_email">Email Group</string>
     <string name="send_email">Send Email</string>
     <string name="send_email_condensed">Email</string>
     <string name="no_email_address">The selected contact does not have an e-mail address.</string>
-    
+    <string name="no_group_email">The selected group does not have any contacts with an e-mail address.</string>
 </resources>

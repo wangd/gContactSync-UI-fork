@@ -109,6 +109,7 @@ public final class ContactListActivity extends Activity {
   private static final int CONTEXT_SHOW_CONTACT = 1;
   private static final int CONTEXT_EMAIL_CONTACT = 2;
   private static final int CONTEXT_DELETE_CONTACT = 3;
+  private static final int CONTEXT_EMAIL_GROUP = 4;
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
@@ -123,14 +124,18 @@ public final class ContactListActivity extends Activity {
   
   /** The contact that was last selected for viewing */
   public static ContactEntry mSelectedContact = null;
+  /** The group that was last selected for viewing */
+  public static GroupEntry mSelectedGroup = null;
 
   /** SDK 2.2 ("FroYo") version build number. */
   private static final int FROYO = 8;
 
+  protected static final Integer MAX_CONTACTS = 10000;
+
   // These are both overwritten at runtime with manifest info
   private String mAppVersion = "Unknown Version";
   private String mPackageName = "Unknown Package";
-  private String mActivityName = "Unknown Activity";
+  String mActivityName = "Unknown Activity";
   
   // UI Elements
   ExpandableListView mListView = null;
@@ -179,24 +184,10 @@ public final class ContactListActivity extends Activity {
     parser.namespaceDictionary = Util.DICTIONARY;
     HttpRequestWrapper.parser = parser;
     
-    // Adapter for the list of groups and contacts
-    //mAdapter = new GCSExpandableListAdapter(ContactListActivity.this);
-    /*mAdapter = new GCSExpandableAdapter(
-      this,
-      null,
-      R.layout.expandable_group_layout,
-      R.layout.expandable_child_layout,
-      new String [] {"title"},
-      new int [] {R.id.tvGroupName},
-      new String [] {"DisplayName"},
-      new int [] {R.id.tvChildName}
-    );
-    */
-    
     setContentView(R.layout.contact_groups);
     
     mListView = (ExpandableListView)findViewById(R.id.expandableListView1);
-    mListView.setFastScrollEnabled(true);
+    //mListView.setFastScrollEnabled(true);
     mListView.setTextFilterEnabled(true);
     registerForContextMenu(mListView);
     
@@ -392,6 +383,11 @@ public final class ContactListActivity extends Activity {
       menu.add(0, CONTEXT_EMAIL_CONTACT, 0, R.string.send_email);
       menu.add(0, CONTEXT_DELETE_CONTACT, 0, R.string.delete_confirm_title);
     }
+    else if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+      int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
+      mSelectedGroup = mAdapter.getGroupEntry(groupIndex);
+      menu.add(0, CONTEXT_EMAIL_GROUP, 0, R.string.send_group_email);
+    }
     
     // TODO implement
     //menu.add(0, CONTEXT_DELETE, 0, "Delete");
@@ -420,6 +416,9 @@ public final class ContactListActivity extends Activity {
       case CONTEXT_SHOW_CONTACT:
         launchShowContact();
         return true;
+      case CONTEXT_EMAIL_GROUP:
+        emailSelectedGroup(this);
+        return true;
       default:
         return super.onContextItemSelected(item);
     }
@@ -443,6 +442,43 @@ public final class ContactListActivity extends Activity {
       .putExtra(android.content.Intent.EXTRA_EMAIL, new String[] {contact.email.get(0).address})
       .setType("plain/text")
     );
+  }
+  
+  public static void emailSelectedGroup(final Context context) {
+
+    GroupEntry group = ContactListActivity.mSelectedGroup;
+    boolean error = false;
+    ArrayList<String> emailAddresses = new ArrayList<String>();
+    if (group == null || group.contacts == null || group.contacts.size() < 1) {
+      error = true;
+    }
+    else {
+      error = true;
+      for (ContactEntry contact : group.contacts) {
+        if (contact != null && contact.email != null && contact.email.size() > 0) {
+          emailAddresses.add(contact.email.get(0).address);
+          error = false;
+        }
+      }
+    }
+
+    if (!error) {
+      context.startActivity(
+        new Intent(android.content.Intent.ACTION_SEND)
+        .putExtra(android.content.Intent.EXTRA_EMAIL,
+          emailAddresses.toArray(new String[emailAddresses.size()]))
+        .setType("plain/text")
+      );
+    }
+    else {
+      new AlertDialog.Builder(context)
+      .setIcon(android.R.drawable.ic_dialog_alert)
+      .setTitle(context.getString(R.string.error))
+      .setMessage(context.getString(R.string.no_group_email))
+      .setNeutralButton(context.getString(R.string.ok), null)
+      .show();
+      return;
+    }
   }
   
   public static void deleteSelectedContact(final Context context, final ShowContactActivity activity) {
@@ -514,6 +550,7 @@ public final class ContactListActivity extends Activity {
         try {
 
           ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
+          contactUrl.maxResults = MAX_CONTACTS;
           ContactFeed contactFeed = ContactFeed.executeGet(transport, contactUrl);
           if (contactFeed.contacts != null) {
             contacts.addAll(contactFeed.contacts);
@@ -536,6 +573,7 @@ public final class ContactListActivity extends Activity {
             }
           }
 
+          log("Number of contacts: " + contacts.size(), false);
           for (ContactEntry contact : contacts) {
             allContacts.addContact(contact);
             if (contact.groupMembership == null) {
@@ -581,7 +619,6 @@ public final class ContactListActivity extends Activity {
               new String [] {"DisplayName"},
               new int [] {R.id.tvChildName}
             );
-            //mAdapter.setGroups(groups);
             mListView.setAdapter(mAdapter);
             
             mUpdateInProgress = false;
@@ -605,11 +642,23 @@ public final class ContactListActivity extends Activity {
       editor.commit();
     }
   }
+  
+  void log(String message, boolean isError) {
+    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    boolean log = settings.getBoolean("logging", false);
+    if (!log) {
+      return;
+    }
+    if (isError) {
+      Log.e(mActivityName, message);
+    }
+    else  {
+      Log.i(mActivityName, message);
+    }
+  }
 
   void handleException(Exception e) {
     e.printStackTrace();
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
-    boolean log = settings.getBoolean("logging", false);
     if (e instanceof HttpResponseException) {
       HttpResponse response = ((HttpResponseException) e).response;
       int statusCode = response.statusCode;
@@ -622,16 +671,12 @@ public final class ContactListActivity extends Activity {
         gotAccount(true);
         return;
       }
-      if (log) {
-        try {
-          Log.e(mActivityName, response.parseAsString());
-        } catch (IOException parseException) {
-          parseException.printStackTrace();
-        }
+      try {
+        log(response.parseAsString(), true);
+      } catch (IOException parseException) {
+        parseException.printStackTrace();
       }
     }
-    if (log) {
-      Log.e(mActivityName, e.getMessage(), e);
-    }
+    log(e.getMessage(), true);
   }
 }
