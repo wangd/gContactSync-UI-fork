@@ -100,6 +100,9 @@ public class ShowContactActivity extends Activity {
       case R.id.miDelete:
         ContactListActivity.deleteSelectedContact(this, this);
         return true;
+      case R.id.miEmail:
+        ContactListActivity.emailSelectedContact(this);
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }

@@ -106,7 +106,8 @@ public final class ContactListActivity extends Activity {
   // Context menu IDs
   private static final int CONTEXT_LOGGING = 0;
   private static final int CONTEXT_SHOW_CONTACT = 1;
-  private static final int CONTEXT_DELETE_CONTACT = 2;
+  private static final int CONTEXT_EMAIL_CONTACT = 2;
+  private static final int CONTEXT_DELETE_CONTACT = 3;
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
@@ -125,9 +126,6 @@ public final class ContactListActivity extends Activity {
   /** SDK 2.2 ("FroYo") version build number. */
   private static final int FROYO = 8;
 
-  
-
-  
   // These are both overwritten at runtime with manifest info
   private String mAppVersion = "Unknown Version";
   private String mPackageName = "Unknown Package";
@@ -378,7 +376,8 @@ public final class ContactListActivity extends Activity {
       mSelectedContact = mAdapter.groups.get(groupIndex).contacts.get(childIndex);
       menu.setHeaderTitle(mSelectedContact.toString());
       menu.add(0, CONTEXT_SHOW_CONTACT, 0, "Show Contact Details");
-      menu.add(0, CONTEXT_DELETE_CONTACT, 0, "Delete Contact");
+      menu.add(0, CONTEXT_EMAIL_CONTACT, 0, R.string.send_email);
+      menu.add(0, CONTEXT_DELETE_CONTACT, 0, R.string.delete_confirm_title);
     }
     
     // TODO implement
@@ -399,6 +398,9 @@ public final class ContactListActivity extends Activity {
         boolean logging = settings.getBoolean("logging", LOGGING_DEFAULT);
         setLogging(!logging);
         return true;
+      case CONTEXT_EMAIL_CONTACT:
+        emailSelectedContact(this);
+        return true;
       case CONTEXT_DELETE_CONTACT:
         deleteSelectedContact(this, null);
         return true;
@@ -408,6 +410,26 @@ public final class ContactListActivity extends Activity {
       default:
         return super.onContextItemSelected(item);
     }
+  }
+  
+  public static void emailSelectedContact(final Context context) {
+
+    ContactEntry contact = ContactListActivity.mSelectedContact;
+    if (contact == null || contact.email == null || contact.email.size() < 1) {
+      new AlertDialog.Builder(context)
+      .setIcon(android.R.drawable.ic_dialog_alert)
+      .setTitle(context.getString(R.string.error))
+      .setMessage(context.getString(R.string.no_email_address))
+      .setNeutralButton(context.getString(R.string.ok), null)
+      .show();
+      return;
+    }
+
+    context.startActivity(
+      new Intent(android.content.Intent.ACTION_SEND)
+      .putExtra(android.content.Intent.EXTRA_EMAIL, new String[] {contact.email.get(0).address})
+      .setType("plain/text")
+    );
   }
   
   public static void deleteSelectedContact(final Context context, final ShowContactActivity activity) {

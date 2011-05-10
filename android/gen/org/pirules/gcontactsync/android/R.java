@@ -15,13 +15,15 @@ public final class R {
         public static final int ic_menu_delete=0x7f020001;
         public static final int ic_menu_info_details=0x7f020002;
         public static final int ic_menu_refresh=0x7f020003;
-        public static final int icon=0x7f020004;
+        public static final int ic_menu_send=0x7f020004;
+        public static final int icon=0x7f020005;
     }
     public static final class id {
         public static final int expandableListView1=0x7f060001;
         public static final int listViewDetails=0x7f060008;
         public static final int miAbout=0x7f06000b;
         public static final int miDelete=0x7f06000c;
+        public static final int miEmail=0x7f06000d;
         public static final int miRefresh=0x7f06000a;
         public static final int miSwitchAccount=0x7f060009;
         public static final int tableLayout1=0x7f060004;
@@ -51,8 +53,11 @@ public final class R {
         public static final int delete_failed=0x7f040008;
         public static final int error=0x7f040005;
         public static final int no=0x7f04000a;
+        public static final int no_email_address=0x7f04000e;
         public static final int ok=0x7f04000b;
         public static final int refresh=0x7f040003;
+        public static final int send_email=0x7f04000c;
+        public static final int send_email_condensed=0x7f04000d;
         public static final int switch_account=0x7f040001;
         public static final int switch_account_condensed=0x7f040002;
         public static final int yes=0x7f040009;
