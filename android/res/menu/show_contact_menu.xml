@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:icon="@drawable/ic_menu_delete" android:title="@string/delete_confirm_title" android:id="@+id/miDelete"></item>
-    <item android:title="@string/send_email" android:id="@+id/miEmail" android:titleCondensed="@string/send_email_condensed" android:icon="@drawable/ic_menu_send"></item>
+    <item android:titleCondensed="@string/send_email_condensed" android:icon="@drawable/ic_menu_send" android:title="@string/send_email" android:id="@+id/miEmail"></item><item android:icon="@drawable/ic_menu_delete" android:title="@string/delete_confirm_title" android:id="@+id/miDelete"></item>
+    
 </menu>

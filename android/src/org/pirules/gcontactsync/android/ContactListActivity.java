@@ -25,6 +25,7 @@ import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 import org.pirules.gcontactsync.android.model.contact.ContactFeed;
 import org.pirules.gcontactsync.android.model.contact.ContactUrl;
 import org.pirules.gcontactsync.android.model.contact.elements.GContactGroupMembershipInfo;
+import org.pirules.gcontactsync.android.model.group.GroupCursor;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
 import org.pirules.gcontactsync.android.model.group.GroupFeed;
 import org.pirules.gcontactsync.android.model.group.GroupUrl;
@@ -133,7 +134,7 @@ public final class ContactListActivity extends Activity {
   
   // UI Elements
   ExpandableListView mListView = null;
-  static GCSExpandableListAdapter mAdapter = null;
+  static GCSTreeAdapter mAdapter = null;
   
   
 
@@ -179,12 +180,23 @@ public final class ContactListActivity extends Activity {
     HttpRequestWrapper.parser = parser;
     
     // Adapter for the list of groups and contacts
-    mAdapter = new GCSExpandableListAdapter(ContactListActivity.this);
+    //mAdapter = new GCSExpandableListAdapter(ContactListActivity.this);
+    /*mAdapter = new GCSExpandableAdapter(
+      this,
+      null,
+      R.layout.expandable_group_layout,
+      R.layout.expandable_child_layout,
+      new String [] {"title"},
+      new int [] {R.id.tvGroupName},
+      new String [] {"DisplayName"},
+      new int [] {R.id.tvChildName}
+    );
+    */
     
     setContentView(R.layout.contact_groups);
     
     mListView = (ExpandableListView)findViewById(R.id.expandableListView1);
-    
+    mListView.setFastScrollEnabled(true);
     mListView.setTextFilterEnabled(true);
     registerForContextMenu(mListView);
     
@@ -194,7 +206,8 @@ public final class ContactListActivity extends Activity {
         if (mUpdateInProgress) {
           return true;
         }
-        mSelectedContact = mAdapter.groups.get(groupPosition).contacts.get(childPosition);
+        
+        mSelectedContact = mAdapter.getContact(groupPosition, childPosition);
         launchShowContact();
         return true;
       }
@@ -373,7 +386,7 @@ public final class ContactListActivity extends Activity {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       int childIndex = ExpandableListView.getPackedPositionChild(packedPosition);
       
-      mSelectedContact = mAdapter.groups.get(groupIndex).contacts.get(childIndex);
+      mSelectedContact = mAdapter.getContact(groupIndex, childIndex);
       menu.setHeaderTitle(mSelectedContact.toString());
       menu.add(0, CONTEXT_SHOW_CONTACT, 0, "Show Contact Details");
       menu.add(0, CONTEXT_EMAIL_CONTACT, 0, R.string.send_email);
@@ -450,7 +463,8 @@ public final class ContactListActivity extends Activity {
               .show();
             }
             else {
-              ContactListActivity.mAdapter.removeContact(mSelectedContact);
+              // TODO remove contact
+              //ContactListActivity.mAdapter.removeContact(mSelectedContact);
               ContactListActivity.mSelectedContact = null;
               
               if (activity != null) {
@@ -557,7 +571,17 @@ public final class ContactListActivity extends Activity {
         runOnUiThread(new Runnable() {
 
           public void run() {
-            mAdapter.setGroups(groups);
+            mAdapter = new GCSTreeAdapter(
+              context,
+              new GroupCursor(groups),
+              R.layout.expandable_group_layout,
+              R.layout.expandable_child_layout,
+              new String [] {"title"},
+              new int [] {R.id.tvGroupName},
+              new String [] {"DisplayName"},
+              new int [] {R.id.tvChildName}
+            );
+            //mAdapter.setGroups(groups);
             mListView.setAdapter(mAdapter);
             
             mUpdateInProgress = false;

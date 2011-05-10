@@ -22,8 +22,8 @@ public final class R {
         public static final int expandableListView1=0x7f060001;
         public static final int listViewDetails=0x7f060008;
         public static final int miAbout=0x7f06000b;
-        public static final int miDelete=0x7f06000c;
-        public static final int miEmail=0x7f06000d;
+        public static final int miDelete=0x7f06000d;
+        public static final int miEmail=0x7f06000c;
         public static final int miRefresh=0x7f06000a;
         public static final int miSwitchAccount=0x7f060009;
         public static final int tableLayout1=0x7f060004;

@@ -18,11 +18,13 @@ import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.http.HttpTransport;
 
 import org.pirules.gcontactsync.android.model.Entry;
+import org.pirules.gcontactsync.android.model.contact.ContactCursor;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
+
+import android.database.Cursor;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -30,13 +32,17 @@ import java.util.List;
  */
 public class GroupEntry extends Entry {
 
-  public List<ContactEntry> contacts;
+  public ArrayList<ContactEntry> contacts;
   
   public void addContact(ContactEntry contact) {
     if (contacts == null) {
       contacts = new ArrayList<ContactEntry>();
     }
     contacts.add(contact);
+  }
+  
+  public Cursor getContactsCursor() {
+    return new ContactCursor(contacts);
   }
   
   @Override
