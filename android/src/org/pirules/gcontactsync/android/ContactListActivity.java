@@ -100,7 +100,8 @@ public final class ContactListActivity extends Activity {
 
   private static final int REQUEST_AUTHENTICATE = 0;
 
-  private static final String PREF = "org.pirules.gcontactsync.android.prefs";
+  /** The preferences branch */
+  private static final String PREF_NAME = "org.pirules.gcontactsync.android.prefs";
 
   static HttpTransport transport;
 
@@ -144,7 +145,7 @@ public final class ContactListActivity extends Activity {
     setProgressBarIndeterminateVisibility(true);
     
     // Get the logging settings
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
     setLogging(settings.getBoolean("logging", LOGGING_DEFAULT));
 
     // Get the basic application data
@@ -228,7 +229,7 @@ public final class ContactListActivity extends Activity {
   }
 
   private void gotAccount(boolean tokenExpired) {
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
     String accountName = settings.getString("accountName", null);
     if (accountName != null) {
       AccountManager manager = AccountManager.get(this);
@@ -249,7 +250,7 @@ public final class ContactListActivity extends Activity {
   }
 
   void gotAccount(final AccountManager manager, final Account account) {
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
     SharedPreferences.Editor editor = settings.edit();
     editor.putString("accountName", account.name);
     editor.commit();
@@ -359,24 +360,32 @@ public final class ContactListActivity extends Activity {
     boolean contactItemVisibility = false;
     boolean groupItemVisibility = false;
     
+    
+    
     // If it is a child then set mSelectedContact, set the header to the
     // contact's name, and make contact items visible
     if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       int childIndex = ExpandableListView.getPackedPositionChild(packedPosition);
-      
+    
+      mSelectedGroup = mAdapter.getGroupEntry(groupIndex);
       mSelectedContact = mAdapter.getContact(groupIndex, childIndex);
       menu.setHeaderTitle(mSelectedContact.toString());
       
       contactItemVisibility = true;
+      menu.findItem(R.id.cmiDeleteGroup).setVisible(false);
     }
     // If it is a group then set mSelectedGroup, set the header to the
     // group's title, and make group items visible
     else if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       mSelectedGroup = mAdapter.getGroupEntry(groupIndex);
+      
       menu.setHeaderTitle(mSelectedGroup.toString());
       groupItemVisibility = true;
+      
+      // Only allow deleting editable groups (not system groups)
+      menu.findItem(R.id.cmiDeleteGroup).setVisible(mSelectedGroup.getEditLink() != null);
     }
     
     // Set visibility for contact items
@@ -390,7 +399,7 @@ public final class ContactListActivity extends Activity {
     // Set whether the logging option is checked based on the logging pref
     menu.findItem(R.id.cmiEnableLogging)
       .setCheckable(true)
-      .setChecked(getSharedPreferences(PREF, 0).getBoolean("logging", false));
+      .setChecked(getSharedPreferences(PREF_NAME, 0).getBoolean("logging", false));
   }
 
   @Override
@@ -400,9 +409,7 @@ public final class ContactListActivity extends Activity {
     }
     switch (item.getItemId()) {
       case R.id.cmiEnableLogging:
-        SharedPreferences settings = getSharedPreferences(PREF, 0);
-        boolean logging = settings.getBoolean("logging", LOGGING_DEFAULT);
-        setLogging(!logging);
+        setLogging(!getSharedPreferences(PREF_NAME, 0).getBoolean("logging", LOGGING_DEFAULT));
         return true;
       case R.id.cmiSendEmail:
         emailSelectedContact(this);
@@ -415,6 +422,9 @@ public final class ContactListActivity extends Activity {
         return true;
       case R.id.cmiSendGroupEmail:
         emailSelectedGroup(this);
+        return true;
+      case R.id.cmiDeleteGroup:
+        deleteSelectedGroup(this);
         return true;
       default:
         return super.onContextItemSelected(item);
@@ -487,7 +497,7 @@ public final class ContactListActivity extends Activity {
       .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            if (!ContactListActivity.mSelectedContact.deleteContact(transport)) {
+            if (!ContactListActivity.mSelectedContact.delete(transport)) {
               new AlertDialog.Builder(context)
               .setIcon(android.R.drawable.ic_dialog_alert)
               .setTitle(R.string.error)
@@ -496,13 +506,41 @@ public final class ContactListActivity extends Activity {
               .show();
             }
             else {
-              // TODO remove contact
-              //ContactListActivity.mAdapter.removeContact(mSelectedContact);
+              ContactListActivity.mAdapter.removeContact(ContactListActivity.mSelectedContact);
               ContactListActivity.mSelectedContact = null;
               
               if (activity != null) {
                 activity.finish();
               }
+            }
+          }
+
+      })
+      .setNegativeButton(R.string.no, null)
+      .show();
+    }
+  }
+  public static void deleteSelectedGroup(final Context context) {
+    if (ContactListActivity.mSelectedGroup != null &&
+        ContactListActivity.mSelectedGroup.getEditLink() != null) {
+      new AlertDialog.Builder(context)
+      .setIcon(android.R.drawable.ic_dialog_alert)
+      .setTitle(context.getString(R.string.delete_confirm_title) + " '" + mSelectedGroup + "'")
+      .setMessage(R.string.delete_group_confirm_message)
+      .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            if (!ContactListActivity.mSelectedGroup.delete(transport)) {
+              new AlertDialog.Builder(context)
+              .setIcon(android.R.drawable.ic_dialog_alert)
+              .setTitle(R.string.error)
+              .setMessage(R.string.delete_group_failed)
+              .setNeutralButton(R.string.ok, null)
+              .show();
+            }
+            else {
+              mAdapter.removeGroup(mSelectedGroup);
+              ContactListActivity.mSelectedGroup = null;
             }
           }
 
@@ -631,7 +669,7 @@ public final class ContactListActivity extends Activity {
 
   private void setLogging(boolean logging) {
     Logger.getLogger("org.pirules.gcontactsync.android").setLevel(logging ? Level.CONFIG : Level.OFF);
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
+    SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
     boolean currentSetting = settings.getBoolean("logging", false);
     if (currentSetting != logging) {
       SharedPreferences.Editor editor = settings.edit();
@@ -641,8 +679,7 @@ public final class ContactListActivity extends Activity {
   }
   
   void log(String message, boolean isError) {
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
-    boolean log = settings.getBoolean("logging", false);
+    boolean log = getSharedPreferences(PREF_NAME, 0).getBoolean("logging", false);
     if (!log) {
       return;
     }

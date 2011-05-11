@@ -14,9 +14,12 @@
 
 package org.pirules.gcontactsync.android;
 
+import org.pirules.gcontactsync.android.model.contact.ContactCursor;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 import org.pirules.gcontactsync.android.model.group.GroupCursor;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
+
+import java.util.ArrayList;
 
 import android.content.Context;
 
@@ -30,14 +33,30 @@ import android.widget.SimpleCursorTreeAdapter;
  */
 public class GCSTreeAdapter extends SimpleCursorTreeAdapter {
 
-  //Note that the constructor does not take a Cursor. This is done to avoid querying the 
-  // database on the main thread.
   public GCSTreeAdapter(Context context, GroupCursor groupCursor, int groupLayout,
                               int childLayout, String[] groupFrom, int[] groupTo, String[] childrenFrom,
                               int[] childrenTo) {
     
     super(context, groupCursor, groupLayout, groupFrom, groupTo, childLayout, childrenFrom,
       childrenTo);
+  }
+  
+  public void removeGroup(GroupEntry group) {
+    ArrayList<GroupEntry> groups = ((GroupCursor) getCursor()).groups;
+    groups.remove(group);
+    
+    setGroupCursor(new GroupCursor(groups));
+    notifyDataSetChanged();
+  }
+  
+  public void removeContact(ContactEntry contact) {
+    ArrayList<GroupEntry> groups = ((GroupCursor) getCursor()).groups;
+    for (GroupEntry group : groups) {
+      int groupPosition = groups.indexOf(group);
+      if (group.contacts != null && group.contacts.remove(contact)) {
+        this.setChildrenCursor(groupPosition, new ContactCursor(group.contacts));
+      }
+    }
   }
 
   /**

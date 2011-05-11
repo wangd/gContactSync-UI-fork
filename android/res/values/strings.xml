@@ -7,11 +7,14 @@
     <string name="error">Error</string>
     <string name="delete_confirm_title">Delete</string>
     <string name="delete_confirm_message">Are you sure you want to delete this contact?</string>
+    <string name="delete_group_confirm_message">Are you sure you want to delete this group?  Contacts in this group will not be deleted.</string>
     <string name="delete_failed">Error while deleting contact.</string>
+    <string name="delete_group_failed">Error while deleting group.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
     <string name="enable_logging">Enable Logging</string>
+    <string name="delete_group">Delete Group</string>
     <string name="send_group_email">Email Group</string>
     <string name="send_email">Send Email</string>
     <string name="show_contact_details">Show Contact Details</string>

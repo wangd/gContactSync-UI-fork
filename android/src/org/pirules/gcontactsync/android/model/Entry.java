@@ -58,10 +58,24 @@ public class Entry implements Cloneable {
   protected Entry clone() {
     return Data.clone(this);
   }
+  
+  public boolean delete(HttpTransport transport) {
+    try {
+      executeDelete(transport);
+      return true;
+    } catch (IOException exception) {
+      exception.printStackTrace();
+      return false;
+    }
+  }
 
-  public void executeDelete(HttpTransport transport, GoogleUrl url, String match) throws IOException {
+  public void executeDelete(HttpTransport transport) throws IOException {
+    if (getEditLink() == null) {
+      throw new IOException("Edit link is null...Entry is not editable");
+    }
+    GoogleUrl url = new GoogleUrl(getEditLink());
     HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildDeleteRequest(url);
-    request.headers.ifMatch = match;
+    request.headers.ifMatch = etag;
     HttpRequestWrapper.execute(request).ignore();
   }
 
