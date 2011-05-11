@@ -14,12 +14,15 @@
 
 package org.pirules.gcontactsync.android.model.group;
 
+import com.google.api.client.http.HttpTransport;
+
 import org.pirules.gcontactsync.android.model.Entry;
 import org.pirules.gcontactsync.android.model.contact.ContactCursor;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 
 import android.database.Cursor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -71,5 +74,15 @@ public class GroupEntry extends Entry {
   public GroupEntry clone() {
     // TODO - need to copy contacts?
     return (GroupEntry) super.clone();
+  }
+  
+  public boolean insert(HttpTransport transport) {
+    try {
+      executeInsert(transport, GroupUrl.forAllGroupsFeed());
+      return true;
+    } catch (IOException exception) {
+      exception.printStackTrace();
+      return false;
+    }
   }
 }

@@ -5,8 +5,12 @@
     <string name="switch_account_condensed">Account</string><string name="refresh">Refresh</string>
     <string name="about">About</string>
     <string name="error">Error</string>
+    <string name="new_group_title">Create a new Group</string>
+    <string name="new_group_message">Name for this group:</string>
+    <string name="new_group_failed">Unable to create a new group.</string>
     <string name="rename_title">Rename</string>
     <string name="rename_message">New name for this group:</string>
+    <string name="rename_group_failed">Unable to rename the group.</string>
     <string name="delete_confirm_title">Delete</string>
     <string name="delete_confirm_message">Are you sure you want to delete this contact?</string>
     <string name="delete_group_confirm_message">Are you sure you want to delete this group?  Contacts in this group will not be deleted.</string>
@@ -29,4 +33,5 @@
     <string name="support">Support:</string>
     <string name="version">Version:</string>
     <string name="error_getting_contacts">Unable to retrieve your contacts and groups.  Make sure you have a working data connection.</string>
+    <string name="new_group">New Group</string>
 </resources>

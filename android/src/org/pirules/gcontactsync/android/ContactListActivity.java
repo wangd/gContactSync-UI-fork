@@ -323,6 +323,9 @@ public final class ContactListActivity extends Activity {
        * contact.executeInsert(transport, url); } catch (IOException e) { handleException(e); }
        * executeRefreshContacts(); return true;
        */
+      case R.id.miNewGroup:
+        createNewGroup(this);
+        return true;
       case R.id.miRefresh:
         executeRefreshContacts();
         return true;
@@ -335,6 +338,36 @@ public final class ContactListActivity extends Activity {
       default:
         return super.onOptionsItemSelected(item);
     }
+  }
+  
+  public static void createNewGroup(final Context context) {
+    final EditText input = new EditText(context);
+    Util.showInputDialog(
+      context,
+      context.getString(R.string.new_group_title),
+      context.getString(R.string.new_group_message),
+      input,
+      new DialogInterface.OnClickListener() {
+        
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          GroupEntry newGroup = new GroupEntry();
+          newGroup.title = input.getText().toString();
+          if (newGroup.insert(ContactListActivity.transport)) {
+            ArrayList<GroupEntry> groups = ((GroupCursor) ContactListActivity.mAdapter.getCursor()).groups;
+            groups.add(newGroup);
+            ContactListActivity.mAdapter.resetGroupCursor();
+          }
+          else {
+            Util.showMessage(context,
+              context.getString(R.string.error),
+              context.getString(R.string.new_group_failed),
+              null);
+          }
+        }
+      },
+      null
+    );
   }
 
   @Override
@@ -546,9 +579,18 @@ public final class ContactListActivity extends Activity {
         
         @Override
         public void onClick(DialogInterface dialog, int which) {
+          String oldTitle = ContactListActivity.mSelectedGroup.title;
           ContactListActivity.mSelectedGroup.title = input.getText().toString();
-          ContactListActivity.mSelectedGroup.update(transport);
-          ContactListActivity.mAdapter.resetGroupCursor();
+          if (ContactListActivity.mSelectedGroup.update(transport)) {
+            ContactListActivity.mAdapter.resetGroupCursor();
+          }
+          else {
+            ContactListActivity.mSelectedGroup.title = oldTitle;
+            Util.showMessage(context,
+              context.getString(R.string.error),
+              context.getString(R.string.rename_group_failed),
+              null);
+          }
         }
       },
       null
