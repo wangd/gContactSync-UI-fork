@@ -40,8 +40,6 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import android.content.pm.PackageManager;
 
-import android.view.MenuInflater;
-
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.content.pm.PackageInfo;
@@ -80,10 +78,6 @@ import java.util.logging.Logger;
 
 /**
  * gContactSync for Android
- * <p>
- * To enable logging of HTTP requests/responses, run this command: {@code adb shell setprop
- * log.tag.HttpTransport DEBUG}. Then press-and-hold a contact, and enable "Logging".
- * </p>
  * 
  * Originally based on Google's Calendar v2 Android Sample project by Yaniv Inbar
  *
@@ -104,17 +98,9 @@ public final class ContactListActivity extends Activity {
   private static final int DIALOG_ACCOUNTS = 0;
   private static final int DIALOG_ABOUT = 1;
 
-  // Context menu IDs
-  private static final int CONTEXT_LOGGING = 0;
-  private static final int CONTEXT_SHOW_CONTACT = 1;
-  private static final int CONTEXT_EMAIL_CONTACT = 2;
-  private static final int CONTEXT_DELETE_CONTACT = 3;
-  private static final int CONTEXT_EMAIL_GROUP = 4;
-
   private static final int REQUEST_AUTHENTICATE = 0;
 
   private static final String PREF = "org.pirules.gcontactsync.android.prefs";
-
 
   static HttpTransport transport;
 
@@ -130,7 +116,7 @@ public final class ContactListActivity extends Activity {
   /** SDK 2.2 ("FroYo") version build number. */
   private static final int FROYO = 8;
 
-  protected static final Integer MAX_CONTACTS = 10000;
+  static final Integer MAX_CONTACTS = 10000;
 
   // These are both overwritten at runtime with manifest info
   private String mAppVersion = "Unknown Version";
@@ -140,8 +126,6 @@ public final class ContactListActivity extends Activity {
   // UI Elements
   ExpandableListView mListView = null;
   static GCSTreeAdapter mAdapter = null;
-  
-  
 
   public ContactListActivity() {
     if (Build.VERSION.SDK_INT <= FROYO) {
@@ -186,7 +170,7 @@ public final class ContactListActivity extends Activity {
     
     setContentView(R.layout.contact_groups);
     
-    mListView = (ExpandableListView)findViewById(R.id.expandableListView1);
+    mListView = (ExpandableListView) findViewById(R.id.expandableListView1);
     //mListView.setFastScrollEnabled(true);
     mListView.setTextFilterEnabled(true);
     registerForContextMenu(mListView);
@@ -230,9 +214,9 @@ public final class ContactListActivity extends Activity {
       case DIALOG_ABOUT:
         new AlertDialog.Builder(ContactListActivity.this)
           .setTitle("About " + mActivityName).setMessage(
-            "Author: Josh Geenen\n" +
-            "Support: joshgeenen@gmail.com\n" +
-            "Version: " + mAppVersion
+            getString(R.string.author) + " Josh Geenen\n" +
+            getString(R.string.support) + " http://pirules.org/forum\n" +
+            getString(R.string.version) + " " + mAppVersion
           )
           .setPositiveButton("OK",
             new DialogInterface.OnClickListener() {
@@ -318,14 +302,12 @@ public final class ContactListActivity extends Activity {
   void authenticated(String authToken) {
     this.authToken = authToken;
     HttpRequestWrapper.defaultHeaders.setGoogleLogin(authToken);
-    //RedirectHandler.resetSessionId(transport);
     executeRefreshContacts();
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.contact_groups_menu, menu);
+    getMenuInflater().inflate(R.menu.contact_groups_menu, menu);
     return true;
   }
 
@@ -369,31 +351,46 @@ public final class ContactListActivity extends Activity {
       return;
     }
     super.onCreateContextMenu(menu, v, menuInfo);
+
+    getMenuInflater().inflate(R.menu.contact_groups_context_menu, menu);
     
     long packedPosition = ((ExpandableListContextMenuInfo) menuInfo).packedPosition;
     int type = ExpandableListView.getPackedPositionType(packedPosition);
+    boolean contactItemVisibility = false;
+    boolean groupItemVisibility = false;
     
+    // If it is a child then set mSelectedContact, set the header to the
+    // contact's name, and make contact items visible
     if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       int childIndex = ExpandableListView.getPackedPositionChild(packedPosition);
       
       mSelectedContact = mAdapter.getContact(groupIndex, childIndex);
       menu.setHeaderTitle(mSelectedContact.toString());
-      menu.add(0, CONTEXT_SHOW_CONTACT, 0, "Show Contact Details");
-      menu.add(0, CONTEXT_EMAIL_CONTACT, 0, R.string.send_email);
-      menu.add(0, CONTEXT_DELETE_CONTACT, 0, R.string.delete_confirm_title);
+      
+      contactItemVisibility = true;
     }
+    // If it is a group then set mSelectedGroup, set the header to the
+    // group's title, and make group items visible
     else if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       mSelectedGroup = mAdapter.getGroupEntry(groupIndex);
-      menu.add(0, CONTEXT_EMAIL_GROUP, 0, R.string.send_group_email);
+      menu.setHeaderTitle(mSelectedGroup.toString());
+      groupItemVisibility = true;
     }
     
-    // TODO implement
-    //menu.add(0, CONTEXT_DELETE, 0, "Delete");
-    SharedPreferences settings = getSharedPreferences(PREF, 0);
-    boolean logging = settings.getBoolean("logging", false);
-    menu.add(0, CONTEXT_LOGGING, 0, "Enable Logging").setCheckable(true).setChecked(logging);
+    // Set visibility for contact items
+    menu.findItem(R.id.cmiShowContact).setVisible(contactItemVisibility);
+    menu.findItem(R.id.cmiSendEmail).setVisible(contactItemVisibility);
+    menu.findItem(R.id.cmiDeleteContact).setVisible(contactItemVisibility);
+    
+    // Set visibility for group items
+    menu.findItem(R.id.cmiSendGroupEmail).setVisible(groupItemVisibility);
+
+    // Set whether the logging option is checked based on the logging pref
+    menu.findItem(R.id.cmiEnableLogging)
+      .setCheckable(true)
+      .setChecked(getSharedPreferences(PREF, 0).getBoolean("logging", false));
   }
 
   @Override
@@ -402,21 +399,21 @@ public final class ContactListActivity extends Activity {
       return true;
     }
     switch (item.getItemId()) {
-      case CONTEXT_LOGGING:
+      case R.id.cmiEnableLogging:
         SharedPreferences settings = getSharedPreferences(PREF, 0);
         boolean logging = settings.getBoolean("logging", LOGGING_DEFAULT);
         setLogging(!logging);
         return true;
-      case CONTEXT_EMAIL_CONTACT:
+      case R.id.cmiSendEmail:
         emailSelectedContact(this);
         return true;
-      case CONTEXT_DELETE_CONTACT:
+      case R.id.cmiDeleteContact:
         deleteSelectedContact(this, null);
         return true;
-      case CONTEXT_SHOW_CONTACT:
+      case R.id.cmiShowContact:
         launchShowContact();
         return true;
-      case CONTEXT_EMAIL_GROUP:
+      case R.id.cmiSendGroupEmail:
         emailSelectedGroup(this);
         return true;
       default:
@@ -526,11 +523,11 @@ public final class ContactListActivity extends Activity {
   }
 
   private void executeRefreshContacts() {
-    
+
     mUpdateInProgress = true;
-    
+
     setProgressBarIndeterminateVisibility(mUpdateInProgress);
-    
+
     final Context context = this;
 
     new Thread() {
@@ -540,7 +537,7 @@ public final class ContactListActivity extends Activity {
 
         /** All the contacts */
         List<ContactEntry> contacts = Lists.newArrayList();
-        
+
         /** All the groups */
         final ArrayList<GroupEntry> groups = Lists.newArrayList();
 
@@ -593,14 +590,14 @@ public final class ContactListActivity extends Activity {
 
             public void run() {
               new AlertDialog.Builder(context)
-                .setTitle("Error")
-                .setMessage("Unable to retrieve your contacts.  Make sure you have a valid Internet connection.")
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                  public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                    }
-                  })
-                .show();
+              .setTitle(context.getString(R.string.error))
+              .setMessage(context.getString(R.string.error_getting_contacts))
+              .setNeutralButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                  dialog.cancel();
+                }
+              })
+              .show();
             }
           });
           handleException(e);
@@ -620,7 +617,7 @@ public final class ContactListActivity extends Activity {
               new int [] {R.id.tvChildName}
             );
             mListView.setAdapter(mAdapter);
-            
+
             mUpdateInProgress = false;
 
             setProgressBarIndeterminateVisibility(mUpdateInProgress);

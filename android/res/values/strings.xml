@@ -11,9 +11,15 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
+    <string name="enable_logging">Enable Logging</string>
     <string name="send_group_email">Email Group</string>
     <string name="send_email">Send Email</string>
+    <string name="show_contact_details">Show Contact Details</string>
     <string name="send_email_condensed">Email</string>
     <string name="no_email_address">The selected contact does not have an e-mail address.</string>
     <string name="no_group_email">The selected group does not have any contacts with an e-mail address.</string>
+    <string name="author">Author:</string>
+    <string name="support">Support:</string>
+    <string name="version">Version:</string>
+    <string name="error_getting_contacts">Unable to retrieve your contacts and groups.  Make sure you have a working data connection.</string>
 </resources>
