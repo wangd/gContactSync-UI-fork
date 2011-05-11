@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2010 Google Inc., 2011 Josh Geenen
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -31,6 +31,8 @@ import org.pirules.gcontactsync.android.model.group.GroupFeed;
 import org.pirules.gcontactsync.android.model.group.GroupUrl;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
+
+import android.widget.EditText;
 
 import android.content.Context;
 
@@ -80,20 +82,20 @@ import java.util.logging.Logger;
  * gContactSync for Android
  * 
  * Originally based on Google's Calendar v2 Android Sample project by Yaniv Inbar
- *
+ * 
  * @author Yaniv Inbar, Josh Geenen
  */
 public final class ContactListActivity extends Activity {
 
   /** The type of auth token (cp = contacts) */
   private static final String AUTH_TOKEN_TYPE = "cp";
-  
+
   /** The gdata version of the API */
-  private static final String GDATA_VERSION = "3"; 
+  private static final String GDATA_VERSION = "3";
 
   /** Whether to enable logging by default */
   private static final boolean LOGGING_DEFAULT = false;
-  
+
   // Dialog IDs
   private static final int DIALOG_ACCOUNTS = 0;
   private static final int DIALOG_ABOUT = 1;
@@ -106,9 +108,9 @@ public final class ContactListActivity extends Activity {
   static HttpTransport transport;
 
   private String authToken;
-  
+
   boolean mUpdateInProgress = false;
-  
+
   /** The contact that was last selected for viewing */
   public static ContactEntry mSelectedContact = null;
   /** The group that was last selected for viewing */
@@ -123,7 +125,7 @@ public final class ContactListActivity extends Activity {
   private String mAppVersion = "Unknown Version";
   private String mPackageName = "Unknown Package";
   String mActivityName = "Unknown Activity";
-  
+
   // UI Elements
   ExpandableListView mListView = null;
   static GCSTreeAdapter mAdapter = null;
@@ -139,11 +141,11 @@ public final class ContactListActivity extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     setProgressBarIndeterminate(true);
     setProgressBarIndeterminateVisibility(true);
-    
+
     // Get the logging settings
     SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
     setLogging(settings.getBoolean("logging", LOGGING_DEFAULT));
@@ -154,12 +156,13 @@ public final class ContactListActivity extends Activity {
       PackageInfo packageInfo = pm.getPackageInfo(getPackageName(), 0);
       mAppVersion = packageInfo.versionName;
       mPackageName = packageInfo.packageName;
-      mActivityName = (String) pm.getApplicationLabel(pm.getApplicationInfo(mPackageName, PackageManager.GET_META_DATA));
-    }
-    catch (NameNotFoundException e) {
+      mActivityName =
+          (String) pm.getApplicationLabel(pm.getApplicationInfo(mPackageName,
+              PackageManager.GET_META_DATA));
+    } catch (NameNotFoundException e) {
       handleException(e);
     }
-    
+
     // Setup the default headers for this application
     GoogleHeaders headers = new GoogleHeaders();
     headers.setApplicationName(mPackageName + "/" + mAppVersion);
@@ -168,27 +171,28 @@ public final class ContactListActivity extends Activity {
     AtomParser parser = new AtomParser();
     parser.namespaceDictionary = Util.DICTIONARY;
     HttpRequestWrapper.parser = parser;
-    
+
     setContentView(R.layout.contact_groups);
-    
+
     mListView = (ExpandableListView) findViewById(R.id.expandableListView1);
-    //mListView.setFastScrollEnabled(true);
+    // mListView.setFastScrollEnabled(true);
     mListView.setTextFilterEnabled(true);
     registerForContextMenu(mListView);
-    
-    mListView.setOnChildClickListener(new OnChildClickListener() {     
+
+    mListView.setOnChildClickListener(new OnChildClickListener() {
       @Override
-      public boolean onChildClick(ExpandableListView listView, View view, int groupPosition, int childPosition, long arg4) {
+      public boolean onChildClick(ExpandableListView listView, View view, int groupPosition,
+          int childPosition, long arg4) {
         if (mUpdateInProgress) {
           return true;
         }
-        
-        mSelectedContact = mAdapter.getContact(groupPosition, childPosition);
+
+        mSelectedContact = mAdapter.getContactEntry(groupPosition, childPosition);
         launchShowContact();
         return true;
       }
     });
-    
+
     gotAccount(false);
 
   }
@@ -213,17 +217,14 @@ public final class ContactListActivity extends Activity {
         });
         return builder.create();
       case DIALOG_ABOUT:
-        new AlertDialog.Builder(ContactListActivity.this)
-          .setTitle("About " + mActivityName).setMessage(
-            getString(R.string.author) + " Josh Geenen\n" +
-            getString(R.string.support) + " http://pirules.org/forum\n" +
-            getString(R.string.version) + " " + mAppVersion
-          )
-          .setPositiveButton("OK",
-            new DialogInterface.OnClickListener() {
-             public void onClick(DialogInterface dialog, int which) {}
-            })
-          .show();
+        new AlertDialog.Builder(ContactListActivity.this).setTitle("About " + mActivityName)
+            .setMessage(
+                getString(R.string.author) + " Josh Geenen\n" + getString(R.string.support)
+                    + " http://pirules.org/forum\n" + getString(R.string.version) + " "
+                    + mAppVersion).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+              }
+            }).show();
     }
     return null;
   }
@@ -319,18 +320,11 @@ public final class ContactListActivity extends Activity {
     }
     switch (item.getItemId()) {
       /*
-      case R.id.miAdd:
-        ContactUrl url = ContactUrl.forAllContactsFeed();
-        ContactEntry contact = new ContactEntry();
-        contact.title = "Contact " + new DateTime(new Date());
-        try {
-          contact.executeInsert(transport, url);
-        } catch (IOException e) {
-          handleException(e);
-        }
-        executeRefreshContacts();
-        return true;
-      */
+       * case R.id.miAdd: ContactUrl url = ContactUrl.forAllContactsFeed(); ContactEntry contact =
+       * new ContactEntry(); contact.title = "Contact " + new DateTime(new Date()); try {
+       * contact.executeInsert(transport, url); } catch (IOException e) { handleException(e); }
+       * executeRefreshContacts(); return true;
+       */
       case R.id.miRefresh:
         executeRefreshContacts();
         return true;
@@ -347,59 +341,61 @@ public final class ContactListActivity extends Activity {
 
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-    
+
     if (mUpdateInProgress) {
       return;
     }
     super.onCreateContextMenu(menu, v, menuInfo);
 
     getMenuInflater().inflate(R.menu.contact_groups_context_menu, menu);
-    
+
     long packedPosition = ((ExpandableListContextMenuInfo) menuInfo).packedPosition;
     int type = ExpandableListView.getPackedPositionType(packedPosition);
     boolean contactItemVisibility = false;
     boolean groupItemVisibility = false;
-    
-    
-    
+
+    // Disable these by default and only enable them for editable groups
+    menu.findItem(R.id.cmiDeleteGroup).setVisible(false);
+    menu.findItem(R.id.cmiRenameGroup).setVisible(false);
+
     // If it is a child then set mSelectedContact, set the header to the
     // contact's name, and make contact items visible
     if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       int childIndex = ExpandableListView.getPackedPositionChild(packedPosition);
-    
+
       mSelectedGroup = mAdapter.getGroupEntry(groupIndex);
-      mSelectedContact = mAdapter.getContact(groupIndex, childIndex);
+      mSelectedContact = mAdapter.getContactEntry(groupIndex, childIndex);
       menu.setHeaderTitle(mSelectedContact.toString());
-      
+
       contactItemVisibility = true;
-      menu.findItem(R.id.cmiDeleteGroup).setVisible(false);
+
     }
     // If it is a group then set mSelectedGroup, set the header to the
     // group's title, and make group items visible
     else if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
       int groupIndex = ExpandableListView.getPackedPositionGroup(packedPosition);
       mSelectedGroup = mAdapter.getGroupEntry(groupIndex);
-      
+
       menu.setHeaderTitle(mSelectedGroup.toString());
       groupItemVisibility = true;
-      
-      // Only allow deleting editable groups (not system groups)
+
+      // Only allow deleting & renaming editable groups (not system groups)
       menu.findItem(R.id.cmiDeleteGroup).setVisible(mSelectedGroup.getEditLink() != null);
+      menu.findItem(R.id.cmiRenameGroup).setVisible(mSelectedGroup.getEditLink() != null);
     }
-    
+
     // Set visibility for contact items
     menu.findItem(R.id.cmiShowContact).setVisible(contactItemVisibility);
     menu.findItem(R.id.cmiSendEmail).setVisible(contactItemVisibility);
     menu.findItem(R.id.cmiDeleteContact).setVisible(contactItemVisibility);
-    
+
     // Set visibility for group items
     menu.findItem(R.id.cmiSendGroupEmail).setVisible(groupItemVisibility);
 
     // Set whether the logging option is checked based on the logging pref
-    menu.findItem(R.id.cmiEnableLogging)
-      .setCheckable(true)
-      .setChecked(getSharedPreferences(PREF_NAME, 0).getBoolean("logging", false));
+    menu.findItem(R.id.cmiEnableLogging).setCheckable(true).setChecked(
+        getSharedPreferences(PREF_NAME, 0).getBoolean("logging", false));
   }
 
   @Override
@@ -426,42 +422,40 @@ public final class ContactListActivity extends Activity {
       case R.id.cmiDeleteGroup:
         deleteSelectedGroup(this);
         return true;
+      case R.id.cmiRenameGroup:
+        renameSelectedGroup(this);
+        return true;
       default:
         return super.onContextItemSelected(item);
     }
   }
-  
+
   public static void emailSelectedContact(final Context context) {
 
     ContactEntry contact = ContactListActivity.mSelectedContact;
     if (contact == null || contact.email == null || contact.email.size() < 1) {
-      new AlertDialog.Builder(context)
-      .setIcon(android.R.drawable.ic_dialog_alert)
-      .setTitle(context.getString(R.string.error))
-      .setMessage(context.getString(R.string.no_email_address))
-      .setNeutralButton(context.getString(R.string.ok), null)
-      .show();
+      new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(
+          context.getString(R.string.error)).setMessage(
+          context.getString(R.string.no_email_address)).setNeutralButton(
+          context.getString(R.string.ok), null).show();
       return;
     }
 
-    context.startActivity(
-      new Intent(android.content.Intent.ACTION_SEND)
-      .putExtra(android.content.Intent.EXTRA_EMAIL, new String[] {contact.email.get(0).address})
-      .setType("plain/text")
-    );
+    context.startActivity(new Intent(android.content.Intent.ACTION_SEND).putExtra(
+        android.content.Intent.EXTRA_EMAIL, new String[] {contact.email.get(0).address}).setType(
+        "plain/text"));
   }
-  
+
   public static void emailSelectedGroup(final Context context) {
 
     GroupEntry group = ContactListActivity.mSelectedGroup;
     boolean error = false;
     ArrayList<String> emailAddresses = new ArrayList<String>();
-    if (group == null || group.contacts == null || group.contacts.size() < 1) {
+    if (group == null || group.getContacts() == null || group.getContacts().size() < 1) {
       error = true;
-    }
-    else {
+    } else {
       error = true;
-      for (ContactEntry contact : group.contacts) {
+      for (ContactEntry contact : group.getContacts()) {
         if (contact != null && contact.email != null && contact.email.size() > 0) {
           emailAddresses.add(contact.email.get(0).address);
           error = false;
@@ -470,86 +464,113 @@ public final class ContactListActivity extends Activity {
     }
 
     if (!error) {
-      context.startActivity(
-        new Intent(android.content.Intent.ACTION_SEND)
-        .putExtra(android.content.Intent.EXTRA_EMAIL,
-          emailAddresses.toArray(new String[emailAddresses.size()]))
-        .setType("plain/text")
-      );
-    }
-    else {
-      new AlertDialog.Builder(context)
-      .setIcon(android.R.drawable.ic_dialog_alert)
-      .setTitle(context.getString(R.string.error))
-      .setMessage(context.getString(R.string.no_group_email))
-      .setNeutralButton(context.getString(R.string.ok), null)
-      .show();
+      context.startActivity(new Intent(android.content.Intent.ACTION_SEND).putExtra(
+          android.content.Intent.EXTRA_EMAIL,
+          emailAddresses.toArray(new String[emailAddresses.size()])).setType("plain/text"));
+    } else {
+      new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(
+          context.getString(R.string.error)).setMessage(context.getString(R.string.no_group_email))
+          .setNeutralButton(context.getString(R.string.ok), null).show();
       return;
     }
   }
-  
+
   public static void deleteSelectedContact(final Context context, final ShowContactActivity activity) {
-    if (ContactListActivity.mSelectedContact != null) {
-      new AlertDialog.Builder(context)
-      .setIcon(android.R.drawable.ic_dialog_alert)
-      .setTitle(context.getString(R.string.delete_confirm_title) + " '" + mSelectedContact + "'")
-      .setMessage(R.string.delete_confirm_message)
-      .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
+    if (ContactListActivity.mSelectedContact == null) {
+      return;
+    }
+    showYesNoDialog(context, context.getString(R.string.delete_confirm_title) + " '"
+        + mSelectedContact + "'", context.getString(R.string.delete_confirm_message),
+        new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             if (!ContactListActivity.mSelectedContact.delete(transport)) {
-              new AlertDialog.Builder(context)
-              .setIcon(android.R.drawable.ic_dialog_alert)
-              .setTitle(R.string.error)
-              .setMessage(R.string.delete_failed)
-              .setNeutralButton(R.string.ok, null)
-              .show();
-            }
-            else {
+              new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert)
+                  .setTitle(R.string.error).setMessage(R.string.delete_failed).setNeutralButton(
+                      R.string.ok, null).show();
+            } else {
               ContactListActivity.mAdapter.removeContact(ContactListActivity.mSelectedContact);
               ContactListActivity.mSelectedContact = null;
-              
+
               if (activity != null) {
                 activity.finish();
               }
             }
           }
-
-      })
-      .setNegativeButton(R.string.no, null)
-      .show();
-    }
+        }, null);
   }
+
   public static void deleteSelectedGroup(final Context context) {
-    if (ContactListActivity.mSelectedGroup != null &&
-        ContactListActivity.mSelectedGroup.getEditLink() != null) {
-      new AlertDialog.Builder(context)
-      .setIcon(android.R.drawable.ic_dialog_alert)
-      .setTitle(context.getString(R.string.delete_confirm_title) + " '" + mSelectedGroup + "'")
-      .setMessage(R.string.delete_group_confirm_message)
-      .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
+
+    // Make sure there is a group selected and the edit link is present
+    if (ContactListActivity.mSelectedGroup == null
+        || ContactListActivity.mSelectedGroup.getEditLink() == null) {
+      return;
+    }
+
+    showYesNoDialog(context, context.getString(R.string.delete_confirm_title) + " '"
+        + mSelectedGroup + "'", context.getString(R.string.delete_group_confirm_message),
+        new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             if (!ContactListActivity.mSelectedGroup.delete(transport)) {
-              new AlertDialog.Builder(context)
-              .setIcon(android.R.drawable.ic_dialog_alert)
-              .setTitle(R.string.error)
-              .setMessage(R.string.delete_group_failed)
-              .setNeutralButton(R.string.ok, null)
-              .show();
-            }
-            else {
+              new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert)
+                  .setTitle(R.string.error).setMessage(R.string.delete_group_failed)
+                  .setNeutralButton(R.string.ok, null).show();
+            } else {
               mAdapter.removeGroup(mSelectedGroup);
               ContactListActivity.mSelectedGroup = null;
             }
           }
 
-      })
-      .setNegativeButton(R.string.no, null)
-      .show();
-    }
+        }, null);
   }
-  
+
+  public static void showYesNoDialog(final Context context, String title, String message,
+      DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener) {
+    new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title)
+        .setMessage(message).setPositiveButton(context.getString(R.string.yes), yesListener)
+        .setNegativeButton(context.getString(R.string.no), noListener).show();
+  }
+
+  public static void showInputDialog(final Context context, String title, String message,
+      final View input, DialogInterface.OnClickListener okListener,
+      DialogInterface.OnClickListener cancelListener) {
+    new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title)
+        .setMessage(message).setView(input).setPositiveButton(context.getString(R.string.ok),
+            okListener).setNegativeButton(context.getString(R.string.cancel), cancelListener)
+        .show();
+  }
+
+  public static void renameSelectedGroup(final Context context) {
+    
+    // Make sure there is a group selected and the edit link is present
+    if (ContactListActivity.mSelectedGroup == null ||
+        ContactListActivity.mSelectedGroup.getEditLink() == null) {
+      return;
+    }
+
+    final EditText input = new EditText(context);
+    input.setText(ContactListActivity.mSelectedGroup.title);
+    showInputDialog(
+      context,
+      context.getString(R.string.rename_title) + " '" + mSelectedGroup.toString() + "'",
+      context.getString(R.string.rename_message),
+      input,
+      new DialogInterface.OnClickListener() {
+        
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          String newTitle = input.getText().toString();
+          ContactListActivity.mSelectedGroup.title = newTitle;
+          ContactListActivity.mSelectedGroup.update(transport);
+          ContactListActivity.mAdapter.resetGroupCursor();
+        }
+      },
+      null
+    );
+  }
+
   /**
    * Launches the ShowContactActivity with the currently selected contact.
    */
@@ -627,15 +648,13 @@ public final class ContactListActivity extends Activity {
           runOnUiThread(new Runnable() {
 
             public void run() {
-              new AlertDialog.Builder(context)
-              .setTitle(context.getString(R.string.error))
-              .setMessage(context.getString(R.string.error_getting_contacts))
-              .setNeutralButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                  dialog.cancel();
-                }
-              })
-              .show();
+              new AlertDialog.Builder(context).setTitle(context.getString(R.string.error))
+                  .setMessage(context.getString(R.string.error_getting_contacts)).setNeutralButton(
+                      context.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                          dialog.cancel();
+                        }
+                      }).show();
             }
           });
           handleException(e);
@@ -644,16 +663,11 @@ public final class ContactListActivity extends Activity {
         runOnUiThread(new Runnable() {
 
           public void run() {
-            mAdapter = new GCSTreeAdapter(
-              context,
-              new GroupCursor(groups),
-              R.layout.expandable_group_layout,
-              R.layout.expandable_child_layout,
-              new String [] {"title"},
-              new int [] {R.id.tvGroupName},
-              new String [] {"DisplayName"},
-              new int [] {R.id.tvChildName}
-            );
+            mAdapter =
+                new GCSTreeAdapter(context, new GroupCursor(groups),
+                    R.layout.expandable_group_layout, R.layout.expandable_child_layout,
+                    new String[] {"title"}, new int[] {R.id.tvGroupName},
+                    new String[] {"DisplayName"}, new int[] {R.id.tvChildName});
             mListView.setAdapter(mAdapter);
 
             mUpdateInProgress = false;
@@ -668,7 +682,8 @@ public final class ContactListActivity extends Activity {
   }
 
   private void setLogging(boolean logging) {
-    Logger.getLogger("org.pirules.gcontactsync.android").setLevel(logging ? Level.CONFIG : Level.OFF);
+    Logger.getLogger("org.pirules.gcontactsync.android").setLevel(
+        logging ? Level.CONFIG : Level.OFF);
     SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
     boolean currentSetting = settings.getBoolean("logging", false);
     if (currentSetting != logging) {
@@ -677,7 +692,7 @@ public final class ContactListActivity extends Activity {
       editor.commit();
     }
   }
-  
+
   void log(String message, boolean isError) {
     boolean log = getSharedPreferences(PREF_NAME, 0).getBoolean("logging", false);
     if (!log) {
@@ -685,8 +700,7 @@ public final class ContactListActivity extends Activity {
     }
     if (isError) {
       Log.e(mActivityName, message);
-    }
-    else  {
+    } else {
       Log.i(mActivityName, message);
     }
   }

@@ -14,7 +14,6 @@
 
 package org.pirules.gcontactsync.android;
 
-import org.pirules.gcontactsync.android.model.contact.ContactCursor;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 import org.pirules.gcontactsync.android.model.group.GroupCursor;
 import org.pirules.gcontactsync.android.model.group.GroupEntry;
@@ -45,6 +44,14 @@ public class GCSTreeAdapter extends SimpleCursorTreeAdapter {
     ArrayList<GroupEntry> groups = ((GroupCursor) getCursor()).groups;
     groups.remove(group);
     
+    setGroups(groups);
+  }
+  
+  public void resetGroupCursor() {
+    setGroups(((GroupCursor) getCursor()).groups);
+  }
+  
+  private void setGroups(ArrayList<GroupEntry> groups) {
     setGroupCursor(new GroupCursor(groups));
     notifyDataSetChanged();
   }
@@ -53,8 +60,8 @@ public class GCSTreeAdapter extends SimpleCursorTreeAdapter {
     ArrayList<GroupEntry> groups = ((GroupCursor) getCursor()).groups;
     for (GroupEntry group : groups) {
       int groupPosition = groups.indexOf(group);
-      if (group.contacts != null && group.contacts.remove(contact)) {
-        this.setChildrenCursor(groupPosition, new ContactCursor(group.contacts));
+      if (group.removeContact(contact)) {
+        this.setChildrenCursor(groupPosition, group.getContactsCursor());
       }
     }
   }
@@ -70,8 +77,8 @@ public class GCSTreeAdapter extends SimpleCursorTreeAdapter {
   public GroupEntry getGroupEntry(int groupPosition) {
     return ((GroupCursor) this.getCursor()).groups.get(groupPosition);
   }
-  public ContactEntry getContact(int groupPosition, int childPosition) {
-    return getGroupEntry(groupPosition).contacts.get(childPosition);
+  public ContactEntry getContactEntry(int groupPosition, int childPosition) {
+    return getGroupEntry(groupPosition).getContacts().get(childPosition);
   }
 
 }

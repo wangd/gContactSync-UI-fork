@@ -68,6 +68,28 @@ public class Entry implements Cloneable {
       return false;
     }
   }
+  
+  public boolean update(HttpTransport transport) {
+    try {
+      executeUpdate(transport);
+      return true;
+    } catch (IOException exception) {
+      exception.printStackTrace();
+      return false;
+    }
+  }
+  
+  public Entry executeUpdate(HttpTransport transport) throws IOException {
+    if (getEditLink() == null) {
+      throw new IOException("Edit link is null...Entry is not editable");
+    }
+    GoogleUrl url = new GoogleUrl(getEditLink());
+    AtomContent content = new AtomContent();
+    content.namespaceDictionary = Util.DICTIONARY;
+    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPutRequest(url, content);
+    content.entry = this;
+    return HttpRequestWrapper.execute(request).parseAs(getClass());
+  }
 
   public void executeDelete(HttpTransport transport) throws IOException {
     if (getEditLink() == null) {

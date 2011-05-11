@@ -14,41 +14,55 @@
 
 package org.pirules.gcontactsync.android.model.group;
 
-import com.google.api.client.googleapis.GoogleUrl;
-import com.google.api.client.http.HttpTransport;
-
 import org.pirules.gcontactsync.android.model.Entry;
 import org.pirules.gcontactsync.android.model.contact.ContactCursor;
 import org.pirules.gcontactsync.android.model.contact.ContactEntry;
 
 import android.database.Cursor;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
 
 /**
  * @author Josh Geenen
  */
 public class GroupEntry extends Entry {
 
-  public ArrayList<ContactEntry> contacts;
+  private ArrayList<ContactEntry> contacts;
+  private ContactCursor cursor;
   
   public void addContact(ContactEntry contact) {
     if (contacts == null) {
       contacts = new ArrayList<ContactEntry>();
     }
     contacts.add(contact);
+    cursor = null; // invalidate the cursor since a contact was added
+  }
+  
+  public boolean removeContact(ContactEntry contact) {
+    if (contacts != null && contacts.remove(contact)) {
+      cursor = null; // invalidate the cursor since a contact was removed
+      return true;
+    }
+    return false;
+  }
+  
+  public final ArrayList<ContactEntry> getContacts() {
+    return contacts;
   }
   
   public Cursor getContactsCursor() {
-    return new ContactCursor(contacts);
+    // Create the cursor if necessary, else return the existing cursor
+    if (cursor == null) {
+      cursor = new ContactCursor(contacts);
+    }
+    return cursor;
   }
   
   @Override
   public String toString() {
     return title != null ? title.replaceFirst("System Group: ", "") : "";
   }
+  
   public String getContactFeedLink() {
     return id;
   }
@@ -57,15 +71,5 @@ public class GroupEntry extends Entry {
   public GroupEntry clone() {
     // TODO - need to copy contacts?
     return (GroupEntry) super.clone();
-  }
-
-  @Override
-  public GroupEntry executeInsert(HttpTransport transport, GoogleUrl url) throws IOException {
-    return (GroupEntry) super.executeInsert(transport, url);
-  }
-
-  public GroupEntry executePatchRelativeToOriginal(
-      HttpTransport transport, GroupEntry original) throws IOException {
-    return (GroupEntry) super.executePatchRelativeToOriginal(transport, original);
   }
 }
