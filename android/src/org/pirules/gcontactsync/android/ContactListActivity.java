@@ -217,14 +217,12 @@ public final class ContactListActivity extends Activity {
         });
         return builder.create();
       case DIALOG_ABOUT:
-        new AlertDialog.Builder(ContactListActivity.this).setTitle("About " + mActivityName)
-            .setMessage(
-                getString(R.string.author) + " Josh Geenen\n" + getString(R.string.support)
-                    + " http://pirules.org/forum\n" + getString(R.string.version) + " "
-                    + mAppVersion).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-              }
-            }).show();
+        Util.showMessage(this,
+          getString(R.string.about) + " " + mActivityName,
+          getString(R.string.author) + " Josh Geenen\n" +
+          getString(R.string.support) + " http://pirules.org/forum\n" +
+          getString(R.string.version) + " " + mAppVersion,
+          null);
     }
     return null;
   }
@@ -434,10 +432,10 @@ public final class ContactListActivity extends Activity {
 
     ContactEntry contact = ContactListActivity.mSelectedContact;
     if (contact == null || contact.email == null || contact.email.size() < 1) {
-      new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(
-          context.getString(R.string.error)).setMessage(
-          context.getString(R.string.no_email_address)).setNeutralButton(
-          context.getString(R.string.ok), null).show();
+      Util.showMessage(context,
+        context.getString(R.string.error),
+        context.getString(R.string.no_email_address),
+        null);
       return;
     }
 
@@ -468,9 +466,10 @@ public final class ContactListActivity extends Activity {
           android.content.Intent.EXTRA_EMAIL,
           emailAddresses.toArray(new String[emailAddresses.size()])).setType("plain/text"));
     } else {
-      new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(
-          context.getString(R.string.error)).setMessage(context.getString(R.string.no_group_email))
-          .setNeutralButton(context.getString(R.string.ok), null).show();
+      Util.showMessage(context,
+        context.getString(R.string.error),
+        context.getString(R.string.no_group_email),
+        null);
       return;
     }
   }
@@ -479,15 +478,16 @@ public final class ContactListActivity extends Activity {
     if (ContactListActivity.mSelectedContact == null) {
       return;
     }
-    showYesNoDialog(context, context.getString(R.string.delete_confirm_title) + " '"
+    Util.showYesNoDialog(context, context.getString(R.string.delete_confirm_title) + " '"
         + mSelectedContact + "'", context.getString(R.string.delete_confirm_message),
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             if (!ContactListActivity.mSelectedContact.delete(transport)) {
-              new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert)
-                  .setTitle(R.string.error).setMessage(R.string.delete_failed).setNeutralButton(
-                      R.string.ok, null).show();
+              Util.showMessage(context,
+                context.getString(R.string.error),
+                context.getString(R.string.delete_failed),
+                null);
             } else {
               ContactListActivity.mAdapter.removeContact(ContactListActivity.mSelectedContact);
               ContactListActivity.mSelectedContact = null;
@@ -508,15 +508,16 @@ public final class ContactListActivity extends Activity {
       return;
     }
 
-    showYesNoDialog(context, context.getString(R.string.delete_confirm_title) + " '"
+    Util.showYesNoDialog(context, context.getString(R.string.delete_confirm_title) + " '"
         + mSelectedGroup + "'", context.getString(R.string.delete_group_confirm_message),
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
             if (!ContactListActivity.mSelectedGroup.delete(transport)) {
-              new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert)
-                  .setTitle(R.string.error).setMessage(R.string.delete_group_failed)
-                  .setNeutralButton(R.string.ok, null).show();
+              Util.showMessage(context,
+                context.getString(R.string.error),
+                context.getString(R.string.delete_group_failed),
+                null);
             } else {
               mAdapter.removeGroup(mSelectedGroup);
               ContactListActivity.mSelectedGroup = null;
@@ -524,22 +525,6 @@ public final class ContactListActivity extends Activity {
           }
 
         }, null);
-  }
-
-  public static void showYesNoDialog(final Context context, String title, String message,
-      DialogInterface.OnClickListener yesListener, DialogInterface.OnClickListener noListener) {
-    new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title)
-        .setMessage(message).setPositiveButton(context.getString(R.string.yes), yesListener)
-        .setNegativeButton(context.getString(R.string.no), noListener).show();
-  }
-
-  public static void showInputDialog(final Context context, String title, String message,
-      final View input, DialogInterface.OnClickListener okListener,
-      DialogInterface.OnClickListener cancelListener) {
-    new AlertDialog.Builder(context).setIcon(android.R.drawable.ic_dialog_alert).setTitle(title)
-        .setMessage(message).setView(input).setPositiveButton(context.getString(R.string.ok),
-            okListener).setNegativeButton(context.getString(R.string.cancel), cancelListener)
-        .show();
   }
 
   public static void renameSelectedGroup(final Context context) {
@@ -552,7 +537,7 @@ public final class ContactListActivity extends Activity {
 
     final EditText input = new EditText(context);
     input.setText(ContactListActivity.mSelectedGroup.title);
-    showInputDialog(
+    Util.showInputDialog(
       context,
       context.getString(R.string.rename_title) + " '" + mSelectedGroup.toString() + "'",
       context.getString(R.string.rename_message),
@@ -561,8 +546,7 @@ public final class ContactListActivity extends Activity {
         
         @Override
         public void onClick(DialogInterface dialog, int which) {
-          String newTitle = input.getText().toString();
-          ContactListActivity.mSelectedGroup.title = newTitle;
+          ContactListActivity.mSelectedGroup.title = input.getText().toString();
           ContactListActivity.mSelectedGroup.update(transport);
           ContactListActivity.mAdapter.resetGroupCursor();
         }
@@ -648,13 +632,10 @@ public final class ContactListActivity extends Activity {
           runOnUiThread(new Runnable() {
 
             public void run() {
-              new AlertDialog.Builder(context).setTitle(context.getString(R.string.error))
-                  .setMessage(context.getString(R.string.error_getting_contacts)).setNeutralButton(
-                      context.getString(R.string.ok), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                          dialog.cancel();
-                        }
-                      }).show();
+              Util.showMessage(context,
+                context.getString(R.string.error),
+                context.getString(R.string.error_getting_contacts),
+                null);
             }
           });
           handleException(e);
