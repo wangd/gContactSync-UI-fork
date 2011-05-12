@@ -353,7 +353,10 @@ public final class ContactListActivity extends Activity {
         public void onClick(DialogInterface dialog, int which) {
           GroupEntry newGroup = new GroupEntry();
           newGroup.title = input.getText().toString();
-          if (newGroup.insert(ContactListActivity.transport)) {
+          
+          // Overwrite newGroup with the group from Google (so it has an etag, edit link, etc.)
+          newGroup = newGroup.insert(ContactListActivity.transport);
+          if (newGroup != null) {
             ArrayList<GroupEntry> groups = ((GroupCursor) ContactListActivity.mAdapter.getCursor()).groups;
             groups.add(newGroup);
             ContactListActivity.mAdapter.resetGroupCursor();
@@ -581,7 +584,22 @@ public final class ContactListActivity extends Activity {
         public void onClick(DialogInterface dialog, int which) {
           String oldTitle = ContactListActivity.mSelectedGroup.title;
           ContactListActivity.mSelectedGroup.title = input.getText().toString();
-          if (ContactListActivity.mSelectedGroup.update(transport)) {
+          
+          // Save the contacts from the group before updating
+          ArrayList<ContactEntry> contacts = ContactListActivity.mSelectedGroup.getContacts();
+          
+          // Update over the old group (for an updated etag)
+          GroupEntry newGroup = (GroupEntry) ContactListActivity.mSelectedGroup.update(transport);
+          if (newGroup != null) {
+            // Add the old contacts back
+            if (contacts != null && contacts.size() > 0) {
+              for (ContactEntry contact : contacts) {
+                newGroup.addContact(contact);
+              }
+            }
+            ArrayList<GroupEntry> groups = ((GroupCursor) ContactListActivity.mAdapter.getCursor()).groups;
+            int index = groups.indexOf(ContactListActivity.mSelectedGroup);
+            groups.set(index, newGroup);
             ContactListActivity.mAdapter.resetGroupCursor();
           }
           else {
