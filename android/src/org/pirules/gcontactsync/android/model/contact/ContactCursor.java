@@ -20,31 +20,36 @@ import java.util.Collections;
 import android.database.MatrixCursor;
 
 /**
- * 
+ * Provides a MatrixCursor given an ArrayList of ContactEntries.
  * @author Josh Geenen (joshgeenen@gmail.com)
  */
 public class ContactCursor extends MatrixCursor {
   
-  private ArrayList<ContactEntry> contacts = new ArrayList<ContactEntry>();
+  /** The projection of what to include in the cursor. */
   private static final String [] CONTACTS_CURSOR_PROJECTION = new String [] {
     "_id",
     "DisplayName",
     "GivenName",
     "FamilyName"
   };
+  
+  /** The groups stored in this cursor. */
+  private ArrayList<ContactEntry> contacts = new ArrayList<ContactEntry>();
+  
+  /**
+   * Initializes the cursor.
+   * @param contacts The list of contacts to add to the cursor.
+   */
   public ContactCursor(ArrayList<ContactEntry> contacts) {
     super(CONTACTS_CURSOR_PROJECTION, contacts == null ? 0 : contacts.size());
     if (contacts != null) {
       Collections.sort(contacts, new ContactComparator());
       for (ContactEntry contact : contacts) {
-        addContact(contact);
+        String givenName = contact.name != null ? contact.name.givenName : null;
+        String familyName = contact.name != null ? contact.name.familyName : null;
+        addRow(new Object [] {contacts.size(), contact.toString(), givenName, familyName});
+        this.contacts.add(contact);
       }
     }
-  }
-  private void addContact(ContactEntry contact) {
-    String givenName = contact.name != null ? contact.name.givenName : null;
-    String familyName = contact.name != null ? contact.name.familyName : null;
-    addRow(new Object [] {contacts.size(), contact.toString(), givenName, familyName});
-    contacts.add(contact);
   }
 }

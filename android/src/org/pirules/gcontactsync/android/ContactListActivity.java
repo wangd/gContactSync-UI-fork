@@ -12,9 +12,13 @@
  * the License.
  */
 
+// TODO - use background service to get data into sqlite
+// TODO - stream parser
+// TODO - for PUTs get full Entry (extend GenericXml) first, then change and upload
+// TODO - gzip response
+
 package org.pirules.gcontactsync.android;
 
-import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -31,6 +35,10 @@ import org.pirules.gcontactsync.android.model.group.GroupFeed;
 import org.pirules.gcontactsync.android.model.group.GroupUrl;
 import org.pirules.gcontactsync.android.util.HttpRequestWrapper;
 import org.pirules.gcontactsync.android.util.Util;
+
+import android.app.ProgressDialog;
+
+import android.os.AsyncTask;
 
 import android.widget.EditText;
 
@@ -52,7 +60,6 @@ import android.app.Activity;
 
 import android.widget.ExpandableListView;
 
-import com.google.api.client.http.xml.atom.AtomParser;
 import com.google.common.collect.Lists;
 
 import android.accounts.Account;
@@ -91,10 +98,12 @@ public final class ContactListActivity extends Activity {
   private static final String AUTH_TOKEN_TYPE = "cp";
 
   /** The gdata version of the API */
-  private static final String GDATA_VERSION = "3";
+  public static final String GDATA_VERSION = "3";
 
   /** Whether to enable logging by default */
   private static final boolean LOGGING_DEFAULT = false;
+  
+  static ContactFeed mContactFeed = null;
 
   // Dialog IDs
   private static final int DIALOG_ACCOUNTS = 0;
@@ -107,9 +116,10 @@ public final class ContactListActivity extends Activity {
 
   static HttpTransport transport;
 
-  private String authToken;
-
   boolean mUpdateInProgress = false;
+  
+  /** Progress dialog to show when loading contact & group feeds */
+  ProgressDialog mProgressDialog = null;
 
   /** The contact that was last selected for viewing */
   public static ContactEntry mSelectedContact = null;
@@ -145,6 +155,8 @@ public final class ContactListActivity extends Activity {
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     setProgressBarIndeterminate(true);
     setProgressBarIndeterminateVisibility(true);
+    
+    mProgressDialog = new ProgressDialog(ContactListActivity.this);
 
     // Get the logging settings
     SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
@@ -163,14 +175,8 @@ public final class ContactListActivity extends Activity {
       handleException(e);
     }
 
-    // Setup the default headers for this application
-    GoogleHeaders headers = new GoogleHeaders();
-    headers.setApplicationName(mPackageName + "/" + mAppVersion);
-    headers.gdataVersion = GDATA_VERSION;
-    HttpRequestWrapper.defaultHeaders = headers;
-    AtomParser parser = new AtomParser();
-    parser.namespaceDictionary = Util.DICTIONARY;
-    HttpRequestWrapper.parser = parser;
+    // Initialize the request wrapper
+    HttpRequestWrapper.init(mPackageName, mAppVersion);
 
     setContentView(R.layout.contact_groups);
 
@@ -238,7 +244,7 @@ public final class ContactListActivity extends Activity {
         Account account = accounts[i];
         if (accountName.equals(account.name)) {
           if (tokenExpired) {
-            manager.invalidateAuthToken("com.google", this.authToken);
+            manager.invalidateAuthToken("com.google", HttpRequestWrapper.mAuthToken);
           }
           gotAccount(manager, account);
           return;
@@ -300,8 +306,7 @@ public final class ContactListActivity extends Activity {
   }
 
   void authenticated(String authToken) {
-    this.authToken = authToken;
-    HttpRequestWrapper.defaultHeaders.setGoogleLogin(authToken);
+    HttpRequestWrapper.mAuthToken = authToken;
     executeRefreshContacts();
   }
 
@@ -479,6 +484,68 @@ public final class ContactListActivity extends Activity {
         android.content.Intent.EXTRA_EMAIL, new String[] {contact.email.get(0).address}).setType(
         "plain/text"));
   }
+  
+  class LoadContactFeed extends AsyncTask<Void, Void, ContactFeed> {
+    @Override
+    protected void onPreExecute() {
+      mProgressDialog.setMessage("Loading...");
+      mProgressDialog.show();
+    }
+   /**
+    * @see android.os.AsyncTask#doInBackground(Params[])
+    */
+   @Override
+   protected ContactFeed doInBackground(Void... params) {
+     ContactUrl contactUrl = ContactUrl.forAllContactsFeed();
+     contactUrl.maxResults = MAX_CONTACTS;
+     try {
+       return ContactFeed.executeGet(transport, contactUrl);
+     } catch (IOException exception) {
+       handleException(exception);
+       return null;
+     }
+   }
+   @Override
+   protected void onPostExecute(ContactFeed feed) {
+     mProgressDialog.dismiss();
+     if (feed == null) {
+       return;
+     }
+     ContactListActivity.mContactFeed = feed;
+     new LoadGroupFeed().execute((Void []) null);
+   }
+  }
+   
+   class LoadGroupFeed extends AsyncTask<Void, Void, GroupFeed> {
+     @Override
+     protected void onPreExecute() {
+       mProgressDialog.setMessage("Loading...");
+       mProgressDialog.show();
+     }
+    /**
+     * @see android.os.AsyncTask#doInBackground(Params[])
+     */
+    @Override
+    protected GroupFeed doInBackground(Void... params) {
+      GroupUrl groupUrl = GroupUrl.forAllGroupsFeed();
+      groupUrl.maxResults = MAX_CONTACTS;
+      try {
+        return GroupFeed.executeGet(transport, groupUrl);
+      } catch (IOException exception) {
+        handleException(exception);
+        return null;
+      }
+    }
+    @Override
+    protected void onPostExecute(GroupFeed feed) {
+      mProgressDialog.dismiss();
+      if (feed != null) {
+        return;
+      }
+      // TODO - do something with the feeds
+    }
+   }
+  
 
   public static void emailSelectedGroup(final Context context) {
 
@@ -657,6 +724,7 @@ public final class ContactListActivity extends Activity {
           }
 
           GroupUrl groupUrl = GroupUrl.forAllGroupsFeed();
+          groupUrl.maxResults = MAX_CONTACTS;
           GroupFeed groupFeed = GroupFeed.executeGet(transport, groupUrl);
           GroupEntry allContacts = new GroupEntry();
           allContacts.id = null;
@@ -723,8 +791,11 @@ public final class ContactListActivity extends Activity {
   }
 
   private void setLogging(boolean logging) {
-    Logger.getLogger("org.pirules.gcontactsync.android").setLevel(
-        logging ? Level.CONFIG : Level.OFF);
+    Level level = logging ? Level.CONFIG : Level.OFF; 
+    // Logging level for gcontactsync
+    Logger.getLogger("org.pirules.gcontactsync.android").setLevel(level);
+    // Logging level for Google API HTTP requests
+    Logger.getLogger("com.google.api.client.http").setLevel(level);
     SharedPreferences settings = getSharedPreferences(PREF_NAME, 0);
     boolean currentSetting = settings.getBoolean("logging", false);
     if (currentSetting != logging) {

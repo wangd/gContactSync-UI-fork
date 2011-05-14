@@ -20,15 +20,19 @@ import com.google.api.client.util.Key;
 import org.pirules.gcontactsync.android.util.Util;
 
 /**
+ * The base class for URLs to use with contact feeds.
  * @author Josh Geenen
  */
 public class ContactUrl extends GoogleUrl {
 
+  /** The base URL to use with contact feeds. */
   public static final String ROOT_URL = "https://www.google.com/m8/feeds/contacts";
 
+  /** The max number of contacts to return. */
   @Key("max-results")
   public Integer maxResults;
   
+  /** The ID of the group whose feed is to be returned (leave as null for all contacts). */
   @Key("group")
   public String group;
 

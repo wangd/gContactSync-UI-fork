@@ -17,12 +17,16 @@ package org.pirules.gcontactsync.android.model.contact;
 import java.util.Comparator;
 
 /**
- * 
+ * Compares two contacts.
  * @author Josh Geenen (joshgeenen@gmail.com)
  */
 public class ContactComparator implements Comparator<ContactEntry> {
 
   /**
+   * Compares the two given contacts.  Currently this only does a string
+   * comparison on the two contacts' toString methods.
+   * @param contact0 The first contact to compare.
+   * @param contact1 The second contact to compare.
    * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
    */
   @Override

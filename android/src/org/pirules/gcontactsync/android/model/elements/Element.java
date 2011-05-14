@@ -26,6 +26,11 @@ import java.util.Map;
  * @author joshgeenen@gmail.com (Josh Geenen)
  */
 public class Element {
+  
+  /** The identifier of the element. */
+  @Key("@id")
+  public String id;
+  
   /**
    * A simple string value used to name this element.
    * It allows UIs to display a label such as "Work", "Personal", "Preferred", etc.

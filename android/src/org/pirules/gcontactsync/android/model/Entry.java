@@ -69,13 +69,12 @@ public class Entry implements Cloneable {
     }
   }
   
-  public boolean update(HttpTransport transport) {
+  public Entry update(HttpTransport transport) {
     try {
-      executeUpdate(transport);
-      return true;
+      return executeUpdate(transport);
     } catch (IOException exception) {
       exception.printStackTrace();
-      return false;
+      return null;
     }
   }
   
@@ -101,14 +100,29 @@ public class Entry implements Cloneable {
     HttpRequestWrapper.execute(request).ignore();
   }
 
+  /**
+   * Inserts this Entry to the given URL and returns the response
+   * @param transport The HttpTransport to use.
+   * @param url The URL to POST this Entry to.
+   * @return The response parsed as the current Entry class.
+   * @throws IOException
+   */
   protected Entry executeInsert(HttpTransport transport, GoogleUrl url) throws IOException {
     AtomContent content = new AtomContent();
     content.namespaceDictionary = Util.DICTIONARY;
-    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
     content.entry = this;
+    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
     return HttpRequestWrapper.execute(request).parseAs(getClass());
   }
 
+  /**
+   * Performs a patch between this Entry and an original Entry and executes the
+   * request, then returns the response from parsed as the current class.
+   * @param transport The HttpTransport to use.
+   * @param original The original Entry.
+   * @return The response parsed as the current Entry class.
+   * @throws IOException from HttpRequest.execute.
+   */
   protected Entry executePatchRelativeToOriginal(HttpTransport transport, Entry original) throws IOException {
     AtomPatchRelativeToOriginalContent content = new AtomPatchRelativeToOriginalContent();
     content.namespaceDictionary = Util.DICTIONARY;
@@ -119,10 +133,18 @@ public class Entry implements Cloneable {
     return HttpRequestWrapper.execute(request).parseAs(getClass());
   }
 
+  /**
+   * Returns the link to edit this Entry, if one exists, else null.
+   * @return The link to edit this Entry, if one exists, else null.
+   */
   public String getEditLink() {
     return Link.find(links, "edit");
   }
   
+  /**
+   * Returns the link to this Entry.
+   * @return The link to this Entry for GET requests.
+   */
   public String getSelfLink() {
     return Link.find(links, "self");
   }

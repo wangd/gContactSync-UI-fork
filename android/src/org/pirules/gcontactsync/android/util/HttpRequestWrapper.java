@@ -25,6 +25,8 @@ import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.xml.atom.AtomParser;
 
+import org.pirules.gcontactsync.android.ContactListActivity;
+
 import java.io.IOException;
 
 /**
@@ -32,15 +34,30 @@ import java.io.IOException;
  */
 public class HttpRequestWrapper {
  
-  private static HttpRequestFactory factory = null;
-  public static GoogleHeaders defaultHeaders = null;
-  public static AtomParser parser = null;
+  private static HttpRequestFactory mFactory = null;
+  public static AtomParser mParser = null;
+  static String mApplicationName = "";
+  public static String mAuthToken = "";
   
+  public static void init(String packageName, String appVersion) {
+
+    mApplicationName = packageName + "/" + appVersion;
+    AtomParser parser = new AtomParser();
+    parser.namespaceDictionary = Util.DICTIONARY;
+    HttpRequestWrapper.mParser = parser;
+  }
+  
+  /**
+   * Returns an HttpRequestFactory with the given HttpTransport and GoogleUrl.
+   * @param transport
+   * @param url
+   * @return
+   */
   public static HttpRequestFactory getFactory(HttpTransport transport, GoogleUrl url) {
-    if (factory == null) {
-      factory = createRequestFactory(transport, url);
+    if (mFactory == null) {
+      mFactory = createRequestFactory(transport, url);
     }
-    return factory;
+    return mFactory;
   }
   
   /**
@@ -67,7 +84,7 @@ public class HttpRequestWrapper {
       if (e.response.statusCode == 302) {
         GoogleUrl url = new GoogleUrl(e.response.headers.location);
         request.url = url;
-        factory = createRequestFactory(request.transport, url);
+        mFactory = createRequestFactory(request.transport, url);
         e.response.ignore(); // close the connection
         return request.execute(); // re-execute the request
       }
@@ -79,9 +96,16 @@ public class HttpRequestWrapper {
     final SessionInterceptor interceptor = new SessionInterceptor(transport, locationUrl);
     return transport.createRequestFactory(new HttpRequestInitializer() {
       public void initialize(HttpRequest request) {
+        
+        GoogleHeaders headers = new GoogleHeaders();
+        headers.setApplicationName(mApplicationName);
+        headers.gdataVersion = ContactListActivity.GDATA_VERSION;
+        headers.setGoogleLogin(mAuthToken);
+        
         request.interceptor = interceptor;
-        request.headers = defaultHeaders;
-        request.addParser(parser);
+        request.headers = headers;
+        request.enableGZipContent = true;
+        request.addParser(mParser);
       }
     });
   }

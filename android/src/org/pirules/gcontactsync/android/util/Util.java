@@ -24,14 +24,37 @@ import android.content.DialogInterface;
 import android.view.View;
 
 /**
+ * Provides some commonly used methods and a default XML namespace dictionary.
  * @author Yaniv Inbar, Josh Geenen
  */
 public class Util {
-  public static final boolean DEBUG = false;
+  
+  /**
+   * Whether to enable certain debugging features (logging by default,
+   * prettyprint of HTML, etc.
+   * TODO turn off
+   */
+  public static final boolean DEBUG = true;
 
+  /**
+   * The default XML namespace dictionary from namespace to URI.
+   */
   public static final XmlNamespaceDictionary DICTIONARY =
-    new XmlNamespaceDictionary().set("", "http://www.w3.org/2005/Atom");
+    new XmlNamespaceDictionary().set("", "http://www.w3.org/2005/Atom")
+                                .set("app", "http://www.w3.org/2007/app") // this is the problem
+                                .set("openSearch", "http://a9.com/-/spec/opensearch/1.1/")
+                                .set("gContact", "http://schemas.google.com/contact/2008")
+                                .set("batch", "http://schemas.google.com/gdata/batch")
+                                .set("gd", "http://schemas.google.com/g/2005");
 
+  /**
+   * Shows a dialog with yes and no buttons.
+   * @param context The Context of the dialog.
+   * @param title The title for the dialog.
+   * @param message The message to display in the dialog.
+   * @param yesListener The listener for when Yes (positive button) is clicked.
+   * @param noListener The listener for when No (negative button) is clicked. 
+   */
   public static void showYesNoDialog(final Context context,
                                      final String title,
                                      final String message,
@@ -46,6 +69,13 @@ public class Util {
     .show();
   }
   
+  /**
+   * Shows a dialog with a single OK button.
+   * @param context The Context of the dialog.
+   * @param title The title for the dialog.
+   * @param message The message to display in the dialog.
+   * @param yesListener The listener for when OK (neutral button) is clicked. 
+   */
   public static void showMessage(final Context context,
                                  final String title,
                                  final String message,
@@ -57,6 +87,15 @@ public class Util {
     .show();
   }
 
+  /**
+   * Shows a dialog with OK and Cancel buttons with an input View of some kind.
+   * @param context The Context of the dialog.
+   * @param title The title for the dialog.
+   * @param input The View that requests input.
+   * @param message The message to display in the dialog.
+   * @param okListener The listener for when OK (positive button) is clicked.
+   * @param cancelListener The listener for when Cancel (negative button) is clicked. 
+   */
   public static void showInputDialog(final Context context,
                                      final String title,
                                      final String message,

@@ -20,6 +20,7 @@
     <string name="no">No</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="loading">Loading...</string>
     <string name="enable_logging">Enable Logging</string>
     <string name="delete_group">Delete Group</string>
     <string name="rename_group">Rename Group</string>

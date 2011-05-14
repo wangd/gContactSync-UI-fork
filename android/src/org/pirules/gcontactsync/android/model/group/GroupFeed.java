@@ -25,13 +25,24 @@ import java.util.List;
 
 
 /**
+ * Stores a list of GroupEntries.
  * @author Josh Geenen
  */
 public class GroupFeed extends Feed {
 
+  /** A list of the groups. */
   @Key("entry")
   public List<GroupEntry> groups = Lists.newArrayList();
 
+  /**
+   * Sends a GET request for a group feed and parses the groups into a List of
+   * GroupEntries.
+   * 
+   * @param transport The HttpTransport to use.
+   * @param url The URL of the group feed.
+   * @return The GroupFeed from the given URL.
+   * @throws IOException from HttpRequest.execute()
+   */
   public static GroupFeed executeGet(HttpTransport transport, GroupUrl url)
       throws IOException {
     return (GroupFeed) Feed.executeGet(transport, url, GroupFeed.class);

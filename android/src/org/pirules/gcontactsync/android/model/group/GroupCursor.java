@@ -19,32 +19,33 @@ import java.util.ArrayList;
 import android.database.MatrixCursor;
 
 /**
- * 
+ * Provides a MatrixCursor given an ArrayList of GroupEntries.
  * @author Josh Geenen (joshgeenen@gmail.com)
  */
 public class GroupCursor extends MatrixCursor {
+  
+  /** The projection of what to include in the cursor. */
   private static final String [] GROUPS_CURSOR_PROJECTION = new String [] {
     "_id",
     "title"
   };
+  
+  /** The groups stored in this cursor. */
   public ArrayList<GroupEntry> groups;
+  
   /**
-   * 
+   * Initializes the cursor.
+   * @param groups The list of groups to add to the cursor.
    */
   public GroupCursor(ArrayList<GroupEntry> groups) {
     super(GROUPS_CURSOR_PROJECTION, groups == null ? 0 : groups.size());
-    addGroups(groups);
+    if (groups != null) {
+      int i = 0;
+      for (GroupEntry group : groups) {
+        addRow(new Object[] {i, group.title});
+        ++i;
+      }
+    }
     this.groups = groups;
-  }
-  
-  public void addGroups(ArrayList<GroupEntry> groups) {
-    if (groups == null) {
-      return;
-    }
-    int i = 0;
-    for (GroupEntry group : groups) {
-      addRow(new Object[] {i, group.title});
-      ++i;
-    }
   }
 }
