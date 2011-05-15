@@ -29,8 +29,8 @@ import android.content.Context;
 import android.widget.ArrayAdapter;
 
 /**
- * 
- * @author joshgeenen@gmail.com (Josh Geenen)
+ * An adapter for the contact view activity which extends ArrayAdapter.
+ * @author Josh Geenen (joshgeenen@gmail.com)
  */
 public class ContactEntryListViewAdapter extends ArrayAdapter<String> {
 
@@ -38,6 +38,7 @@ public class ContactEntryListViewAdapter extends ArrayAdapter<String> {
   ArrayList<String> items = new ArrayList<String>();
   
   /**
+   * 
    * @param context
    * @param textViewResourceId
    */
@@ -52,6 +53,11 @@ public class ContactEntryListViewAdapter extends ArrayAdapter<String> {
     items.add(object);
   }
   
+  /**
+   * 
+   * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
+   * @param position 
+   */
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     if (convertView == null) {

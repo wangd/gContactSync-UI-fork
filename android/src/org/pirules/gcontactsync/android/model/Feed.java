@@ -43,6 +43,6 @@ public class Feed {
   protected static Feed executeGet(HttpTransport transport, GoogleUrl url, Class<? extends Feed> feedClass)
       throws IOException {
     HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildGetRequest(url);
-    return HttpRequestWrapper.execute(request).parseAs(feedClass);
+    return request.execute().parseAs(feedClass);
   }
 }

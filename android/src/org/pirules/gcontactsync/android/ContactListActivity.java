@@ -827,7 +827,8 @@ public final class ContactListActivity extends Activity {
       } catch (IOException e1) {
         e1.printStackTrace();
       }
-      if (statusCode == 401 || statusCode == 403) {
+      // TODO - this may no longer be required (see the unsuccessfulHandler)
+      if (statusCode == 401) {
         gotAccount(true);
         return;
       }

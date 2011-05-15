@@ -87,7 +87,7 @@ public class Entry implements Cloneable {
     content.namespaceDictionary = Util.DICTIONARY;
     HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPutRequest(url, content);
     content.entry = this;
-    return HttpRequestWrapper.execute(request).parseAs(getClass());
+    return request.execute().parseAs(getClass());
   }
 
   public void executeDelete(HttpTransport transport) throws IOException {
@@ -97,7 +97,7 @@ public class Entry implements Cloneable {
     GoogleUrl url = new GoogleUrl(getEditLink());
     HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildDeleteRequest(url);
     request.headers.ifMatch = etag;
-    HttpRequestWrapper.execute(request).ignore();
+    request.execute().ignore();
   }
 
   /**
@@ -112,7 +112,7 @@ public class Entry implements Cloneable {
     content.namespaceDictionary = Util.DICTIONARY;
     content.entry = this;
     HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
-    return HttpRequestWrapper.execute(request).parseAs(getClass());
+    return request.execute().parseAs(getClass());
   }
 
   /**
@@ -130,7 +130,7 @@ public class Entry implements Cloneable {
     content.patchedEntry = this;
     GoogleUrl url = new GoogleUrl(getEditLink());
     HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
-    return HttpRequestWrapper.execute(request).parseAs(getClass());
+    return request.execute().parseAs(getClass());
   }
 
   /**

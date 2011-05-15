@@ -16,18 +16,15 @@ package org.pirules.gcontactsync.android.util;
 
 import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.GoogleUrl;
-import com.google.api.client.http.HttpExecuteInterceptor;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.HttpUnsuccessfulResponseHandler;
 import com.google.api.client.http.xml.atom.AtomParser;
 
 import org.pirules.gcontactsync.android.ContactListActivity;
-
-import java.io.IOException;
 
 /**
  * @author Josh Geenen
@@ -37,7 +34,7 @@ public class HttpRequestWrapper {
   private static HttpRequestFactory mFactory = null;
   public static AtomParser mParser = null;
   static String mApplicationName = "";
-  public static String mAuthToken = "";
+  public static String mAuthToken = ""; // TODO - this could be persisted through a pref...
   
   public static void init(String packageName, String appVersion) {
 
@@ -48,52 +45,31 @@ public class HttpRequestWrapper {
   }
   
   /**
-   * Returns an HttpRequestFactory with the given HttpTransport and GoogleUrl.
-   * @param transport
+   * Returns an HttpRequestFactory with the given HttpTransport.
+   * @param transport The HttpTransport to use for requests.
    * @param url
    * @return
    */
   public static HttpRequestFactory getFactory(HttpTransport transport, GoogleUrl url) {
     if (mFactory == null) {
-      mFactory = createRequestFactory(transport, url);
+      mFactory = createRequestFactory(transport);
     }
     return mFactory;
   }
   
-  /**
-   * See <a href="http://code.google.com/apis/calendar/faq.html#redirect_handling">How do I handle
-   * redirects...?</a>.
-   */
-  static class SessionInterceptor implements HttpExecuteInterceptor {
+  public static HttpRequestFactory createRequestFactory(HttpTransport transport) {
+    final HttpUnsuccessfulResponseHandler unsuccessfulHandler = new HttpUnsuccessfulResponseHandler() {
 
-    private String gsessionid;
-
-    SessionInterceptor(HttpTransport transport, GoogleUrl locationUrl) {
-      this.gsessionid = (String) locationUrl.getFirst("gsessionid");
-    }
-
-    public void intercept(HttpRequest request) {
-      request.url.set("gsessionid", this.gsessionid);
-    }
-  }
-
-  public static HttpResponse execute(HttpRequest request) throws IOException {
-    try {
-      return request.execute();
-    } catch (HttpResponseException e) {
-      if (e.response.statusCode == 302) {
-        GoogleUrl url = new GoogleUrl(e.response.headers.location);
-        request.url = url;
-        mFactory = createRequestFactory(request.transport, url);
-        e.response.ignore(); // close the connection
-        return request.execute(); // re-execute the request
+      public boolean handleResponse(HttpRequest request, HttpResponse response, boolean retrySupported) {
+        switch (response.statusCode) {
+          case 401:
+            // TODO invalidate auth token in the AccountManager...
+            mAuthToken = null;
+            return false; // do not retry
+        }
+        return false;
       }
-      throw e;
-    }
-  }
-  
-  public static HttpRequestFactory createRequestFactory(HttpTransport transport, GoogleUrl locationUrl) {
-    final SessionInterceptor interceptor = new SessionInterceptor(transport, locationUrl);
+    };
     return transport.createRequestFactory(new HttpRequestInitializer() {
       public void initialize(HttpRequest request) {
         
@@ -101,11 +77,11 @@ public class HttpRequestWrapper {
         headers.setApplicationName(mApplicationName);
         headers.gdataVersion = ContactListActivity.GDATA_VERSION;
         headers.setGoogleLogin(mAuthToken);
-        
-        request.interceptor = interceptor;
+
         request.headers = headers;
         request.enableGZipContent = true;
         request.addParser(mParser);
+        request.unsuccessfulResponseHandler = unsuccessfulHandler;
       }
     });
   }
