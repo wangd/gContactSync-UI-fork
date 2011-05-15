@@ -132,8 +132,8 @@ public final class ContactListActivity extends Activity {
   static final Integer MAX_CONTACTS = 10000;
 
   // These are both overwritten at runtime with manifest info
-  private String mAppVersion = "Unknown Version";
-  private String mPackageName = "Unknown Package";
+  public static String mAppVersion = "Unknown Version";
+  public static String mPackageName = "Unknown Package";
   String mActivityName = "Unknown Activity";
 
   // UI Elements
@@ -174,9 +174,6 @@ public final class ContactListActivity extends Activity {
     } catch (NameNotFoundException e) {
       handleException(e);
     }
-
-    // Initialize the request wrapper
-    HttpRequestWrapper.init(mPackageName, mAppVersion);
 
     setContentView(R.layout.contact_groups);
 

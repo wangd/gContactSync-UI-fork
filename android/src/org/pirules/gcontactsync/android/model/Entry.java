@@ -85,7 +85,7 @@ public class Entry implements Cloneable {
     GoogleUrl url = new GoogleUrl(getEditLink());
     AtomContent content = new AtomContent();
     content.namespaceDictionary = Util.DICTIONARY;
-    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPutRequest(url, content);
+    HttpRequest request = HttpRequestWrapper.getFactory(transport).buildPutRequest(url, content);
     content.entry = this;
     return request.execute().parseAs(getClass());
   }
@@ -95,7 +95,7 @@ public class Entry implements Cloneable {
       throw new IOException("Edit link is null...Entry is not editable");
     }
     GoogleUrl url = new GoogleUrl(getEditLink());
-    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildDeleteRequest(url);
+    HttpRequest request = HttpRequestWrapper.getFactory(transport).buildDeleteRequest(url);
     request.headers.ifMatch = etag;
     request.execute().ignore();
   }
@@ -111,7 +111,7 @@ public class Entry implements Cloneable {
     AtomContent content = new AtomContent();
     content.namespaceDictionary = Util.DICTIONARY;
     content.entry = this;
-    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
+    HttpRequest request = HttpRequestWrapper.getFactory(transport).buildPostRequest(url, content);
     return request.execute().parseAs(getClass());
   }
 
@@ -129,7 +129,7 @@ public class Entry implements Cloneable {
     content.originalEntry = original;
     content.patchedEntry = this;
     GoogleUrl url = new GoogleUrl(getEditLink());
-    HttpRequest request = HttpRequestWrapper.getFactory(transport, url).buildPostRequest(url, content);
+    HttpRequest request = HttpRequestWrapper.getFactory(transport).buildPostRequest(url, content);
     return request.execute().parseAs(getClass());
   }
 

@@ -15,7 +15,6 @@
 package org.pirules.gcontactsync.android.util;
 
 import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -32,25 +31,14 @@ import org.pirules.gcontactsync.android.ContactListActivity;
 public class HttpRequestWrapper {
  
   private static HttpRequestFactory mFactory = null;
-  public static AtomParser mParser = null;
-  static String mApplicationName = "";
   public static String mAuthToken = ""; // TODO - this could be persisted through a pref...
-  
-  public static void init(String packageName, String appVersion) {
-
-    mApplicationName = packageName + "/" + appVersion;
-    AtomParser parser = new AtomParser();
-    parser.namespaceDictionary = Util.DICTIONARY;
-    HttpRequestWrapper.mParser = parser;
-  }
   
   /**
    * Returns an HttpRequestFactory with the given HttpTransport.
    * @param transport The HttpTransport to use for requests.
-   * @param url
-   * @return
+   * @return An HttpRequestFactory with the given HttpTransport.
    */
-  public static HttpRequestFactory getFactory(HttpTransport transport, GoogleUrl url) {
+  public static HttpRequestFactory getFactory(HttpTransport transport) {
     if (mFactory == null) {
       mFactory = createRequestFactory(transport);
     }
@@ -58,6 +46,7 @@ public class HttpRequestWrapper {
   }
   
   public static HttpRequestFactory createRequestFactory(HttpTransport transport) {
+    final AtomParser parser = new AtomParser();
     final HttpUnsuccessfulResponseHandler unsuccessfulHandler = new HttpUnsuccessfulResponseHandler() {
 
       public boolean handleResponse(HttpRequest request, HttpResponse response, boolean retrySupported) {
@@ -73,14 +62,16 @@ public class HttpRequestWrapper {
     return transport.createRequestFactory(new HttpRequestInitializer() {
       public void initialize(HttpRequest request) {
         
+        parser.namespaceDictionary = Util.DICTIONARY;
+        
         GoogleHeaders headers = new GoogleHeaders();
-        headers.setApplicationName(mApplicationName);
+        headers.setApplicationName(ContactListActivity.mPackageName + "/" + ContactListActivity.mAppVersion);
         headers.gdataVersion = ContactListActivity.GDATA_VERSION;
         headers.setGoogleLogin(mAuthToken);
 
         request.headers = headers;
         request.enableGZipContent = true;
-        request.addParser(mParser);
+        request.addParser(parser);
         request.unsuccessfulResponseHandler = unsuccessfulHandler;
       }
     });
