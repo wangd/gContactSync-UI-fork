@@ -91,16 +91,17 @@ com.gContactSync.SyncSummaryData.prototype.addSummary = function SyncSummaryData
 /**
  * Prints summary data to the log and optionally shows an alert dialog.
  *
- * @param aAlert {boolean} Set this to true to show the summary in an alert
- *                         dialog.
+ * @param aAlert {boolean}   Set this to true to show the summary in an alert
+ *                           dialog.
+ * @param aOverall {boolean} Set this to true to show the overall summary
+ *                           instead of a summary for the current AB.
  */
-com.gContactSync.SyncSummaryData.prototype.print = function SyncSummaryData_print(aAlert) {
-  
+com.gContactSync.SyncSummaryData.prototype.print = function SyncSummaryData_print(aAlert, aOverall) {
   var getStr = function specialGetStr(aName) {
     return com.gContactSync.StringBundle.getStr(aName).replace(/%/g, " ");
   }
   var msg = "*****";
-  if (aAlert) {
+  if (aOverall || !com.gContactSync.Sync.mCurrentAb) {
     msg += getStr('countOverallSummary');
   } else {
     msg +=
