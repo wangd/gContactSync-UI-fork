@@ -207,16 +207,28 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
     var cardsTransferredText;
 
     // set the status bar text
-    if (actionIsMoving)
-      cardsTransferredText = 
-        numrows == 1 ? gAddressBookBundle.getString("cardMoved")
-                     : gAddressBookBundle.getFormattedString("cardsMoved",
-                                                              [numrows]);
-    else
-      cardsTransferredText =
-        numrows == 1 ? gAddressBookBundle.getString("cardCopied")
-                     : gAddressBookBundle.getFormattedString("cardsCopied",
-                                                              [numrows]);
+    if (actionIsMoving) {
+      try {
+        cardsTransferredText = PluralForm.get(numrows,
+          gAddressBookBundle.getFormattedString("contactsMoved", [numrows]));
+      } catch (e) {
+        cardsTransferredText = 
+          numrows == 1 ? gAddressBookBundle.getString("cardMoved")
+                       : gAddressBookBundle.getFormattedString("cardsMoved",
+                                                                [numrows]);
+      }
+    } else {
+      try {
+        cardsTransferredText = PluralForm.get(numrows,
+          gAddressBookBundle.getFormattedString("contactsCopied", [numrows]));
+      } catch (e) {
+        alert(e);
+        cardsTransferredText =
+          numrows == 1 ? gAddressBookBundle.getString("cardCopied")
+                       : gAddressBookBundle.getFormattedString("cardsCopied",
+                                                                [numrows]);
+      }
+    }
     // update the address book view so it doesn't show the card twice
     SetAbView(GetSelectedDirectory(), false);
     // select the first card, if any
