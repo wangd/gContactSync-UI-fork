@@ -63,10 +63,15 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
                                 .createInstance(Components.interfaces.nsITransferable);
   trans.addDataFlavor("moz/abcard");
 
-  var targetResource = dirTree.builderView.getResourceAtIndex(row),
-  // get the source and target directory information
-      targetURI      = targetResource.Value,
-      srcURI         = GetSelectedDirectory(),
+  var targetURI      = 0;
+  try {
+    // Pre Bug 422845
+    targetURI        = dirTree.builderView.getResourceAtIndex(row).Value;
+  } catch (e) {
+    // Post Bug 422845
+    targetURI        = gDirectoryTreeView.getDirectoryAtIndex(row);
+  }
+  var srcURI         = GetSelectedDirectory(),
       toDirectory    = GetDirectoryFromURI(targetURI),
       srcDirectory   = GetDirectoryFromURI(srcURI),
       ab             = new com.gContactSync.GAddressBook(toDirectory);
