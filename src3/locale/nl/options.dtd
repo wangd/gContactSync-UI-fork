@@ -1,0 +1,62 @@
+<!ENTITY title.label "gContactSync Voorkeursinstellingen">
+<!ENTITY main.tab "Voornaamste">
+<!ENTITY help.value "Help">
+<!ENTITY gettingStarted1.value "Controleer deze instellingen voordat u begint met synchroniseren.">
+<!ENTITY autoSync.value "Automatische Synchronisatie">
+<!ENTITY autoSync.label "Synchroniseer Contactpersonen Automatisch">
+<!ENTITY refreshInterval.value "Synchroniseer elke X minuten [Standaard is 120 (2 uur)]">
+<!ENTITY initialDelayMinutes.value "Wachttijd in minuten voor eerste Synchronisatie [Standaard is 5]">
+<!ENTITY abName.value "Naam van het adresboek waarmee gesynchroniseerd moet worden (oud of nieuw)">
+<!ENTITY syncBehavior.label "Synchronisatie Gedrag">
+<!ENTITY removeOldAddresses.label "verwijder oude adressen na conversie naar de nieuwe indeling">
+<!ENTITY alertSummary.label "Toon een samenvatting na iedere synchronisatie">
+<!ENTITY phoneTypes.label "Voeg telefoonnummer velden toe (negeer bestaande veldnamen)">
+<!ENTITY accountDelay.value "Wachttijd tussen accounts (ms) [5000]">
+<!ENTITY logging.label "Loggen">
+<!ENTITY enableLogging.label "Loggen Inschakelen">
+<!ENTITY verboseLog.label "Uitgebreid Loggen Inschakelen (t.b.v. debugging)">
+<!ENTITY interface.tab "Interface">
+<!ENTITY buttons.label "Knoppen en Menu's">
+<!ENTITY enableSyncBtn.label "Taakbalk knop tonen">
+<!ENTITY forceBtnImage.label "Taakbalk knop repareren">
+<!ENTITY enableMenu.label "gContactSync Menu tonen">
+<!ENTITY enableMenuLinks.label "Voeg een aantal links toe (Wiki, FAQ, etc.) in het gContactSync Menu">
+<!ENTITY addReset.label "Vervang Naar en Vervang Van Server knoppen tonen in Adresboek menu's">
+<!ENTITY abResults.label "Contactpersonen Lijst">
+<!ENTITY phoneColLabels.label "Hernoem de telefoonnummer labels">
+<!ENTITY newColLabels.label "Voeg de nieuwe velden aan de kolom labels toe (Alleen TB 3/SM 2)">
+<!ENTITY abCardView.label "Adresboek Contactpersoon Details">
+<!ENTITY enableImUrls.label "Voeg links toe voor diverse IM protocollen (AIM, Yahoo!, MSN, etc.)">
+<!ENTITY extended.tab "Andere">
+<!ENTITY syncExtended.label "Sync Uitgebreide instellingen">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "Property 1  ">
+<!ENTITY extended2.value "Property 2  ">
+<!ENTITY extended3.value "Property 3  ">
+<!ENTITY extended4.value "Property 4  ">
+<!ENTITY extended5.value "Property 5  ">
+<!ENTITY extended6.value "Property 6  ">
+<!ENTITY extended7.value "Property 7  ">
+<!ENTITY extended8.value "Property 8  ">
+<!ENTITY extended9.value "Property 9  ">
+<!ENTITY extended10.value "Property 10">
+<!ENTITY extendedPropertiesDesc1.value "10 extra eigenschappen om te synchroniseren.  Voorbeelden:">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc2.value " * Custom1, Custom2, Custom3, Custom4">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc3.value " * AnniversayDay, AnniversayMonth, AnniversaryYear">
+<!ENTITY advanced.tab "Geavanceerd">
+<!ENTITY warning.value "Waarschuwing - Dit is voor gevorderde gebruikers">
+<!ENTITY backup.label "Adresboek backups">
+<!ENTITY backupInterval.value "Backup interval (Dagen, -1 om uit te schakelen) [14]">
+<!ENTITY other.label "Andere">
+<!ENTITY chromeTime.value "'Unresponsive Script' waarschuwingstijd (0 om uit te schakelen)">
+<!ENTITY confirmDeleteThreshold.value "Minimum aantal Contactpersonen die verwijderd worden alvorens om toestemming te vragen">
+<!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
+<!ENTITY syncAddresses.label "Synchroniseer postadressen (EXPERIMENTEEL)">
+<!ENTITY resetAll.label "Reset Alle Gesynchron. ABs">
+<!ENTITY cleanOldPrefs.label "verwijder oude AB instellingen">
+<!-- FirstLogin.xul only -->
+<!ENTITY myContacts.label "Allen synchroniseren met de 'Mijn Contactpersonen' groep">
+<!ENTITY openAccounts.value "Geavanceerde Account Instellingen">
+<!ENTITY openPreferences.value "Geavanceerde Instellingen">

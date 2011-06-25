@@ -69,7 +69,7 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
     targetURI        = dirTree.builderView.getResourceAtIndex(row).Value;
   } catch (e) {
     // Post Bug 422845
-    targetURI        = gDirectoryTreeView.getDirectoryAtIndex(row);
+    targetURI        = gDirectoryTreeView.getDirectoryAtIndex(row).URI;
   }
   var srcURI         = GetSelectedDirectory(),
       toDirectory    = GetDirectoryFromURI(targetURI),
