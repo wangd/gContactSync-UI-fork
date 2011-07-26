@@ -46,7 +46,7 @@ window.addEventListener("load",
 false);
 
 /**
- * Stores information on using the Google Data Api™ protocol, specifically the
+ * Stores information on using the Google Data Api protocol, specifically the
  * contacts portion of the protocol.
  * http://code.google.com/apis/contacts/
  * @class

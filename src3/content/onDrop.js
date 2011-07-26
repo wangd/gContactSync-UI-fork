@@ -63,10 +63,15 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
                                 .createInstance(Components.interfaces.nsITransferable);
   trans.addDataFlavor("moz/abcard");
 
-  var targetResource = dirTree.builderView.getResourceAtIndex(row),
-  // get the source and target directory information
-      targetURI      = targetResource.Value,
-      srcURI         = GetSelectedDirectory(),
+  var targetURI      = 0;
+  try {
+    // Pre Bug 422845
+    targetURI        = dirTree.builderView.getResourceAtIndex(row).Value;
+  } catch (e) {
+    // Post Bug 422845
+    targetURI        = gDirectoryTreeView.getDirectoryAtIndex(row).URI;
+  }
+  var srcURI         = GetSelectedDirectory(),
       toDirectory    = GetDirectoryFromURI(targetURI),
       srcDirectory   = GetDirectoryFromURI(srcURI),
       ab             = new com.gContactSync.GAddressBook(toDirectory);
@@ -202,16 +207,28 @@ com.gContactSync.myOnDrop = function gCS_myOnDrop(row, orientation) {
     var cardsTransferredText;
 
     // set the status bar text
-    if (actionIsMoving)
-      cardsTransferredText = 
-        numrows == 1 ? gAddressBookBundle.getString("cardMoved")
-                     : gAddressBookBundle.getFormattedString("cardsMoved",
-                                                              [numrows]);
-    else
-      cardsTransferredText =
-        numrows == 1 ? gAddressBookBundle.getString("cardCopied")
-                     : gAddressBookBundle.getFormattedString("cardsCopied",
-                                                              [numrows]);
+    if (actionIsMoving) {
+      try {
+        cardsTransferredText = PluralForm.get(numrows,
+          gAddressBookBundle.getFormattedString("contactsMoved", [numrows]));
+      } catch (e) {
+        cardsTransferredText = 
+          numrows == 1 ? gAddressBookBundle.getString("cardMoved")
+                       : gAddressBookBundle.getFormattedString("cardsMoved",
+                                                                [numrows]);
+      }
+    } else {
+      try {
+        cardsTransferredText = PluralForm.get(numrows,
+          gAddressBookBundle.getFormattedString("contactsCopied", [numrows]));
+      } catch (e) {
+        alert(e);
+        cardsTransferredText =
+          numrows == 1 ? gAddressBookBundle.getString("cardCopied")
+                       : gAddressBookBundle.getFormattedString("cardsCopied",
+                                                                [numrows]);
+      }
+    }
     // update the address book view so it doesn't show the card twice
     SetAbView(GetSelectedDirectory(), false);
     // select the first card, if any
