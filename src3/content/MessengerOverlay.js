@@ -77,13 +77,13 @@ com.gContactSync.MessengerOverlay = {
     SetBusyCursor = com.gContactSync.MessengerOverlay.SetBusyCursor;
 
     // log some basic system and application info
-    com.gContactSync.LOGGER.LOG("Loading gContactSync at " + new Date());
-    com.gContactSync.LOGGER.LOG(" * Version is:       " +
-                                com.gContactSync.getVersionString());
-    com.gContactSync.LOGGER.LOG(" * Last version was: " +
-                                com.gContactSync.getVersionString(true));
-    com.gContactSync.LOGGER.LOG(" * User Agent:       " +
-                                navigator.userAgent + "\n");
+    com.gContactSync.LOGGER.LOG(
+        "Loading gContactSync at " + new Date() +
+        "\n * Version is:       " + com.gContactSync.getVersionString() +
+        "\n * Last version was: " + com.gContactSync.getVersionString(true) +
+        "\n * User Agent:       " + navigator.userAgent +
+        "\n * Log location:     " + com.gContactSync.FileIO.mLogFile.path +
+        "\n");
     com.gContactSync.Preferences.setSyncPref("lastVersionMajor",
                                              com.gContactSync.versionMajor);
     com.gContactSync.Preferences.setSyncPref("lastVersionMinor",

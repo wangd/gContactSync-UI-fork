@@ -1,0 +1,46 @@
+<!ENTITY title.label "gContactSync Accounts">
+<!ENTITY accounts.tab "Accounts">
+<!ENTITY addressBook.label "Adresboek">
+<!ENTITY abSynced.label "Google Account">
+<!-- Global buttons -->
+<!ENTITY addAB.label "Nieuw Adresboek">
+<!ENTITY addAB.accesskey "N">
+<!ENTITY refreshTree.label "Verniewen">
+<!ENTITY refreshTree.accesskey "R">
+<!-- Account labels and options -->
+<!-- Basic Settings -->
+<!ENTITY Basic.label "Basisinstellingen">
+<!ENTITY Username.label "Kies een Account">
+<!ENTITY NewUsername.label "Voeg een Nieuwe Account toe">
+<!ENTITY NoUsername.label "Geen gebruikersnamen gevonden">
+<!ENTITY Groups.label "Groepen en Contactpersonen om te Synchroniseren">
+<!ENTITY AllGroups.label "Alle Groepen en Contactpersonen">
+<!ENTITY NoGroups.label "Alleen Contactpersonen (geen Groepen)">
+<!ENTITY Contacts.label "Mijn Contactpersonen">
+<!ENTITY Coworkers.label "Collega's">
+<!ENTITY Family.label "Familie">
+<!ENTITY Friends.label "Vrienden">
+<!ENTITY GetGroups.label "Vindt alle Groepen">
+<!ENTITY GetGroups.accesskey "F">
+<!-- Advanced Settings -->
+<!ENTITY showAdvanced.label "Toon geavanceerde instellingen">
+<!ENTITY Advanced.label "Geavanceerde instellingen">
+<!ENTITY Plugin.label "Kies een plug-in om te gebruiken">
+<!ENTITY Google.label "Google">
+<!ENTITY SyncDirection.label "Kies de richting van Synchronisatie">
+<!ENTITY DirectionHelp.label "Wat is dit?">
+<!ENTITY Complete.label "Volledig (Update zowel Google als Lokaal)">
+<!ENTITY ReadOnly.label "Alleen Schrijven (Lokaal ontvangt updates van Google)">
+<!ENTITY WriteOnly.label "Alleen Lezen (Google ontvangt updates van Lokaal)">
+<!ENTITY Disable.label "Tijdelijk uitschakelen van synchroniseren voor dit adresboek">
+<!ENTITY Disable.tooltiptext "Om synchroniseren uit te schakelen vinkt u deze optie aan. Om Synchroniseren weer te hervatten haalt u het vinkje weg.">
+<!ENTITY updateG.label "Lokale wijzigingen hebben prioriteit over wijzigingen in Google">
+<!ENTITY updateG.tooltiptext "Als een Contactpersoon zowel lokaal als op Google is gewijzigd sinds de laatste synchronisatie, dan is onduidelijk welke wijziging klopt. Vink deze optie aan opdat lokale wijzigingen prioriteit krijgen boven die op Google.">
+<!-- Account buttons -->
+<!ENTITY deleteAB.label "Verwijder dit adresboek">
+<!ENTITY removeLogin.label "Verwijder instellingen">
+<!ENTITY saveChanges.label "Wijzigingen opslaan">
+<!ENTITY saveChanges.accesskey "S">
+<!-- Other -->
+<!ENTITY Close.label "Sluiten">
+<!ENTITY Close.accesskey "C">

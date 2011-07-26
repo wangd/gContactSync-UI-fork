@@ -1,0 +1,62 @@
+<!ENTITY title.label "gContactSync Možnosti">
+<!ENTITY main.tab "Hlavní">
+<!ENTITY help.value "Nápověda">
+<!ENTITY gettingStarted1.value "Před synchronizací prosím zkontrolujte tato nastavení">
+<!ENTITY autoSync.value "Automatická synchronizace">
+<!ENTITY autoSync.label "Synchronizovat kontakty automaticky">
+<!ENTITY refreshInterval.value "Interval synchronizace (minuty) [Výchozí 120 (2 hodiny)]">
+<!ENTITY initialDelayMinutes.value "Zpoždění počáteční synchronizace (minuty) [Výchozí 5]">
+<!ENTITY abName.value "Jméno adresáře k synchronizaci (staré nebo nové)">
+<!ENTITY syncBehavior.label "Chování synchronizace">
+<!ENTITY removeOldAddresses.label "Smazat staré adresy po konverzi do nového formátu">
+<!ENTITY alertSummary.label "Zobrazit souhrn po každé ruční synchronizaci">
+<!ENTITY phoneTypes.label "Přidat pole pro telefon (ignorovat názvy existujících polí)">
+<!ENTITY accountDelay.value "Zpoždění mezi účty (ms) [5000]">
+<!ENTITY logging.label "Logování">
+<!ENTITY enableLogging.label "Povolit logování">
+<!ENTITY verboseLog.label "Povolit podrobnější logování (pro ladění)">
+<!ENTITY interface.tab "Rozhraní">
+<!ENTITY buttons.label "Tlačítka a nabídky">
+<!ENTITY enableSyncBtn.label "Povolit tlačítko nástr.lišty">
+<!ENTITY forceBtnImage.label "Připevnit tlačítko nástr.lišty">
+<!ENTITY enableMenu.label "Povolit nabídku gContactSync">
+<!ENTITY enableMenuLinks.label "Přidat odkazy (Wiki, FAQ, atd.) do nabídky">
+<!ENTITY addReset.label "Přidat 'Nahradit' a 'Nahradit ze serveru' do místní nabídky adresáře">
+<!ENTITY abResults.label "Seznam kontaktů">
+<!ENTITY phoneColLabels.label "Přejmenovat telefonní štítky">
+<!ENTITY newColLabels.label "Přidat nová pole do sloupce štítků (pouze TB 3/SM 2)">
+<!ENTITY abCardView.label "Detaily kontaktů adresáře">
+<!ENTITY enableImUrls.label "Povolit odkazy pro IM protokoly (ICQ, MSN, Skype, atd.)">
+<!ENTITY extended.tab "Další">
+<!ENTITY syncExtended.label "Rozšířené vlastnosti synchronizace">
+<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
+<!ENTITY extended1.value "Vlastnost 1">
+<!ENTITY extended2.value "Vlastnost 2">
+<!ENTITY extended3.value "Vlastnost 3">
+<!ENTITY extended4.value "Vlastnost 4">
+<!ENTITY extended5.value "Vlastnost 5">
+<!ENTITY extended6.value "Vlastnost 6">
+<!ENTITY extended7.value "Vlastnost 7">
+<!ENTITY extended8.value "Vlastnost 8">
+<!ENTITY extended9.value "Vlastnost 9">
+<!ENTITY extended10.value "Vlastnost 10">
+<!ENTITY extendedPropertiesDesc1.value "10 vlastností synchronizace navíc. Příklady:">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc2.value "* Custom1, Custom2, Custom3, Custom4">
+<!-- LOCALIZATION NOTE: This line should not change -->
+<!ENTITY extendedPropertiesDesc3.value "* AnniversayDay, AnniversayMonth, AnniversaryYear">
+<!ENTITY advanced.tab "Rozšířené">
+<!ENTITY warning.value "Varování - pouze pro zkušené uživatele">
+<!ENTITY backup.label "Zálohování adresáře">
+<!ENTITY backupInterval.value "Intervaly záloh (dny, -1 pro vypnutí) [14]">
+<!ENTITY other.label "Další">
+<!ENTITY chromeTime.value "Zpoždění varování 'Skript nereaguje' (0 pro vypnutí)">
+<!ENTITY confirmDeleteThreshold.value "Minimální počet kontaktů pro smazání před zobrazením dotazu">
+<!-- LOCALIZATION NOTE: Try to emphasize that this option is experimental and buggy -->
+<!ENTITY syncAddresses.label "Synchronizovat poštovní adresy (experimentální)">
+<!ENTITY resetAll.label "Resetovat všechny synchronizované adresáře">
+<!ENTITY cleanOldPrefs.label "Vyčistit nastavení starých adresářů">
+<!-- FirstLogin.xul only -->
+<!ENTITY myContacts.label "Synchronizovat pouze skupiny 'Moje kontakty'">
+<!ENTITY openAccounts.value "Rozšířené možnosti účtu">
+<!ENTITY openPreferences.value "Rozšířené možnosti">
