@@ -74,33 +74,49 @@ com.gContactSync.ABOverlay = {
     GOOGLE_TALK: "gtalk:chat?jid="
   },
   /**
+   * The number of times this overlay has attempted to load while waiting
+   * for its dependencies to load.
+   */
+  mLoadNumber: 0,
+  /**
    * Called when the overlay is loaded and overrides some methods to add
    * gContactSync fields.
    */
   initialize: function ABOverlay_initialize() {
+
+    // if it isn't finished loading yet wait another 200 ms and try again
+    if (!("GAbManager" in com.gContactSync)) {
+      // if it has tried to load more than 50 times something is wrong, so quit
+      if (com.gContactSync.ABOverlay.mLoadNumber < 50) {
+        setTimeout(com.gContactSync.ABOverlay.initialize, 200);
+      } else {
+        throw "Error - com.gContactSync.GAbManager not defined.\nAbManager: " +
+            com.gContactSync.AbManager + "\nGAbManager: " + com.gContactSync.GAbManager;
+      }
+      com.gContactSync.ABOverlay.mLoadNumber++;
+      return;
+    }
     // determine if this is before or after Bug 413260 landed
     var card = Components.classes["@mozilla.org/addressbook/cardproperty;1"]
                          .createInstance(Components.interfaces.nsIAbCard);
-    this.mBug413260 = card.getProperty ? true : false;
+    com.gContactSync.ABOverlay.mBug413260 = card.getProperty ? true : false;
 
     com.gContactSync.originalOnLoadCardView = OnLoadCardView;
-    OnLoadCardView = this.myOnLoadCardView;
+    OnLoadCardView = com.gContactSync.ABOverlay.myOnLoadCardView;
     if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
-      this.setupButton();    // insert the Sync button
-    if (!com.gContactSync.Preferences.mSyncPrefs.enableMenu.value)
-      document.getElementById("gContactSyncMenu").collapsed = true;
+      com.gContactSync.ABOverlay.setupButton();    // insert the Sync button
     // add the extra attributes as tree columns to show and
-    this.addTreeCols(); // sort by in the results pane if this is after 413260 
+    com.gContactSync.ABOverlay.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver
     // so when a card is copied the extra attributes are copied with it
     if (com.gContactSync.Preferences.mSyncPrefs.overrideCopy.value)
       abDirTreeObserver.onDrop = com.gContactSync.myOnDrop;
     // override the display card view pane
     com.gContactSync.originalDisplayCardViewPane = DisplayCardViewPane;
-    DisplayCardViewPane = this.myDisplayCardViewPane;
+    DisplayCardViewPane = com.gContactSync.ABOverlay.myDisplayCardViewPane;
     // Add a reset menuitem to the directory tree context menu
     if (com.gContactSync.Preferences.mSyncPrefs.addReset.value) {
-      this.addResetContext();
+      com.gContactSync.ABOverlay.addResetContext();
     }
     // override the ab results tree function
     //com.gContactSync.originalSetAbView = SetAbView;
@@ -109,10 +125,10 @@ com.gContactSync.ABOverlay = {
     // Duplicate Contacts Manager extension
     // https://www.mozdev.org/bugs/show_bug.cgi?id=21883
     if (com.gContactSync.Preferences.mSyncPrefs.fixDupContactManagerCSS.value)
-      this.fixDescriptionStyle();
+      com.gContactSync.ABOverlay.fixDescriptionStyle();
     // load the card view (required by seamonkey)
     if (document.getElementById("ab-menubar"))
-      this.myOnLoadCardView();
+      com.gContactSync.ABOverlay.myOnLoadCardView();
   },
   /**
    * Adds treecol elements to the address book results tree that shows cards in
@@ -127,7 +143,7 @@ com.gContactSync.ABOverlay = {
       return;
     // if Bug 413260 isn't applied in this version of TB, or if the pref was
     // changed to false, then stop here
-    if (!this.mBug413260 || !com.gContactSync.Preferences.mSyncPrefs.newColLabels.value)
+    if (!com.gContactSync.ABOverlay.mBug413260 || !com.gContactSync.Preferences.mSyncPrefs.newColLabels.value)
       return;
     // get the added attributes
     var ids = com.gContactSync.ContactConverter.getExtraSyncAttributes(false, false),
@@ -203,7 +219,7 @@ com.gContactSync.ABOverlay = {
       button.setAttribute("id",           "button-sync");
       button.setAttribute("label",
                           com.gContactSync.StringBundle.getStr("syncButton"));
-      button.setAttribute("oncommand",    "com.gContactSync.Sync.begin();");
+      button.addEventListener("command", com.gContactSync.Sync.begin, false);
       button.setAttribute("tooltiptext",
                           com.gContactSync.StringBundle.getStr("syncTooltip"));
       button.setAttribute("insertbefore", "new-separator");
@@ -604,11 +620,11 @@ com.gContactSync.ABOverlay = {
       // then use the attribute's string as a default value
       var str = label && label != "" ? com.gContactSync.StringBundle.getStr(label)
                                      : com.gContactSync.StringBundle.getStr(attr);
-      var prefix = this.links[label];
+      var prefix = com.gContactSync.ABOverlay.links[label];
       // Make this a link if there is a prefix (aim:goim?...), the pref is set,
       // and there is a box for this data
       if (prefix && com.gContactSync.Preferences.mSyncPrefs.enableImUrls.value && cvData["cv" + attr + "Box"]) {
-        var suffix = this.links[label + "S"] ? this.links[label + "S"] : "";
+        var suffix = com.gContactSync.ABOverlay.links[label + "S"] ? com.gContactSync.ABOverlay.links[label + "S"] : "";
         visible    = HandleLink(cvData["cv" + attr], str, value,
                                 cvData["cv" + attr + "Box"], prefix +
                                 value + suffix) || visible;
@@ -709,7 +725,7 @@ com.gContactSync.ABOverlay = {
     cvData.cvOtherMapIt.setAttribute("label",
                                      com.gContactSync.StringBundle.getStr("getMap"));
     cvData.cvOtherMapIt.setAttribute("url",       "");
-    cvData.cvOtherMapIt.setAttribute("oncommand", "MapIt('cvOtherMapIt');");
+    cvData.cvOtherMapIt.addEventListener("command", function() {MapIt('cvOtherMapIt');}, false);
     cvData.cvOtherMapIt.setAttribute("tooltip",
                                      com.gContactSync.StringBundle.getStr("getMapTooltip"));
     cvData.cvOtherMapIt.setAttribute("id",        "cvOtherMapIt");
@@ -736,7 +752,7 @@ com.gContactSync.ABOverlay = {
     cvData.cvFullHomeMapIt.setAttribute("label",
                                         com.gContactSync.StringBundle.getStr("getMap"));
     cvData.cvFullHomeMapIt.setAttribute("url",        "");
-    cvData.cvFullHomeMapIt.setAttribute("oncommand", "MapIt('cvFullHomeMapIt');");
+    cvData.cvFullHomeMapIt.addEventListener("command", function() {MapIt('cvFullHomeMapIt');}, false);
     cvData.cvFullHomeMapIt.setAttribute("tooltip",
                                         com.gContactSync.StringBundle.getStr("getMapTooltip"));
     cvData.cvFullHomeMapIt.setAttribute("id",        "cvFullHomeMapIt");
@@ -766,7 +782,7 @@ com.gContactSync.ABOverlay = {
     cvData.cvFullWorkMapIt = document.createElement("button");
     cvData.cvFullWorkMapIt.setAttribute("label", com.gContactSync.StringBundle.getStr("getMap"));
     cvData.cvFullWorkMapIt.setAttribute("url", "");
-    cvData.cvFullWorkMapIt.setAttribute("oncommand", "MapIt('cvFullWorkMapIt');");
+    cvData.cvFullWorkMapIt.addEventListener("command", function() {MapIt('cvFullWorkMapIt');}, false);
     cvData.cvFullWorkMapIt.setAttribute("tooltip", com.gContactSync.StringBundle.getStr("getMapTooltip"));
     cvData.cvFullWorkMapIt.setAttribute("id", "cvFullWorkMapIt");
     FullWorkVbox.appendChild(cvData.cvFullWorkAddress);
@@ -845,10 +861,10 @@ com.gContactSync.ABOverlay = {
     replaceTo.id    = "dirTreeContext-replaceTo";
     replaceFrom.setAttribute("label",     com.gContactSync.StringBundle.getStr("reset"));
     replaceFrom.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("resetKey"));
-    replaceFrom.setAttribute("oncommand", "com.gContactSync.ABOverlay.resetSelectedAB()");
+    replaceFrom.addEventListener("command", com.gContactSync.ABOverlay.resetSelectedAB, false);
     replaceTo.setAttribute("label",       com.gContactSync.StringBundle.getStr("replaceTo"));
     replaceTo.setAttribute("accesskey",   com.gContactSync.StringBundle.getStr("replaceToKey"));
-    replaceTo.setAttribute("oncommand",   "com.gContactSync.ABOverlay.replaceToSelectedAB()");
+    replaceTo.addEventListener("command",   com.gContactSync.ABOverlay.replaceToSelectedAB, false);
     document.getElementById("dirTreeContext").appendChild(replaceFrom);
     document.getElementById("dirTreeContext").appendChild(replaceTo);
   },
@@ -858,8 +874,15 @@ com.gContactSync.ABOverlay = {
    */
   resetSelectedAB: function ABOverlay_resetSelectedAB() {
     var dirTree  = document.getElementById("dirTree");
-    var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
-    var ab = new com.gContactSync.GAbManager.getGAbByURI(selected.Value);
+    var targetURI      = 0;
+    try {
+      // Pre Bug 422845
+      targetURI = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex).Value;
+    } catch (e) {
+      // Post Bug 422845
+      targetURI = gDirectoryTreeView.getDirectoryAtIndex(gDirTree.currentIndex).URI;
+    }
+    var ab = new com.gContactSync.GAbManager.getGAbByURI(targetURI);
     // make sure the AB was not already reset
     if (ab.mPrefs.reset === "true") {
       com.gContactSync.alert(com.gContactSync.StringBundle.getStr("alreadyReset"));
@@ -870,7 +893,7 @@ com.gContactSync.ABOverlay = {
       if (ab.reset()) {
         var restartStr = com.gContactSync.StringBundle.getStr("pleaseRestart");
         com.gContactSync.Preferences.setSyncPref("needRestart", true);
-        this.setStatusBarText(restartStr);
+        com.gContactSync.ABOverlay.setStatusBarText(restartStr);
         com.gContactSync.alertError(restartStr);
       }
     }

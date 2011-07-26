@@ -131,12 +131,12 @@ com.gContactSync.Sync = {
     // Log some summary data if an AB was just synchronized
     if (com.gContactSync.Sync.mCurrentAb &&
         com.gContactSync.Sync.mCurrentAb instanceof com.gContactSync.GAddressBook) {
-      com.gContactSync.Sync.mCurrentSummary.print(false);
+      com.gContactSync.Sync.mCurrentSummary.print(false, false);
+      com.gContactSync.Sync.mOverallSummary.addSummary(com.gContactSync.Sync.mCurrentSummary);
     }
 
     // Add the current summary to the overall summary then reset the current
     // summary
-    com.gContactSync.Sync.mOverallSummary.addSummary(com.gContactSync.Sync.mCurrentSummary);
     com.gContactSync.Sync.mCurrentSummary = new com.gContactSync.SyncSummaryData();
     
     var obj = com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex++];
@@ -351,7 +351,8 @@ com.gContactSync.Sync = {
     // alertSummary is set to true.
     com.gContactSync.Sync.mOverallSummary.print(
         com.gContactSync.Sync.mManualSync &&
-        com.gContactSync.Preferences.mSyncPrefs.alertSummary.value);
+        com.gContactSync.Preferences.mSyncPrefs.alertSummary.value,
+        true);
     
     // reset some variables
     com.gContactSync.ContactConverter.mCurrentCard = {};

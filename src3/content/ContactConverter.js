@@ -245,9 +245,9 @@ com.gContactSync.ContactConverter = {
     // if the contact has a birth month (and birth day) add it to the contact
     // from Google
     if (birthMonth && !isNaN(parseInt(birthMonth, 10))) {
-      var birthYear = aTBContact.getValue("BirthYear");
-      // if the birth year is empty, use '-'
-      if (!birthYear || isNaN(parseInt(birthYear, 10))) {
+      var birthYear = parseInt(aTBContact.getValue("BirthYear"), 10);
+      // if the birth year is NaN or 0, use '-'
+      if (!birthYear) {
         birthYear = "-";
       }
       // otherwise pad it to 4 characters
