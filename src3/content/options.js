@@ -67,7 +67,21 @@ com.gContactSync.Options = {
       document.getElementById("autoSync")
               .addEventListener("change", com.gContactSync.Options.enableDelays, false);
       com.gContactSync.Options.enableDelays();
+      document.getElementById("enableLogging")
+              .addEventListener("change", com.gContactSync.Options.enableVerboseLog, false);
+      com.gContactSync.Options.enableVerboseLog();
     }
+  },
+  /**
+   * Enables or disables the extended property textboxes based on the state of
+   * the syncExtended checkbox.
+   */
+  enableVerboseLog: function Options_enableVerboseLog() {
+    var enableLogging = document.getElementById("enableLogging");
+    if (!enableLogging) return false;
+    var disable = !enableLogging.value;
+    document.getElementById("verboseLog").disabled = disable;
+    return true;
   },
   /**
    * Enables or disables the extended property textboxes based on the state of
