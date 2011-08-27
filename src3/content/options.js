@@ -73,8 +73,8 @@ com.gContactSync.Options = {
     }
   },
   /**
-   * Enables or disables the extended property textboxes based on the state of
-   * the syncExtended checkbox.
+   * Enables or disables the enable verbose logging checkbox based on the state of
+   * the enableLogging checkbox.
    */
   enableVerboseLog: function Options_enableVerboseLog() {
     var enableLogging = document.getElementById("enableLogging");
