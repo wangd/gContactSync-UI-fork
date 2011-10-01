@@ -177,7 +177,6 @@ com.gContactSync.Preferences = {
     overrideCopy:             new com.gContactSync.Pref("overrideCopy",             "bool", true),
     autoSync:                 new com.gContactSync.Pref("autoSync",                 "bool", true),
     syncGroups:               new com.gContactSync.Pref("syncGroups",               "bool", true),
-    removeOldAddresses:       new com.gContactSync.Pref("removeOldAddresses",       "bool", true),
     enableSyncBtn:            new com.gContactSync.Pref("enableSyncBtn",            "bool", true),
     enableMenu:               new com.gContactSync.Pref("enableMenu",               "bool", true),
     enableLogging:            new com.gContactSync.Pref("enableLogging",            "bool", true),

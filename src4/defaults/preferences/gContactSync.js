@@ -22,8 +22,6 @@ pref("extensions.gContactSync.verboseLog", false);
 pref("extensions.gContactSync.autoSync", true);
 // set to true to synchronize groups with mailing lists
 pref("extensions.gContactSync.syncGroups", true);
-// set to true to remove the old addresses when they are converted to the new format
-pref("extensions.gContactSync.removeOldAddresses", false);
 // enable/disable the sync toolbar button
 pref("extensions.gContactSync.enableSyncBtn", true);
 // enable/disable the menu
@@ -75,8 +73,8 @@ pref("extensions.gContactSync.alertSummary", true);
 pref("extensions.gContactSync.Plugin", "Google");
 // disable synchronization with all address books--even those setup to sync--by default
 pref("extensions.gContactSync.Disabled", "false");
-// enable address synchronization (this is buggy and disabled by default since the API isn't fully implemented...)
-pref("extensions.gContactSync.syncAddresses", false);
+// enable address synchronization
+pref("extensions.gContactSync.syncAddresses", true);
 // the interval between AB backups, in days
 pref("extensions.gContactSync.backupInterval", 14);
 // the minimum number of contacts about to be deleted for a confirmation dialog to be displayed
