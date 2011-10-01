@@ -83,10 +83,7 @@ com.gContactSync.gAttributes = {
   "Relation3":            {},
   "Relation3Type":        {},
   "WebPage1Type":         {},
-  "WebPage2Type":         {},
-  "FullHomeAddress":      {},
-  "FullWorkAddress":      {},
-  "OtherAddress":         {}
+  "WebPage2Type":         {}
 };
 /**
  * Adds a tab to the tab box in the New and Edit Card Dialogs.  Using JavaScript

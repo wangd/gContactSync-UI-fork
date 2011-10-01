@@ -67,7 +67,6 @@
   
   <tabs id="abTabs">
     <tab label="&gContactSyncTab.label;"     id="gContactSyncTab"/>
-    <tab label="&gContactSyncAddrTab.label;" id="gContactSyncAddrTab"/>
   </tabs>
 
   <tabpanels id="abTabPanels" flex="1">
@@ -175,48 +174,6 @@
             </groupbox>
           </vbox>
       </vbox>
-      </hbox>
-    </vbox>
-    <vbox id="gContactSyncAddrTab" flex="1">
-      <hbox>
-        <vbox class="alignBoxWithFieldset" align="left">
-          <groupbox id="addressGroupBox" flex="1">
-            <caption label="&address.box;"/>
-            <hbox>
-              <spacer flex="1"/>
-              <label control="FullHomeAddress" value="&home.label;" class="CardEditLabel"/>
-              <hbox class="CardEditWidth">
-                <textbox id="FullHomeAddress" multiline="true" wrap="virtual" flex="1"/>
-              </hbox>
-            </hbox>
-            <hbox>
-              <spacer flex="1"/>
-              <label control="FullWorkAddress" value="&work.label;" class="CardEditLabel"/>
-              <hbox class="CardEditWidth">
-                <textbox id="FullWorkAddress" multiline="true" wrap="virtual" flex="1"/>
-              </hbox>
-            </hbox>
-            <hbox>
-              <spacer flex="1"/>
-              <label control="OtherAddress" value="&other.label;" class="CardEditLabel"/>
-              <hbox class="CardEditWidth">
-                <textbox id="OtherAddress" multiline="true" wrap="virtual" flex="1"/>
-              </hbox>
-            </hbox>
-          </groupbox>
-        </vbox>
-        <vbox id="addressDescBox">
-          <groupbox id="addressDescGroupBox" flex="1">
-            <caption label="&addressDesc.box;"/>
-            <label value="&addressDesc1.value;"/>
-            <label value="&addressDesc2.value;"/>
-            <label value="&addressDesc3.value;"/>
-            <label value="&addressDesc4.value;"/>
-            <label value="&addressDesc5.value;"/>
-            <label value="&addressDesc6.value;"/>
-            <label value="&addressDesc7.value;"/>
-          </groupbox>
-        </vbox>
       </hbox>
     </vbox>
   </tabpanels>
