@@ -22,16 +22,12 @@ pref("extensions.gContactSync.verboseLog", false);
 pref("extensions.gContactSync.autoSync", true);
 // set to true to synchronize groups with mailing lists
 pref("extensions.gContactSync.syncGroups", true);
-// enable/disable the sync toolbar button
-pref("extensions.gContactSync.enableSyncBtn", true);
 // enable/disable the menu
 pref("extensions.gContactSync.enableMenu", true);
 // enable/disable read-only mode (TB gets updates from Google only)
 pref("extensions.gContactSync.readOnly", false);
 // enable/disable write-only mode (TB writes updates Google only)
 pref("extensions.gContactSync.writeOnly", false);
-// force setting the button's image through JavaScript
-pref("extensions.gContactSync.forceBtnImage", true);
 // only sync the My Contacts group
 pref("extensions.gContactSync.myContacts", false);
 // the name of the group to sync if myContacts is true
@@ -71,8 +67,6 @@ pref("extensions.gContactSync.addReset", true);
 pref("extensions.gContactSync.alertSummary", true);
 // default plugin for new synchronization accounts
 pref("extensions.gContactSync.Plugin", "Google");
-// disable synchronization with all address books--even those setup to sync--by default
-pref("extensions.gContactSync.Disabled", "false");
 // enable address synchronization
 pref("extensions.gContactSync.syncAddresses", true);
 // the interval between AB backups, in days
@@ -102,7 +96,6 @@ pref("extensions.gContactSync.extended8", "Custom2");
 pref("extensions.gContactSync.extended9", "Custom3");
 pref("extensions.gContactSync.extended10", "Custom4");
 pref("extensions.gContactSync.syncExtended", true);
-pref("extensions.gContactSync.wikiURL",  "http://www.pirules.org/tikiwiki/");
 pref("extensions.gContactSync.faqURL",   "http://www.pirules.org/addons/gcontactsync/faq.php");
 pref("extensions.gContactSync.forumURL", "http://www.pirules.org/forum/");
 pref("extensions.gContactSync.errorURL", "http://www.pirules.org/extensions/submit_error.php?ext=gContactSync");

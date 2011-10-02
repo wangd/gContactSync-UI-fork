@@ -55,6 +55,9 @@
       <preference id="initialDelayMinutes"
                   name="extensions.gContactSync.initialDelayMinutes"
                   type="int"/>
+      <preference id="syncAddresses"
+                  name="extensions.gContactSync.syncAddresses"
+                  type="bool"/>
       <preference id="alertSummary"
                   name="extensions.gContactSync.alertSummary"
                   type="bool"/>
@@ -72,6 +75,7 @@
                   type="bool"/>
     </preferences>
     <groupbox flex="1">
+      <!-- TODO - replace this link with one not on the wiki -->
       <label href="http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences"
              class="text-link"
              value="&help.value;"/>
@@ -107,6 +111,9 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&syncBehavior.label;"/>
+        <checkbox preference="syncAddresses"
+                  id="syncAddresses"
+                  label="&syncAddresses.label;"/>
         <checkbox preference="alertSummary"
                   id="alertSummary"
                   label="&alertSummary.label;"/>
@@ -144,12 +151,6 @@
   </prefpane>
   <prefpane id="pane_interface" index="interface" label="&interface.tab;">
     <preferences>
-      <preference id="enableSyncBtn"
-                  name="extensions.gContactSync.enableSyncBtn"
-                  type="bool"/>
-      <preference id="forceBtnImage"
-                  name="extensions.gContactSync.forceBtnImage"
-                  type="bool"/>
       <preference id="enableMenu"
                   name="extensions.gContactSync.enableMenu"
                   type="bool"/>
@@ -170,14 +171,6 @@
       <separator class="thin"/>
       <groupbox>
         <caption label="&buttons.label;"/>
-        <checkbox preference="enableSyncBtn"
-                  id="chkEnableSyncBtn"
-                  label="&enableSyncBtn.label;"
-                  collapsed="true"/>
-        <checkbox preference="forceBtnImage"
-                  id="chkForceBtnImage"
-                  label="&forceBtnImage.label;"
-                  collapsed="true"/>
         <checkbox preference="enableMenu"
                   id="enableMenu"
                   label="&enableMenu.label;"/>
@@ -314,9 +307,6 @@
       <preference id="confirmDeleteThreshold"
                   name="extensions.gContactSync.confirmDeleteThreshold"
                   type="int"/>
-      <preference id="syncAddresses"
-                  name="extensions.gContactSync.syncAddresses"
-                  type="bool"/>
     </preferences>
     <vbox>
       <label value="&warning.value;"/>
@@ -367,11 +357,6 @@
                        id="confirmDeleteThreshold"
                        maxlength="5"
                        maxwidth="60"/>
-            </row>
-            <row>
-              <checkbox preference="syncAddresses"
-                        id="syncAddresses"
-                        label="&syncAddresses.label;"/>
             </row>
           </rows>
         </grid>

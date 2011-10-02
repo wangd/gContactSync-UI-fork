@@ -47,8 +47,6 @@
 <!ENTITY prefMenuItem.accesskey        "P">
 <!ENTITY forumMenuItem.label           "Support Forum">
 <!ENTITY forumMenuItem.accesskey       "u">
-<!ENTITY wikiMenuItem.label            "Wiki">
-<!ENTITY wikiMenuItem.accesskey        "W">
 <!ENTITY faqMenuItem.label             "FAQs">
 <!ENTITY faqMenuItem.accesskey         "Q">
 <!ENTITY errorMenuItem.label           "Error Report Form">

@@ -103,8 +103,6 @@ com.gContactSync.ABOverlay = {
 
     com.gContactSync.originalOnLoadCardView = OnLoadCardView;
     OnLoadCardView = com.gContactSync.ABOverlay.myOnLoadCardView;
-    if (com.gContactSync.Preferences.mSyncPrefs.enableSyncBtn.value)
-      com.gContactSync.ABOverlay.setupButton();    // insert the Sync button
     // add the extra attributes as tree columns to show and
     com.gContactSync.ABOverlay.addTreeCols(); // sort by in the results pane if this is after 413260 
     // override the onDrop method of abDirTreeObserver
@@ -194,96 +192,6 @@ com.gContactSync.ABOverlay = {
         treeCols.appendChild(elem);
       }
     }
-  },
-  /**
-   * Sets up the Sync button to go between the Write and Delete buttons and adds
-   * a separator between Sync and Delete.
-   * @returns {boolean} True if the button was added manually.
-   */
-  setupButton: function ABOverlay_setupButton() {
-    try {
-      com.gContactSync.LOGGER.VERBOSE_LOG("Trying to add button");
-      // get the toolbar with the buttons
-      var toolbar     = document.getElementById("abToolbar"); // seamonkey
-      if (!toolbar) {
-        com.gContactSync.LOGGER.VERBOSE_LOG("Didn't find the toolbar");
-        return false;
-      }
-      // setup the separators
-      var separator   = document.createElement("toolbarseparator");
-      var separator2  = document.createElement("toolbarseparator");
-      // setup the button
-      var button      = document.createElement("toolbarbutton");
-      button.setAttribute("class", "gContactSync-Button toolbarbutton-1" + 
-                          " chromeclass-toolbar-additional");
-      button.setAttribute("id",           "button-sync");
-      button.setAttribute("label",
-                          com.gContactSync.StringBundle.getStr("syncButton"));
-      button.addEventListener("command", com.gContactSync.Sync.begin, false);
-      button.setAttribute("tooltiptext",
-                          com.gContactSync.StringBundle.getStr("syncTooltip"));
-      button.setAttribute("insertbefore", "new-separator");
-
-      var deleteButton = document.getElementById("button-delete");
-      var writeButton  = document.getElementById("button-newmessage");
-      var addedButton  = false;
-      // first, try to insert it after the delete button
-      if (deleteButton) {
-        try {
-          // insert the separator before the Delete button
-          toolbar.insertBefore(separator, deleteButton);
-          // insert the button before the separator
-          toolbar.insertBefore(button, separator);
-          com.gContactSync.LOGGER.VERBOSE_LOG("Added the button before the delete button");
-          addedButton = true;
-          // insert the second separator before the button if necessary
-          if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
-              toolbar.insertBefore(separator2, button);
-              com.gContactSync.LOGGER.VERBOSE_LOG("Also added a separator before the button");
-          }
-        }
-        catch (e) {
-          com.gContactSync.LOGGER.LOG_WARNING("Couldn't setup the sync button before the delete button", e);
-        }
-      }
-      // if that doesn't work, try after the write button
-      if (writeButton && !addedButton) {
-        try {
-          // insert the separator before the Write button
-          toolbar.insertBefore(separator, writeButton);
-          // insert the button before the separator
-          toolbar.insertBefore(button, separator);
-          com.gContactSync.LOGGER.VERBOSE_LOG("Added the button before the compose button");
-          com.gContactSync.LOGGER.VERBOSE_LOG("Added a separator after the button");
-          addedButton = true;
-          // insert the second separator before the button if necessary
-          if (button.previousSibling && button.previousSibling.nodeName != "toolbarseparator") {
-              toolbar.insertBefore(separator2, button);
-              com.gContactSync.LOGGER.VERBOSE_LOG("Added a separator before the button");
-          }
-        }
-        catch (e) {
-          com.gContactSync.LOGGER.LOG_WARNING("Couldn't setup the sync button before the write button", e);
-        }
-      }
-      // if all else fails try to append the button at the end of the toolbar
-      if (!addedButton) {
-        com.gContactSync.LOGGER.VERBOSE_LOG("Attempting to append the toolbar button");
-        toolbar.appendChild(separator);
-        toolbar.appendChild(button);
-      }
-      if (com.gContactSync.Preferences.mSyncPrefs.forceBtnImage.value) {
-        com.gContactSync.LOGGER.VERBOSE_LOG("Forcing the listStyleImage for the button");
-        document.getElementById("button-sync").style.listStyleImage =
-          "url('chrome://gcontactsync/skin/logo_main_24.png')";
-      }
-      com.gContactSync.LOGGER.VERBOSE_LOG("Finished adding button\n");
-      return true;
-    }
-    catch(e) {
-       com.gContactSync.LOGGER.LOG_WARNING("Couldn't setup the sync button", e);
-    }
-    return false;
   },
   /**
    * Modifies the SetAbView function.  Unused

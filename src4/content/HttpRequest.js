@@ -145,7 +145,7 @@ com.gContactSync.HttpRequest.prototype = {
 
     for (var i = 0; i < this.mHeaderLabels.length; i++) {
       com.gContactSync.LOGGER.VERBOSE_LOG("   o " + this.mHeaderLabels[i] +
-                                          " " + this.mHeaderValues[i]);
+                                          ": " + this.mHeaderValues[i]);
       this.mHttpRequest.setRequestHeader(this.mHeaderLabels[i],
                                          this.mHeaderValues[i]);
     }

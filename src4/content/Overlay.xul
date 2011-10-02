@@ -139,11 +139,6 @@
                accesskey="&forumMenuItem.accesskey;"
                class="menuitem-iconic icon-mail16 menu-iconic"
                oncommand="com.gContactSync.openURL('extensions.gContactSync.forumURL');"/>
-     <menuitem id="wikiMenuItem"
-               label="&wikiMenuItem.label;"
-               accesskey="&wikiMenuItem.accesskey;"
-               class="menuitem-iconic icon-mail16 menu-iconic"
-               oncommand="com.gContactSync.openURL('extensions.gContactSync.wikiURL');"/>
      <menuitem id="faqMenuItem"
                label="&faqMenuItem.label;"
                accesskey="&faqMenuItem.accesskey;"
