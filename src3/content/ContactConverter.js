@@ -295,8 +295,9 @@ com.gContactSync.ContactConverter = {
       if (isNew && com.gContactSync.Sync.mContactsUrl) {
         aGContact.setGroups([com.gContactSync.Sync.mContactsUrl]);
       }
-    }
-    else {
+    // If syncing all groups then find all the lists this contact is in and set
+    // those as the contact's groups
+    } else if (ab.mPrefs.syncGroups == "true") {
       // set the groups
       var groups = [],
           list;
@@ -315,6 +316,7 @@ com.gContactSync.ContactConverter = {
       }
       aGContact.setGroups(groups);
     }
+    
     // Upload the photo
     if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value) {
       // Get the profile directory
