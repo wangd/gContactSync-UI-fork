@@ -272,7 +272,18 @@ com.gContactSync.GAbManager.getAllAddressBooks = function GAbManager_getAllAddre
   return abs;
 };
 
-// TODO document
+/**
+ * Compares two contacts and returns true if they are similar in enough
+ * attributes to be considered the same.
+ *
+ * @param aContact0 The first contact.  Can be a TBContact or GContact.
+ * @param aContact1 The second contact.  Can be a TBContact or GContact.
+ * @param aAttributeList0 The list of attributes in aContact0 to compare.
+ * @param aAttributeList1 The list of attributes in aContact1 to compare.
+ * @param aThreshold The ratio of (num matching attributes) / (num non-empty attributes)
+ *                   at which the two contacts should be considered equal.
+ * @returns {boolean} True if aContact0 and aContact1 share enough attributes.
+ */
 com.gContactSync.GAbManager.compareContacts = function GAbManager_compareContacts(aContact0, aContact1, aAttributeList0, aAttributeList1, aThreshold) {
   var hitCount = 0, valCount = 0;
   com.gContactSync.LOGGER.VERBOSE_LOG("Comparing '" + aContact0.getName() + "' and '" + aContact1.getName() + "'");
