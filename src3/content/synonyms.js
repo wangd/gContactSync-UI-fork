@@ -51,7 +51,7 @@ com.gContactSync.versionMajor   = "0";
 /** The minor version of gContactSync (ie 3 in 0.3.0b1) */
 com.gContactSync.versionMinor   = "3";
 /** The release for the current version of gContactSync (ie 1 in 0.3.1a7) */
-com.gContactSync.versionRelease = "3";
+com.gContactSync.versionRelease = "4";
 /** The suffix for the current version of gContactSync (ie a7 for Alpha 7) */
 com.gContactSync.versionSuffix  = "";
 
