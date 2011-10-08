@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2010
+ * Portions created by the Initial Developer are Copyright (C) 2008-2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -270,4 +270,33 @@ com.gContactSync.GAbManager.getAllAddressBooks = function GAbManager_getAllAddre
     }
   }
   return abs;
+};
+
+// TODO document
+com.gContactSync.GAbManager.compareContacts = function GAbManager_compareContacts(aContact0, aContact1, aAttributeList0, aAttributeList1, aThreshold) {
+  var hitCount = 0, valCount = 0;
+  com.gContactSync.LOGGER.VERBOSE_LOG("Comparing '" + aContact0.getName() + "' and '" + aContact1.getName() + "'");
+  if (aAttributeList0.length != aAttributeList1.length)
+    throw "Error - attribute lists don't match in length";
+
+  for (var i = 0; i < aAttributeList0.length; i++) {
+    var val0 = aContact0.getValue(aAttributeList0[i]),
+        val1 = aContact1.getValue(aAttributeList1[i]);
+    if (val0 && aContact0 instanceof com.gContactSync.GContact)
+      val0 = val0.value;
+    if (val1 && aContact1 instanceof com.gContactSync.GContact)
+      val1 = val1.value;
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * " + aAttributeList0[i] + ": '" + val0 + "'" +
+                                        " "   + aAttributeList1[i] + ": '" + val1 + "'");
+    if (val0 && val1) {
+      valCount++;
+      if (val0 == val1) hitCount++;
+    }
+  }
+
+  com.gContactSync.LOGGER.VERBOSE_LOG(" * Hit count: " + hitCount +
+                                      " Value count: " + valCount +
+                                      " threshold (%): " + (aThreshold * 100));
+
+  return valCount && ((hitCount / valCount) >= aThreshold);
 };

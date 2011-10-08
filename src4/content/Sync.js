@@ -435,6 +435,36 @@ com.gContactSync.Sync = {
     // re-initialize the contact converter (in case a pref changed)
     com.gContactSync.ContactConverter.init();
 
+    // Step 1.5: If this is the first sync then iterate through TB contacts
+    // If the contact matches a Google contact then set the TB contact's
+    // GoogleID to its matching contact and LastModifiedDate to 0.
+    // This prevents some duplicates on the first sync by basically overwritting
+    // similar TB contacts during the first sync.
+    // This is very basic, and won't merge duplicates in Thunderbird or dups
+    // in Google; it just matches with the first contact it finds, if any.
+    if (lastSync == 0) {
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("firstSyncContacts"));
+      for (i = 0, length = abCards.length; i < length; i++) {
+        if (abCards[i].getValue("GoogleID")) continue;
+        for (var id in gContacts) {
+          if (gContacts[id] && abCards[i]) {
+            if (com.gContactSync.GAbManager.compareContacts(
+                abCards[i],
+                gContacts[id],
+                ["DisplayName", "PrimaryEmail"],
+                ["fullName",    "email"],
+                0.5)) {
+              abCards[i].setValue("GoogleID", id);
+              abCards[i].setValue("LastModifiedDate", 0);
+              break;
+            }
+          }
+        }
+      }
+    }
+    
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
+
     // Step 2: iterate through TB Contacts and check for matches
     for (i = 0, length = abCards.length; i < length; i++) {
       var tbContact  = abCards[i],

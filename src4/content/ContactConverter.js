@@ -387,19 +387,10 @@ com.gContactSync.ContactConverter = {
         property.value = com.gContactSync.makeDummyEmail(aGContact);
         property.type  = "home";
       }
-      // don't wipe out structured address info
-      if (property.value ||
-           (obj.elementName !== 'street' && obj.elementName !== 'city' &&
-            obj.elementName !== 'region' && obj.elementName !== 'postcode' &&
-            obj.elementName !== 'country')) {
-        aTBContact.setValue(obj.tbName, property.value);
-        // set the type, if it is an attribute with a type
-        if (property.type)
-          aTBContact.setValue(obj.tbName + "Type", property.type);
-      }
-      else {
-        com.gContactSync.LOGGER.VERBOSE_LOG("Going to avoid wiping out " + obj.tbName);
-      }
+      aTBContact.setValue(obj.tbName, property.value);
+      // set the type, if it is an attribute with a type
+      if (property.type)
+        aTBContact.setValue(obj.tbName + "Type", property.type);
     }
     // get the extended properties
     arr = com.gContactSync.Preferences.mExtendedProperties;
