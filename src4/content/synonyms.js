@@ -432,13 +432,16 @@ com.gContactSync.openURL = function gCS_openURL(aURL) {
 };
 
 /**
- * Opens the "view source" window with the log file.
+ * Opens the "view source" window with the log file if logging is enabled.
  */
 com.gContactSync.showLog = function gCS_showLog() {
   try {
-    window.open("view-source:file://" + com.gContactSync.FileIO.mLogFile.path,
-                "gContactSyncLog",
-                "chrome=yes,resizable=yes,height=480,width=600");
+    if (!com.gContactSync.Preferences.mSyncPrefs.enableLogging.value)
+      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("loggingDisabled"));
+    else
+      window.open("view-source:file://" + com.gContactSync.FileIO.mLogFile.path,
+                  "gContactSyncLog",
+                  "chrome=yes,resizable=yes,height=480,width=600");
   }
   catch(e) {
     com.gContactSync.LOGGER.LOG_WARNING("Unable to open the log", e);

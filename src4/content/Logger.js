@@ -60,8 +60,9 @@ com.gContactSync.LOGGER = {
       return;
     // this can fail if called before FileIO is initialized
     try {
-      com.gContactSync.FileIO.appendToFile(com.gContactSync.FileIO.mLogFile,
-                                           aMessage + "\n");
+      if (com.gContactSync.Preferences.mSyncPrefs.enableLogging.value)
+        com.gContactSync.FileIO.appendToFile(com.gContactSync.FileIO.mLogFile,
+                                             aMessage + "\n");
     } catch (e) {}
   },
   /**
