@@ -1,0 +1,419 @@
+<?xml version="1.0"?>
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is gContactSync.
+   -
+   - The Initial Developer of the Original Code is
+   - Josh Geenen <gcontactsync@pirules.org>.
+   - Portions created by the Initial Developer are Copyright (C) 2008-2010
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   - Leszek(teo)Życzkowski
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK ***** -->
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://gcontactsync/skin/options.css" type="text/css"?>
+
+<!DOCTYPE prefwindow SYSTEM "chrome://gContactSync/locale/options.dtd">
+
+<prefwindow id="gContactSyncPrefs"
+            title="&title.label;"
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <prefpane id="pane_main" index="main" label="&main.tab;">
+    <preferences>
+      <preference id="autoSync"
+                  name="extensions.gContactSync.autoSync"
+                  type="bool"/>
+      <preference id="refreshInterval"
+                  name="extensions.gContactSync.refreshInterval"
+                  type="int"/>
+      <preference id="initialDelayMinutes"
+                  name="extensions.gContactSync.initialDelayMinutes"
+                  type="int"/>
+      <preference id="syncAddresses"
+                  name="extensions.gContactSync.syncAddresses"
+                  type="bool"/>
+      <preference id="alertSummary"
+                  name="extensions.gContactSync.alertSummary"
+                  type="bool"/>
+      <preference id="phoneTypes"
+                  name="extensions.gContactSync.phoneTypes"
+                  type="bool"/>
+      <preference id="accountDelay"
+                  name="extensions.gContactSync.accountDelay"
+                  type="int"/>
+      <preference id="enableLogging"
+                  name="extensions.gContactSync.enableLogging"
+                  type="bool"/>
+      <preference id="verboseLog"
+                  name="extensions.gContactSync.verboseLog"
+                  type="bool"/>
+    </preferences>
+    <groupbox flex="1">
+      <!-- TODO - replace this link with one not on the wiki -->
+      <label href="http://www.pirules.org/tikiwiki/tiki-index.php?page=gContactSync+Preferences"
+             class="text-link"
+             value="&help.value;"/>
+      <groupbox>
+        <caption label="&autoSync.value;"/>
+        <checkbox preference="autoSync"
+                  id="autoSync"
+                  label="&autoSync.label;"/>
+        <grid>
+          <columns>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="refreshInterval"
+                     value="&refreshInterval.value;"/>
+              <textbox preference="refreshInterval"
+                       id="refreshIntervalBox"
+                       maxlength="4"
+                       maxwidth="60"/>
+            </row>
+            <row align="center">
+              <label control="initialDelayMinutesBox"
+                     value="&initialDelayMinutes.value;"/>
+              <textbox preference="initialDelayMinutes"
+                       id="initialDelayMinutesBox"
+                       maxlength="8"
+                       maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+      </groupbox>
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&syncBehavior.label;"/>
+        <checkbox preference="syncAddresses"
+                  id="syncAddresses"
+                  label="&syncAddresses.label;"/>
+        <checkbox preference="alertSummary"
+                  id="alertSummary"
+                  label="&alertSummary.label;"/>
+        <checkbox preference="phoneTypes"
+                  id="phoneTypes"
+                  label="&phoneTypes.label;"/>
+        <grid flex="1">
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="accountDelay"
+                     value="&accountDelay.value;"/>
+              <textbox preference="accountDelay"
+                       id="accountDelay"
+                       maxlength="6"
+                       maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+      </groupbox>
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&logging.label;"/>
+        <checkbox preference="enableLogging"
+                  id="enableLogging"
+                  label="&enableLogging.label;"/>
+        <checkbox preference="verboseLog"
+                  id="verboseLog"
+                  label="&verboseLog.label;"/>
+      </groupbox>
+    </groupbox>
+  </prefpane>
+  <prefpane id="pane_interface" index="interface" label="&interface.tab;">
+    <preferences>
+      <preference id="enableMenu"
+                  name="extensions.gContactSync.enableMenu"
+                  type="bool"/>
+      <preference id="addReset"
+                  name="extensions.gContactSync.addReset"
+                  type="bool"/>
+      <preference id="phoneColLabels"
+                  name="extensions.gContactSync.phoneColLabels"
+                  type="bool"/>
+      <preference id="newColLabels"
+                  name="extensions.gContactSync.newColLabels"
+                  type="bool"/>
+      <preference id="enableImUrls"
+                  name="extensions.gContactSync.enableImUrls"
+                  type="bool"/>
+    </preferences>
+    <groupbox flex="1">
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&buttons.label;"/>
+        <checkbox preference="enableMenu"
+                  id="enableMenu"
+                  label="&enableMenu.label;"/>
+        <checkbox preference="addReset"
+                  id="addReset"
+                  label="&addReset.label;"/>
+      </groupbox>
+      <groupbox>
+        <caption label="&abResults.label;"/>
+        <checkbox preference="phoneColLabels"
+                  id="phoneColLabels"
+                  label="&phoneColLabels.label;"/>
+        <checkbox preference="newColLabels"
+                  id="newColLabels"
+                  label="&newColLabels.label;"/>
+      </groupbox>
+      <groupbox>
+        <caption label="&abCardView.label;"/>
+        <checkbox preference="enableImUrls"
+                  id="enableImUrls"
+                  label="&enableImUrls.label;"/>
+      </groupbox>
+    </groupbox>
+  </prefpane>
+  <prefpane id="pane_extended"
+            index="extended"
+            label="&extended.tab;">
+    <preferences>
+      <preference id="syncExtended"
+                  name="extensions.gContactSync.syncExtended"
+                  type="bool"/>
+      <preference id="extended1"
+                  name="extensions.gContactSync.extended1"
+                  type="string"/>
+      <preference id="extended2"
+                  name="extensions.gContactSync.extended2"
+                  type="string"/>
+      <preference id="extended3"
+                  name="extensions.gContactSync.extended3"
+                  type="string"/>
+      <preference id="extended4"
+                  name="extensions.gContactSync.extended4"
+                  type="string"/>
+      <preference id="extended5"
+                  name="extensions.gContactSync.extended5"
+                  type="string"/>
+      <preference id="extended6"
+                  name="extensions.gContactSync.extended6"
+                  type="string"/>
+      <preference id="extended7"
+                  name="extensions.gContactSync.extended7"
+                  type="string"/>
+      <preference id="extended8"
+                  name="extensions.gContactSync.extended8"
+                  type="string"/>
+      <preference id="extended9"
+                  name="extensions.gContactSync.extended9"
+                  type="string"/>
+      <preference id="extended10"
+                  name="extensions.gContactSync.extended10"
+                  type="string"/>
+    </preferences>
+    <groupbox>
+      <label value="&extendedPropertiesDesc1.value;"/>
+      <label value="&extendedPropertiesDesc2.value;"/>
+      <label value="&extendedPropertiesDesc3.value;"/>
+      <separator class="thin"/>
+      <checkbox preference="syncExtended"
+                id="syncExtended"
+                label="&syncExtended.label;"/>
+      <separator class="thin"/>
+      <vbox align="center">
+        <grid flex="1">
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="extended1" value="&extended1.value;"/>
+              <textbox preference="extended1" id="extended1"/>
+            </row>
+            <row align="center">
+              <label control="extended2" value="&extended2.value;"/>
+              <textbox preference="extended2" id="extended2"/>
+            </row>
+            <row align="center">
+              <label control="extended3" value="&extended3.value;"/>
+              <textbox preference="extended3" id="extended3"/>
+            </row>
+            <row align="center">
+              <label control="extended4" value="&extended4.value;"/>
+              <textbox preference="extended4" id="extended4"/>
+            </row>
+            <row align="center">
+              <label control="extended5" value="&extended5.value;"/>
+              <textbox preference="extended5" id="extended5"/>
+            </row>
+            <row align="center">
+              <label control="extended6" value="&extended6.value;"/>
+              <textbox preference="extended6" id="extended6"/>
+            </row>
+            <row align="center">
+              <label control="extended7" value="&extended7.value;"/>
+              <textbox preference="extended7" id="extended7"/>
+            </row>
+            <row align="center">
+              <label control="extended8" value="&extended8.value;"/>
+              <textbox preference="extended8" id="extended8"/>
+            </row>
+            <row align="center">
+              <label control="extended9" value="&extended9.value;"/>
+              <textbox preference="extended9" id="extended9"/>
+            </row>
+            <row align="center">
+              <label control="extended10" value="&extended10.value;"/>
+              <textbox preference="extended10" id="extended10"/>
+            </row>
+          </rows>
+        </grid>
+      </vbox>
+    </groupbox>
+  </prefpane>
+  <prefpane id="pane_advanced"
+            index="advanced"
+            label="&advanced.tab;">
+    <preferences>
+      <preference id="backupInterval"
+                  name="extensions.gContactSync.backupInterval"
+                  type="int"/>
+      <preference id="max_chrome_script_run_time"
+                  name="dom.max_chrome_script_run_time"
+                  type="int"/>
+      <preference id="confirmDeleteThreshold"
+                  name="extensions.gContactSync.confirmDeleteThreshold"
+                  type="int"/>
+    </preferences>
+    <vbox>
+      <label value="&warning.value;"/>
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&backup.label;"/>
+        <grid flex="1">
+          <columns>
+            <column/>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="backupInterval"
+                     value="&backupInterval.value;"/>
+              <textbox preference="backupInterval"
+                       id="backupInterval"
+                       maxlength="6"
+                       maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+      </groupbox>
+      <separator class="thin"/>
+      <groupbox>
+        <caption label="&other.label;"/>
+        <grid flex="1">
+          <columns>
+            <column/>
+          </columns>
+          <rows>
+            <row align="center">
+              <label control="chromeTimeBox"
+                     value="&chromeTime.value;"/>
+            </row>
+            <row align="center">
+              <textbox preference="max_chrome_script_run_time"
+                       id="chromeTimeBox"
+                       maxlength="5"
+                       maxwidth="60"/>
+            </row>
+            <row align="center">
+              <label control="confirmDeleteThreshold"
+                     value="&confirmDeleteThreshold.value;"/>
+            </row>
+            <row align="center">
+              <textbox preference="confirmDeleteThreshold"
+                       id="confirmDeleteThreshold"
+                       maxlength="5"
+                       maxwidth="60"/>
+            </row>
+          </rows>
+        </grid>
+      </groupbox>
+      <separator class="thin"/>
+      <hbox>
+        <button id="resetAll"
+                label="&resetAll.label;"
+                oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
+        <button id="cleanOldPrefs"
+                label="&cleanOldPrefs.label;"
+                oncommand="com.gContactSync.Options.cleanOldPrefs(true);"/>
+      </hbox>
+    </vbox>
+  </prefpane>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/synonyms.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Logger.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/FileIO.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/LoginManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/StringBundle.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/options.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/AddressBook.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GAddressBook.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/MailList.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GMailList.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/AbManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GAbManager.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/TBContact.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Namespace.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GElement.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/gdata.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/HttpRequest.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/GHttpRequest.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Pref.js"/>
+  <script type="application/x-javascript"
+          src="chrome://gcontactsync/content/Preferences.js"/>
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="gContactSyncStringBundle"
+                  src="chrome://gContactSync/locale/gcontactsync.properties"/>
+  </stringbundleset>
+</prefwindow>

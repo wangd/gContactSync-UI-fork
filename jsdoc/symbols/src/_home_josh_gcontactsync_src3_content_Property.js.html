@@ -1,0 +1,58 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/* ***** BEGIN LICENSE BLOCK *****
+<span class='line'>  2</span>  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+<span class='line'>  3</span>  *
+<span class='line'>  4</span>  * The contents of this file are subject to the Mozilla Public License Version
+<span class='line'>  5</span>  * 1.1 (the "License"); you may not use this file except in compliance with
+<span class='line'>  6</span>  * the License. You may obtain a copy of the License at
+<span class='line'>  7</span>  * http://www.mozilla.org/MPL/
+<span class='line'>  8</span>  *
+<span class='line'>  9</span>  * Software distributed under the License is distributed on an "AS IS" basis,
+<span class='line'> 10</span>  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+<span class='line'> 11</span>  * for the specific language governing rights and limitations under the
+<span class='line'> 12</span>  * License.
+<span class='line'> 13</span>  *
+<span class='line'> 14</span>  * The Original Code is gContactSync.
+<span class='line'> 15</span>  *
+<span class='line'> 16</span>  * The Initial Developer of the Original Code is
+<span class='line'> 17</span>  * Josh Geenen &lt;gcontactsync@pirules.org>.
+<span class='line'> 18</span>  * Portions created by the Initial Developer are Copyright (C) 2008
+<span class='line'> 19</span>  * the Initial Developer. All Rights Reserved.
+<span class='line'> 20</span>  *
+<span class='line'> 21</span>  * Contributor(s):
+<span class='line'> 22</span>  *
+<span class='line'> 23</span>  * Alternatively, the contents of this file may be used under the terms of
+<span class='line'> 24</span>  * either the GNU General Public License Version 2 or later (the "GPL"), or
+<span class='line'> 25</span>  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+<span class='line'> 26</span>  * in which case the provisions of the GPL or the LGPL are applicable instead
+<span class='line'> 27</span>  * of those above. If you wish to allow use of your version of this file only
+<span class='line'> 28</span>  * under the terms of either the GPL or the LGPL, and not to allow others to
+<span class='line'> 29</span>  * use your version of this file under the terms of the MPL, indicate your
+<span class='line'> 30</span>  * decision by deleting the provisions above and replace them with the notice
+<span class='line'> 31</span>  * and other provisions required by the GPL or the LGPL. If you do not delete
+<span class='line'> 32</span>  * the provisions above, a recipient may use your version of this file under
+<span class='line'> 33</span>  * the terms of any one of the MPL, the GPL or the LGPL.
+<span class='line'> 34</span>  *
+<span class='line'> 35</span>  * ***** END LICENSE BLOCK ***** */</span><span class="WHIT">
+<span class='line'> 36</span> 
+<span class='line'> 37</span> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">com</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">com</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// A generic wrapper variable</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="COMM">// A wrapper for all GCS functions and variables</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">com.gContactSync</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="NAME">com.gContactSync</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 40</span> 
+<span class='line'> 41</span> </span><span class="COMM">/**
+<span class='line'> 42</span>  * A simple object for storing the value and type of a property.
+<span class='line'> 43</span>  * @param aValue {string} The value of the property.
+<span class='line'> 44</span>  * @param aType  {string} The 'type' of the property (Home, Work, Other, etc.)
+<span class='line'> 45</span>  * @class
+<span class='line'> 46</span>  */</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="NAME">com.gContactSync.Property</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_Property</span><span class="PUNC">(</span><span class="NAME">aValue</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aType</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">  </span><span class="NAME">this.value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">  </span><span class="NAME">this.type</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">aType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 51</span> </span></pre></body></html>

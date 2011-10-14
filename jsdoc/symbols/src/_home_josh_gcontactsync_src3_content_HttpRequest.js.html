@@ -1,0 +1,208 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/* ***** BEGIN LICENSE BLOCK *****
+<span class='line'>  2</span>  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+<span class='line'>  3</span>  *
+<span class='line'>  4</span>  * The contents of this file are subject to the Mozilla Public License Version
+<span class='line'>  5</span>  * 1.1 (the "License"); you may not use this file except in compliance with
+<span class='line'>  6</span>  * the License. You may obtain a copy of the License at
+<span class='line'>  7</span>  * http://www.mozilla.org/MPL/
+<span class='line'>  8</span>  *
+<span class='line'>  9</span>  * Software distributed under the License is distributed on an "AS IS" basis,
+<span class='line'> 10</span>  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+<span class='line'> 11</span>  * for the specific language governing rights and limitations under the
+<span class='line'> 12</span>  * License.
+<span class='line'> 13</span>  *
+<span class='line'> 14</span>  * The Original Code is gContactSync.
+<span class='line'> 15</span>  *
+<span class='line'> 16</span>  * The Initial Developer of the Original Code is
+<span class='line'> 17</span>  * Josh Geenen &lt;gcontactsync@pirules.org>.
+<span class='line'> 18</span>  * Portions created by the Initial Developer are Copyright (C) 2008-2009
+<span class='line'> 19</span>  * the Initial Developer. All Rights Reserved.
+<span class='line'> 20</span>  *
+<span class='line'> 21</span>  * Contributor(s):
+<span class='line'> 22</span>  *
+<span class='line'> 23</span>  * Alternatively, the contents of this file may be used under the terms of
+<span class='line'> 24</span>  * either the GNU General Public License Version 2 or later (the "GPL"), or
+<span class='line'> 25</span>  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+<span class='line'> 26</span>  * in which case the provisions of the GPL or the LGPL are applicable instead
+<span class='line'> 27</span>  * of those above. If you wish to allow use of your version of this file only
+<span class='line'> 28</span>  * under the terms of either the GPL or the LGPL, and not to allow others to
+<span class='line'> 29</span>  * use your version of this file under the terms of the MPL, indicate your
+<span class='line'> 30</span>  * decision by deleting the provisions above and replace them with the notice
+<span class='line'> 31</span>  * and other provisions required by the GPL or the LGPL. If you do not delete
+<span class='line'> 32</span>  * the provisions above, a recipient may use your version of this file under
+<span class='line'> 33</span>  * the terms of any one of the MPL, the GPL or the LGPL.
+<span class='line'> 34</span>  *
+<span class='line'> 35</span>  * ***** END LICENSE BLOCK ***** */</span><span class="WHIT">
+<span class='line'> 36</span> 
+<span class='line'> 37</span> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">com</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">com</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// A generic wrapper variable</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="COMM">// A wrapper for all GCS functions and variables</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">com.gContactSync</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="NAME">com.gContactSync</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 40</span> 
+<span class='line'> 41</span> </span><span class="COMM">/**
+<span class='line'> 42</span>  * Sets up an HTTP request.&lt;br>
+<span class='line'> 43</span>  * The constructor is not all that useful so extend this class if you must
+<span class='line'> 44</span>  * make repetitive HTTP requests.&lt;br>&lt;br>
+<span class='line'> 45</span>  * You may setup callbacks based on different HTTP status codes:
+<span class='line'> 46</span>  * &lt;ul>
+<span class='line'> 47</span>  * &lt;li>0 (offline): use &lt;b>mOnError&lt;/b>&lt;/li>
+<span class='line'> 48</span>  * &lt;li>200 (OK): use &lt;b>mOnSuccess&lt;/b>&lt;/li>
+<span class='line'> 49</span>  * &lt;li>201 (CREATED): use &lt;b>mOnCreated&lt;/b>&lt;/li>
+<span class='line'> 50</span>  * &lt;li>401 (UNAUTHORIZED): use &lt;b>mOn401&lt;/b>&lt;/li>
+<span class='line'> 51</span>  * &lt;li>&lt;anything else&gt;: use &lt;b>mOnError&lt;/b>&lt;/li>
+<span class='line'> 52</span>  * &lt;/ul>
+<span class='line'> 53</span>  * &lt;br>Sample usage:
+<span class='line'> 54</span>  * &lt;pre>
+<span class='line'> 55</span>  * // Create and setup a new HttpRequest
+<span class='line'> 56</span>  * var myHttpRequest   = new com.gContactSync.HttpRequest();
+<span class='line'> 57</span>  * myHttpRequest.mUrl  = "http://www.pirules.org";
+<span class='line'> 58</span>  * myHttpRequest.mType = "GET";
+<span class='line'> 59</span>  * myHttpRequest.addHeaderItem("Content-length", 0);
+<span class='line'> 60</span>  * // setup the callbacks
+<span class='line'> 61</span>  * myHttpRequest.mOnSuccess = function myRequestSuccess(aHttpReq) {
+<span class='line'> 62</span>  *   com.gContactSync.alert("Request succeeded.  Content:\n\n" + aHttpReq.statusText);
+<span class='line'> 63</span>  * };
+<span class='line'> 64</span>  * myHttpRequest.mOnOffline = function myRequestOffline(aHttpReq) {
+<span class='line'> 65</span>  *   com.gContactSync.alert("You are offline");
+<span class='line'> 66</span>  * };
+<span class='line'> 67</span>  * myHttpRequest.mOnError   = function myRequestError(aHttpReq) {
+<span class='line'> 68</span>  *   com.gContactSync.alert("Request failed...Status: " + aHttpReq.status); 
+<span class='line'> 69</span>  * };
+<span class='line'> 70</span>  * // send the request
+<span class='line'> 71</span>  * myHttpRequest.send();
+<span class='line'> 72</span>  * &lt;/pre>
+<span class='line'> 73</span>  * @constructor
+<span class='line'> 74</span>  * @class
+<span class='line'> 75</span>  */</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="NAME">com.gContactSync.HttpRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">gCS_HttpRequest</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.XMLHttpRequest</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">    </span><span class="NAME">this.mHttpRequest</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">XMLHttpRequest</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.mHttpRequest</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">    </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Error - could not create an XMLHttpRequest"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">          </span><span class="NAME">com.gContactSync.StringBundle.getStr</span><span class="PUNC">(</span><span class="STRN">"pleaseReport"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 83</span> 
+<span class='line'> 84</span> </span><span class="NAME">com.gContactSync.HttpRequest.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">  </span><span class="COMM">/** Content types */</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">  </span><span class="NAME">CONTENT_TYPES</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">    </span><span class="COMM">/** URL encoded */</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">    </span><span class="NAME">URL_ENC</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"application/x-www-form-urlencoded"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">    </span><span class="COMM">/** ATOM/XML */</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">    </span><span class="NAME">ATOM</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="STRN">"application/atom+xml"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">    </span><span class="COMM">/** XML */</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">    </span><span class="NAME">XML</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="STRN">"application/xml"</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'> 95</span>    * Adds a content override to the header in case a firewall blocks DELETE or
+<span class='line'> 96</span>    * PUT requests.
+<span class='line'> 97</span>    * @param aType {string} The type of override.  Must be DELETE or PUT.
+<span class='line'> 98</span>    */</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">  </span><span class="NAME">addContentOverride</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">HttpRequest_addContentOverride</span><span class="PUNC">(</span><span class="NAME">aType</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">    </span><span class="KEYW">switch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">aType</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">    </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">"delete"</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">    </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">"DELETE"</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">      </span><span class="NAME">this.addHeaderItem</span><span class="PUNC">(</span><span class="STRN">"X-HTTP-Method-Override"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"DELETE"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">      </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">    </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">"put"</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">    </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">"PUT"</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">      </span><span class="NAME">this.addHeaderItem</span><span class="PUNC">(</span><span class="STRN">"X-HTTP-Method-Override"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"PUT"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">      </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">    </span><span class="KEYW">default</span><span class="PUNC">:</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">      </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">"Error - type sent to addContentOverride must be DELETE or PUT"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>114</span>    * Adds a header label/value pair to the arrays of header information
+<span class='line'>115</span>    * @param aLabel {string} The label for the header.
+<span class='line'>116</span>    * @param aValue {string} The value for the header.
+<span class='line'>117</span>    */</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">  </span><span class="NAME">addHeaderItem</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">HttpRequest_addHeaderItem</span><span class="PUNC">(</span><span class="NAME">aLabel</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.mHeaderLabels</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">      </span><span class="NAME">this.mHeaderLabels</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">      </span><span class="NAME">this.mHeaderValues</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">    </span><span class="NAME">this.mHeaderLabels.push</span><span class="PUNC">(</span><span class="NAME">aLabel</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">    </span><span class="NAME">this.mHeaderValues.push</span><span class="PUNC">(</span><span class="NAME">aValue</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">  </span><span class="COMM">/**
+<span class='line'>127</span>    * Sends the HTTP Request with the information stored in the object.&lt;br>
+<span class='line'>128</span>    * Note: Setup everything, including the callbacks for different statuses
+<span class='line'>129</span>    *       including mOnSuccess, mOnError, mOnFail, and mOnCreated first.&lt;br>
+<span class='line'>130</span>    * See the class documentation for a sample request.
+<span class='line'>131</span>    */</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">  </span><span class="NAME">send</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">HttpRequest_send</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">    </span><span class="COMM">// log the basic info for debugging purposes</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">"HTTP Request being formed"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Caller is: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.send.caller.name</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>136</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * URL: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.mUrl</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Type: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.mType</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Content-Type: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.mContentType</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">    
+<span class='line'>140</span>     </span><span class="NAME">this.mHttpRequest.open</span><span class="PUNC">(</span><span class="NAME">this.mType</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.mUrl</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// open the request</span><span class="WHIT">
+<span class='line'>141</span> 
+<span class='line'>142</span> </span><span class="WHIT">    </span><span class="COMM">// set the header</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">    </span><span class="NAME">this.addHeaderItem</span><span class="PUNC">(</span><span class="STRN">"Content-Type"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.mContentType</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Setting up the header: "</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>145</span> 
+<span class='line'>146</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">this.mHeaderLabels.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">      </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">"   o "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.mHeaderLabels</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">                                          </span><span class="STRN">" "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.mHeaderValues</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">      </span><span class="NAME">this.mHttpRequest.setRequestHeader</span><span class="PUNC">(</span><span class="NAME">this.mHeaderLabels</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">                                         </span><span class="NAME">this.mHeaderValues</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">    </span><span class="NAME">this.mHttpRequest.send</span><span class="PUNC">(</span><span class="NAME">this.mBody</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// send the request</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">    </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Request Sent"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">httpReq</span><span class="WHIT">   </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mHttpRequest</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">        </span><span class="NAME">onSuccess</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mOnSuccess</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">        </span><span class="NAME">onOffline</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mOnOffline</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">        </span><span class="NAME">onFail</span><span class="WHIT">    </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mOnError</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">        </span><span class="NAME">onCreated</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mOnCreated</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">        </span><span class="NAME">on401</span><span class="WHIT">     </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.mOn401</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>160</span> 
+<span class='line'>161</span> </span><span class="WHIT">    </span><span class="NAME">httpReq.onreadystatechange</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">httpReq_readyState</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">      </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">          </span><span class="NAME">i</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">      </span><span class="COMM">// if the request is done then check the status</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">      </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">httpReq.readyState</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">        </span><span class="COMM">// this may be called after the address book window is closed</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">        </span><span class="COMM">// if the window is closed there will be an exception thrown as</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">        </span><span class="COMM">// explained here - https://www.mozdev.org/bugs/show_bug.cgi?id=20527</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">        </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * The request has finished with status: "</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">                                            </span><span class="NAME">httpReq.status</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"/"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">                                            </span><span class="PUNC">(</span><span class="NAME">httpReq.status</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">httpReq.statusText</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"offline"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">httpReq.status</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">          </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Headers:\n"</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">                                              </span><span class="NAME">httpReq.getAllResponseHeaders</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">"\n"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">          
+<span class='line'>177</span>         </span><span class="KEYW">switch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">httpReq.status</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> 
+<span class='line'>178</span>         </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="COMM">// the user is offline</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">          </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">onOffline</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">          </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">        </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">201</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="COMM">// 201 CREATED</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">          </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">onCreated</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">          </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>184</span> </span><span class="WHIT">        </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">200</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="COMM">// 200 OK</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">          </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">onSuccess</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">          </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">        </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="NUMB">401</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="COMM">// 401 Unauthorized (Token Expired in Gmail)</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">          </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">on401</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="WHIT">          </span><span class="KEYW">break</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>190</span> </span><span class="WHIT">        </span><span class="KEYW">default</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="COMM">// other status</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">          </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">onFail</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">callback</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">          </span><span class="NAME">com.gContactSync.LOGGER.VERBOSE_LOG</span><span class="PUNC">(</span><span class="STRN">" * Running the function callback"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">          </span><span class="NAME">callback.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">httpReq</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">      </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="COMM">// end of readyState</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">  </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span> </span></pre></body></html>
