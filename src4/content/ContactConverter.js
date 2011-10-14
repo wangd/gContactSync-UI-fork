@@ -162,10 +162,6 @@ com.gContactSync.ContactConverter = {
       this.mConverterArr.push(new com.gContactSync.ConverterElement("region",   "WorkState",   0, "work"));
       this.mConverterArr.push(new com.gContactSync.ConverterElement("postcode", "WorkZipCode", 0, "work"));
       this.mConverterArr.push(new com.gContactSync.ConverterElement("country",  "WorkCountry", 0, "work"));
-      // full (formatted) addresses at the bottom so they have priority
-      this.mConverterArr.push(new com.gContactSync.ConverterElement("formattedAddress", "FullHomeAddress", 0, "home"));
-      this.mConverterArr.push(new com.gContactSync.ConverterElement("formattedAddress", "FullWorkAddress", 0, "work"));
-      this.mConverterArr.push(new com.gContactSync.ConverterElement("formattedAddress", "OtherAddress",    0, "other"));
     }
     this.mInitialized = true;
   },
@@ -174,14 +170,12 @@ com.gContactSync.ContactConverter = {
    * @param aIncludeURLs {boolean} Should be true if the URL-related attributes
    *                               should be returned.
    */
-  getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs, aIncludeAddresses) {
+  getExtraSyncAttributes: function ContactConverter_getExtraSyncAttributes(aIncludeURLs) {
     if (!this.mInitialized)
       this.init();
     var arr = this.mAddedAttributes.slice();
     if (aIncludeURLs)
       arr = arr.concat("PhotoURL", "SelfURL", "EditURL", "GoogleID");
-    if (aIncludeAddresses)
-      arr = arr.concat("FullHomeAddress", "FullWorkAddress", "OtherAddress");
     return arr;
   },
   /**
@@ -316,7 +310,6 @@ com.gContactSync.ContactConverter = {
       }
       aGContact.setGroups(groups);
     }
-    
     // Upload the photo
     if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value) {
       // Get the profile directory
@@ -394,19 +387,10 @@ com.gContactSync.ContactConverter = {
         property.value = com.gContactSync.makeDummyEmail(aGContact);
         property.type  = "home";
       }
-      // don't wipe out structured address info
-      if (property.value ||
-           (obj.elementName !== 'street' && obj.elementName !== 'city' &&
-            obj.elementName !== 'region' && obj.elementName !== 'postcode' &&
-            obj.elementName !== 'country')) {
-        aTBContact.setValue(obj.tbName, property.value);
-        // set the type, if it is an attribute with a type
-        if (property.type)
-          aTBContact.setValue(obj.tbName + "Type", property.type);
-      }
-      else {
-        com.gContactSync.LOGGER.VERBOSE_LOG("Going to avoid wiping out " + obj.tbName);
-      }
+      aTBContact.setValue(obj.tbName, property.value);
+      // set the type, if it is an attribute with a type
+      if (property.type)
+        aTBContact.setValue(obj.tbName + "Type", property.type);
     }
     // get the extended properties
     arr = com.gContactSync.Preferences.mExtendedProperties;

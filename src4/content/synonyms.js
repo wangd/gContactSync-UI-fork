@@ -44,16 +44,16 @@ if (!com.gContactSync) {
   com.gContactSync = {};
 }
 
-/** The attribute where the dummy e-mail address is stored */
-com.gContactSync.dummyEmailName = "PrimaryEmail";
 /** The major version of gContactSync (ie 0 in 0.2.18) */
 com.gContactSync.versionMajor   = "0";
 /** The minor version of gContactSync (ie 3 in 0.3.0b1) */
-com.gContactSync.versionMinor   = "3";
+com.gContactSync.versionMinor   = "4";
 /** The release for the current version of gContactSync (ie 1 in 0.3.1a7) */
-com.gContactSync.versionRelease = "4";
+com.gContactSync.versionRelease = "0";
 /** The suffix for the current version of gContactSync (ie a7 for Alpha 7) */
-com.gContactSync.versionSuffix  = "";
+com.gContactSync.versionSuffix  = "a1pre";
+/** The attribute where the dummy e-mail address is stored */
+com.gContactSync.dummyEmailName = "PrimaryEmail";
 
 /**
  * Returns a string of the current version for logging.  This can print either
@@ -432,14 +432,12 @@ com.gContactSync.openURL = function gCS_openURL(aURL) {
 };
 
 /**
- * Opens the "view source" window with the log file.
+ * Opens the "view source" window with the log file if logging is enabled.
  */
 com.gContactSync.showLog = function gCS_showLog() {
   try {
-    // NOTE - this is not localized because it was added after localization for 0.3.x was finished
-    // It will be localized in 0.4
     if (!com.gContactSync.Preferences.mSyncPrefs.enableLogging.value)
-      com.gContactSync.alertWarning("Logging is disabled.  Go in the Preferences and enable logging if you want to view the log file.");
+      com.gContactSync.alertWarning(com.gContactSync.StringBundle.getStr("loggingDisabled"));
     else
       window.open("view-source:file://" + com.gContactSync.FileIO.mLogFile.path,
                   "gContactSyncLog",
