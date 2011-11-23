@@ -475,8 +475,7 @@ com.gContactSync.CardDialogOverlay = {
     if (!contact.mContact.getProperty && gEditCard.abURI) {
       if (contact.mContact.editCardToDatabase) { // Thunderbird 2
         contact.mContact.editCardToDatabase(gEditCard.abURI);
-      }
-      else if (GetDirectoryFromURI) { // Postbox doesn't have editCardToDatabase
+      } else if (GetDirectoryFromURI) { // Postbox doesn't have editCardToDatabase
         var dir = GetDirectoryFromURI(gEditCard.abURI);
         if (dir) {
           dir.modifyCard(contact.mContact);
@@ -486,30 +485,39 @@ com.gContactSync.CardDialogOverlay = {
     // ensure that every contact edited through this dialog has at least a dummy
     // e-mail address if necessary
     var primEmailElem = aDoc.getElementById("PrimaryEmail");
-    if (!primEmailElem.value) {
+    if (!primEmailElem.value && gEditCard.abURI) {
       // if it is a new contact it isn't already in any lists
-      if (gEditCard.abURI) {
       // Check if it is in any mailing lists.  If so, force a dummy address
       // When fetching lists, do not get the contacts (if it is found there is
       // no need to get the contacts in every list)
-        var ab    = com.gContactSync.GAbManager.getAbByURI(gEditCard.abURI),
-            ab    = (ab ? new com.gContactSync.GAddressBook(ab) : null),
-            lists = ab.getAllLists(true);
-        for (var i in lists) {
-          // if the list does have the contact then make sure it gets a dummy
-          // e-mail address regardless of the preference
-          // do not check the PrimaryEmail address in hasContact since it is now
-          // empty
-          if (lists[i].hasContact(contact)) {
-            primEmailElem.value = com.gContactSync.makeDummyEmail(contact.mContact, true);
-            com.gContactSync.alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
-            break;
+      try {
+        var tbAB = com.gContactSync.GAbManager.getAbByURI(gEditCard.abURI);
+        var dummyEmailNeeded = tbAB.isMailList;
+        if (!dummyEmailNeeded) {
+          var lists = tbAB && !tbAB.isMailList ?
+                        new com.gContactSync.GAddressBook(tbAB).getAllLists(true) :
+                        [tbAB];
+          for (var i in lists) {
+            // if the list does have the contact then make sure it gets a dummy
+            // e-mail address regardless of the preference
+            // do not check the PrimaryEmail address in hasContact since it is now
+            // empty
+            if (lists[i].hasContact(contact)) {
+              dummyEmailNeeded = true;
+              break;
+            }
           }
         }
-      }
+        if (dummyEmailNeeded) {
+          primEmailElem.value = com.gContactSync.makeDummyEmail(contact.mContact, true);
+          com.gContactSync.alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
+        }
+      } catch (e) {alert("Error checking if the contact needs a dummy e-mail address\n" + e);}
     }
-    // call the original and return its return value
-    return com.gContactSync.originalCheckAndSetCardValues.apply(this, arguments);
+    try {
+      // call the original and return its return value
+      return com.gContactSync.originalCheckAndSetCardValues.apply(this, arguments);
+    } catch (ex) {alert("CheckAndSetCardValues threw an exception:\n" + ex);}
   },
   /**
    * A method that gets all of the attributes added by this extension and sets
