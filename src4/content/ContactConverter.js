@@ -272,8 +272,8 @@ com.gContactSync.ContactConverter = {
     arr = com.gContactSync.Preferences.mExtendedProperties;
     var props = {};
     for (i = 0, length = arr.length; i < length; i++) {
-      // add this extended property if it isn't a duplicate
-      if (!props[arr[i]]) {
+      // add this extended property if it isn't a duplicate or blank
+      if (arr[i] && !props[arr[i]]) {
         props[arr[i]] = true;
         value = this.checkValue(aTBContact.getValue(arr[i]));
         aGContact.setExtendedProperty(arr[i], value);
