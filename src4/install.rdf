@@ -27,6 +27,14 @@
                 <em:maxVersion>2.7a1</em:maxVersion>
             </Description>
         </em:targetApplication>
+        <!-- Postbox -->
+        <em:targetApplication>
+            <Description>
+                <em:id>postbox@postbox-inc.com</em:id>
+                <em:minVersion>1.0.*</em:minVersion>
+                <em:maxVersion>3.0.*</em:maxVersion>
+            </Description>
+        </em:targetApplication> 
         <!-- Spicebird -->
         <!-- Commented out for now, several UI differences need to be addressed
         <em:targetApplication>
