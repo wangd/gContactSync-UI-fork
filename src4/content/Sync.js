@@ -1131,12 +1131,12 @@ com.gContactSync.Sync = {
   schedule: function Sync_schedule(aDelay) {
     // only schedule a sync if the delay is greater than 0, a sync is not
     // already scheduled, and autosyncing is enabled
-    if (aDelay && !com.gContactSync.Preferences.mSyncPrefs.synchronizing.value &&
-        !com.gContactSync.Sync.mSyncScheduled && aDelay > 0 &&
+    if (aDelay > 0 && !com.gContactSync.Preferences.mSyncPrefs.synchronizing.value &&
+        !com.gContactSync.Sync.mSyncScheduled &&
         com.gContactSync.Preferences.mSyncPrefs.autoSync.value) {
       com.gContactSync.Sync.mSyncScheduled = true;
-      com.gContactSync.LOGGER.VERBOSE_LOG("Next sync in: " + aDelay + " milliseconds");
       setTimeout(com.gContactSync.Sync.begin, aDelay);  
+      com.gContactSync.LOGGER.VERBOSE_LOG("Next sync in: " + aDelay + " milliseconds");
     }
   }
 };

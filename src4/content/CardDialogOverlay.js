@@ -494,9 +494,7 @@ com.gContactSync.CardDialogOverlay = {
         var tbAB = com.gContactSync.GAbManager.getAbByURI(gEditCard.abURI);
         var dummyEmailNeeded = tbAB.isMailList;
         if (!dummyEmailNeeded) {
-          var lists = tbAB && !tbAB.isMailList ?
-                        new com.gContactSync.GAddressBook(tbAB).getAllLists(true) :
-                        [tbAB];
+          var lists = tbAB ? new com.gContactSync.GAddressBook(tbAB).getAllLists(true) : [];
           for (var i in lists) {
             // if the list does have the contact then make sure it gets a dummy
             // e-mail address regardless of the preference
