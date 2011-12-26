@@ -84,6 +84,7 @@ com.gContactSync.MessengerOverlay = {
         "\n * User Agent:       " + navigator.userAgent +
         "\n * Log location:     " + com.gContactSync.FileIO.mLogFile.path +
         "\n");
+    var lastVersionMinor = com.gContactSync.Preferences.mSyncPrefs.lastVersionMinor.value;
     com.gContactSync.Preferences.setSyncPref("lastVersionMajor",
                                              com.gContactSync.versionMajor);
     com.gContactSync.Preferences.setSyncPref("lastVersionMinor",
@@ -93,7 +94,12 @@ com.gContactSync.MessengerOverlay = {
     com.gContactSync.Preferences.setSyncPref("lastVersionSuffix",
                                              com.gContactSync.versionSuffix);
     com.gContactSync.Preferences.setSyncPref("synchronizing", false);
-    com.gContactSync.MessengerOverlay.checkAuthentication(); // check if the Auth token is valid
+    if (!lastVersionMinor) {
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
+      com.gContactSync.MessengerOverlay.promptLogin();
+    } else {
+      com.gContactSync.Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.initialDelayMinutes.value * 60000);
+    }
     if (com.gContactSync.Preferences.mSyncPrefs.overrideGetCardForEmail.value) {
       try {
         com.gContactSync.MessengerOverlay.originalGetCardForEmail = getCardForEmail;
@@ -185,14 +191,13 @@ com.gContactSync.MessengerOverlay = {
         ab.savePref("Username", com.gContactSync.MessengerOverlay.mUsername);
         ab.setLastSyncDate(0);
         com.gContactSync.Sync.begin();
-      }
-      else {
+      } else {
         com.gContactSync.Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.initialDelayMinutes.value * 60000);
       }
-      return;
+    } else {
+      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
+      com.gContactSync.MessengerOverlay.promptLogin();
     }
-    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("notAuth"));
-    com.gContactSync.MessengerOverlay.promptLogin();
   },
   /**
    * Prompts the user to enter his or her Google username and password and then
