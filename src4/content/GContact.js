@@ -492,19 +492,21 @@ com.gContactSync.GContact.prototype = {
         return 1;
       }
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue,
-          year      = sModified.substring(0,4),
-          month     = sModified.substring(5,7),
-          day       = sModified.substring(8,10),
-          hrs       = sModified.substring(11,13),
-          mins      = sModified.substring(14,16),
-          sec       = sModified.substring(17,19),
-          ms        = sModified.substring(20,23);
-      return parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
+          year      = sModified.substring(0, 4),
+          month     = sModified.substring(5, 7),
+          day       = sModified.substring(8, 10),
+          hrs       = sModified.substring(11, 13),
+          mins      = sModified.substring(14, 16),
+          sec       = sModified.substring(17, 19),
+          ms        = sModified.substring(20, 23),
+          ret       = parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms), 10);
+      if (isNaN(ret) || !isFinite(ret)) throw "Error - couldn't parse date: " + sModified;
+      return ret;
     }
     catch(e) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
     }
-    return 0;
+    return 1;
   },
   /**
    * Removes all extended properties from this contact.

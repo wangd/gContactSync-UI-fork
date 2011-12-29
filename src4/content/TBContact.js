@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2009
+ * Portions created by the Initial Developer are Copyright (C) 2009-2011
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -77,13 +77,19 @@ com.gContactSync.TBContact.prototype = {
   getValue: function TBContact_getValue(aAttribute) {
     if (!aAttribute)
       throw "Error - invalid attribute sent to TBContact.getValue";
-    if (aAttribute === "LastModifiedDate" && this.mAddressBook &&
-        this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly === "true") {
-      com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 1");
-      return 1;
+    if (aAttribute === "LastModifiedDate") {
+      var ret = com.gContactSync.GAbManager.getCardValue(this.mContact, aAttribute);
+      if (this.mAddressBook.mPrefs && this.mAddressBook.mPrefs.readOnly === "true") {
+        com.gContactSync.LOGGER.VERBOSE_LOG(" * Read only mode, setting LMD to 1");
+        ret = 1;
+      } else if (isNaN(ret) || !isFinite(ret)) {
+        com.gContactSync.LOGGER.LOG_WARNING(" * Couldn't parse date (" + ret + ")");
+        ret = 1;
+      }
+      return ret;
     }
     // Postbox stores additional e-mail addresses already
-    if (this.mPostbox && (aAttribute === "ThirdEmail" || aAttribute === "FourthEmail")) {
+    else if (this.mPostbox && (aAttribute === "ThirdEmail" || aAttribute === "FourthEmail")) {
       var arrLen   = {},
           emailArr = this.mContact.getAdditionalEmailAddresses(arrLen);
       if (aAttribute === "ThirdEmail" && emailArr.length > 0) {
@@ -179,21 +185,5 @@ com.gContactSync.TBContact.prototype = {
     if (primaryEmail)
       return primaryEmail;
     return this.getID();
-  },
-  /**
-   * Returns true if an only if this contact has a value for one or more of the
-   * postal address fields (Address, Address2, City, State, ZipCode, or Country)
-   * of the given type (Home, Work, etc.)
-   * @param aPrefix {string} The type of address (Home, Work, etc.)
-   * @return {boolean} True if and only if one or more of the address fields of
-   *                   the given type has a value.
-   */
-  hasAddress: function TBContact_hasAddress(aPrefix) {
-    return this.getValue(aPrefix + "Address") ||
-           this.getValue(aPrefix + "Address2") ||
-           this.getValue(aPrefix + "City") ||
-           this.getValue(aPrefix + "State") ||
-           this.getValue(aPrefix + "ZipCode") ||
-           this.getValue(aPrefix + "Country");
   }
 };
