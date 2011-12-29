@@ -150,7 +150,7 @@ com.gContactSync.Preferences = {
         var ab = com.gContactSync.GAbManager.mABs[this.mBranchName + aData.substring(0, aData.lastIndexOf(".") + 1)];
         if (ab) {
           var pref         = aData.substring(aData.lastIndexOf(".") + 1),
-              prefNoPrefix = pref.replace(ab.prefPrefix, "");
+              prefNoPrefix = pref.replace(ab.prefPrefix, ""),
               newPrefValue = ab.getStringPref(pref);
           com.gContactSync.LOGGER.VERBOSE_LOG("Changing AB pref: " + pref +
                                               "\nFrom: " + ab.mPrefs[prefNoPrefix] +
