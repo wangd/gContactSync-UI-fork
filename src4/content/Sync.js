@@ -397,7 +397,7 @@ com.gContactSync.Sync = {
         // if there are more contacts than returned, increase the pref
         newMax;
     if (isNaN(lastSync)) {
-      com.gContactSync.LOGGER.LOG_WARNING("lastSync was NaN, setting to 0");
+      com.gContactSync.LOGGER.VERBOSE_LOG("lastSync was NaN, setting to 0");
       lastSync = 0;
     }
     // mark the AB as not having been reset if it gets this far
@@ -447,22 +447,22 @@ com.gContactSync.Sync = {
       for (i = 0, length = abCards.length; i < length; i++) {
         if (abCards[i].getValue("GoogleID")) continue;
         for (var id in gContacts) {
-          if (gContacts[id] && abCards[i]) {
-            if (com.gContactSync.GAbManager.compareContacts(
+          if (gContacts[id] && abCards[i] && !gContacts[id].merged &&
+              com.gContactSync.GAbManager.compareContacts(
                 abCards[i],
                 gContacts[id],
                 ["DisplayName", "PrimaryEmail"],
                 ["fullName",    "email"],
                 0.5)) {
-              abCards[i].setValue("GoogleID", id);
-              abCards[i].setValue("LastModifiedDate", 0);
-              break;
-            }
+            abCards[i].setValue("GoogleID", id);
+            abCards[i].setValue("LastModifiedDate", 0);
+            gContacts[id].merged = true;
+            break;
           }
         }
       }
     }
-    
+
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
 
     // Step 2: iterate through TB Contacts and check for matches
@@ -493,7 +493,7 @@ com.gContactSync.Sync = {
         // remove it from gContacts
         gContacts[id]  = null;
         // note that this returns 0 if readOnly is set
-        gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0;
+        gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0; // TODO - should this be a 1?
         // 4 options
         // if both were updated
         com.gContactSync.LOGGER.LOG(found +
@@ -826,6 +826,10 @@ com.gContactSync.Sync = {
       var myContacts = ab.mPrefs.myContacts == "true" && ab.mPrefs.myContactsName;
       var arr        = aAtom.getElementsByTagNameNS(ns.url, "entry");
       var noCatch    = false;
+      if (isNaN(lastSync)) {
+        com.gContactSync.LOGGER.VERBOSE_LOG("lastSync was NaN, setting to 0");
+        lastSync = 0;
+      }
       // get the mailing lists if not only synchronizing my contacts
       if (!myContacts) {
         com.gContactSync.LOGGER.VERBOSE_LOG("***Getting all mailing lists***");
@@ -840,10 +844,28 @@ com.gContactSync.Sync = {
             var title = group.getTitle();
             var modifiedDate = group.getLastModifiedDate();
             com.gContactSync.LOGGER.LOG(" * " + title + " - " + id +
-                                        " last modified: " + modifiedDate);
+                                        " - last modified: " + modifiedDate);
             var list = com.gContactSync.Sync.mLists[id];
+            // If this is the first sync and a list wasn't found then manually
+            // search through each existing list to see if the names match.
+            // Ignore lists with IDs as these are already being used.
+            if (lastSync == 0 && !list) {
+              for (var j in com.gContactSync.Sync.mLists) {
+                var tmpList   = com.gContactSync.Sync.mLists[j];
+                var tmpListID = tmpList.getGroupID();
+                com.gContactSync.LOGGER.VERBOSE_LOG("  - comparing with " + tmpList.getName() +
+                                                    " - " + tmpListID);
+                if (tmpListID.indexOf("www.google.com/m8/feeds/groups") === -1 &&
+                    tmpList.getName() == title) {
+                  list = tmpList;
+                  list.setGroupID(id);
+                  com.gContactSync.LOGGER.LOG("  - Merged with " + tmpList.getName());
+                  break;
+                }
+              }
+            }
             com.gContactSync.Sync.mGroups[id] = group;
-            if (modifiedDate < lastSync) { // it's an old group
+            if (modifiedDate < lastSync && lastSync) { // it's an old group
               if (list) {
                 list.matched = true;
                 // if the name is different, update the group's title
