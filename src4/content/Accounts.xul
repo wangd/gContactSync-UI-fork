@@ -102,6 +102,11 @@
                   label="&GetGroups.label;"
                   accesskey="&GetGroups.accesskey;"/>
         </hbox>
+        <spacer height="5px"/>
+        <checkbox id="disabled"
+                  label="&Disable.label;"
+                  tooltiptext="&Disable.tooltiptext;"
+                  oncommand="com.gContactSync.Accounts.mUnsavedChange = true;"/>        
       </groupbox>
       <checkbox id="showAdvanced" label="&showAdvanced.label;"
                 oncommand="com.gContactSync.Accounts.showAdvancedSettings(this.checked);"/>
@@ -130,11 +135,6 @@
             <menuitem value="WriteOnly" label="&WriteOnly.label;"/>
           </menupopup>
         </menulist>
-        <spacer height="5px"/>
-        <checkbox id="disabled"
-                  label="&Disable.label;"
-                  tooltiptext="&Disable.tooltiptext;"
-                  oncommand="com.gContactSync.Accounts.mUnsavedChange = true;"/>
         <spacer height="5px"/>
         <checkbox id="updateGoogleInConflicts"
                   label="&updateG.label;"
