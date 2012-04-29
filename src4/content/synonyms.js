@@ -490,7 +490,8 @@ com.gContactSync.writePhoto = function gCS_writePhoto(aURL, aFilename, aRedirect
                        .getService(Components.interfaces.nsIProperties)
                        .get("ProfD", Components.interfaces.nsIFile);
   // Get (or make) the Photos directory
-  file.append("Photos");
+  file.append("gcontactsync");
+  file.append("photos");
   if (!file.exists() || !file.isDirectory())
     file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
   var ios = Components.classes["@mozilla.org/network/io-service;1"]
@@ -548,6 +549,34 @@ com.gContactSync.writePhoto = function gCS_writePhoto(aURL, aFilename, aRedirect
       fstream.close();
   // Close the input stream
   istream.close();
+  return file;
+};
+
+/**
+ * Thunderbird requires two copies of each photo.  A permanent copy must be kept
+ * outside of the Photos directory.  Each time a contact is edited Thunderbird
+ * will re-copy the original photo to the Photos directory and deletes the old
+ * copy.
+ * This function emulates the original copy done when a photo is first added to
+ * a contact.
+ * @param aPhotoFile {nsIFile} The photo file to copy.  Should be outside of the
+ *                             Photos folder in the profile directory.
+ * @returns {nsIFile} The new copy of the photo.
+ */
+com.gContactSync.copyPhotoToPhotosDir = function gCS_copyPhotoToPhotosDir(aPhotoFile) {
+
+  // Get the profile directory
+  var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                       .getService(Components.interfaces.nsIProperties)
+                       .get("ProfD", Components.interfaces.nsIFile);
+  // Get (or make) the Photos directory
+  file.append("Photos");
+  if (!file.exists() || !file.isDirectory())
+    file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+  com.gContactSync.LOGGER.VERBOSE_LOG("Copying photo from '" + aPhotoFile.path +
+                                      "' to '" + file.path + "'");
+  aPhotoFile.copyToFollowingLinks(file, aPhotoFile.leafName);
+  file.append(aPhotoFile.leafName);
   return file;
 };
 

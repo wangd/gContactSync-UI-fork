@@ -433,9 +433,14 @@ com.gContactSync.ContactConverter = {
       var info = aGContact.getPhotoInfo();
       // If the contact has a photo then save it to a local file and update
       // the related attributes
+      // Thunderbird requires two copies of each photo.  A permanent copy must
+      // be kept outside of the Photos directory.  Each time a contact is edited
+      // Thunderbird will re-copy the original photo to the Photos directory and
+      // delete the old copy.
       if (info && info.etag &&
           (file = aGContact.writePhoto(com.gContactSync.Sync.mCurrentAuthToken))) {
         com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+        com.gContactSync.copyPhotoToPhotosDir(file);
         aTBContact.setValue("PhotoName", file.leafName);
         aTBContact.setValue("PhotoType", "file");
         aTBContact.setValue("PhotoURI",

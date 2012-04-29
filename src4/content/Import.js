@@ -521,9 +521,14 @@ com.gContactSync.Import = {
           // Download FB photos
           if (this.mSource === "facebook" && id) {
             var file = com.gContactSync.writePhoto("https://graph.facebook.com/" + id + "/picture?type=large",
-                                                   id + "_" + (new Date()).getTime());
+                                                   "facebook_" + id + "_" + (new Date()).getTime());
             if (file) {
+              // Thunderbird requires two copies of each photo.  A permanent copy must
+              // be kept outside of the Photos directory.  Each time a contact is edited
+              // Thunderbird will re-copy the original photo to the Photos directory and
+              // delete the old copy.
               com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+              com.gContactSync.copyPhotoToPhotosDir(file);
               newCard.setValue("PhotoName", file.leafName);
               newCard.setValue("PhotoType", "file");
               newCard.setValue("PhotoURI",
@@ -547,10 +552,15 @@ com.gContactSync.Import = {
               if (j === "picture" || j === "thumbnailUrl" || j === "photos" ||
                   j === "profile_image_url") {
                 var file = com.gContactSync.writePhoto((j === "photos" ? contact[j][0].value : contact[j]),
-                                                       this.mSource + "_" + id,
+                                                       this.mSource + "_" + id + (new Date()).getTime(),
                                                        0);
                 if (file) {
+                  // Thunderbird requires two copies of each photo.  A permanent copy must
+                  // be kept outside of the Photos directory.  Each time a contact is edited
+                  // Thunderbird will re-copy the original photo to the Photos directory and
+                  // delete the old copy.
                   com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+                  com.gContactSync.copyPhotoToPhotosDir(file);
                   newCard.setValue("PhotoName", file.leafName);
                   newCard.setValue("PhotoType", "file");
                   newCard.setValue("PhotoURI",

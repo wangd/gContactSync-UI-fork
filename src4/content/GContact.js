@@ -923,7 +923,8 @@ com.gContactSync.GContact.prototype = {
                          .getService(Components.interfaces.nsIProperties)
                          .get("ProfD", Components.interfaces.nsIFile);
     // Get (or make) the Photos directory
-    file.append("Photos");
+    file.append("gcontactsync");
+    file.append("photos");
     if (!file.exists() || !file.isDirectory())
       file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
     var ios = Components.classes["@mozilla.org/network/io-service;1"]
@@ -940,7 +941,7 @@ com.gContactSync.GContact.prototype = {
     }
 
     // Create a name for the photo with the contact's ID and the photo extension
-    var filename = this.getID(false);
+    var filename = this.getID(false) + "_" + (new Date()).getTime();
     try {
       var ext = com.gContactSync.findPhotoExt(ch);
       filename = filename + (ext ? "." + ext : "");
