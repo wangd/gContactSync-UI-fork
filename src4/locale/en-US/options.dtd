@@ -41,7 +41,7 @@
 <!ENTITY extended8.value                "Property 8  ">
 <!ENTITY extended9.value                "Property 9  ">
 <!ENTITY extended10.value               "Property 10">
-<!ENTITY extendedPropertiesDesc1.value  "10 extra properties to sync.  Examples:">
+<!ENTITY extendedPropertiesDesc1.value  "10 extra properties to sync.  These aren't visible from Gmail.  Examples:">
 <!-- LOCALIZATION NOTE: This line should not change -->
 <!ENTITY extendedPropertiesDesc2.value  " * Custom1, Custom2, Custom3, Custom4">
 <!-- LOCALIZATION NOTE: This line should not change -->
