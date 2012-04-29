@@ -576,7 +576,8 @@ com.gContactSync.ABOverlay = {
   addResetContext: function ABOverlay_addResetContext() {
     var replaceFrom = document.createElement("menuitem"),
         replaceTo   = document.createElement("menuitem"),
-        syncNow     = document.createElement("menuitem");
+        syncNow     = document.createElement("menuitem"),
+        separator   = document.createElement("menuseparator");
 
     replaceFrom.id  = "dirTreeContext-replaceFrom";
     replaceTo.id    = "dirTreeContext-replaceTo";
@@ -590,6 +591,7 @@ com.gContactSync.ABOverlay = {
     syncNow.setAttribute("label",           com.gContactSync.StringBundle.getStr("syncNow"));
     syncNow.setAttribute("accesskey",       com.gContactSync.StringBundle.getStr("syncNowKey"));
     syncNow.addEventListener("command",     com.gContactSync.ABOverlay.syncSelectedAB, false);
+    document.getElementById("dirTreeContext").appendChild(separator);
     document.getElementById("dirTreeContext").appendChild(replaceFrom);
     document.getElementById("dirTreeContext").appendChild(replaceTo);
     document.getElementById("dirTreeContext").appendChild(syncNow);
