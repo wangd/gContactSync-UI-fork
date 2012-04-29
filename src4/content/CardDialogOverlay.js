@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2011
+ * Portions created by the Initial Developer are Copyright (C) 2008-2012
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -553,6 +553,41 @@ com.gContactSync.CardDialogOverlay = {
           }
         }
       } catch (e) { com.gContactSync.alertError("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
+    }
+
+    // In TB 10 the way photos are saved changed and now requires two copies of
+    // each photo.  One persistent copy is required as TB will copy it to the
+    // Photos directory and delete the previous copy when the contact is edited.
+    // gContactSync only saves one copy so TB deletes the original on the first
+    // edit of the contact then TB fails to copy from the original in future
+    // edits of the contact.
+    // As a workaround check if the photo at PhotoURI still exists.
+    // If it doesn't exist then update it to point to the photo at PhotoName.
+    var photoURI = aCard.getProperty("PhotoURI", "");
+    var photoType = aCard.getProperty("PhotoType", "");
+    if (photoURI && photoType === "file") {
+      var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                              .getService(Components.interfaces.nsIIOService);
+      var uriFile = ios.newURI(photoURI, null, null)
+                       .QueryInterface(Components.interfaces.nsIFileURL)
+                       .file;
+      if (!uriFile.exists()) {
+        var photoName = aCard.getProperty("PhotoName", "");
+        com.gContactSync.LOGGER.VERBOSE_LOG("Photo workaround for URI: " +
+                                            photoURI + "...Name: " + photoName);
+        var photoNameFile = Components.classes["@mozilla.org/file/directory_service;1"]
+                                      .getService(Components.interfaces.nsIProperties)
+                                      .get("ProfD", Components.interfaces.nsIFile);
+        photoNameFile.append("Photos");
+        photoNameFile.append(photoName);
+        if (photoNameFile.exists()) {
+          var newPhotoURI = ios.newFileURI(photoNameFile).spec;
+          com.gContactSync.LOGGER.VERBOSE_LOG("New URI: " + newPhotoURI);
+          aCard.setProperty("PhotoURI", newPhotoURI);
+          loadPhoto(aCard);
+          setCardEditorPhoto(photoType, aCard);
+        }
+      }
     }
   
     if (com.gContactSync.isDummyEmail(aDoc.getElementById("PrimaryEmail").value))
