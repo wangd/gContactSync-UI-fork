@@ -195,6 +195,9 @@
       </groupbox>
     </groupbox>
   </prefpane>
+  <!--
+  TODO - decide whether this pane is going to be removed permanently...
+  The prefs and feature will still be present.
   <prefpane id="pane_extended"
             index="extended"
             label="&extended.tab;">
@@ -294,6 +297,7 @@
       </vbox>
     </groupbox>
   </prefpane>
+  -->
   <prefpane id="pane_advanced"
             index="advanced"
             label="&advanced.tab;">
