@@ -108,7 +108,7 @@
   <toolbarbutton id="button-sync"
                  label="&sync.label;"
                  tooltiptext="&sync.tooltip;"
-                 oncommand="com.gContactSync.Sync.begin(true);"
+                 oncommand="com.gContactSync.Sync.begin(true, null);"
                  class="gContactSync-Button toolbarbutton-1 chromeclass-toolbar-additional"/>
 
   <statusbarpanel id="gContactSyncStatusText"
@@ -123,7 +123,7 @@
                label="&syncMenuItem.label;"
                accesskey="&syncMenuItem.accesskey;"
                class="menuitem-iconic icon-mail16 menu-iconic"
-               oncommand="com.gContactSync.Sync.begin(true);"/>
+               oncommand="com.gContactSync.Sync.begin(true, null);"/>
      <menuitem id="acctMenuItem"
                label="&acctMenuItem.label;"
                accesskey="&acctMenuItem.accesskey;"

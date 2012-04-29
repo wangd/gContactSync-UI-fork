@@ -190,7 +190,7 @@ com.gContactSync.MessengerOverlay = {
         var ab   = com.gContactSync.GAbManager.getGAb(com.gContactSync.GAbManager.getAbByName(name));
         ab.savePref("Username", com.gContactSync.MessengerOverlay.mUsername);
         ab.setLastSyncDate(0);
-        com.gContactSync.Sync.begin();
+        com.gContactSync.Sync.begin(false, null);
       } else {
         com.gContactSync.Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.initialDelayMinutes.value * 60000);
       }

@@ -80,7 +80,7 @@ com.gContactSync.Sync = {
   /** Commands to execute when offline during an HTTP Request */
   mOfflineFunction: function Sync_offlineFunc(httpReq) {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
-    com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'));
+    com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'), false);
   },
   /** True if a synchronization is scheduled */
   mSyncScheduled: false,
@@ -96,7 +96,7 @@ com.gContactSync.Sync = {
    * Performs the first steps of the sync process.
    * @param aManualSync {boolean} Set this to true if the sync was run manually.
    */
-  begin: function Sync_begin(aManualSync) {
+  begin: function Sync_begin(aManualSync, aAddressBooks) {
     if (!com.gContactSync.gdata.isAuthValid()) {
       com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseAuth"));
       return;
@@ -118,8 +118,14 @@ com.gContactSync.Sync = {
     com.gContactSync.LOGGER.mErrorCount  = 0; // reset the error count
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mIndex         = 0;
-    com.gContactSync.Sync.mAddressBooks  = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
     com.gContactSync.Sync.mCurrentAb     = {};
+
+    if (aAddressBooks) {
+      com.gContactSync.Sync.mAddressBooks = aAddressBooks;
+    } else {
+      com.gContactSync.Sync.mAddressBooks = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
+    }
+
     com.gContactSync.Sync.syncNextUser();
   },
   /**
@@ -141,7 +147,7 @@ com.gContactSync.Sync = {
     
     var obj = com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex++];
     if (!obj) {
-      com.gContactSync.Sync.finish();
+      com.gContactSync.Sync.finish("", false);
       return;
     }
     // make sure the user doesn't have to restart TB
@@ -257,8 +263,8 @@ com.gContactSync.Sync = {
   },
   /**
    * Sends an HTTP Request to Google for a feed of all of the user's groups.
-   * Calls com.gContactSync.Sync.begin() when there is a successful response on an error other
-   * than offline.
+   * Calls com.gContactSync.Sync.syncGroups() if successful, or syncNextUser on
+   * errors.
    */
   getGroups: function Sync_getGroups() {
     com.gContactSync.LOGGER.LOG("***Beginning Group - Mail List Synchronization***");
@@ -273,16 +279,15 @@ com.gContactSync.Sync = {
     };
     httpReq.mOnError   = function getGroupsError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);
-      // if there is an error, try to sync w/o groups                   
-      com.gContactSync.Sync.begin();
+      com.gContactSync.Sync.syncNextUser(httpReq.responseText);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
     httpReq.send();
   },
   /**
    * Sends an HTTP Request to Google for a feed of all the user's contacts.
-   * Calls com.gContactSync.Sync.sync with the response if successful or com.gContactSync.Sync.syncNextUser with the
-   * error.
+   * Calls com.gContactSync.Sync.sync with the response if successful or
+   * com.gContactSync.Sync.syncNextUser on errors.
    */
   getContacts: function Sync_getContacts() {
     com.gContactSync.LOGGER.LOG("***Beginning Contact Synchronization***");
@@ -375,7 +380,8 @@ com.gContactSync.Sync = {
     catch (e) {}
     // start over, if necessary, or schedule the next synchronization
     if (aStartOver)
-      com.gContactSync.Sync.begin();
+      com.gContactSync.Sync.begin(com.gContactSync.Sync.mManualSync,
+                                  com.gContactSync.Sync.mAddressBook);
     else
       com.gContactSync.Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.refreshInterval.value * 60000);
   },
