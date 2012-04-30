@@ -191,5 +191,95 @@ com.gContactSync.Options = {
     }
     com.gContactSync.LOGGER.LOG("***Found " + numDeleted + " gContactSync prefs for deleted ABs***");
     com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedPrefClean").replace("%d", numDeleted + numObsolete));
+  },
+  /**
+   * Deletes unused contact photos from Thunderbird and gContactSync's photos
+   * directories.  When address books and contacts are deleted TB doesn't delete
+   * the corresponding photo which can leave quite a few photos behind.
+   */
+  deleteOldPhotos: function Options_deleteOldPhotos() {
+    var abs = com.gContactSync.GAbManager.getAllAddressBooks();
+    var photoURIs = {};
+    var photoNames = {};
+    
+    // Get the URI for the gContactSync photos directory
+    var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                         .getService(Components.interfaces.nsIProperties)
+                         .get("ProfD", Components.interfaces.nsIFile);
+    file.append("gcontactsync");
+    file.append("photos");
+    var gcsPhotosDir = Components.classes["@mozilla.org/network/io-service;1"]
+                                 .getService(Components.interfaces.nsIIOService)
+                                 .newFileURI(file)
+                                 .spec;
+
+    // Step 1: Get all photos in use in the gContactSync photos directory (photoURIs)
+    // and in the TB Photos directory (photoNames).
+    for (var uri in abs) {
+      var ab = abs[uri];
+      var contacts = ab.getAllContacts();
+      for (var i in contacts) {
+        var contact = contacts[i];
+        var photoURI = contact.getValue("PhotoURI");
+        if (photoURI) {
+          if (photoURI.indexOf(gcsPhotosDir) != -1) {
+            photoURI = photoURI.substring(gcsPhotosDir.length);
+            photoURIs[photoURI] = true;
+            com.gContactSync.LOGGER.VERBOSE_LOG(" * " + photoURI);
+          }
+          photoNames[contact.getValue("PhotoName")] = true;
+        }
+      }
+    }
+    var numRemoved = 0;
+    if (file.exists() && file.isDirectory()) {
+      // Step 2: Iterate through all photos in gContactSync's photos directory and
+      // delete the unused ones
+      com.gContactSync.LOGGER.VERBOSE_LOG("\n\n**Searching gContactSync Photos directory***");
+      var iter = file.directoryEntries;
+      while (iter.hasMoreElements()) {
+        file = iter.getNext().QueryInterface(Components.interfaces.nsIFile);
+        if (file.isFile()) {
+          var filename = file.leafName;
+          if (!photoURIs[filename]) {
+            com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting " + filename);
+            try {
+              file.remove(false);
+              ++numRemoved;
+            } catch(e) {
+              com.gContactSync.LOGGER.LOG_WARNING("Unable to delete the following file: " + filename);
+            }
+          }
+        }
+      }
+    }
+    // Step 3: Iterate through all photos in TB's Photos directory and delete
+    // the unused ones
+    file = Components.classes["@mozilla.org/file/directory_service;1"]
+                     .getService(Components.interfaces.nsIProperties)
+                     .get("ProfD", Components.interfaces.nsIFile);
+    file.append("Photos")
+    if (file.exists() && file.isDirectory()) {
+      // Step 2: Iterate through all photos in gContactSync's photos directory and
+      // delete the unused ones
+      com.gContactSync.LOGGER.VERBOSE_LOG("\n\n**Searching TB Photos directory***");
+      var iter = file.directoryEntries;
+      while (iter.hasMoreElements()) {
+        file = iter.getNext().QueryInterface(Components.interfaces.nsIFile);
+        if (file.isFile()) {
+          var filename = file.leafName;
+          if (!photoNames[filename]) {
+            com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting " + filename);
+            try {
+              file.remove(false);
+              ++numRemoved;
+            } catch(e) {
+              com.gContactSync.LOGGER.LOG_WARNING("Unable to delete the following file: " + filename);
+            }
+          }
+        }
+      }
+    }
+    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedPhotoClean").replace("%d", numRemoved));
   }
 };

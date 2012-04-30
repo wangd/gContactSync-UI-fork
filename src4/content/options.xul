@@ -370,6 +370,9 @@
         <button id="resetAll"
                 label="&resetAll.label;"
                 oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
+        <button id="cleanOldPhotos"
+                label="&cleanOldPhotos.label;"
+                oncommand="com.gContactSync.Options.deleteOldPhotos();"/>
         <button id="cleanOldPrefs"
                 label="&cleanOldPrefs.label;"
                 oncommand="com.gContactSync.Options.cleanOldPrefs(true);"/>

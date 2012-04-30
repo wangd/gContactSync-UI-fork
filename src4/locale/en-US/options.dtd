@@ -56,6 +56,7 @@
 <!ENTITY confirmDeleteThreshold.value   "Minimum number of contacts to delete before requesting permission">
 <!ENTITY resetAll.label                 "Reset All Synced ABs">
 <!ENTITY cleanOldPrefs.label            "Clean Old AB Preferences">
+<!ENTITY cleanOldPhotos.label           "Delete Old Contact Photos">
 
 <!-- FirstLogin.xul only -->
 <!ENTITY myContacts.label               "Only synchronize the 'My Contacts' group">
