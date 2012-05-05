@@ -68,7 +68,7 @@ com.gContactSync.StringBundle = {
       
     if (!com.gContactSync.StringBundle.mBundles.mStrings) {
       var err = "Error - com.gContactSync.StringBundle could not be initialized\n";
-      com.gContactSync.alertError(err);
+      com.gContactSync.alert(err, "Error");
       throw err;
     }
 
