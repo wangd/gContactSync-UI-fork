@@ -60,10 +60,7 @@ com.gContactSync.Options = {
       document.getElementById("chkForceBtnImage").collapsed = false;
     }
     // if this is the full preferences dialog add a few event listeners
-    if (document.getElementById("syncExtended")) {
-      document.getElementById("syncExtended")
-              .addEventListener("change", com.gContactSync.Options.enableExtended, false);
-      com.gContactSync.Options.enableExtended();
+    if (document.getElementById("enableLogging")) {
       document.getElementById("autoSync")
               .addEventListener("change", com.gContactSync.Options.enableDelays, false);
       com.gContactSync.Options.enableDelays();
@@ -81,26 +78,6 @@ com.gContactSync.Options = {
     if (!enableLogging) return false;
     var disable = !enableLogging.value;
     document.getElementById("verboseLog").disabled = disable;
-    return true;
-  },
-  /**
-   * Enables or disables the extended property textboxes based on the state of
-   * the syncExtended checkbox.
-   */
-  enableExtended: function Options_enableExtended() {
-    var disableElem = document.getElementById("syncExtended");
-    if (!disableElem) return false;
-    var disable = !disableElem.value;
-    document.getElementById("extended1").disabled  = disable;
-    document.getElementById("extended2").disabled  = disable;
-    document.getElementById("extended3").disabled  = disable;
-    document.getElementById("extended4").disabled  = disable;
-    document.getElementById("extended5").disabled  = disable;
-    document.getElementById("extended6").disabled  = disable;
-    document.getElementById("extended7").disabled  = disable;
-    document.getElementById("extended8").disabled  = disable;
-    document.getElementById("extended9").disabled  = disable;
-    document.getElementById("extended10").disabled = disable;
     return true;
   },
   /**
