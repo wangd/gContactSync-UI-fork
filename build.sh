@@ -12,7 +12,7 @@
 #SRC_DIR=./src2
 #VERSION=0.3.5
 #SRC_DIR=./src3
-VERSION=0.4.0a3
+VERSION=0.4.0a4
 SRC_DIR=./src4
 
 # Dest should be absolute or relative to SRC_DIR
