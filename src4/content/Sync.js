@@ -82,6 +82,13 @@ com.gContactSync.Sync = {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
     com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'), false);
   },
+  /** Commands to execute if a 503 is returned during an HTTP Request */
+  m503Function: function Sync_503Func(httpReq) {
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('err503Short'));
+    var str = com.gContactSync.StringBundle.getStr('err503') + "\n" + httpReq.responseText;
+    com.gContactSync.alertError(str);
+    com.gContactSync.Sync.finish(str, false);
+  },
   /** True if a synchronization is scheduled */
   mSyncScheduled: false,
   /** used to store groups for the account being synchronized */
@@ -231,6 +238,7 @@ com.gContactSync.Sync = {
         };
         // if the user is offline, alert them and quit
         httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+        httpReq.mOn503 = com.gContactSync.Sync.m503Function;
         httpReq.send();
       }
       else
@@ -282,6 +290,7 @@ com.gContactSync.Sync = {
       com.gContactSync.Sync.syncNextUser(httpReq.responseText);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -328,6 +337,7 @@ com.gContactSync.Sync = {
       com.gContactSync.Sync.syncNextUser(httpReq.responseText);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -656,6 +666,21 @@ com.gContactSync.Sync = {
     return true;
   },
   /**
+   * Calls the given function after the timeout specified in the
+   * remoteActionDelay pref.  If the pref is <= 0 then this function calls it
+   * immediately.
+   * This should help mitigate 503 errors if the pref is set.
+   * @param {function} func The function to call.
+   */
+  delayedProcessQueue: function Sync_delayedProcessQueue(func) {
+    if (com.gContactSync.Preferences.mSyncPrefs.remoteActionDelay.value > 0) {
+      setTimeout(func,
+                 com.gContactSync.Preferences.mSyncPrefs.remoteActionDelay.value);
+    } else {
+      func.call();
+    }
+  },
+  /**
    * Deletes all contacts from Google included in the mContactsToDelete
    * array one at a time to avoid timing conflicts. Calls
    * com.gContactSync.Sync.processAddQueue() when finished.
@@ -683,13 +708,16 @@ com.gContactSync.Sync = {
                                                     editURL, null,
                                                     com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
-    httpReq.mOnSuccess = com.gContactSync.Sync.processDeleteQueue;
+    httpReq.mOnSuccess = function processDeleteSuccess(httpReq) {
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processDeleteQueue);
+    };
     httpReq.mOnError   = function processDeleteError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR('Error while deleting contact',
                                         httpReq.responseText);
-      com.gContactSync.Sync.processDeleteQueue();
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processDeleteQueue);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -724,7 +752,7 @@ com.gContactSync.Sync = {
                                                     null,
                                                     string,
                                                     com.gContactSync.Sync.mCurrentUsername);
-    this.mNewPhotoURI = com.gContactSync.Preferences.mSyncPrefs.sendPhotos ?
+    this.mNewPhotoURI = com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value ?
                           gcontact.mNewPhotoURI : null;
     /* When the contact is successfully created:
      *  1. Get the card from which the contact was made
@@ -741,20 +769,29 @@ com.gContactSync.Sync = {
       contact.setValue('GoogleID', gcontact.getID(true));
       contact.update();
       // if photos are allowed to be uploaded to Google then do so
-      if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos) {
+      if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value) {
         gcontact.setPhoto(com.gContactSync.Sync.mNewPhotoURI);
       }
       // reset the new photo URI variable
       com.gContactSync.Sync.mNewPhotoURI = null;
-      com.gContactSync.Sync.processAddQueue();
+      // NOTE - Google has an undocumented limit on the rate at which photos
+      // can be added.  Add a small wait here.
+      if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value &&
+          com.gContactSync.Preferences.mSyncPrefs.newContactPhotoDelay.value > 0) {
+        setTimeout(com.gContactSync.Sync.processAddQueue,
+                   com.gContactSync.Preferences.mSyncPrefs.newContactPhotoDelay.value);
+      } else {
+        com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processAddQueue);
+      }
     }
     httpReq.mOnCreated = onCreated;
     httpReq.mOnError   = function contactCreatedError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR('Error while adding contact',
                                         httpReq.responseText);
-      com.gContactSync.Sync.processAddQueue();
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processAddQueue);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -804,13 +841,16 @@ com.gContactSync.Sync = {
                                                     string,
                                                     com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
-    httpReq.mOnSuccess = com.gContactSync.Sync.processUpdateQueue;
+    httpReq.mOnSuccess = function processUpdateSuccess(httpReq) {
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processUpdateQueue);
+    };
     httpReq.mOnError   = function processUpdateError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR('Error while updating contact',
                                         httpReq.responseText);
-      com.gContactSync.Sync.processUpdateQueue();
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processUpdateQueue);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**

@@ -635,7 +635,7 @@ com.gContactSync.GContact.prototype = {
       if (group)
         groups[id] = group;
       else {
-        if (com.gContactSync.Preferences.mSyncPrefs.myContacts)
+        if (com.gContactSync.Preferences.mSyncPrefs.myContacts.value)
           groups[id] = true;
         else
           com.gContactSync.LOGGER.LOG_WARNING("Unable to find group: " + id);
@@ -816,6 +816,7 @@ com.gContactSync.GContact.prototype = {
                                           httpReq.responseText);
       };
       httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+      httpReq.mOn503 = com.gContactSync.Sync.m503Function;
       httpReq.addHeaderItem("If-Match", "*");
       httpReq.send();
       return;
@@ -859,8 +860,6 @@ com.gContactSync.GContact.prototype = {
       outChannel.setRequestHeader("Authorization", com.gContactSync.Sync.mCurrentAuthToken, false);
       outChannel.setRequestHeader("Content-Type",  photoInfo.type, false);
       outChannel.setRequestHeader("If-Match",      "*", false);
-      // set the status bar text since this can take a minute
-      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("uploadingPhoto"));
       outChannel.open();
       try {
         com.gContactSync.LOGGER.VERBOSE_LOG(" * Update status: " + outChannel.responseStatus);

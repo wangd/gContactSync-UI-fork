@@ -206,7 +206,9 @@ com.gContactSync.Preferences = {
     needRestart:              new com.gContactSync.Pref("needRestart",              "bool", false),
     synchronizing:            new com.gContactSync.Pref("synchronizing",            "bool", false),
     overrideGetCardForEmail:  new com.gContactSync.Pref("overrideGetCardForEmail",  "bool", true),
-    syncPhoneticNames:        new com.gContactSync.Pref("syncPhoneticNames",        "bool", true)
+    syncPhoneticNames:        new com.gContactSync.Pref("syncPhoneticNames",        "bool", true),
+    newContactPhotoDelay:     new com.gContactSync.Pref("newContactPhotoDelay",     "int",  0),
+    remoteActionDelay:        new com.gContactSync.Pref("remoteActionDelay",        "int",  0)
   },
   /**
    * Gets a preference given its branch, name, and type
