@@ -12,7 +12,7 @@
 #SRC_DIR=./src2
 #VERSION=0.3.5
 #SRC_DIR=./src3
-VERSION=0.3.0_`git show -s --format=%h`
+VERSION=0.3.5_`git show -s --format=%h`
 SRC_DIR=./src3
 #VERSION=0.4.0a4
 #SRC_DIR=./src4
