@@ -575,26 +575,34 @@ com.gContactSync.ABOverlay = {
    */
   addResetContext: function ABOverlay_addResetContext() {
     var replaceFrom = document.createElement("menuitem"),
-        replaceTo   = document.createElement("menuitem");
+        replaceTo   = document.createElement("menuitem"),
+        syncNow     = document.createElement("menuitem"),
+        separator   = document.createElement("menuseparator");
 
     replaceFrom.id  = "dirTreeContext-replaceFrom";
     replaceTo.id    = "dirTreeContext-replaceTo";
-    replaceFrom.setAttribute("label",     com.gContactSync.StringBundle.getStr("reset"));
-    replaceFrom.setAttribute("accesskey", com.gContactSync.StringBundle.getStr("resetKey"));
+    syncNow.id      = "dirTreeContext-syncNow";
+    replaceFrom.setAttribute("label",       com.gContactSync.StringBundle.getStr("reset"));
+    replaceFrom.setAttribute("accesskey",   com.gContactSync.StringBundle.getStr("resetKey"));
     replaceFrom.addEventListener("command", com.gContactSync.ABOverlay.resetSelectedAB, false);
-    replaceTo.setAttribute("label",       com.gContactSync.StringBundle.getStr("replaceTo"));
-    replaceTo.setAttribute("accesskey",   com.gContactSync.StringBundle.getStr("replaceToKey"));
+    replaceTo.setAttribute("label",         com.gContactSync.StringBundle.getStr("replaceTo"));
+    replaceTo.setAttribute("accesskey",     com.gContactSync.StringBundle.getStr("replaceToKey"));
     replaceTo.addEventListener("command",   com.gContactSync.ABOverlay.replaceToSelectedAB, false);
+    syncNow.setAttribute("label",           com.gContactSync.StringBundle.getStr("syncNow"));
+    syncNow.setAttribute("accesskey",       com.gContactSync.StringBundle.getStr("syncNowKey"));
+    syncNow.addEventListener("command",     com.gContactSync.ABOverlay.syncSelectedAB, false);
+    document.getElementById("dirTreeContext").appendChild(separator);
     document.getElementById("dirTreeContext").appendChild(replaceFrom);
     document.getElementById("dirTreeContext").appendChild(replaceTo);
+    document.getElementById("dirTreeContext").appendChild(syncNow);
   },
   /**
-   * Resets the currently selected address book after showing a confirmation
-   * dialog.
+   * Returns a GAddressBook object for the currently selected address book.
+   * @returns {GAddressBook} The currently selected address book.
    */
-  resetSelectedAB: function ABOverlay_resetSelectedAB() {
-    var dirTree  = document.getElementById("dirTree");
-    var targetURI      = 0;
+  getSelectedAB: function ABOverlay_getSelectedAB() {
+    var dirTree   = document.getElementById("dirTree");
+    var targetURI = 0;
     try {
       // Pre Bug 422845
       targetURI = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex).Value;
@@ -602,7 +610,14 @@ com.gContactSync.ABOverlay = {
       // Post Bug 422845
       targetURI = gDirectoryTreeView.getDirectoryAtIndex(gDirTree.currentIndex).URI;
     }
-    var ab = new com.gContactSync.GAbManager.getGAbByURI(targetURI);
+    return targetURI;
+  },
+  /**
+   * Resets the currently selected address book after showing a confirmation
+   * dialog.
+   */
+  resetSelectedAB: function ABOverlay_resetSelectedAB() {
+    var ab = new com.gContactSync.GAbManager.getGAbByURI(com.gContactSync.ABOverlay.getSelectedAB());
     // make sure the AB was not already reset
     if (ab.mPrefs.reset === "true") {
       com.gContactSync.alert(com.gContactSync.StringBundle.getStr("alreadyReset"));
@@ -622,11 +637,24 @@ com.gContactSync.ABOverlay = {
    * Updates the LastModifiedDate of all contacts in the selected AB.
    */
   replaceToSelectedAB: function ABOverlay_replaceToSelectedAB() {
-    var dirTree  = document.getElementById("dirTree");
-    var selected = dirTree.builderView.getResourceAtIndex(dirTree.currentIndex);
-    var ab = new com.gContactSync.GAbManager.getGAbByURI(selected.Value);
+    var ab = new com.gContactSync.GAbManager.getGAbByURI(com.gContactSync.ABOverlay.getSelectedAB());
     ab.replaceToServer();
     com.gContactSync.alert(com.gContactSync.StringBundle.getStr("replaceToComplete"));
+  },
+
+  /**
+   * Syncs only the selected address book.
+   */
+  syncSelectedAB: function ABOverlay_syncSelectedAB() {
+    var ab = new com.gContactSync.GAbManager.getGAbByURI(com.gContactSync.ABOverlay.getSelectedAB());
+    var username = ab.mPrefs.Username;
+    if (username && username.toLowerCase() !== "none") {
+      com.gContactSync.LOGGER.VERBOSE_LOG("\n***Synchronizing selected AB: " + ab.getName() + "***\n");
+      com.gContactSync.Sync.begin(true, [{username: username, ab: ab}]);
+    } else {
+      var invalidABErrorStr = com.gContactSync.StringBundle.getStr("syncNowError");
+      com.gContactSync.alertWarning(invalidABErrorStr);
+    }
   },
   /**
    * Fixes the description style as set (accidentally?) by the

@@ -492,19 +492,21 @@ com.gContactSync.GContact.prototype = {
         return 1;
       }
       var sModified = this.xml.getElementsByTagName('updated')[0].childNodes[0].nodeValue,
-          year      = sModified.substring(0,4),
-          month     = sModified.substring(5,7),
-          day       = sModified.substring(8,10),
-          hrs       = sModified.substring(11,13),
-          mins      = sModified.substring(14,16),
-          sec       = sModified.substring(17,19),
-          ms        = sModified.substring(20,23);
-      return parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms));
+          year      = sModified.substring(0, 4),
+          month     = sModified.substring(5, 7),
+          day       = sModified.substring(8, 10),
+          hrs       = sModified.substring(11, 13),
+          mins      = sModified.substring(14, 16),
+          sec       = sModified.substring(17, 19),
+          ms        = sModified.substring(20, 23),
+          ret       = parseInt(Date.UTC(year, parseInt(month, 10) - 1, day, hrs, mins, sec, ms), 10);
+      if (isNaN(ret) || !isFinite(ret)) throw "Error - couldn't parse date: " + sModified;
+      return ret;
     }
     catch(e) {
       com.gContactSync.LOGGER.LOG_WARNING("Unable to get last modified date from a contact:\n" + e);
     }
-    return 0;
+    return 1;
   },
   /**
    * Removes all extended properties from this contact.
@@ -633,7 +635,7 @@ com.gContactSync.GContact.prototype = {
       if (group)
         groups[id] = group;
       else {
-        if (com.gContactSync.Preferences.mSyncPrefs.myContacts)
+        if (com.gContactSync.Preferences.mSyncPrefs.myContacts.value)
           groups[id] = true;
         else
           com.gContactSync.LOGGER.LOG_WARNING("Unable to find group: " + id);
@@ -814,6 +816,7 @@ com.gContactSync.GContact.prototype = {
                                           httpReq.responseText);
       };
       httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+      httpReq.mOn503 = com.gContactSync.Sync.m503Function;
       httpReq.addHeaderItem("If-Match", "*");
       httpReq.send();
       return;
@@ -857,8 +860,6 @@ com.gContactSync.GContact.prototype = {
       outChannel.setRequestHeader("Authorization", com.gContactSync.Sync.mCurrentAuthToken, false);
       outChannel.setRequestHeader("Content-Type",  photoInfo.type, false);
       outChannel.setRequestHeader("If-Match",      "*", false);
-      // set the status bar text since this can take a minute
-      com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("uploadingPhoto"));
       outChannel.open();
       try {
         com.gContactSync.LOGGER.VERBOSE_LOG(" * Update status: " + outChannel.responseStatus);
@@ -921,7 +922,8 @@ com.gContactSync.GContact.prototype = {
                          .getService(Components.interfaces.nsIProperties)
                          .get("ProfD", Components.interfaces.nsIFile);
     // Get (or make) the Photos directory
-    file.append("Photos");
+    file.append("gcontactsync");
+    file.append("photos");
     if (!file.exists() || !file.isDirectory())
       file.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
     var ios = Components.classes["@mozilla.org/network/io-service;1"]
@@ -938,7 +940,7 @@ com.gContactSync.GContact.prototype = {
     }
 
     // Create a name for the photo with the contact's ID and the photo extension
-    var filename = this.getID(false);
+    var filename = this.getID(false) + "_" + (new Date()).getTime();
     try {
       var ext = com.gContactSync.findPhotoExt(ch);
       filename = filename + (ext ? "." + ext : "");

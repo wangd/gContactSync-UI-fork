@@ -28,25 +28,6 @@
 <!ENTITY abCardView.label               "Address Book Contact Details">
 <!ENTITY enableImUrls.label             "Enable links for various IM protocols (AIM, Yahoo!, MSN, etc.)">
 
-<!ENTITY extended.tab                   "Other">
-<!ENTITY syncExtended.label             "Sync Extended Properties">
-<!-- LOCALIZATION NOTE: Please leave trailing spaces in extended1 - extended9 -->
-<!ENTITY extended1.value                "Property 1  ">
-<!ENTITY extended2.value                "Property 2  ">
-<!ENTITY extended3.value                "Property 3  ">
-<!ENTITY extended4.value                "Property 4  ">
-<!ENTITY extended5.value                "Property 5  ">
-<!ENTITY extended6.value                "Property 6  ">
-<!ENTITY extended7.value                "Property 7  ">
-<!ENTITY extended8.value                "Property 8  ">
-<!ENTITY extended9.value                "Property 9  ">
-<!ENTITY extended10.value               "Property 10">
-<!ENTITY extendedPropertiesDesc1.value  "10 extra properties to sync.  Examples:">
-<!-- LOCALIZATION NOTE: This line should not change -->
-<!ENTITY extendedPropertiesDesc2.value  " * Custom1, Custom2, Custom3, Custom4">
-<!-- LOCALIZATION NOTE: This line should not change -->
-<!ENTITY extendedPropertiesDesc3.value  " * AnniversayDay, AnniversayMonth, AnniversaryYear">
-
 <!ENTITY advanced.tab                   "Advanced">
 <!ENTITY warning.value                  "Warning - this is intended for advanced users only">
 <!ENTITY backup.label                   "Address Book Backup Policy">
@@ -56,6 +37,7 @@
 <!ENTITY confirmDeleteThreshold.value   "Minimum number of contacts to delete before requesting permission">
 <!ENTITY resetAll.label                 "Reset All Synced ABs">
 <!ENTITY cleanOldPrefs.label            "Clean Old AB Preferences">
+<!ENTITY cleanOldPhotos.label           "Delete Old Contact Photos">
 
 <!-- FirstLogin.xul only -->
 <!ENTITY myContacts.label               "Only synchronize the 'My Contacts' group">

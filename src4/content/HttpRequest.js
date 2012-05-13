@@ -48,6 +48,7 @@ if (!com.gContactSync) com.gContactSync = {};
  * <li>200 (OK): use <b>mOnSuccess</b></li>
  * <li>201 (CREATED): use <b>mOnCreated</b></li>
  * <li>401 (UNAUTHORIZED): use <b>mOn401</b></li>
+ * <li>503 (SERVICE_UNAVAILABLE): use <b>mOn503</b></li>
  * <li>&lt;anything else&gt;: use <b>mOnError</b></li>
  * </ul>
  * <br>Sample usage:
@@ -156,7 +157,8 @@ com.gContactSync.HttpRequest.prototype = {
         onOffline = this.mOnOffline,
         onFail    = this.mOnError,
         onCreated = this.mOnCreated,
-        on401     = this.mOn401;
+        on401     = this.mOn401,
+        on503     = this.mOn503;
 
     httpReq.onreadystatechange = function httpReq_readyState() {
       var callback = [],
@@ -176,7 +178,7 @@ com.gContactSync.HttpRequest.prototype = {
           
         switch (httpReq.status) { 
         case 0: // the user is offline
-          callback = onOffline;
+          callback = onOffline || onFail;
           break;
         case 201: // 201 CREATED
           callback = onCreated;
@@ -185,7 +187,10 @@ com.gContactSync.HttpRequest.prototype = {
           callback = onSuccess;
           break;
         case 401: // 401 Unauthorized (Token Expired in Gmail)
-          callback = on401;
+          callback = on401 || onFail;
+          break;
+        case 503: // 503 Service unavailble (Server is busy, user exceeded quota, etc.)
+          callback = on503 || onFail;
           break;
         default: // other status
           callback = onFail;

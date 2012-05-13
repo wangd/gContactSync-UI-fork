@@ -60,10 +60,7 @@ com.gContactSync.Options = {
       document.getElementById("chkForceBtnImage").collapsed = false;
     }
     // if this is the full preferences dialog add a few event listeners
-    if (document.getElementById("syncExtended")) {
-      document.getElementById("syncExtended")
-              .addEventListener("change", com.gContactSync.Options.enableExtended, false);
-      com.gContactSync.Options.enableExtended();
+    if (document.getElementById("enableLogging")) {
       document.getElementById("autoSync")
               .addEventListener("change", com.gContactSync.Options.enableDelays, false);
       com.gContactSync.Options.enableDelays();
@@ -81,26 +78,6 @@ com.gContactSync.Options = {
     if (!enableLogging) return false;
     var disable = !enableLogging.value;
     document.getElementById("verboseLog").disabled = disable;
-    return true;
-  },
-  /**
-   * Enables or disables the extended property textboxes based on the state of
-   * the syncExtended checkbox.
-   */
-  enableExtended: function Options_enableExtended() {
-    var disableElem = document.getElementById("syncExtended");
-    if (!disableElem) return false;
-    var disable = !disableElem.value;
-    document.getElementById("extended1").disabled  = disable;
-    document.getElementById("extended2").disabled  = disable;
-    document.getElementById("extended3").disabled  = disable;
-    document.getElementById("extended4").disabled  = disable;
-    document.getElementById("extended5").disabled  = disable;
-    document.getElementById("extended6").disabled  = disable;
-    document.getElementById("extended7").disabled  = disable;
-    document.getElementById("extended8").disabled  = disable;
-    document.getElementById("extended9").disabled  = disable;
-    document.getElementById("extended10").disabled = disable;
     return true;
   },
   /**
@@ -191,5 +168,95 @@ com.gContactSync.Options = {
     }
     com.gContactSync.LOGGER.LOG("***Found " + numDeleted + " gContactSync prefs for deleted ABs***");
     com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedPrefClean").replace("%d", numDeleted + numObsolete));
+  },
+  /**
+   * Deletes unused contact photos from Thunderbird and gContactSync's photos
+   * directories.  When address books and contacts are deleted TB doesn't delete
+   * the corresponding photo which can leave quite a few photos behind.
+   */
+  deleteOldPhotos: function Options_deleteOldPhotos() {
+    var abs = com.gContactSync.GAbManager.getAllAddressBooks();
+    var photoURIs = {};
+    var photoNames = {};
+    
+    // Get the URI for the gContactSync photos directory
+    var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                         .getService(Components.interfaces.nsIProperties)
+                         .get("ProfD", Components.interfaces.nsIFile);
+    file.append("gcontactsync");
+    file.append("photos");
+    var gcsPhotosDir = Components.classes["@mozilla.org/network/io-service;1"]
+                                 .getService(Components.interfaces.nsIIOService)
+                                 .newFileURI(file)
+                                 .spec;
+
+    // Step 1: Get all photos in use in the gContactSync photos directory (photoURIs)
+    // and in the TB Photos directory (photoNames).
+    for (var uri in abs) {
+      var ab = abs[uri];
+      var contacts = ab.getAllContacts();
+      for (var i in contacts) {
+        var contact = contacts[i];
+        var photoURI = contact.getValue("PhotoURI");
+        if (photoURI) {
+          if (photoURI.indexOf(gcsPhotosDir) != -1) {
+            photoURI = photoURI.substring(gcsPhotosDir.length);
+            photoURIs[photoURI] = true;
+            com.gContactSync.LOGGER.VERBOSE_LOG(" * " + photoURI);
+          }
+          photoNames[contact.getValue("PhotoName")] = true;
+        }
+      }
+    }
+    var numRemoved = 0;
+    if (file.exists() && file.isDirectory()) {
+      // Step 2: Iterate through all photos in gContactSync's photos directory and
+      // delete the unused ones
+      com.gContactSync.LOGGER.VERBOSE_LOG("\n\n**Searching gContactSync Photos directory***");
+      var iter = file.directoryEntries;
+      while (iter.hasMoreElements()) {
+        file = iter.getNext().QueryInterface(Components.interfaces.nsIFile);
+        if (file.isFile()) {
+          var filename = file.leafName;
+          if (!photoURIs[filename]) {
+            com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting " + filename);
+            try {
+              file.remove(false);
+              ++numRemoved;
+            } catch(e) {
+              com.gContactSync.LOGGER.LOG_WARNING("Unable to delete the following file: " + filename);
+            }
+          }
+        }
+      }
+    }
+    // Step 3: Iterate through all photos in TB's Photos directory and delete
+    // the unused ones
+    file = Components.classes["@mozilla.org/file/directory_service;1"]
+                     .getService(Components.interfaces.nsIProperties)
+                     .get("ProfD", Components.interfaces.nsIFile);
+    file.append("Photos")
+    if (file.exists() && file.isDirectory()) {
+      // Step 2: Iterate through all photos in gContactSync's photos directory and
+      // delete the unused ones
+      com.gContactSync.LOGGER.VERBOSE_LOG("\n\n**Searching TB Photos directory***");
+      var iter = file.directoryEntries;
+      while (iter.hasMoreElements()) {
+        file = iter.getNext().QueryInterface(Components.interfaces.nsIFile);
+        if (file.isFile()) {
+          var filename = file.leafName;
+          if (!photoNames[filename]) {
+            com.gContactSync.LOGGER.VERBOSE_LOG(" * Deleting " + filename);
+            try {
+              file.remove(false);
+              ++numRemoved;
+            } catch(e) {
+              com.gContactSync.LOGGER.LOG_WARNING("Unable to delete the following file: " + filename);
+            }
+          }
+        }
+      }
+    }
+    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("finishedPhotoClean").replace("%d", numRemoved));
   }
 };

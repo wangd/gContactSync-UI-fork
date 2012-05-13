@@ -150,7 +150,7 @@ com.gContactSync.Preferences = {
         var ab = com.gContactSync.GAbManager.mABs[this.mBranchName + aData.substring(0, aData.lastIndexOf(".") + 1)];
         if (ab) {
           var pref         = aData.substring(aData.lastIndexOf(".") + 1),
-              prefNoPrefix = pref.replace(ab.prefPrefix, "");
+              prefNoPrefix = pref.replace(ab.prefPrefix, ""),
               newPrefValue = ab.getStringPref(pref);
           com.gContactSync.LOGGER.VERBOSE_LOG("Changing AB pref: " + pref +
                                               "\nFrom: " + ab.mPrefs[prefNoPrefix] +
@@ -206,7 +206,9 @@ com.gContactSync.Preferences = {
     needRestart:              new com.gContactSync.Pref("needRestart",              "bool", false),
     synchronizing:            new com.gContactSync.Pref("synchronizing",            "bool", false),
     overrideGetCardForEmail:  new com.gContactSync.Pref("overrideGetCardForEmail",  "bool", true),
-    syncPhoneticNames:        new com.gContactSync.Pref("syncPhoneticNames",        "bool", true)
+    syncPhoneticNames:        new com.gContactSync.Pref("syncPhoneticNames",        "bool", true),
+    newContactPhotoDelay:     new com.gContactSync.Pref("newContactPhotoDelay",     "int",  0),
+    remoteActionDelay:        new com.gContactSync.Pref("remoteActionDelay",        "int",  0)
   },
   /**
    * Gets a preference given its branch, name, and type

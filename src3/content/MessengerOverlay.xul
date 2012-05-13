@@ -43,7 +43,7 @@
        Overlay.xul -->
   <!-- Add some text to the status bar -->
   <statusbar id="status-bar" class="chromeclass-status">
-    <statusbarpanel id="gContactSyncStatusText" crop="left" flex="1"/>
+    <statusbarpanel id="gContactSyncStatusText"/>
   </statusbar>
   <menubar id="mail-menubar">
     <menu id="gContactSyncMenu" insertbefore="tasksMenu"/>

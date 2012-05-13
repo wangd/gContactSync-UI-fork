@@ -62,6 +62,10 @@ com.gContactSync.Import = {
   mSource: "",
   /** This is used internally to track whether an import is in progress */
   mStarted: false,
+  /** Stores how many contacts were merged during this import */
+  mMergedContacts: 0,
+  /** Stores how many contacts were added during this import */
+  mNewContacts: 0,
   /** A reference to the window TODO remove */
   mWindow: {},
   /** Map for Plaxo only */
@@ -420,8 +424,8 @@ com.gContactSync.Import = {
     }
   },
   /**
-   * Gets the response from step 4 and calls beginImport to parse the JSON feed
-   * of contacts.
+   * Gets the response from step 4 and calls showImportDialog to parse the JSON
+   * feed of contacts.
    */
   // Get the contact feed and import it into an AB
   finish: function Import_finish(httpReq) {
@@ -435,7 +439,7 @@ com.gContactSync.Import = {
     imp.mStarted = false;
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importParsingContacts'));
     // start the import
-    imp.beginImport(response);
+    imp.showImportDialog(response);
   },
   /**
    * Parses and stores a URL-encoded response in the following format:
@@ -478,15 +482,56 @@ com.gContactSync.Import = {
     }
   },
   /**
-   * Begins the actual import given a JSON feed of contacts.
-   * It promps the user for a name for the destination AB (can be new or old).
+   * Shows a simple import dialog that lets the user pick an address book and
+   * whether to merge contacts.
+   * Calls beginImport when the dialog is closed.
    *
    * @param aFeed {string} The JSON feed of contacts to parse.
    */
-  beginImport: function Import_beginImport(aFeed) {
+  showImportDialog: function Import_showImportDialog(aFeed) {
+    var dialog = window.open("chrome://gcontactsync/content/ImportDialog.xul",
+                            "gcsImportWindow",
+                            "chrome,resizable=yes,scrollbars=no,status=no");
+    // when the setup window loads, set its onunload property to begin a sync
+    dialog.onload = function onloadListener() {
+      var menu = dialog.document.getElementById("ABList");
+      // Get all Personal/Mork DB Address Books (type == 2,
+      // see mailnews/addrbook/src/nsDirPrefs.h)
+      var abs = com.gContactSync.GAbManager.getAllAddressBooks(2, true);
+      for (i in abs) {
+        if (abs[i] instanceof com.gContactSync.GAddressBook) {
+          menu.appendItem(abs[i].getName(), i);
+        }
+      }
+      menu.selectedIndex = 0;
+      dialog.onunload = function onunloadListener() {
+        if (menu.selectedIndex == -1) {
+          com.gContactSync.LOGGER.LOG("***Import Canceled***");
+          com.gContactSync.alert(com.gContactSync.StringBundle.getStr("importCanceled"),
+                                 com.gContactSync.StringBundle.getStr("importCanceledTitle"),
+                                 window);
+        } else {
+          // New ABs can be added from the dialog, so refresh the list
+          var abs = com.gContactSync.GAbManager.getAllAddressBooks(2, true);
+          var checkbox = dialog.document.getElementById("MergeCheckbox");
+          com.gContactSync.Import.beginImport(aFeed, abs[menu.value], checkbox.checked);
+        }
+      };
+    };
+  },
+  /**
+   * Begins the actual import given a JSON feed of contacts.
+   * It promps the user for a name for the destination AB (can be new or old).
+   *
+   * @param aFeed  {string}       The JSON feed of contacts to parse.
+   * @param aAB    {GAddressBook} The address book to import to.
+   * @param aMerge {bool}         Set to true to merge contacts during the import.
+   */
+  beginImport: function Import_beginImport(aFeed, aAB, aMerge) {
     if (!aFeed) {
       return;
     }
+    this.mNewContacts = this.mMergedContacts = 0;
     try {
       com.gContactSync.LOGGER.VERBOSE_LOG(aFeed);
       var obj = aFeed;
@@ -502,28 +547,38 @@ com.gContactSync.Import = {
         com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFailed'));
         return;
       }
-      var res = com.gContactSync.prompt(com.gContactSync.StringBundle.getStr("importDestination"),
-                                        com.gContactSync.StringBundle.getStr("importDestinationTitle"),
-                                        window);
-      if (!res) {
-        return;
+      var arr = obj.entry || obj.data || obj,
+          abContacts = {};
+      if (aMerge) {
+        let abContactsArray = aAB.getAllContacts();
+        for (var i = 0, length = abContactsArray.length; i < length; i++) {
+          let contact = abContactsArray[i];
+          let displayName  = contact.getValue("DisplayName");
+          let primaryEmail = contact.getValue("PrimaryEmail");
+          if (displayName)  abContacts[displayName.toLowerCase()]  = contact;
+          if (primaryEmail) abContacts[primaryEmail.toLowerCase()] = primaryEmail;
+        }
       }
-      var ab = new com.gContactSync.GAddressBook(com.gContactSync.GAbManager.getAbByName(res),
-                                                 true);
-      var arr = obj.entry || obj.data || obj;
 
       for (var i in arr) {
         var contact = arr[i],
             id = contact.id || contact.guid;
         if (id || contact.name || contact.displayName) {
-          var newCard = ab.newContact(),
-              attr    = "";
+          var newCard = aMerge ? this.searchForContact(contact, aAB, abContacts) : aAB.newContact(),
+              attr    = "",
+              srcId   = this.mSource + "_" + id;
+          if (!aMerge) ++com.gContactSync.Import.mNewContacts;
           // Download FB photos
           if (this.mSource === "facebook" && id) {
             var file = com.gContactSync.writePhoto("https://graph.facebook.com/" + id + "/picture?type=large",
-                                                   id + "_" + (new Date()).getTime());
+                                                   srcId + "_" + (new Date()).getTime());
             if (file) {
+              // Thunderbird requires two copies of each photo.  A permanent copy must
+              // be kept outside of the Photos directory.  Each time a contact is edited
+              // Thunderbird will re-copy the original photo to the Photos directory and
+              // delete the old copy.
               com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+              com.gContactSync.copyPhotoToPhotosDir(file);
               newCard.setValue("PhotoName", file.leafName);
               newCard.setValue("PhotoType", "file");
               newCard.setValue("PhotoURI",
@@ -547,10 +602,15 @@ com.gContactSync.Import = {
               if (j === "picture" || j === "thumbnailUrl" || j === "photos" ||
                   j === "profile_image_url") {
                 var file = com.gContactSync.writePhoto((j === "photos" ? contact[j][0].value : contact[j]),
-                                                       this.mSource + "_" + id,
+                                                       srcId + "_" + (new Date()).getTime(),
                                                        0);
                 if (file) {
+                  // Thunderbird requires two copies of each photo.  A permanent copy must
+                  // be kept outside of the Photos directory.  Each time a contact is edited
+                  // Thunderbird will re-copy the original photo to the Photos directory and
+                  // delete the old copy.
                   com.gContactSync.LOGGER.VERBOSE_LOG("Wrote photo...name: " + file.leafName);
+                  com.gContactSync.copyPhotoToPhotosDir(file);
                   newCard.setValue("PhotoName", file.leafName);
                   newCard.setValue("PhotoType", "file");
                   newCard.setValue("PhotoURI",
@@ -624,7 +684,7 @@ com.gContactSync.Import = {
       com.gContactSync.alertError(e);
       return;
     }
-    // refresh the ab results pane
+    // refresh the AB results pane
     try {
       if (SetAbView !== undefined) {
         SetAbView(GetSelectedDirectory(), false);
@@ -635,8 +695,13 @@ com.gContactSync.Import = {
         SelectFirstCard();
     }
     catch (e) {}
+    com.gContactSync.LOGGER.LOG("***Imported Complete, Added: " +
+                                this.mNewContacts + ", Merged: " +
+                                this.mMergedContacts + "***");
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('importFinished'));
-    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("importComplete"),
+    com.gContactSync.alert(com.gContactSync.StringBundle.getStr("importComplete") + "\n" +
+                           com.gContactSync.StringBundle.getStr("importCompleteAdded")  + " " + this.mNewContacts    + "\n" +
+                           com.gContactSync.StringBundle.getStr("importCompleteMerged") + " " + this.mMergedContacts + "\n",
                            com.gContactSync.StringBundle.getStr("importCompleteTitle"),
                            window);
   },
@@ -689,7 +754,6 @@ com.gContactSync.Import = {
       var nsIJSON = Components.classes["@mozilla.org/dom/json;1"]
                               .createInstance(Components.interfaces.nsIJSON);
 
-      // TODO - this needs to be much more efficient
       var json = JSON.stringify({data: People.find({})});
       var toEncode = {data: []};
       var people = [];
@@ -719,16 +783,33 @@ com.gContactSync.Import = {
             for (var k in person.documents[j]) {
               for (var l in person.documents[j][k])
               personInfo[l] = person.documents[j][k][l];
-              com.gContactSync.LOGGER.LOG(j + "." + k + "." + l + " - " + person.documents[j][k][l])
+              com.gContactSync.LOGGER.VERBOSE_LOG(j + "." + k + "." + l + " - " + person.documents[j][k][l])
             }
           }
           toEncode.data.push(personInfo);
         }
       }
-      com.gContactSync.Import.beginImport(JSON.stringify(toEncode));
+      com.gContactSync.Import.showImportDialog(JSON.stringify(toEncode));
     } catch (e) {
       com.gContactSync.alertError(com.gContactSync.StringBundle.getStr("mozLabsContactsImportFailed"));
       com.gContactSync.LOGGER.LOG_ERROR("Mozilla Labs Contacts Import Failed", e);
     }
+  },
+  searchForContact: function Import_searchForContact(aData, aAB, aABContacts) {
+    var contact = null;
+    var displayName = aData.displayName || aData.name;
+    if (displayName && (displayName instanceof Array)) { // name may be complex
+      displayName = displayName.displayName || displayName.formatted;
+    }
+    if (!displayName)
+      displayName = aData.nickname;
+    var primaryEmail = aData.email;
+    if (primaryEmail && (primaryEmail instanceof Array)) primaryEmail = primaryEmail[0];
+    if (displayName) contact = aABContacts[displayName.toLowerCase()];
+    if (!contact && primaryEmail) contact = aABContacts[primaryEmail.toLowerCase()];
+    com.gContactSync.LOGGER.VERBOSE_LOG(" * Display Name: " + displayName + ", Email: " + primaryEmail + " - AB Contact: " + (contact ? contact.getName() : "No match found"));
+    if (contact) ++com.gContactSync.Import.mMergedContacts;
+    else         ++com.gContactSync.Import.mNewContacts;
+    return contact || aAB.newContact(); 
   }
 };

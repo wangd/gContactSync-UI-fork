@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Josh Geenen <gcontactsync@pirules.org>.
- * Portions created by the Initial Developer are Copyright (C) 2008-2011
+ * Portions created by the Initial Developer are Copyright (C) 2008-2012
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -475,8 +475,7 @@ com.gContactSync.CardDialogOverlay = {
     if (!contact.mContact.getProperty && gEditCard.abURI) {
       if (contact.mContact.editCardToDatabase) { // Thunderbird 2
         contact.mContact.editCardToDatabase(gEditCard.abURI);
-      }
-      else if (GetDirectoryFromURI) { // Postbox doesn't have editCardToDatabase
+      } else if (GetDirectoryFromURI) { // Postbox doesn't have editCardToDatabase
         var dir = GetDirectoryFromURI(gEditCard.abURI);
         if (dir) {
           dir.modifyCard(contact.mContact);
@@ -486,30 +485,37 @@ com.gContactSync.CardDialogOverlay = {
     // ensure that every contact edited through this dialog has at least a dummy
     // e-mail address if necessary
     var primEmailElem = aDoc.getElementById("PrimaryEmail");
-    if (!primEmailElem.value) {
+    if (!primEmailElem.value && gEditCard.abURI) {
       // if it is a new contact it isn't already in any lists
-      if (gEditCard.abURI) {
       // Check if it is in any mailing lists.  If so, force a dummy address
       // When fetching lists, do not get the contacts (if it is found there is
       // no need to get the contacts in every list)
-        var ab    = com.gContactSync.GAbManager.getAbByURI(gEditCard.abURI),
-            ab    = (ab ? new com.gContactSync.GAddressBook(ab) : null),
-            lists = ab.getAllLists(true);
-        for (var i in lists) {
-          // if the list does have the contact then make sure it gets a dummy
-          // e-mail address regardless of the preference
-          // do not check the PrimaryEmail address in hasContact since it is now
-          // empty
-          if (lists[i].hasContact(contact)) {
-            primEmailElem.value = com.gContactSync.makeDummyEmail(contact.mContact, true);
-            com.gContactSync.alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
-            break;
+      try {
+        var tbAB = com.gContactSync.GAbManager.getAbByURI(gEditCard.abURI);
+        var dummyEmailNeeded = tbAB.isMailList;
+        if (!dummyEmailNeeded) {
+          var lists = tbAB ? new com.gContactSync.GAddressBook(tbAB).getAllLists(true) : [];
+          for (var i in lists) {
+            // if the list does have the contact then make sure it gets a dummy
+            // e-mail address regardless of the preference
+            // do not check the PrimaryEmail address in hasContact since it is now
+            // empty
+            if (lists[i].hasContact(contact)) {
+              dummyEmailNeeded = true;
+              break;
+            }
           }
         }
-      }
+        if (dummyEmailNeeded) {
+          primEmailElem.value = com.gContactSync.makeDummyEmail(contact.mContact, true);
+          com.gContactSync.alert(com.gContactSync.StringBundle.getStr("dummyEmailAdded") + "\n" + primEmailElem.value);
+        }
+      } catch (e) {alert("Error checking if the contact needs a dummy e-mail address\n" + e);}
     }
-    // call the original and return its return value
-    return com.gContactSync.originalCheckAndSetCardValues.apply(this, arguments);
+    try {
+      // call the original and return its return value
+      return com.gContactSync.originalCheckAndSetCardValues.apply(this, arguments);
+    } catch (ex) {alert("CheckAndSetCardValues threw an exception:\n" + ex);}
   },
   /**
    * A method that gets all of the attributes added by this extension and sets
@@ -547,6 +553,41 @@ com.gContactSync.CardDialogOverlay = {
           }
         }
       } catch (e) { com.gContactSync.alertError("Error in com.gContactSync.GetCardValues: " + attr + "\n" + e); }
+    }
+
+    // In TB 10 the way photos are saved changed and now requires two copies of
+    // each photo.  One persistent copy is required as TB will copy it to the
+    // Photos directory and delete the previous copy when the contact is edited.
+    // gContactSync only saves one copy so TB deletes the original on the first
+    // edit of the contact then TB fails to copy from the original in future
+    // edits of the contact.
+    // As a workaround check if the photo at PhotoURI still exists.
+    // If it doesn't exist then update it to point to the photo at PhotoName.
+    var photoURI = aCard.getProperty("PhotoURI", "");
+    var photoType = aCard.getProperty("PhotoType", "");
+    if (photoURI && photoType === "file") {
+      var ios = Components.classes["@mozilla.org/network/io-service;1"]
+                              .getService(Components.interfaces.nsIIOService);
+      var uriFile = ios.newURI(photoURI, null, null)
+                       .QueryInterface(Components.interfaces.nsIFileURL)
+                       .file;
+      if (!uriFile.exists()) {
+        var photoName = aCard.getProperty("PhotoName", "");
+        com.gContactSync.LOGGER.VERBOSE_LOG("Photo workaround for URI: " +
+                                            photoURI + "...Name: " + photoName);
+        var photoNameFile = Components.classes["@mozilla.org/file/directory_service;1"]
+                                      .getService(Components.interfaces.nsIProperties)
+                                      .get("ProfD", Components.interfaces.nsIFile);
+        photoNameFile.append("Photos");
+        photoNameFile.append(photoName);
+        if (photoNameFile.exists()) {
+          var newPhotoURI = ios.newFileURI(photoNameFile).spec;
+          com.gContactSync.LOGGER.VERBOSE_LOG("New URI: " + newPhotoURI);
+          aCard.setProperty("PhotoURI", newPhotoURI);
+          loadPhoto(aCard);
+          setCardEditorPhoto(photoType, aCard);
+        }
+      }
     }
   
     if (com.gContactSync.isDummyEmail(aDoc.getElementById("PrimaryEmail").value))

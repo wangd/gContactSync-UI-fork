@@ -231,7 +231,7 @@ com.gContactSync.GAbManager.getGAb = function GAbManager_getGAb(aDirectory, aNoP
  * @param aDirType {int} The type of directory (2 is the usual Mork AB)
  * @returns {object} An object filled with GAddressBook objects keyed by URI.
  */
-com.gContactSync.GAbManager.getAllAddressBooks = function GAbManager_getAllAddressBooks(aDirType) {
+com.gContactSync.GAbManager.getAllAddressBooks = function GAbManager_getAllAddressBooks(aDirType, aSkipPrefs) {
   var iter,
       abManager,
       dir,
@@ -259,7 +259,7 @@ com.gContactSync.GAbManager.getAllAddressBooks = function GAbManager_getAllAddre
 
       // If data isn't a valid AB then skip to the next one.
       try {
-        ab = this.getGAb(data);
+        ab = this.getGAb(data, aSkipPrefs);
       } catch (e) {
         continue;
       }

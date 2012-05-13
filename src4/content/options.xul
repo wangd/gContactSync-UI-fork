@@ -195,105 +195,6 @@
       </groupbox>
     </groupbox>
   </prefpane>
-  <prefpane id="pane_extended"
-            index="extended"
-            label="&extended.tab;">
-    <preferences>
-      <preference id="syncExtended"
-                  name="extensions.gContactSync.syncExtended"
-                  type="bool"/>
-      <preference id="extended1"
-                  name="extensions.gContactSync.extended1"
-                  type="string"/>
-      <preference id="extended2"
-                  name="extensions.gContactSync.extended2"
-                  type="string"/>
-      <preference id="extended3"
-                  name="extensions.gContactSync.extended3"
-                  type="string"/>
-      <preference id="extended4"
-                  name="extensions.gContactSync.extended4"
-                  type="string"/>
-      <preference id="extended5"
-                  name="extensions.gContactSync.extended5"
-                  type="string"/>
-      <preference id="extended6"
-                  name="extensions.gContactSync.extended6"
-                  type="string"/>
-      <preference id="extended7"
-                  name="extensions.gContactSync.extended7"
-                  type="string"/>
-      <preference id="extended8"
-                  name="extensions.gContactSync.extended8"
-                  type="string"/>
-      <preference id="extended9"
-                  name="extensions.gContactSync.extended9"
-                  type="string"/>
-      <preference id="extended10"
-                  name="extensions.gContactSync.extended10"
-                  type="string"/>
-    </preferences>
-    <groupbox>
-      <label value="&extendedPropertiesDesc1.value;"/>
-      <label value="&extendedPropertiesDesc2.value;"/>
-      <label value="&extendedPropertiesDesc3.value;"/>
-      <separator class="thin"/>
-      <checkbox preference="syncExtended"
-                id="syncExtended"
-                label="&syncExtended.label;"/>
-      <separator class="thin"/>
-      <vbox align="center">
-        <grid flex="1">
-          <columns>
-            <column/>
-            <column/>
-          </columns>
-          <rows>
-            <row align="center">
-              <label control="extended1" value="&extended1.value;"/>
-              <textbox preference="extended1" id="extended1"/>
-            </row>
-            <row align="center">
-              <label control="extended2" value="&extended2.value;"/>
-              <textbox preference="extended2" id="extended2"/>
-            </row>
-            <row align="center">
-              <label control="extended3" value="&extended3.value;"/>
-              <textbox preference="extended3" id="extended3"/>
-            </row>
-            <row align="center">
-              <label control="extended4" value="&extended4.value;"/>
-              <textbox preference="extended4" id="extended4"/>
-            </row>
-            <row align="center">
-              <label control="extended5" value="&extended5.value;"/>
-              <textbox preference="extended5" id="extended5"/>
-            </row>
-            <row align="center">
-              <label control="extended6" value="&extended6.value;"/>
-              <textbox preference="extended6" id="extended6"/>
-            </row>
-            <row align="center">
-              <label control="extended7" value="&extended7.value;"/>
-              <textbox preference="extended7" id="extended7"/>
-            </row>
-            <row align="center">
-              <label control="extended8" value="&extended8.value;"/>
-              <textbox preference="extended8" id="extended8"/>
-            </row>
-            <row align="center">
-              <label control="extended9" value="&extended9.value;"/>
-              <textbox preference="extended9" id="extended9"/>
-            </row>
-            <row align="center">
-              <label control="extended10" value="&extended10.value;"/>
-              <textbox preference="extended10" id="extended10"/>
-            </row>
-          </rows>
-        </grid>
-      </vbox>
-    </groupbox>
-  </prefpane>
   <prefpane id="pane_advanced"
             index="advanced"
             label="&advanced.tab;">
@@ -366,6 +267,9 @@
         <button id="resetAll"
                 label="&resetAll.label;"
                 oncommand="com.gContactSync.GAbManager.resetAllSyncedABs(true);"/>
+        <button id="cleanOldPhotos"
+                label="&cleanOldPhotos.label;"
+                oncommand="com.gContactSync.Options.deleteOldPhotos();"/>
         <button id="cleanOldPrefs"
                 label="&cleanOldPrefs.label;"
                 oncommand="com.gContactSync.Options.cleanOldPrefs(true);"/>

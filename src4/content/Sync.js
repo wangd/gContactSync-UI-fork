@@ -80,7 +80,14 @@ com.gContactSync.Sync = {
   /** Commands to execute when offline during an HTTP Request */
   mOfflineFunction: function Sync_offlineFunc(httpReq) {
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('offlineStatusText')); 
-    com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'));
+    com.gContactSync.Sync.finish(com.gContactSync.StringBundle.getStr('offlineStatusText'), false);
+  },
+  /** Commands to execute if a 503 is returned during an HTTP Request */
+  m503Function: function Sync_503Func(httpReq) {
+    com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr('err503Short'));
+    var str = com.gContactSync.StringBundle.getStr('err503') + "\n" + httpReq.responseText;
+    com.gContactSync.alertError(str);
+    com.gContactSync.Sync.finish(str, false);
   },
   /** True if a synchronization is scheduled */
   mSyncScheduled: false,
@@ -96,7 +103,7 @@ com.gContactSync.Sync = {
    * Performs the first steps of the sync process.
    * @param aManualSync {boolean} Set this to true if the sync was run manually.
    */
-  begin: function Sync_begin(aManualSync) {
+  begin: function Sync_begin(aManualSync, aAddressBooks) {
     if (!com.gContactSync.gdata.isAuthValid()) {
       com.gContactSync.alert(com.gContactSync.StringBundle.getStr("pleaseAuth"));
       return;
@@ -118,8 +125,14 @@ com.gContactSync.Sync = {
     com.gContactSync.LOGGER.mErrorCount  = 0; // reset the error count
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
     com.gContactSync.Sync.mIndex         = 0;
-    com.gContactSync.Sync.mAddressBooks  = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
     com.gContactSync.Sync.mCurrentAb     = {};
+
+    if (aAddressBooks) {
+      com.gContactSync.Sync.mAddressBooks = aAddressBooks;
+    } else {
+      com.gContactSync.Sync.mAddressBooks = com.gContactSync.GAbManager.getSyncedAddressBooks(true);
+    }
+
     com.gContactSync.Sync.syncNextUser();
   },
   /**
@@ -141,7 +154,7 @@ com.gContactSync.Sync = {
     
     var obj = com.gContactSync.Sync.mAddressBooks[com.gContactSync.Sync.mIndex++];
     if (!obj) {
-      com.gContactSync.Sync.finish();
+      com.gContactSync.Sync.finish("", false);
       return;
     }
     // make sure the user doesn't have to restart TB
@@ -225,6 +238,7 @@ com.gContactSync.Sync = {
         };
         // if the user is offline, alert them and quit
         httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+        httpReq.mOn503 = com.gContactSync.Sync.m503Function;
         httpReq.send();
       }
       else
@@ -257,8 +271,8 @@ com.gContactSync.Sync = {
   },
   /**
    * Sends an HTTP Request to Google for a feed of all of the user's groups.
-   * Calls com.gContactSync.Sync.begin() when there is a successful response on an error other
-   * than offline.
+   * Calls com.gContactSync.Sync.syncGroups() if successful, or syncNextUser on
+   * errors.
    */
   getGroups: function Sync_getGroups() {
     com.gContactSync.LOGGER.LOG("***Beginning Group - Mail List Synchronization***");
@@ -273,16 +287,16 @@ com.gContactSync.Sync = {
     };
     httpReq.mOnError   = function getGroupsError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR(httpReq.responseText);
-      // if there is an error, try to sync w/o groups                   
-      com.gContactSync.Sync.begin();
+      com.gContactSync.Sync.syncNextUser(httpReq.responseText);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
    * Sends an HTTP Request to Google for a feed of all the user's contacts.
-   * Calls com.gContactSync.Sync.sync with the response if successful or com.gContactSync.Sync.syncNextUser with the
-   * error.
+   * Calls com.gContactSync.Sync.sync with the response if successful or
+   * com.gContactSync.Sync.syncNextUser on errors.
    */
   getContacts: function Sync_getContacts() {
     com.gContactSync.LOGGER.LOG("***Beginning Contact Synchronization***");
@@ -323,6 +337,7 @@ com.gContactSync.Sync = {
       com.gContactSync.Sync.syncNextUser(httpReq.responseText);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -375,7 +390,8 @@ com.gContactSync.Sync = {
     catch (e) {}
     // start over, if necessary, or schedule the next synchronization
     if (aStartOver)
-      com.gContactSync.Sync.begin();
+      com.gContactSync.Sync.begin(com.gContactSync.Sync.mManualSync,
+                                  com.gContactSync.Sync.mAddressBook);
     else
       com.gContactSync.Sync.schedule(com.gContactSync.Preferences.mSyncPrefs.refreshInterval.value * 60000);
   },
@@ -397,7 +413,7 @@ com.gContactSync.Sync = {
         // if there are more contacts than returned, increase the pref
         newMax;
     if (isNaN(lastSync)) {
-      com.gContactSync.LOGGER.LOG_WARNING("lastSync was NaN, setting to 0");
+      com.gContactSync.LOGGER.VERBOSE_LOG("lastSync was NaN, setting to 0");
       lastSync = 0;
     }
     // mark the AB as not having been reset if it gets this far
@@ -447,22 +463,22 @@ com.gContactSync.Sync = {
       for (i = 0, length = abCards.length; i < length; i++) {
         if (abCards[i].getValue("GoogleID")) continue;
         for (var id in gContacts) {
-          if (gContacts[id] && abCards[i]) {
-            if (com.gContactSync.GAbManager.compareContacts(
+          if (gContacts[id] && abCards[i] && !gContacts[id].merged &&
+              com.gContactSync.GAbManager.compareContacts(
                 abCards[i],
                 gContacts[id],
                 ["DisplayName", "PrimaryEmail"],
                 ["fullName",    "email"],
                 0.5)) {
-              abCards[i].setValue("GoogleID", id);
-              abCards[i].setValue("LastModifiedDate", 0);
-              break;
-            }
+            abCards[i].setValue("GoogleID", id);
+            abCards[i].setValue("LastModifiedDate", 0);
+            gContacts[id].merged = true;
+            break;
           }
         }
       }
     }
-    
+
     com.gContactSync.Overlay.setStatusBarText(com.gContactSync.StringBundle.getStr("syncing"));
 
     // Step 2: iterate through TB Contacts and check for matches
@@ -493,7 +509,7 @@ com.gContactSync.Sync = {
         // remove it from gContacts
         gContacts[id]  = null;
         // note that this returns 0 if readOnly is set
-        gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0;
+        gCardDate  = ab.mPrefs.writeOnly !== "true" ? gContact.lastModified : 0; // TODO - should this be a 1?
         // 4 options
         // if both were updated
         com.gContactSync.LOGGER.LOG(found +
@@ -650,6 +666,21 @@ com.gContactSync.Sync = {
     return true;
   },
   /**
+   * Calls the given function after the timeout specified in the
+   * remoteActionDelay pref.  If the pref is <= 0 then this function calls it
+   * immediately.
+   * This should help mitigate 503 errors if the pref is set.
+   * @param {function} func The function to call.
+   */
+  delayedProcessQueue: function Sync_delayedProcessQueue(func) {
+    if (com.gContactSync.Preferences.mSyncPrefs.remoteActionDelay.value > 0) {
+      setTimeout(func,
+                 com.gContactSync.Preferences.mSyncPrefs.remoteActionDelay.value);
+    } else {
+      func.call();
+    }
+  },
+  /**
    * Deletes all contacts from Google included in the mContactsToDelete
    * array one at a time to avoid timing conflicts. Calls
    * com.gContactSync.Sync.processAddQueue() when finished.
@@ -677,13 +708,16 @@ com.gContactSync.Sync = {
                                                     editURL, null,
                                                     com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
-    httpReq.mOnSuccess = com.gContactSync.Sync.processDeleteQueue;
+    httpReq.mOnSuccess = function processDeleteSuccess(httpReq) {
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processDeleteQueue);
+    };
     httpReq.mOnError   = function processDeleteError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR('Error while deleting contact',
                                         httpReq.responseText);
-      com.gContactSync.Sync.processDeleteQueue();
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processDeleteQueue);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -718,7 +752,7 @@ com.gContactSync.Sync = {
                                                     null,
                                                     string,
                                                     com.gContactSync.Sync.mCurrentUsername);
-    this.mNewPhotoURI = com.gContactSync.Preferences.mSyncPrefs.sendPhotos ?
+    this.mNewPhotoURI = com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value ?
                           gcontact.mNewPhotoURI : null;
     /* When the contact is successfully created:
      *  1. Get the card from which the contact was made
@@ -735,20 +769,29 @@ com.gContactSync.Sync = {
       contact.setValue('GoogleID', gcontact.getID(true));
       contact.update();
       // if photos are allowed to be uploaded to Google then do so
-      if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos) {
+      if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value) {
         gcontact.setPhoto(com.gContactSync.Sync.mNewPhotoURI);
       }
       // reset the new photo URI variable
       com.gContactSync.Sync.mNewPhotoURI = null;
-      com.gContactSync.Sync.processAddQueue();
+      // NOTE - Google has an undocumented limit on the rate at which photos
+      // can be added.  Add a small wait here.
+      if (com.gContactSync.Preferences.mSyncPrefs.sendPhotos.value &&
+          com.gContactSync.Preferences.mSyncPrefs.newContactPhotoDelay.value > 0) {
+        setTimeout(com.gContactSync.Sync.processAddQueue,
+                   com.gContactSync.Preferences.mSyncPrefs.newContactPhotoDelay.value);
+      } else {
+        com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processAddQueue);
+      }
     }
     httpReq.mOnCreated = onCreated;
     httpReq.mOnError   = function contactCreatedError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR('Error while adding contact',
                                         httpReq.responseText);
-      com.gContactSync.Sync.processAddQueue();
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processAddQueue);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -798,13 +841,16 @@ com.gContactSync.Sync = {
                                                     string,
                                                     com.gContactSync.Sync.mCurrentUsername);
     httpReq.addHeaderItem("If-Match", "*");
-    httpReq.mOnSuccess = com.gContactSync.Sync.processUpdateQueue;
+    httpReq.mOnSuccess = function processUpdateSuccess(httpReq) {
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processUpdateQueue);
+    };
     httpReq.mOnError   = function processUpdateError(httpReq) {
       com.gContactSync.LOGGER.LOG_ERROR('Error while updating contact',
                                         httpReq.responseText);
-      com.gContactSync.Sync.processUpdateQueue();
+      com.gContactSync.Sync.delayedProcessQueue(com.gContactSync.Sync.processUpdateQueue);
     };
     httpReq.mOnOffline = com.gContactSync.Sync.mOfflineFunction;
+    httpReq.mOn503 = com.gContactSync.Sync.m503Function;
     httpReq.send();
   },
   /**
@@ -826,6 +872,10 @@ com.gContactSync.Sync = {
       var myContacts = ab.mPrefs.myContacts == "true" && ab.mPrefs.myContactsName;
       var arr        = aAtom.getElementsByTagNameNS(ns.url, "entry");
       var noCatch    = false;
+      if (isNaN(lastSync)) {
+        com.gContactSync.LOGGER.VERBOSE_LOG("lastSync was NaN, setting to 0");
+        lastSync = 0;
+      }
       // get the mailing lists if not only synchronizing my contacts
       if (!myContacts) {
         com.gContactSync.LOGGER.VERBOSE_LOG("***Getting all mailing lists***");
@@ -840,10 +890,28 @@ com.gContactSync.Sync = {
             var title = group.getTitle();
             var modifiedDate = group.getLastModifiedDate();
             com.gContactSync.LOGGER.LOG(" * " + title + " - " + id +
-                                        " last modified: " + modifiedDate);
+                                        " - last modified: " + modifiedDate);
             var list = com.gContactSync.Sync.mLists[id];
+            // If this is the first sync and a list wasn't found then manually
+            // search through each existing list to see if the names match.
+            // Ignore lists with IDs as these are already being used.
+            if (lastSync == 0 && !list) {
+              for (var j in com.gContactSync.Sync.mLists) {
+                var tmpList   = com.gContactSync.Sync.mLists[j];
+                var tmpListID = tmpList.getGroupID();
+                com.gContactSync.LOGGER.VERBOSE_LOG("  - comparing with " + tmpList.getName() +
+                                                    " - " + tmpListID);
+                if (tmpListID.indexOf("www.google.com/m8/feeds/groups") === -1 &&
+                    tmpList.getName() == title) {
+                  list = tmpList;
+                  list.setGroupID(id);
+                  com.gContactSync.LOGGER.LOG("  - Merged with " + tmpList.getName());
+                  break;
+                }
+              }
+            }
             com.gContactSync.Sync.mGroups[id] = group;
-            if (modifiedDate < lastSync) { // it's an old group
+            if (modifiedDate < lastSync && lastSync) { // it's an old group
               if (list) {
                 list.matched = true;
                 // if the name is different, update the group's title
@@ -1131,12 +1199,12 @@ com.gContactSync.Sync = {
   schedule: function Sync_schedule(aDelay) {
     // only schedule a sync if the delay is greater than 0, a sync is not
     // already scheduled, and autosyncing is enabled
-    if (aDelay && !com.gContactSync.Preferences.mSyncPrefs.synchronizing.value &&
-        !com.gContactSync.Sync.mSyncScheduled && aDelay > 0 &&
+    if (aDelay > 0 && !com.gContactSync.Preferences.mSyncPrefs.synchronizing.value &&
+        !com.gContactSync.Sync.mSyncScheduled &&
         com.gContactSync.Preferences.mSyncPrefs.autoSync.value) {
       com.gContactSync.Sync.mSyncScheduled = true;
-      com.gContactSync.LOGGER.VERBOSE_LOG("Next sync in: " + aDelay + " milliseconds");
       setTimeout(com.gContactSync.Sync.begin, aDelay);  
+      com.gContactSync.LOGGER.VERBOSE_LOG("Next sync in: " + aDelay + " milliseconds");
     }
   }
 };

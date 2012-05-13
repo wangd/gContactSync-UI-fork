@@ -10,8 +10,11 @@
 # Edit install.rdf and content/synonyms.js to change the actual VERSION
 #VERSION=0.2.18
 #SRC_DIR=./src2
-VERSION=0.3.4_`git show -s --format=%h`
-SRC_DIR=./src3
+#VERSION=0.3.5
+#SRC_DIR=./src3
+VERSION=0.4.0a4
+SRC_DIR=./src4
+
 # Dest should be absolute or relative to SRC_DIR
 DEST=$(pwd)/downloads/gContactSync-$VERSION.xpi
 

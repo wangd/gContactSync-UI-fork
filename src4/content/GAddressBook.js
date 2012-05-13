@@ -90,18 +90,17 @@ com.gContactSync.GAddressBook.prototype.prefPrefix = "gContactSync";
  */
 com.gContactSync.GAddressBook.prototype.getPrefs = function GAddressBook_getPrefs() {
   com.gContactSync.LOGGER.VERBOSE_LOG("\nGetting Prefs for AB '" + this.getName() + "':");
-  var i, val, pref;
-  for (i in this.mPrefs) {
+  for (var i in this.mPrefs) {
     var isLastSync = (i === "lastSync")
     // all prefs except lastSync have the prefPrefix in from of them
-    val = this.getStringPref(isLastSync ? i : this.prefPrefix + i);
+    var val = this.getStringPref(isLastSync ? i : this.prefPrefix + i);
     // getStringPref returns 0 iff the pref doesn't exist
     // if the pref doesn't exist, then use the global gContactSync pref
     // AND set this AB's pref so this doesn't fall through next time
     // this behavior is mostly for backwards compatibility
     if (val === 0) {
       com.gContactSync.LOGGER.VERBOSE_LOG("getPrefs fell through on " + i);
-      pref = com.gContactSync.Preferences.mSyncPrefs[i];
+      var pref = com.gContactSync.Preferences.mSyncPrefs[i];
       val  = pref ? String(pref.value) : "";
       this.savePref(i, val);
     }

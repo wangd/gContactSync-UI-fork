@@ -374,12 +374,8 @@ com.gContactSync.AbManager = {
     }
     while (iter.hasMoreElements()) {
       data = iter.getNext();
-      if (data instanceof Components.interfaces.nsIAbDirectory)
-        if (data.dirName == aDirName) {
-          var ab = new com.gContactSync.GAddressBook(data);
-          ab.setLastSyncDate(0);
-          return data;
-        }
+      if ((data instanceof Components.interfaces.nsIAbDirectory) && data.dirName == aDirName)
+        return data;
     }// end of while loop
     return null;
   },
