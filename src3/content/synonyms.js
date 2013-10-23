@@ -51,7 +51,7 @@ com.gContactSync.versionMajor   = "0";
 /** The minor version of gContactSync (ie 3 in 0.3.0b1) */
 com.gContactSync.versionMinor   = "3";
 /** The release for the current version of gContactSync (ie 1 in 0.3.1a7) */
-com.gContactSync.versionRelease = "5";
+com.gContactSync.versionRelease = "6";
 /** The suffix for the current version of gContactSync (ie a7 for Alpha 7) */
 com.gContactSync.versionSuffix  = "";
 
@@ -90,25 +90,22 @@ com.gContactSync.getVersionString = function gCS_getVersionString(aGetLast) {
 }
 
 /**
- * Creates an XMLSerializer to serialize the given XML then create a more
+ * Creates a DOMSerializer to serialize the given XML then create a more
  * human-friendly string representation of that XML.
- * This is an expensive method of serializing XML but results in the most
- * human-friendly string from XML.
  * 
  * Also see serializeFromText.
  *
  * @param aXML {XML} The XML to serialize into a human-friendly string.
- * @returns {string}  A formatted string of the given XML.
+ * @returns {string} A formatted string of the given XML.
  */
 com.gContactSync.serialize = function gCS_serialize(aXML) {
   if (!aXML)
     return "";
   try {
-    var serializer = new XMLSerializer(),
-        str        = serializer.serializeToString(aXML);
-    // source: http://developer.mozilla.org/en/E4X#Known_bugs_and_limitations
-    str = str.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, ""); // bug 336551
-    return XML(str).toXMLString();
+    return Components.classes["@mozilla.org/xmlextras/xmlserializer;1"]
+                     .createInstance(Components.interfaces.nsIDOMSerializer)
+                     .serializeToString(aXML)
+                     .replace(/null/g, "");
   }
   catch (e) {
     com.gContactSync.LOGGER.LOG_WARNING("Error while serializing the following XML: " +
